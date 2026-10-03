@@ -1,0 +1,102 @@
+[
+  {
+    "key": "mountain",
+    "name": "山地",
+    "icon": "hugeicons:mountain",
+    "description": "山地是一个地形复杂的地方，可以找到各种矿物和稀有资源。",
+    "position": {
+      "x": 34,
+      "y": 3
+    }
+  },
+  {
+    "key": "river_side",
+    "name": "河边",
+    "icon": "fluent:stream-48-regular",
+    "description": "河边是一个资源丰富的地方，可以找到各种各样的物品。",
+    "position": {
+      "x": 269,
+      "y": 105
+    }
+  },
+  {
+    "key": "forest",
+    "name": "森林",
+    "icon": "temaki:tree-row",
+    "description": "森林是一个充满生机的地方，可以找到各种各样的植物和动物。",
+    "position": {
+      "x": 68,
+      "y": 108
+    }
+  },
+  {
+    "key": "cave",
+    "name": "溶洞",
+    "icon": "roentgen:cave",
+    "description": "溶洞是一个神秘的地方，可以找到各种各样的矿物和稀有资源。",
+    "position": {
+      "x": 150,
+      "y": 150
+    }
+  },
+  {
+    "key": "volcano",
+    "name": "火山",
+    "icon": "fa7-solid:volcano",
+    "description": "火山是一个危险的地方，可以找到各种各样的矿物和稀有资源。",
+    "position": {
+      "x": 279,
+      "y": 0
+    }
+  },
+  {
+    "key": "basin",
+    "name": "盆地",
+    "icon": "svg-icon:basin",
+    "description": "盆地是一个低洼的地方，可以找到各种各样的矿物和稀有资源。",
+    "position": {
+      "x": 150,
+      "y": 30
+    }
+  },
+  {
+    "key": "beach",
+    "name": "海滩",
+    "icon": "tabler:beach",
+    "description": "海滩是一个美丽的地方，可以找到各种各样的贝壳和稀有资源。",
+    "position": {
+      "x": 426,
+      "y": 201
+    }
+  },
+  {
+    "key": "meteor_crater",
+    "name": "陨石坑",
+    "icon": "tabler:meteor",
+    "description": "陨石坑是一个神秘的地方，可以找到各种各样的陨石和稀有资源。",
+    "position": {
+      "x": 407,
+      "y": 0
+    }
+  },
+  {
+    "key": "salt_lake",
+    "name": "盐湖",
+    "icon": "la:water",
+    "description": "盐湖是一个特殊的地方，可以找到各种各样的盐和稀有资源。",
+    "position": {
+      "x": 208,
+      "y": 223
+    }
+  },
+  {
+    "key": "island",
+    "name": "海岛",
+    "icon": "mingcute:tree-4-fill",
+    "description": "海岛是一个孤立的地方，可以找到各种各样的植物和动物。",
+    "position": {
+      "x": 642,
+      "y": 126
+    }
+  }
+]

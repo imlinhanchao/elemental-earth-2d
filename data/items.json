@@ -1,0 +1,4797 @@
+[
+  {
+    "name": "石头",
+    "key": "stone",
+    "category": "材料",
+    "description": "灰褐色、表面粗糙的碎块，边缘不规则，握在手心能感受沉实的重量。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "加工石块",
+    "key": "cut_stone",
+    "category": "材料",
+    "description": "表面平整的石灰岩块，边缘方正，散发着古老的静谧感。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "giza_pyramid",
+    "name": "埃及金字塔",
+    "category": "奇观",
+    "description": "巍峨的巨型石砌建筑，矗立在沙海之间，诉说着千年的秘密。它是人类劳动力与几何智慧的巅峰结晶。",
+    "type": [
+      "material",
+      "building"
+    ],
+    "milestone": "build_pyramid",
+    "attrs": {
+      "level": 4
+    }
+  },
+  {
+    "name": "木材",
+    "key": "wood",
+    "category": "燃料",
+    "description": "一种常见的材料，可以用来建造和制作工具。",
+    "type": [
+      "material",
+      "fuel"
+    ],
+    "attrs": {
+      "burn_time": 30
+    }
+  },
+  {
+    "name": "燧石",
+    "key": "flint",
+    "category": "矿石",
+    "description": "深灰至黑色的致密石块，断面呈贝壳状、带有蜡样光泽，边缘锐利如刃。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "key": "bark",
+    "name": "树皮",
+    "category": "材料",
+    "description": "从树干上剥落的外皮，外侧粗糙龟裂、内侧光滑柔软，带有淡淡的草木气息。",
+    "type": [
+      "material"
+    ],
+    "attrs": {
+      "burn_time": 10
+    }
+  },
+  {
+    "name": "树脂",
+    "key": "resin",
+    "category": "材料",
+    "description": "金黄色的半透明粘稠液体，从树干的伤口处缓缓渗出，散发出浓郁的松脂气味。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "粘土",
+    "key": "clay",
+    "category": "材料",
+    "description": "细腻油润的土块，呈灰白色，触手冰凉湿润，揉捏间能感受到极强的可塑性。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "泥土",
+    "key": "mud",
+    "category": "材料",
+    "description": "深褐色湿润的松软土块，混杂着细小的砂砾和腐殖质，散发着雨后大地的气息。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "water",
+    "name": "水",
+    "category": "液体",
+    "description": "清澈透明的液体，无色无味，捧在掌心能看到指缝间透过的光线。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "木炭",
+    "key": "charcoal",
+    "category": "燃料",
+    "description": "木材燃烧后的产物，可以用来制作火种和其他物品。",
+    "type": [
+      "material",
+      "fuel"
+    ],
+    "elemental": 6,
+    "attrs": {
+      "burn_time": 60
+    }
+  },
+  {
+    "name": "草木灰",
+    "key": "wood_ash",
+    "category": "材料",
+    "description": "银灰色粉末，细如轻尘，风一吹便四散飞扬，散发着焦糊的烟气味。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "火种",
+    "key": "fire_seed",
+    "category": "火源",
+    "description": "用燧石和木材制作的火种，可以用来生火。",
+    "durable": 1,
+    "type": [
+      "fire_source"
+    ],
+    "milestone": "craft_fire_seed"
+  },
+  {
+    "name": "砂金",
+    "key": "gold_sand",
+    "category": "矿石",
+    "description": "细碎的金黄色颗粒，混杂在灰黑的河砂之中，在日光下闪烁着耀眼的金属光泽。",
+    "elemental": 79,
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "石斧",
+    "key": "stone_axe",
+    "category": "工具",
+    "description": "用石头制作的斧头，可以用来砍树和挖掘。",
+    "durable": 1,
+    "type": [
+      "tool"
+    ]
+  },
+  {
+    "name": "石镐",
+    "key": "stone_pickaxe",
+    "category": "工具",
+    "description": "用石头制作的镐，可以用来挖掘和采矿。",
+    "durable": 1,
+    "type": [
+      "tool"
+    ],
+    "milestone": "craft_stone_pickaxe"
+  },
+  {
+    "name": "木桶",
+    "key": "wooden_bucket",
+    "category": "容器",
+    "description": "用木材制作的桶，可以用来装水和其他物品。",
+    "durable": 1,
+    "type": [
+      "container"
+    ]
+  },
+  {
+    "name": "陶罐",
+    "key": "clay_pot",
+    "category": "容器",
+    "description": "用粘土制作的罐子，可以用来装水和其他物品。",
+    "durable": 1,
+    "type": [
+      "container"
+    ],
+    "attrs": {
+      "can_heat": true,
+      "save_gas": true
+    }
+  },
+  {
+    "name": "窑炉",
+    "key": "kiln",
+    "category": "容器",
+    "description": "用来烧制陶器和其他物品的设备。",
+    "durable": 1,
+    "type": [
+      "container"
+    ],
+    "attrs": {
+      "can_heat": true
+    },
+    "milestone": "build_kiln"
+  },
+  {
+    "name": "纤维布",
+    "key": "fiber_cloth",
+    "category": "材料",
+    "description": "由细韧的植物纤维纵横交织而成的粗糙布料，质地轻薄、边缘有些松散。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "鼓风机",
+    "key": "bellows",
+    "category": "工具",
+    "description": "用来吹风的工具，可以增加火焰的温度。",
+    "durable": 1,
+    "type": [
+      "tool"
+    ]
+  },
+  {
+    "name": "一氧化碳",
+    "key": "carbon_monoxide",
+    "category": "气体",
+    "description": "无色无味的气体，着不见也摸不着，闻起来感到一股莫名的眩晕感。用火点燃会产生淡蓝色火焰。",
+    "type": [
+      "material",
+      "gas",
+      "fuel"
+    ],
+    "attrs": {
+      "burn_time": 30
+    }
+  },
+  {
+    "name": "二氧化碳",
+    "key": "carbon_dioxide",
+    "category": "气体",
+    "description": "无色无味的气体，着不见也摸不着，将燃烧的木片伸入其中会立刻熄灭，仿佛被无形之手掐灭。",
+    "type": [
+      "material",
+      "gas"
+    ]
+  },
+  {
+    "name": "孔雀石",
+    "key": "malachite",
+    "category": "矿石",
+    "description": "一簇浓绿色的矿石，表面有深浅交替的弧形纹路，断面显现丝绢般的光泽。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "铜",
+    "key": "copper",
+    "category": "材料",
+    "description": "一块暗红色的金属锭，表面略带氧化斑驳，敲击发出清脆绵长的声音。",
+    "elemental": 29,
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "碱水",
+    "key": "alkaline_solution",
+    "category": "液体",
+    "description": "一种碱性的液体，可以用来中和酸性物质。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "key": "hematite",
+    "name": "赤铁矿",
+    "category": "矿石",
+    "description": "暗红色的致密矿石，断面呈不规则的参差状，表面隐约泛着金属光泽。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "生铁",
+    "key": "pig_iron",
+    "category": "材料",
+    "description": "灰黑色的铸铁块，表面粗糙带有砂眼，断面呈现银灰色的结晶颗粒。",
+    "type": [
+      "material"
+    ],
+    "elemental": 26
+  },
+  {
+    "key": "steel",
+    "name": "钢",
+    "category": "材料",
+    "description": "银灰色的金属条块，表面光洁致密，在光线下反射出冷冽的寒光，敲击声清脆悠长。",
+    "type": [
+      "material"
+    ],
+    "elemental": 0
+  },
+  {
+    "name": "炉渣",
+    "key": "slag",
+    "category": "材料",
+    "description": "灰褐色的多孔团块，表面呈玻璃质光泽，质地疏松易碎，像是岩浆冷却后的残骸。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "焦炭",
+    "key": "coke",
+    "category": "材料",
+    "description": "银灰色的多孔块状物，质地坚硬而轻，表面布满蜂窝状的空洞，敲击有金属声。",
+    "type": [
+      "material",
+      "fuel"
+    ],
+    "elemental": 6,
+    "attrs": {
+      "burn_time": 90
+    }
+  },
+  {
+    "name": "煤",
+    "key": "coal",
+    "category": "材料",
+    "description": "漆黑色的不规则块体，表面光滑略带光亮，断面平整如镜，会染黑手指。",
+    "type": [
+      "material",
+      "fuel"
+    ],
+    "elemental": 6,
+    "attrs": {
+      "burn_time": 60
+    }
+  },
+  {
+    "name": "耐火砖",
+    "key": "fire_brick",
+    "category": "材料",
+    "description": "米黄色的方形砖块，质地致密沉重，表面有细小的砂质颗粒，触感粗糙而坚实。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "blast_furnace",
+    "name": "高炉",
+    "category": "容器",
+    "description": "用于高温冶炼金属的竖炉，需耐火砖建造，可进行还原熔炼。",
+    "type": [
+      "container"
+    ],
+    "durable": 100,
+    "attrs": {
+      "can_heat": true
+    }
+  },
+  {
+    "name": "石灰石",
+    "key": "limestone",
+    "category": "矿石",
+    "description": "浅灰色的致密岩石，表面有细微的砂质感，滴上液体后冒出细密的气泡。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "硫磺",
+    "key": "sulfur",
+    "category": "矿石",
+    "description": "鲜黄色的晶体碎块，半透明，表面有油脂般的光泽，散发着刺鼻的气味。",
+    "type": [
+      "material"
+    ],
+    "elemental": 16
+  },
+  {
+    "name": "硫化氢",
+    "key": "hydrogen_sulfide",
+    "category": "气体",
+    "description": "无色气体，具有臭鸡蛋气味，极毒。易通过硫化物与酸反应产生。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "iron_shovel",
+    "name": "铁铲",
+    "category": "工具",
+    "description": "用铁打造的锹，可以用来挖掘土壤和沙子。",
+    "type": [
+      "tool"
+    ],
+    "durable": 3
+  },
+  {
+    "key": "iron_axe",
+    "name": "铁斧",
+    "category": "工具",
+    "description": "用铁打造的斧头，比石斧更坚固耐用。",
+    "type": [
+      "tool"
+    ],
+    "durable": 3
+  },
+  {
+    "name": "坩埚",
+    "key": "crucible",
+    "category": "容器",
+    "description": "耐高温的容器，可用于熔炼金属和进行高温反应。",
+    "type": [
+      "container"
+    ],
+    "attrs": {
+      "can_heat": true
+    },
+    "durable": 1,
+    "milestone": "craft_crucible"
+  },
+  {
+    "name": "硝石",
+    "key": "niter",
+    "category": "矿石",
+    "description": "白色针状结晶，在阳光下闪烁如冰霜，尝起来有一丝清冽的咸味。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "key": "gas_bottle",
+    "name": "集气瓶",
+    "category": "容器",
+    "description": "一种带有密封盖的玻璃容器，用于收集和储存气体。",
+    "type": [
+      "container"
+    ],
+    "durable": 1,
+    "milestone": "craft_gas_bottle",
+    "attrs": {
+      "can_heat": true,
+      "save_gas": true
+    }
+  },
+  {
+    "name": "氢气",
+    "key": "hydrogen",
+    "category": "气体",
+    "description": "无色无味的气体，着不见也摸不着，但装在纸袋中会向上漂浮。尝试点燃会发出清脆的爆鸣声。",
+    "type": [
+      "material",
+      "gas"
+    ],
+    "elemental": 1
+  },
+  {
+    "key": "cinnabar",
+    "name": "辰砂",
+    "category": "矿石",
+    "description": "鲜红色的矿物，质地柔软，表面带有玻璃光泽。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "汞",
+    "key": "mercury",
+    "category": "液体",
+    "description": "银白色的液态金属，流动性极强，滴落时形成圆润的珠状，具有毒性。",
+    "type": [
+      "material",
+      "liquid"
+    ],
+    "elemental": 80
+  },
+  {
+    "name": "二氧化硫",
+    "key": "sulfur_dioxide",
+    "category": "气体",
+    "description": "无色气体，具有强烈的刺激性气味，会刺激眼睛和呼吸道。",
+    "type": [
+      "material",
+      "gas"
+    ]
+  },
+  {
+    "name": "闪锌矿",
+    "key": "sphalerite",
+    "category": "矿石",
+    "description": "深色带有金属光泽的块状矿物，表面常有条纹，在阳光下闪烁，手感沉重。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "锌焙砂",
+    "key": "zinc_oxide",
+    "category": "矿石",
+    "description": "白色微细粉末，无味，接触皮肤时有滑腻感。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "锌",
+    "key": "zinc",
+    "category": "材料",
+    "description": "银白色略带蓝光的金属块，表面有结晶花纹，质地较脆。",
+    "type": [
+      "material"
+    ],
+    "elemental": 30
+  },
+  {
+    "name": "黄铜",
+    "key": "brass",
+    "category": "材料",
+    "description": "金黄色的金属块，表面光滑，比重较大，敲击时发出清脆的声响。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "cassiterite",
+    "name": "锡石",
+    "category": "矿石",
+    "description": "深棕色至黑色的矿物碎块，密度大，有金属光泽，表面有油脂感。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "key": "galena",
+    "name": "方铅矿",
+    "category": "矿石",
+    "description": "铅灰色立方体晶体，金属光泽，质地柔软，比重很大。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "锡",
+    "key": "tin",
+    "category": "材料",
+    "description": "银白色金属，质软，可弯曲，有延展性。",
+    "type": [
+      "material"
+    ],
+    "elemental": 50
+  },
+  {
+    "name": "铅",
+    "key": "lead",
+    "category": "材料",
+    "description": "银灰色软金属，非常重，容易用刀切割。",
+    "type": [
+      "material"
+    ],
+    "elemental": 82
+  },
+  {
+    "name": "氧化铅",
+    "key": "lead_oxide",
+    "category": "材料",
+    "description": "黄色粉末，有毒，微溶于水。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "青铜",
+    "key": "bronze",
+    "category": "材料",
+    "description": "青灰色、带有暗绿色锈斑的金属块，硬度高，断面有细密的颗粒纹理，手感沉实。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "bronze_axe",
+    "name": "青铜斧",
+    "category": "工具",
+    "description": "用青铜铸造的斧头，刃口锋利，用来砍伐树木或收集木材。",
+    "type": [
+      "tool"
+    ],
+    "durable": 2
+  },
+  {
+    "key": "bronze_pickaxe",
+    "name": "青铜镐",
+    "category": "工具",
+    "description": "用青铜铸造的镐头，质地坚硬，适合在矿脉中挖掘矿石。",
+    "type": [
+      "tool"
+    ],
+    "durable": 2
+  },
+  {
+    "key": "brass_pickaxe",
+    "name": "黄铜镐",
+    "category": "工具",
+    "description": "用黄铜打造的镐，比青铜更坚固，适合挖掘中硬度矿石。",
+    "type": [
+      "tool"
+    ],
+    "durable": 5
+  },
+  {
+    "key": "brass_axe",
+    "name": "黄铜斧",
+    "category": "工具",
+    "description": "用黄铜打造的斧，切割效率较高，适合伐木。",
+    "type": [
+      "tool"
+    ],
+    "durable": 5
+  },
+  {
+    "key": "iron_pickaxe",
+    "name": "铁镐",
+    "category": "工具",
+    "description": "用铁打造的镐，比石镐更坚固耐用。",
+    "type": [
+      "tool"
+    ],
+    "durable": 10
+  },
+  {
+    "key": "brass_condenser",
+    "name": "冷凝管",
+    "category": "容器",
+    "description": "螺旋冷凝管，可高效冷却蒸汽，用于蒸馏操作。",
+    "type": [
+      "container",
+      "tool"
+    ],
+    "durable": 2
+  },
+  {
+    "name": "银",
+    "key": "silver",
+    "category": "材料",
+    "description": "银白色、光亮的金属块，表面闪着柔和的冷光，质地柔软但沉重。",
+    "type": [
+      "material"
+    ],
+    "elemental": 47
+  },
+  {
+    "key": "argentite",
+    "name": "辉银矿",
+    "category": "矿石",
+    "description": "灰黑色、金属光泽的矿石碎块，断口呈参差状，重而脆。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "自然银",
+    "key": "native_silver",
+    "category": "材料",
+    "description": "银白色、树枝状或粒状的天然银块，闪烁着耀眼的金属光泽。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "stibnite",
+    "name": "辉锑矿",
+    "category": "矿石",
+    "description": "铅灰色、针状晶体簇，金属光泽，质脆易碎。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "key": "antimony_trioxide",
+    "name": "锑白",
+    "category": "材料",
+    "description": "白色粉末，无味，遇热变黄。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "锑",
+    "key": "antimony",
+    "category": "材料",
+    "description": "银白色、脆硬的金属，断面呈粗晶结构。",
+    "type": [
+      "material"
+    ],
+    "elemental": 51
+  },
+  {
+    "key": "arsenopyrite",
+    "name": "毒砂",
+    "category": "矿石",
+    "description": "银白色或钢灰色块状矿物，表面常有黄褐色锖色，质地脆硬，断口参差状，有金属光泽。",
+    "type": [
+      "material"
+    ],
+    "durable": 0,
+    "is_discovery": true
+  },
+  {
+    "key": "orpiment",
+    "name": "雌黄",
+    "category": "矿石",
+    "description": "柠檬黄色或橘黄色的片状或块状矿物，半透明，质地柔软，有油脂光泽。",
+    "type": [
+      "material"
+    ],
+    "durable": 0,
+    "is_discovery": true
+  },
+  {
+    "key": "realgar",
+    "name": "雄黄",
+    "category": "矿石",
+    "description": "深红色或橙红色的晶体或块状矿物，半透明，断口贝壳状，有油脂光泽。",
+    "type": [
+      "material"
+    ],
+    "durable": 0,
+    "is_discovery": true
+  },
+  {
+    "key": "arsenic_trioxide",
+    "name": "砒霜",
+    "category": "材料",
+    "description": "白色无定形粉末或结晶，无臭无味，剧毒。",
+    "type": [
+      "material"
+    ],
+    "durable": 0
+  },
+  {
+    "key": "arsenic",
+    "name": "砷",
+    "category": "材料",
+    "description": "银灰色脆性金属，表面暴露在空气中会迅速氧化变暗，无臭。",
+    "type": [
+      "material"
+    ],
+    "elemental": 33,
+    "durable": 0
+  },
+  {
+    "name": "硫化亚铁",
+    "key": "iron_sulfide",
+    "category": "材料",
+    "description": "黑褐色、具有金属光泽的固体碎块，质地较硬，是铁与硫的化合物。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "phosphorite",
+    "name": "磷矿石",
+    "category": "矿石",
+    "description": "灰白色或浅绿色块状矿物，表面粗糙，带有泥土气息。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "硅砂",
+    "key": "silica_sand",
+    "category": "矿石",
+    "description": "洁白细腻的砂粒，主要成分为二氧化硅。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "磷",
+    "key": "phosphorus",
+    "category": "材料",
+    "description": "蜡状半透明固体，在空气中会自燃，通常需保存在水下。",
+    "type": [
+      "material"
+    ],
+    "elemental": 15
+  },
+  {
+    "key": "sand",
+    "name": "沙子",
+    "category": "材料",
+    "description": "浅黄色、细小的颗粒，握在手中会从指缝间滑落，夹杂着微小的贝壳碎屑。",
+    "type": [
+      "material"
+    ],
+    "elemental": 0
+  },
+  {
+    "key": "sieve",
+    "name": "筛子",
+    "category": "工具",
+    "description": "用木框和纤维布编织而成的筛网，可以用来筛选不同粒度的颗粒物。",
+    "type": [
+      "tool",
+      "container"
+    ],
+    "durable": 1
+  },
+  {
+    "key": "cobaltite",
+    "name": "辉钴矿",
+    "category": "矿石",
+    "description": "银白色或锡白色的金属光泽矿物，常呈立方体或八面体晶体，表面有时带有灰色调。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氧化钴",
+    "key": "cobalt_oxide",
+    "category": "材料",
+    "description": "灰黑色粉末，无味。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钴",
+    "key": "cobalt",
+    "category": "材料",
+    "description": "银灰色金属，有磁性，质地坚硬。",
+    "type": [
+      "material"
+    ],
+    "elemental": 27
+  },
+  {
+    "name": "钴蓝",
+    "key": "cobalt_blue",
+    "category": "材料",
+    "description": "鲜艳的蓝色粉末，常用于陶瓷和玻璃着色。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "砷铂矿",
+    "key": "sperrylite",
+    "category": "矿石",
+    "description": "锡白色或钢灰色的金属光泽晶体，常呈立方体或八面体，质地坚硬，分量极重。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "铂金锭",
+    "key": "platinum_ingot",
+    "category": "材料",
+    "description": "银白色闪亮的金属块，表面如镜面般光滑，手感异常沉重，散发着高贵而冷冽的光泽。",
+    "type": [
+      "material"
+    ],
+    "elemental": 78
+  },
+  {
+    "name": "镍黄铁矿",
+    "key": "pentlandite",
+    "category": "矿石",
+    "description": "暗铜黄色的块状矿石，表面有金属光泽，断面呈不规则粒状，手感沉重。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氧化镍",
+    "key": "nickel_oxide",
+    "category": "材料",
+    "description": "灰绿色的粉末，质地细腻，无气味。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "镍",
+    "key": "nickel",
+    "category": "材料",
+    "description": "银白色的金属块，表面略带浅黄色调，具有良好的延展性和磁性。",
+    "type": [
+      "material"
+    ],
+    "elemental": 28
+  },
+  {
+    "key": "sulfur_trioxide",
+    "name": "三氧化硫",
+    "category": "气体",
+    "description": "无色刺鼻的气体，在空气中会形成白色酸雾，吸入后对呼吸道有强烈刺激。",
+    "type": [
+      "material",
+      "gas"
+    ],
+    "elemental": 0
+  },
+  {
+    "key": "dilute_sulfuric_acid",
+    "name": "稀硫酸",
+    "category": "液体",
+    "description": "无色油状液体，具有强酸性，能腐蚀多数金属，在工业中有广泛用途。",
+    "type": [
+      "material",
+      "liquid"
+    ],
+    "elemental": 0
+  },
+  {
+    "name": "绿矾",
+    "key": "green_vitriol",
+    "category": "矿石",
+    "description": "翠绿色透明的晶体碎块，在光照下闪烁玻璃般的光泽，表面微微潮湿，散发着一股淡淡的金属酸味。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "key": "zinc_sulfate",
+    "name": "硫酸锌",
+    "category": "材料",
+    "description": "白色结晶粉末，味涩，易溶于水，在空气中逐渐风化失水。",
+    "type": [
+      "material"
+    ],
+    "elemental": 0
+  },
+  {
+    "name": "硫酸亚锡",
+    "key": "tin_sulfate",
+    "category": "材料",
+    "description": "无色或白色的晶体，在潮湿空气中会缓慢水解。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硫酸铅",
+    "key": "lead_sulfate",
+    "category": "材料",
+    "description": "白色重质粉末，几乎不溶于水，在稀硫酸中溶解度极低。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硫酸钴",
+    "key": "cobalt_sulfate",
+    "category": "材料",
+    "description": "深红色的结晶粉末，溶于水后呈现玫瑰红色溶液。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硫酸镍",
+    "key": "nickel_sulfate",
+    "category": "材料",
+    "description": "翠绿色的晶体，受热时失去结晶水变为黄绿色。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氮气",
+    "key": "nitrogen",
+    "category": "气体",
+    "description": "无色无味的气体，看不见也摸不着，但它是空气中含量最多的成分。",
+    "type": [
+      "material",
+      "gas"
+    ],
+    "elemental": 7
+  },
+  {
+    "name": "氨气",
+    "key": "ammonia",
+    "category": "气体",
+    "description": "无色、有强烈刺激性气味的气体，吸入会令人窒息。",
+    "type": [
+      "material",
+      "gas"
+    ]
+  },
+  {
+    "name": "浓硫酸",
+    "key": "concentrated_sulfuric_acid",
+    "category": "液体",
+    "description": "无色、粘稠的油状液体，具有极强的腐蚀性和吸水性。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "硝酸",
+    "key": "nitric_acid",
+    "category": "液体",
+    "description": "无色或淡黄色发烟液体，具有强烈的刺激性气味和腐蚀性。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "火药",
+    "key": "gunpowder",
+    "category": "燃料",
+    "description": "灰黑色的粉末，由硫磺、硝石和木炭按比例混合而成。握在手中能感受到砂粒般的质感，散发着刺鼻的硫磺味。遇火即燃，爆发力极强。",
+    "type": [
+      "material",
+      "fuel"
+    ],
+    "attrs": {
+      "burn_time": 5,
+      "explosive": true
+    }
+  },
+  {
+    "name": "炸药",
+    "key": "dynamite",
+    "category": "材料",
+    "description": "用纸包裹的圆柱形药卷，一端引出一根细细的导火索，散发着刺鼻的硝烟味。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "生石灰",
+    "key": "quicklime",
+    "category": "材料",
+    "description": "白色或灰白色的块状固体，表面有细微裂纹，质地疏松，一触即碎，吸湿后迅速发热并膨胀。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "熟石灰",
+    "key": "slaked_lime",
+    "category": "材料",
+    "description": "细腻的白色粉末，手感滑腻，微溶于水，溶液呈弱碱性。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "石膏",
+    "key": "gypsum",
+    "category": "材料",
+    "description": "无色或白色透明晶体，呈板状或纤维状，表面具玻璃光泽，质地较软，可被指甲刻划。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "水泥",
+    "key": "cement",
+    "category": "材料",
+    "description": "灰绿色细粉末，触感细腻，掺水搅拌后逐渐凝固硬化，形成坚硬的块状物。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氧气",
+    "key": "oxygen",
+    "category": "气体",
+    "description": "无色无味的气体，看不见摸不着，但能明显感受到它的活跃——让火星迸发、让火焰更旺。",
+    "type": [
+      "material",
+      "gas"
+    ],
+    "elemental": 8
+  },
+  {
+    "name": "伏打电池",
+    "key": "battery",
+    "category": "工具",
+    "description": "用锌片、铜片和稀硫酸制成的伏打电池，两根金属片浸在酸液中，能产生稳定的直流电。",
+    "type": [
+      "tool",
+      "battery"
+    ],
+    "durable": 1,
+    "milestone": "craft_battery"
+  },
+  {
+    "name": "岩盐",
+    "key": "rock_salt",
+    "category": "矿石",
+    "description": "白色或浅灰色的结晶块，表面有透明感，味咸。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氯气",
+    "key": "chlorine",
+    "category": "气体",
+    "description": "黄绿色的气体，具有强烈的刺激性气味，吸入会感到窒息。",
+    "type": [
+      "material",
+      "gas"
+    ],
+    "elemental": 17
+  },
+  {
+    "name": "盐酸",
+    "key": "hydrochloric_acid",
+    "category": "液体",
+    "description": "无色透明液体，有刺鼻酸味，具有强腐蚀性。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "漂白粉",
+    "key": "bleaching_powder",
+    "category": "材料",
+    "description": "白色粉末，带有氯气的刺激性气味。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "软锰矿",
+    "key": "pyrolusite",
+    "category": "矿石",
+    "description": "黑色或深灰色的块状矿物，表面有金属光泽，质地较软，容易染手。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "锰",
+    "key": "manganese",
+    "category": "材料",
+    "description": "银白色金属，断面呈浅灰色，质地较脆，遇水缓慢反应。",
+    "type": [
+      "material"
+    ],
+    "elemental": 25
+  },
+  {
+    "key": "manganese_steel",
+    "name": "高锰钢",
+    "category": "材料",
+    "description": "深灰色的合金，表面有金属光泽，质地坚硬而耐磨。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "锰镐",
+    "key": "manganese_pickaxe",
+    "category": "工具",
+    "description": "由锰钢制成的镐，坚固耐用，适合挖掘各种矿石。",
+    "type": [
+      "tool"
+    ],
+    "durable": 100
+  },
+  {
+    "name": "氧化汞",
+    "key": "mercury_oxide",
+    "category": "材料",
+    "description": "红色或橙红色的粉末，质地细腻，带有轻微的光泽。手指捻过之后会留下一抹暗红，闻起来无味，但已知对神经系统有害。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "辉钼矿",
+    "key": "molybdenite",
+    "category": "矿石",
+    "description": "铅灰色、具金属光泽的片状晶体，质地柔软，可污手。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "三氧化钼",
+    "key": "molybdenum_trioxide",
+    "category": "材料",
+    "description": "白色或淡黄色粉末，加热时变黄，溶于碱。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钼",
+    "key": "molybdenum",
+    "category": "材料",
+    "description": "银灰色有光泽的金属，坚硬而坚韧。",
+    "type": [
+      "material"
+    ],
+    "elemental": 42
+  },
+  {
+    "name": "白钨矿",
+    "key": "scheelite",
+    "category": "矿石",
+    "description": "无色至白色半透明的矿物，有时带浅黄色或浅绿色，呈四方双锥状晶体，在紫外光下发蓝白色荧光。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "三氧化钨",
+    "key": "tungsten_trioxide",
+    "category": "材料",
+    "description": "鲜艳的黄色粉末，细腻如尘，捻在指尖有轻微的滑腻感，无臭无味。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钨粉",
+    "key": "tungsten_powder",
+    "category": "材料",
+    "description": "深灰色微细粉末，金属光泽暗淡，手感沉重，轻吹会扬起细尘。",
+    "type": [
+      "material"
+    ],
+    "elemental": 74
+  },
+  {
+    "name": "碲金矿",
+    "key": "tellurium_gold_ore",
+    "category": "矿石",
+    "description": "银灰色金属光泽的矿物，断口呈参差状，是提取金和碲的重要矿石。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "二氧化碲",
+    "key": "tellurium_dioxide",
+    "category": "材料",
+    "description": "白色结晶粉末，是碲的稳定氧化物，可通过还原得到碲。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "含碲碱熔块",
+    "key": "tellurium_alkali_melt",
+    "category": "材料",
+    "description": "粗制碱性熔块，由阳极泥碱熔产生，富含亚碲酸钠。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "碲",
+    "key": "tellurium",
+    "category": "材料",
+    "description": "银白色半金属，性脆，有金属光泽，是稀散金属中的重要元素。",
+    "type": [
+      "material"
+    ],
+    "elemental": 52
+  },
+  {
+    "name": "金锭",
+    "key": "gold",
+    "category": "材料",
+    "description": "金黄色的贵金属，质地柔软，化学性质稳定，常用于货币和首饰。",
+    "type": [
+      "material"
+    ],
+    "elemental": 79
+  },
+  {
+    "name": "锆石",
+    "key": "zircon",
+    "category": "矿石",
+    "description": "棕红色半透明的晶体碎块，断口呈玻璃光泽，质地坚硬，在光线下折射出明亮的火彩。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "锆砂熔块",
+    "key": "unrefined_zirconia",
+    "category": "材料",
+    "description": "从锆石焙烧直接获得的混合氧化物，含有高比例的氧化锆及其他成分，需进一步分离。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氧化锆",
+    "key": "zirconia",
+    "category": "材料",
+    "description": "经萃取分离去除了铪组分的高纯度氧化锆，是获得核能级金属锆的前驱体。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "锆",
+    "key": "zirconium",
+    "category": "材料",
+    "description": "银白色金属块，表面带有轻微的光泽，质地较硬，比钢铁更耐腐蚀。",
+    "type": [
+      "material"
+    ],
+    "elemental": 40
+  },
+  {
+    "name": "沥青铀矿",
+    "key": "pitchblende",
+    "category": "矿石",
+    "description": "黑色沥青光泽的致密块状矿物，质地沉重，断口呈贝壳状。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氧化铀",
+    "key": "uranium_oxide",
+    "category": "材料",
+    "description": "亮黄色粉末，手感细腻，散发着微弱的荧光。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "铀",
+    "key": "uranium",
+    "category": "材料",
+    "description": "银白色金属，带有暗淡光泽，密度极大，表面可形成氧化膜。",
+    "type": [
+      "material"
+    ],
+    "elemental": 92
+  },
+  {
+    "name": "金红石",
+    "key": "rutile",
+    "category": "矿石",
+    "description": "深红色至黑色的柱状晶体，带有金刚光泽，质地坚硬而脆。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "二氧化钛",
+    "key": "titanium_dioxide",
+    "category": "材料",
+    "description": "纯白色的粉末，质地细腻，手感滑润，没有气味。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "四氯化钛",
+    "key": "titanium_tetrachloride",
+    "category": "材料",
+    "description": "无色或微黄色的液体，在潮湿空气中强烈发烟。通过金红石与氯气高温反应制得，是克罗尔法制钛的核心中间体。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钛",
+    "key": "titanium",
+    "category": "材料",
+    "description": "银灰色的金属块，表面有金属光泽，重量比想象中轻得多。",
+    "type": [
+      "material"
+    ],
+    "elemental": 22
+  },
+  {
+    "key": "titanium_pickaxe",
+    "name": "钛镐",
+    "category": "工具",
+    "description": "用钛金属打造的镐子，轻巧而坚固，能高效破碎坚硬的岩石。",
+    "type": [
+      "tool"
+    ],
+    "durable": 500
+  },
+  {
+    "name": "铬铁矿",
+    "key": "chromite",
+    "category": "矿石",
+    "description": "黑色带有金属光泽的矿物碎块，断口参差，握在手中沉甸甸的，表面有时可见微细的晶面反光。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "铬酸钠",
+    "key": "sodium_chromate",
+    "category": "材料",
+    "description": "黄色晶体，由铬铁矿与碱性助剂氧化焙烧制得，是提取铬的关键中间体。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氧化铬",
+    "key": "chromium_oxide",
+    "category": "材料",
+    "description": "深绿色的细腻粉末，质地轻盈，沾染在手指上不易洗去，有一股金属的涩味。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "铬",
+    "key": "chromium",
+    "category": "材料",
+    "description": "银白色的金属块，表面光洁如镜，坚硬而沉重，边缘锐利，在光照下闪烁着冷冽的蓝白色光泽。",
+    "type": [
+      "material"
+    ],
+    "elemental": 24
+  },
+  {
+    "key": "stainless_steel",
+    "name": "奥氏体钢",
+    "category": "材料",
+    "description": "银灰色金属合金，表面平滑致密，泛着柔和的哑光，手感坚实而冰凉，耐腐蚀性极佳。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "chromium_pickaxe",
+    "name": "铬镐",
+    "category": "工具",
+    "description": "用铬合金锻造的镐头，镶嵌在硬木柄上，镐刃锋利坚硬，适合挖掘坚硬的岩石和矿物。",
+    "type": [
+      "tool"
+    ],
+    "durable": 1000
+  },
+  {
+    "name": "绿柱石",
+    "key": "beryl",
+    "category": "矿石",
+    "description": "淡绿色至翠绿色的透明晶体，六棱柱状，表面有玻璃光泽。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氧化铍",
+    "key": "beryllium_oxide",
+    "category": "材料",
+    "description": "白色粉末，手感细腻，无味但有剧毒。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "铍",
+    "key": "beryllium",
+    "category": "材料",
+    "description": "银灰色的轻金属，质地坚硬而脆，常温下表面形成氧化膜。",
+    "type": [
+      "material"
+    ],
+    "elemental": 4
+  },
+  {
+    "name": "钾石盐",
+    "key": "sylvite",
+    "category": "矿石",
+    "description": "无色透明或白色的立方晶体，味咸涩，表面有玻璃光泽。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "光卤石",
+    "key": "carnallite",
+    "category": "矿石",
+    "description": "白色带红色调的粒状矿物，表面粗糙，暴露在空气中易潮解。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "钾",
+    "key": "potassium",
+    "category": "材料",
+    "description": "银白色软质金属，切口迅速氧化发暗，遇水剧烈反应并燃烧。",
+    "type": [
+      "material"
+    ],
+    "elemental": 19
+  },
+  {
+    "name": "氢氧化钾",
+    "key": "potassium_hydroxide",
+    "category": "材料",
+    "description": "白色片状固体，极易潮解，水溶液滑腻并具有强碱性。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "碳酸钾",
+    "key": "potassium_carbonate",
+    "category": "材料",
+    "description": "白色粉末，易溶于水，水溶液呈碱性。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钠",
+    "key": "sodium",
+    "category": "材料",
+    "description": "银白色、质地柔软的金属，能用小刀轻易切开，切开后会暴露银亮光泽，但很快在空气中黯淡。",
+    "type": [
+      "material"
+    ],
+    "elemental": 11
+  },
+  {
+    "name": "氢氧化钠",
+    "key": "sodium_hydroxide",
+    "category": "材料",
+    "description": "白色半透明固体，表面常带细微裂纹，暴露在空气中会逐渐潮解，粘附水珠。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "碳酸钠",
+    "key": "sodium_carbonate",
+    "category": "材料",
+    "description": "白色细小颗粒或粉末，易溶于水，水溶液滑腻，略带涩味。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "芒硝",
+    "key": "mirabilite",
+    "category": "矿石",
+    "description": "无色透明晶体，像碎冰一般，在干燥空气中会失去水分变成白色粉末。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氯化钙",
+    "key": "calcium_chloride",
+    "category": "材料",
+    "description": "白色颗粒或粉末，极易吸潮，暴露在空气中会逐渐变成湿润的团块。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钙",
+    "key": "calcium",
+    "category": "材料",
+    "description": "银白色的金属，质地较软，断面呈晶粒状，在空气中迅速变暗形成白色氧化膜。",
+    "type": [
+      "material"
+    ],
+    "elemental": 20
+  },
+  {
+    "name": "重晶石",
+    "key": "barite",
+    "category": "矿石",
+    "description": "白色或无色透明的晶体，密度极大，手感沉重，表面有玻璃光泽。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "毒重石",
+    "key": "witherite",
+    "category": "矿石",
+    "description": "乳白色或淡黄色的块状矿物，断口参差，质地较脆，用指甲可划出痕迹。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "硫化钡",
+    "key": "barium_sulfide",
+    "category": "材料",
+    "description": "黄绿色粉末，带有强烈的硫磺气味，有毒，遇水会释放臭气。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "碳酸钡",
+    "key": "barium_carbonate",
+    "category": "材料",
+    "description": "白色无定形粉末，无味，不溶于水。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氧化钡",
+    "key": "barium_oxide",
+    "category": "材料",
+    "description": "白色吸湿性粉末，置于空气中会逐渐转化为氢氧化钡。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氯化钡",
+    "key": "barium_chloride",
+    "category": "材料",
+    "description": "白色结晶性粉末，易溶于水，有咸味，有毒。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硝酸钡",
+    "key": "barium_nitrate",
+    "category": "材料",
+    "description": "白色结晶，易溶于水，为绿色火焰的颜料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钡",
+    "key": "barium",
+    "category": "材料",
+    "description": "银白色有光泽的金属，质地较软，遇水剧烈反应。",
+    "type": [
+      "material"
+    ],
+    "elemental": 56
+  },
+  {
+    "name": "动物脂肪",
+    "key": "animal_fat",
+    "category": "材料",
+    "description": "乳白色、略带黄色、软绵绵的团块，摸起来油腻腻的，有一股淡淡的腥膻气味，握在掌心会慢慢渗出油光。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "甘油",
+    "key": "glycerol",
+    "category": "液体",
+    "description": "无色透明的粘稠液体，几乎没有气味，用手沾一点会感到滑腻而微甜，像油一样黏稠，但又完全溶于水。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "肥皂",
+    "key": "soap",
+    "category": "材料",
+    "description": "淡黄色、半透明的固体块，表面光滑，带着淡淡的油脂清香，摸起来有点滑腻，遇水会产生细腻的泡沫。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硝化甘油",
+    "key": "nitroglycerin",
+    "category": "液体",
+    "description": "无色或淡黄色的油状液体，闻起来有甜味和灼热感，稍微加热或受到震动就会猛烈爆炸，是一种极不稳定的烈性炸药。",
+    "type": [
+      "material",
+      "liquid",
+      "fuel"
+    ],
+    "attrs": {
+      "burn_time": 60
+    }
+  },
+  {
+    "name": "硅藻土",
+    "key": "diatomaceous_earth",
+    "category": "材料",
+    "description": "白色或浅黄色粉末，质地轻盈多孔，有轻微的磨砂感，触摸时感觉干燥而细腻。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "高爆炸药",
+    "key": "high_explosive",
+    "category": "材料",
+    "description": "深褐色油灰状块体，散发着刺鼻的硝化甘油气味，威力巨大但相对稳定。",
+    "type": [
+      "material",
+      "fuel"
+    ],
+    "attrs": {
+      "burn_time": 120,
+      "explosive": true
+    }
+  },
+  {
+    "name": "天青石",
+    "key": "celestine",
+    "category": "矿石",
+    "description": "浅蓝色或无色半透明的晶体碎块，断口呈玻璃光泽，握在手中感觉较沉，是锶的主要矿石。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "菱锶矿",
+    "key": "strontianite",
+    "category": "矿石",
+    "description": "白色至浅黄色的块状矿物，表面有玻璃光泽，质地较脆，是另一种重要的锶矿石。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "锶",
+    "key": "strontium",
+    "category": "材料",
+    "description": "银白色金属块，表面迅速氧化形成淡黄色膜，质地较软，在空气中易燃烧。",
+    "type": [
+      "material"
+    ],
+    "elemental": 38
+  },
+  {
+    "name": "氧化锶",
+    "key": "strontium_oxide",
+    "category": "材料",
+    "description": "白色粉末状固体，无味，遇水反应放热，常用于制备其他锶化合物。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硫化锶",
+    "key": "strontium_sulfide",
+    "category": "材料",
+    "description": "灰白色固体，天青石还原产物。是制备各种锶化合物的前体。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氯化锶",
+    "key": "strontium_chloride",
+    "category": "材料",
+    "description": "无色晶体，易溶于水。用于制备玻璃、医药及焰火（红色火花）。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硝酸锶",
+    "key": "strontium_nitrate",
+    "category": "材料",
+    "description": "白色结晶粉末，易溶于水，燃烧时产生明亮的红色火焰。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "菱镁矿",
+    "key": "magnesite",
+    "category": "矿石",
+    "description": "白色或灰白色、玻璃光泽的块状矿物，断口呈贝壳状，质地较脆，手捻有颗粒感。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氧化镁",
+    "key": "magnesium_oxide",
+    "category": "材料",
+    "description": "白色无定形粉末，质地细腻，无气味，易吸潮成块。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "镁",
+    "key": "magnesium",
+    "category": "材料",
+    "description": "银白色轻质金属，表面略带氧化膜，手感轻盈，具有金属光泽。",
+    "type": [
+      "material"
+    ],
+    "elemental": 12
+  },
+  {
+    "name": "氯化镁",
+    "key": "magnesium_chloride",
+    "category": "材料",
+    "description": "无色至白色六方晶体，易潮解，有苦咸味。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硼砂",
+    "key": "borax",
+    "category": "矿石",
+    "description": "无色或白色半透明晶体，表面有玻璃光泽，触感滑腻，微带咸味，常伴有风化形成的白色粉末状皮壳。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硼",
+    "key": "boron",
+    "category": "材料",
+    "description": "黑色脆硬的固体，断面有金属光泽，是硼元素的单质。",
+    "type": [
+      "material"
+    ],
+    "elemental": 5
+  },
+  {
+    "name": "海藻",
+    "key": "seaweed",
+    "category": "材料",
+    "description": "深绿色、湿漉漉的带状叶片，带有咸腥的海水气味，轻轻一捏会渗出黏滑的汁液。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "干海藻",
+    "key": "dried_seaweed",
+    "category": "材料",
+    "description": "干燥后变成皱缩的深褐色薄片，质地脆硬，散发出浓郁的咸味和海腥气。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "海藻灰",
+    "key": "sea_weed_ash",
+    "category": "材料",
+    "description": "灰白色粉末，质地轻盈，手指捻之细滑，带有淡淡的焦糊气息和咸味。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "碘",
+    "key": "iodine",
+    "category": "材料",
+    "description": "紫黑色带有金属光泽的鳞片状晶体，气味刺鼻，加热时升华为紫色蒸气。",
+    "type": [
+      "material"
+    ],
+    "elemental": 53
+  },
+  {
+    "name": "锂辉石",
+    "key": "spodumene",
+    "category": "矿石",
+    "description": "呈灰白色或淡绿色的柱状晶体，玻璃光泽，表面有纵向条纹，质地较脆，握在手心有些许凉意。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "硫酸锂",
+    "key": "lithium_sulfate",
+    "category": "材料",
+    "description": "白色结晶粉末，味微咸，易溶于水，在空气中略微吸湿。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氯化锂",
+    "key": "lithium_chloride",
+    "category": "材料",
+    "description": "白色立方结晶，极易潮解，有强烈的咸味，溶于水时放热。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "锂",
+    "key": "lithium",
+    "category": "材料",
+    "description": "银白色的轻金属，质地柔软，可用刀切割，断面呈银白色光泽，遇空气迅速氧化变暗。",
+    "type": [
+      "material"
+    ],
+    "elemental": 3
+  },
+  {
+    "key": "lithium_ion_battery",
+    "name": "锂离子电池",
+    "category": "工具",
+    "description": "一种可充电电池，使用锂离子作为电荷载体，能量密度高，轻便且寿命长。",
+    "type": [
+      "tool",
+      "battery"
+    ],
+    "durable": 100
+  },
+  {
+    "name": "碳酸锂",
+    "key": "lithium_carbonate",
+    "category": "材料",
+    "description": "白色粉末状固体，无臭无味，微溶于水，在空气中稳定。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氢氧化锂",
+    "key": "lithium_hydroxide",
+    "category": "材料",
+    "description": "白色颗粒状固体，有强碱性，易吸湿，在水中溶解时放热。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "石英",
+    "key": "quartz",
+    "category": "矿石",
+    "description": "无色透明或乳白色的六方柱状晶体，断口呈油脂光泽，质地坚硬且脆。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "硅",
+    "key": "silicon",
+    "category": "材料",
+    "description": "灰黑色、具有金属光泽的脆性固体，断面呈粗糙的结晶状。",
+    "type": [
+      "material"
+    ],
+    "elemental": 14
+  },
+  {
+    "name": "玻璃",
+    "key": "glass",
+    "category": "材料",
+    "description": "透明或半透明的非晶态固体，表面光滑，质地坚硬但易碎。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "玻璃烧杯",
+    "key": "beaker",
+    "category": "容器",
+    "description": "透明、耐热的玻璃容器，杯壁轻薄，底部平坦，边缘有倒嘴，便于倾倒液体。",
+    "type": [
+      "container"
+    ],
+    "attrs": {
+      "can_heat": true
+    },
+    "durable": 1
+  },
+  {
+    "name": "铁罐",
+    "key": "iron_tank",
+    "category": "容器",
+    "description": "加厚的铁制容器。由于其表面能形成紧密的氟化物钝化膜，常用于制备与储存氢氟酸等腐蚀性物质。",
+    "type": [
+      "container"
+    ],
+    "attrs": {
+      "can_heat": true
+    }
+  },
+  {
+    "name": "玻璃试管",
+    "key": "test_tube",
+    "category": "容器",
+    "description": "细长透明的玻璃管，一端开口，底部呈圆形，壁薄而均匀。",
+    "type": [
+      "container"
+    ],
+    "attrs": {
+      "can_heat": true
+    },
+    "durable": 1
+  },
+  {
+    "key": "distilling_flask",
+    "name": "玻璃蒸馏瓶",
+    "category": "容器",
+    "description": "带有长颈和侧支管的玻璃瓶，瓶身圆润，玻璃质地均匀透明。",
+    "type": [
+      "container"
+    ],
+    "durable": 100,
+    "attrs": {
+      "can_heat": true
+    }
+  },
+  {
+    "name": "玻璃棒",
+    "key": "glass_rod",
+    "category": "工具",
+    "description": "细长透明的实心玻璃棒，表面光滑均匀，两端圆润。",
+    "type": [
+      "tool"
+    ],
+    "durable": 1
+  },
+  {
+    "name": "铝土矿",
+    "key": "bauxite",
+    "category": "矿石",
+    "description": "红褐色或灰色的土状矿石，表面粗糙，常混杂着铁质斑点，手感沉重而黏腻。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "冰晶石",
+    "key": "cryolite",
+    "category": "矿石",
+    "description": "无色至白色的透明矿物，玻璃光泽，质地较软，像冰糖般易碎。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氢氧化铝",
+    "key": "aluminum_hydroxide",
+    "category": "材料",
+    "description": "白色无定形粉末，质地细腻，略带滑腻感。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氧化铝",
+    "key": "alumina",
+    "category": "材料",
+    "description": "白色粉末，极细，手感干燥，有轻微吸湿性。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "铝",
+    "key": "aluminum",
+    "category": "材料",
+    "description": "银白色金属锭，表面有光泽，质地轻盈而坚韧。",
+    "type": [
+      "material"
+    ],
+    "elemental": 13,
+    "milestone": "produce_aluminum"
+  },
+  {
+    "name": "雷酸汞",
+    "key": "mercury_fulminate",
+    "category": "材料",
+    "description": "白色或浅灰色的晶体粉末，对撞击和摩擦极其敏感，是常见的起爆药。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "detonator",
+    "name": "雷管",
+    "category": "工具",
+    "description": "金属管状装置，内部装有起爆药，用于安全引爆高能炸药。",
+    "type": [
+      "tool"
+    ],
+    "durable": 0
+  },
+  {
+    "name": "铯榴石",
+    "key": "pollucite",
+    "category": "矿石",
+    "description": "无色或白色半透明晶体，玻璃光泽，常呈立方体或粒状，断面参差，手感沉重。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氯化铯",
+    "key": "cesium_chloride",
+    "category": "材料",
+    "description": "无色或白色结晶，立方晶系，易潮解，无臭，味咸。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "铯",
+    "key": "cesium",
+    "category": "材料",
+    "description": "金黄色柔软金属，在空气中迅速氧化，遇水剧烈反应，熔点仅28.5°C，手感温热如蜡。",
+    "type": [
+      "material"
+    ],
+    "elemental": 55
+  },
+  {
+    "name": "氢氧化铯",
+    "key": "cesium_hydroxide",
+    "category": "材料",
+    "description": "白色吸湿性晶体，强碱性，溶于水放出大量热，在空气中易潮解。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氯化铯溶液",
+    "key": "cesium_chloride_solution",
+    "category": "液体",
+    "description": "无色透明液体，无特殊气味，味咸微苦。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "key": "boric_acid",
+    "name": "硼酸",
+    "category": "材料",
+    "description": "白色片状晶体，有珍珠光泽，略有滑腻感。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "鸟粪石",
+    "key": "struvite",
+    "category": "矿石",
+    "description": "淡黄色至白色透明晶体，带有玻璃光泽，常形成鸟笼状或楔形晶体。质地较脆，富含磷、镁和氮。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "磷酸",
+    "key": "phosphoric_acid",
+    "category": "液体",
+    "description": "无色透明黏稠液体，无味，但具有酸涩感。有腐蚀性，是重要的工业酸。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "氢氟酸",
+    "key": "hydrofluoric_acid",
+    "category": "液体",
+    "description": "无色透明的发烟液体，具有极强的腐蚀性和毒性，能腐蚀玻璃。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "萤石",
+    "key": "fluorite",
+    "category": "矿石",
+    "description": "又称氟石，玻璃光泽，颜色多样，是自然界中最主要的含氟矿物。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "辉铋矿",
+    "key": "bismuthite",
+    "category": "矿石",
+    "description": "银灰色金属光泽的矿物，常呈柱状或针状集合体，断口参差不齐，质地较脆。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氧化铋",
+    "key": "bismuth_oxide",
+    "category": "材料",
+    "description": "淡黄色粉末，无味，遇热变黄棕色，冷却后恢复原色。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "铋锭",
+    "key": "bismuth",
+    "category": "材料",
+    "description": "银白色金属，表面略带粉红色调，质地软而脆，断口呈银白色光泽。",
+    "type": [
+      "material"
+    ],
+    "elemental": 83,
+    "is_discovery": true
+  },
+  {
+    "name": "海水",
+    "key": "brine",
+    "category": "液体",
+    "description": "清澈的咸水，带着海洋的气息，尝起来又咸又苦。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "浓缩卤水",
+    "key": "bittern",
+    "category": "液体",
+    "description": "黄褐色的浓缩卤水，味苦，富含溴化物和其他矿物质。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "溴",
+    "key": "bromine",
+    "category": "液体",
+    "description": "暗红棕色的液体，不断挥发出刺鼻的红色烟雾，具有强烈的腐蚀性。",
+    "type": [
+      "material",
+      "liquid"
+    ],
+    "elemental": 35,
+    "is_discovery": true
+  },
+  {
+    "name": "硒",
+    "key": "selenium",
+    "category": "材料",
+    "description": "一种具有金属光泽的灰色准金属，对光敏感，在化学实验中有多种用途。",
+    "type": [
+      "material"
+    ],
+    "elemental": 34,
+    "is_discovery": true
+  },
+  {
+    "name": "阳极泥",
+    "key": "anode_slime",
+    "category": "矿石",
+    "description": "电解精炼金属（如铜）时沉积在电解槽底部的废泥，虽然看起来不起眼，但富含硒、碲及金银等稀有金属。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "黄铜矿",
+    "key": "chalcopyrite",
+    "category": "矿石",
+    "description": "最主要的铜矿石，呈鲜艳的金黄色，表面带有金属光泽及彩色锖色。它是提取铜及其副产物（如硒）的重要来源。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "粗铜",
+    "key": "blister_copper",
+    "category": "材料",
+    "description": "工业冶炼产出的不纯铜，表面粗糙且气孔多。含有金、银、硒、碲等杂质，通常作为电解精炼的原料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钒铅矿",
+    "key": "vanadinite",
+    "category": "矿石",
+    "description": "呈六方晶系的鲜红色或橘红色晶体，含铅且富含钒元素。不仅是提炼钒的主要矿石，也常被收藏者视为美丽的矿物标本。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钒",
+    "key": "vanadium",
+    "category": "材料",
+    "description": "一种银灰色的硬金属，具有良好的延展性和耐腐蚀性。它是制造高强度合金钢（如钒钢）的关键元素。",
+    "type": [
+      "material"
+    ],
+    "elemental": 23,
+    "is_discovery": true
+  },
+  {
+    "name": "镉",
+    "key": "cadmium",
+    "category": "材料",
+    "description": "一种银白色的软金属，带有浅蓝色光泽。它通常作为锌冶炼的副产品提取，广泛用于电池和防腐镀层。",
+    "type": [
+      "material"
+    ],
+    "elemental": 48,
+    "is_discovery": true
+  },
+  {
+    "name": "氧化钾",
+    "key": "potassium_oxide",
+    "category": "材料",
+    "description": "白色粉末，强碱性，易吸湿，与水反应生成氢氧化钾。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "锂云母",
+    "key": "lepidolite",
+    "category": "矿石",
+    "description": "紫红色或粉红色的鳞片状矿物，具有珍珠光泽，常与锂辉石共生，是提取锂、铷、铯的重要原料。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氯化铷",
+    "key": "rubidium_chloride",
+    "category": "材料",
+    "description": "无色立方晶体，易溶于水，是生产金属铷的关键中间体。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "铷",
+    "key": "rubidium",
+    "category": "材料",
+    "description": "银白色蜡状金属，化学性质极其活泼，能在空气中自燃，遇水发生剧烈爆炸。",
+    "type": [
+      "material"
+    ],
+    "elemental": 37
+  },
+  {
+    "name": "红铊矿",
+    "key": "lorandite",
+    "category": "矿石",
+    "description": "一种深红色至胭脂红色的矿物，金属光泽，常以细小板状或粒状集合体产出。晶体完好时可见四方晶系的板状或短柱状形态，但多数情况下呈致密块状或细粒浸染状附着在围岩表面。用指甲可以刻动，条痕为暗红色，比重大，手感沉甸甸的。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "硫酸铊",
+    "key": "thallium_sulfate",
+    "category": "材料",
+    "description": "无色无味的结晶固体，极剧毒，曾被用作灭鼠药，现主要用于铊的提取和工业用途。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "铊",
+    "key": "thallium",
+    "category": "材料",
+    "description": "银白色偏蓝的柔软金属，质地如铅，暴露在空气中会迅速变色并生成氧化膜。剧毒，接触需极度小心。",
+    "type": [
+      "material"
+    ],
+    "elemental": 81
+  },
+  {
+    "name": "硫酸锌残渣",
+    "key": "zinc_leaching_residue",
+    "category": "材料",
+    "description": "硫酸浸出锌焙砂后留下的残渣，富含铁、铅、银等金属，是回收这些金属的重要原料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "bauxite_residue",
+    "name": "赤泥",
+    "category": "材料",
+    "description": "拜耳法生产氧化铝过程中产生的固体废渣，呈强碱性，富含铁、钛及微量稀土元素（如钪）。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "拜耳法母液",
+    "key": "bayer_liquor",
+    "category": "材料",
+    "description": "拜耳法生产过程中循环使用的强碱性溶液，含有铝酸钠，并富集了矿石中的微量镓。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "铟",
+    "key": "indium",
+    "category": "材料",
+    "description": "银白色重金属，质地极软，比铅还软，具有很好的可塑性和延展性，断面呈金属光泽。",
+    "type": [
+      "material"
+    ],
+    "elemental": 49
+  },
+  {
+    "name": "镓",
+    "key": "gallium",
+    "category": "材料",
+    "description": "银白色金属，熔点极低（约29.7°C），放在手心就会熔化成液态银滴。",
+    "type": [
+      "material"
+    ],
+    "elemental": 31
+  },
+  {
+    "name": "锌酸浸出液",
+    "key": "zinc_leaching_solution",
+    "category": "材料",
+    "description": "氧化锌经硫酸浸出后得到的酸性溶液，含有大量的硫酸锌以及镉、铟等杂质，呈浅黄色透明状。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氧化锗",
+    "key": "germanium_oxide",
+    "category": "材料",
+    "description": "白色粉末状固体，是提炼金属锗的主要原料，通常通过四氯化锗水解获得。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "四氯化锗",
+    "key": "germanium_tetrachloride",
+    "category": "材料",
+    "description": "无色发烟液体，具有强烈的酸味，沸点极低（约84°C），极易挥发。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "锗",
+    "key": "germanium",
+    "category": "材料",
+    "description": "灰白色准金属，具有金属光泽，质硬且脆。它是重要的半导体材料，电子工业的基石之一。",
+    "type": [
+      "material"
+    ],
+    "elemental": 32
+  },
+  {
+    "name": "氧化钪",
+    "key": "scandium_oxide",
+    "category": "材料",
+    "description": "白色粉末状固体，是提炼金属钪及其合金的主要中间体。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氟化钪",
+    "key": "scandium_fluoride",
+    "category": "材料",
+    "description": "白色晶体，难溶于水，是生产金属钪的关键原料之一。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钪",
+    "key": "scandium",
+    "category": "材料",
+    "description": "银白色过渡金属，质地柔软。它常被归类为稀土元素，能显著提高铝合金的强度和耐热性。",
+    "type": [
+      "material"
+    ],
+    "elemental": 21
+  },
+  {
+    "name": "硫酸钙",
+    "key": "calcium_sulfate",
+    "category": "材料",
+    "description": "白色单斜结晶或结晶性粉末，在自然界中常以石膏形式存在。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氟化钾",
+    "key": "potassium_fluoride",
+    "category": "材料",
+    "description": "无色晶体，易潮解，溶于水。在电解制取氟气中作为电解质。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氟",
+    "key": "fluorine",
+    "category": "材料",
+    "description": "淡黄色气体，具有极强的氧化性和毒性，是电负性最强的元素，能与几乎所有元素发生反应。",
+    "type": [
+      "material",
+      "gas"
+    ],
+    "elemental": 9
+  },
+  {
+    "name": "王水",
+    "key": "aqua_regia",
+    "category": "液体",
+    "description": "由浓盐酸和浓硝酸按3:1混合而成的强酸性液体，具有极强的氧化性，能溶解金和铂等贵金属。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "钌",
+    "key": "ruthenium",
+    "category": "材料",
+    "description": "银白色过渡金属，质地坚硬且脆，性状极稳定。常用于电子工业和催化剂，也是多种合金的重要强化添加剂。",
+    "type": [
+      "material"
+    ],
+    "elemental": 44
+  },
+  {
+    "name": "铑",
+    "key": "rhodium",
+    "category": "材料",
+    "description": "银白色金属，极其坚硬，耐腐蚀且具有极高的反射率。主要用于汽车尾气净化催化剂和高级饰品镀层。",
+    "type": [
+      "material"
+    ],
+    "elemental": 45
+  },
+  {
+    "name": "钯",
+    "key": "palladium",
+    "category": "材料",
+    "description": "银白色过渡金属，质柔软，具有极强的吸氢能力。常用于催化剂和电子工业。",
+    "type": [
+      "material"
+    ],
+    "elemental": 46
+  },
+  {
+    "name": "锇",
+    "key": "osmium",
+    "category": "材料",
+    "description": "蓝灰色金属，具有极高的密度（自然界密度最大的单质）和硬度。其粉末在空气中易形成剧毒的四氧化锇。",
+    "type": [
+      "material"
+    ],
+    "elemental": 76
+  },
+  {
+    "name": "铱",
+    "key": "iridium",
+    "category": "材料",
+    "description": "银白色金属，硬且脆，是已知最耐腐蚀的金属。常用于航空发动机和精密仪器。",
+    "type": [
+      "material"
+    ],
+    "elemental": 77
+  },
+  {
+    "name": "淘洗盘",
+    "key": "panning_dish",
+    "category": "工具",
+    "description": "浅底的广口盘，用于在河滩或沙地中淘洗重矿物，是寻找砂金和铂砂的必备工具。",
+    "type": [
+      "tool"
+    ],
+    "durable": 1
+  },
+  {
+    "name": "粗铂砂",
+    "key": "crude_platinum_sand",
+    "category": "矿石",
+    "description": "从河床或矿床中淘出的重砂，富含天然铂及其他铂族金属（钯、锇、铱等）。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "铂砂残渣",
+    "key": "platinum_sand_residue",
+    "category": "材料",
+    "description": "粗铂砂经王水溶解后的不溶性残渣，含有锇、铱、钌等极难溶解的铂族金属。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "贵金属溶液",
+    "key": "precious_metal_solution",
+    "category": "材料",
+    "description": "粗铂砂经王水溶解后的初级溶液，含有金及各种铂族金属的氯络合物。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "铂族母液",
+    "key": "platinum_group_solution",
+    "category": "材料",
+    "description": "从贵金属溶液中还原金之后得到的母液，富含铂、钯、铑等金属。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硫酸亚铁",
+    "key": "ferrous_sulfate",
+    "category": "材料",
+    "description": "青绿色晶体，工业上常作为还原剂，在湿法冶金中用于从溶液中沉淀金属金。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氯化铵",
+    "key": "ammonium_chloride",
+    "category": "材料",
+    "description": "白色晶体，在铂族金属精炼中用于沉淀铂（生成氯铂酸铵）。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钽铌铁矿",
+    "key": "tantalite_columbite",
+    "category": "矿石",
+    "description": "一种深褐色的重矿石，是提取钽和铌的主要矿物来源。通常产于花岗伟晶岩中。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氟钽酸钾",
+    "key": "potassium_fluotantalate",
+    "category": "材料",
+    "description": "白色针状晶体，通过钽铌铁矿的氢氟酸浸出与分步控制沉淀获得，是提炼金属钽的重要中间体。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氟铌酸钾",
+    "key": "potassium_fluoniobate",
+    "category": "材料",
+    "description": "白色晶体，在钽铌分离流程中通过溶解度差异与氟钽酸钾分离，用于提炼金属铌。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钽",
+    "key": "tantalum",
+    "category": "材料",
+    "description": "钢灰色金属，极耐腐蚀，熔点高，具有优异的延展性。主要用于制造高性能电容器和耐酸设备。",
+    "type": [
+      "material"
+    ],
+    "elemental": 73
+  },
+  {
+    "name": "铌",
+    "key": "niobium",
+    "category": "材料",
+    "description": "银灰色金属，具有超导性能和良好的抗强腐蚀性。广泛用于高温合金钢和超导磁体。",
+    "type": [
+      "material"
+    ],
+    "elemental": 41
+  },
+  {
+    "name": "铪",
+    "key": "hafnium",
+    "category": "材料",
+    "description": "银灰色金属，具有高熔点和极强的中子吸收能力，常用于核反应堆控制棒。",
+    "type": [
+      "material"
+    ],
+    "elemental": 72
+  },
+  {
+    "name": "铼",
+    "key": "rhenium",
+    "category": "材料",
+    "description": "极罕见的过渡金属，具有极高的熔点（位列第三）和优异的抗蠕变性，是制造喷气发动机高温合金的关键。",
+    "type": [
+      "material"
+    ],
+    "elemental": 75
+  },
+  {
+    "name": "钼烟道灰",
+    "key": "molybdenum_roaster_dust",
+    "category": "材料",
+    "description": "辉钼矿焙烧过程中收集的烟道粉尘，其中含有微量的铼。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "高铼酸铵",
+    "key": "ammonium_perrhenate",
+    "category": "材料",
+    "description": "白色晶体，是提取高纯度铼的主要中间体。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "磷钇矿",
+    "key": "xenotime",
+    "category": "矿石",
+    "description": "主要的钇矿石，化学成分为磷酸钇（YPO4），常含有钍、铀及各种稀土元素。是提炼钇及重稀土元素的重要原料。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "独居石",
+    "key": "monazite",
+    "category": "矿石",
+    "description": "一种磷酸盐矿物，富含铈、镧等轻稀土元素，也含有一定量的钇 and 钍。通常呈红褐色或棕黄色。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "氧化钇",
+    "key": "yttrium_oxide",
+    "category": "材料",
+    "description": "白色粉末状固体，不溶于水，是生产金属钇和钇铝石榴石等材料的基础原料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "钇",
+    "key": "yttrium",
+    "category": "材料",
+    "description": "银白色过渡金属，质地柔软，在空气中较稳定。它是第一个被发现的稀土元素，广泛应用于超导体、激光器及荧光粉。",
+    "type": [
+      "material"
+    ],
+    "elemental": 39
+  },
+  {
+    "name": "钇富集液",
+    "key": "yttrium_solution",
+    "category": "材料",
+    "description": "磷钇矿经酸处理后得到的酸性溶液，含有高浓度的钇离子及部分重稀土离子。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "草酸钇",
+    "key": "yttrium_oxalate",
+    "category": "材料",
+    "description": "白色沉淀，由钇溶液与草酸反应生成，是提取高纯度氧化钇的重要中间体。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "草酸",
+    "key": "oxalic_acid",
+    "category": "材料",
+    "description": "无色透明结晶，由自然界物质氧化制得。在工业上主要用于金属清洗和提炼稀土元素。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "未精制氧化锆",
+    "key": "unpurified_zirconia",
+    "category": "材料",
+    "description": "含有约2%铪杂质的氧化锆。在大多数工业用途中可以直接使用，但若要用于核工业，必须进行深度脱铪。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氧化铪",
+    "key": "hafnium_oxide",
+    "category": "材料",
+    "description": "白色固体，是获得金属铪的主要前驱体。其化学性质与氧化锆高度相似。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "manganese_sulfate",
+    "name": "硫酸锰",
+    "category": "材料",
+    "description": "白色或浅红色的晶体，溶于水呈淡粉色，略带金属味。晶体表面有些许潮解感，在空气中缓慢风化。",
+    "type": [
+      "material"
+    ],
+    "elemental": 0
+  },
+  {
+    "key": "potassium_bisulfate",
+    "name": "硫酸氢钾",
+    "category": "材料",
+    "description": "无色或白色固体颗粒，表面有玻璃光泽，味酸涩，遇水放热并发出嘶嘶声。",
+    "type": [
+      "material"
+    ],
+    "elemental": 0
+  },
+  {
+    "key": "potassium_pyrosulfate",
+    "name": "焦硫酸钾",
+    "category": "材料",
+    "description": "白色吸湿性固体，在空气中渐渐潮解成粘稠液体。具有强酸性，遇水猛烈放热。",
+    "type": [
+      "material"
+    ],
+    "elemental": 0
+  },
+  {
+    "name": "硫酸钠",
+    "key": "sodium_sulfate",
+    "category": "材料",
+    "description": "白色结晶性粉末，干燥时呈松散状，舔之微咸带苦。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硫化钙",
+    "key": "calcium_sulfide",
+    "category": "材料",
+    "description": "棕黑色或灰色固体，有强烈臭味，类似臭鸡蛋味。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "标枪",
+    "key": "javelin",
+    "category": "工具",
+    "description": "一种长柄投掷武器，适合远距离攻击。",
+    "type": [
+      "tool"
+    ],
+    "durable": 10
+  },
+  {
+    "name": "硝酸钾",
+    "key": "potassium_nitrate",
+    "category": "材料",
+    "description": "白色晶体，味咸而凉，易溶于水，是火药的重要成分。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "亚硝酸钾",
+    "key": "potassium_nitrite",
+    "category": "材料",
+    "description": "微黄色晶体，由硝酸钾受热分解制得。在工业上用于有机合成及化学试剂。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硝酸钠",
+    "key": "sodium_nitrate",
+    "category": "材料",
+    "description": "无色透明晶体，易潮解，常用于肥料和玻璃制造。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硝酸钙",
+    "key": "calcium_nitrate",
+    "category": "材料",
+    "description": "白色颗粒，极易吸湿，用作水溶性肥料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硝酸镁",
+    "key": "magnesium_nitrate",
+    "category": "材料",
+    "description": "白色固体，易潮解，常用于化肥和催化剂。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硝酸锂",
+    "key": "lithium_nitrate",
+    "category": "材料",
+    "description": "白色晶体，易溶于水，用于陶瓷和荧光材料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "autoclave",
+    "name": "高压釜",
+    "category": "容器",
+    "description": "由高强度钢制成的密封容器，能够承受极高的内部压力，用于高压化学反应。",
+    "type": [
+      "container"
+    ],
+    "durable": 100,
+    "attrs": {
+      "can_heat": true
+    }
+  },
+  {
+    "name": "一氧化氮",
+    "key": "nitrogen_monoxide",
+    "category": "气体",
+    "description": "无色气体，遇空气迅速变红棕色，有刺激性气味。",
+    "type": [
+      "material",
+      "gas"
+    ],
+    "elemental": 7
+  },
+  {
+    "name": "二氧化氮",
+    "key": "nitrogen_dioxide",
+    "category": "气体",
+    "description": "红棕色有刺激性气味的气体，易溶于水生成硝酸。",
+    "type": [
+      "material",
+      "gas"
+    ],
+    "elemental": 7
+  },
+  {
+    "name": "铂铑催化剂",
+    "key": "platinum_rhodium_catalyst",
+    "category": "材料",
+    "description": "铂铑合金制成的细网，外观银白闪亮，是氨氧化制硝酸的关键催化材料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "air",
+    "name": "空气",
+    "category": "气体",
+    "description": "包围地球的气体混合物，主要成分是氮气和氧气。",
+    "type": [
+      "gas"
+    ]
+  },
+  {
+    "key": "copper_oxide",
+    "name": "氧化铜",
+    "category": "材料",
+    "description": "黑色粉末，是铜的高价氧化物，微显两性，稍有吸湿性。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "lanthanum",
+    "name": "镧",
+    "category": "材料",
+    "description": "银白色金属，质地柔软，在空气中极易被氧化。它是镧系元素的领头羊，广泛应用于电池、镜头及催化剂。",
+    "type": [
+      "material"
+    ],
+    "elemental": 57,
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "lanthanum_oxide",
+    "name": "氧化镧",
+    "category": "材料",
+    "description": "白色粉末，用于制造特种光学玻璃。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "lanthanum_oxalate",
+    "name": "草酸镧",
+    "category": "材料",
+    "description": "白色沉淀，从稀土溶液中利用草酸沉淀出的中间产物。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "草酸铈",
+    "key": "cerium_oxalate",
+    "category": "材料",
+    "description": "白色晶体粉末，不溶于水，是提炼金属铈的重要中间产物。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氧化铈",
+    "key": "cerium_oxide",
+    "category": "材料",
+    "description": "淡黄色粉末，极其优良的抛光材料。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "铈",
+    "key": "cerium",
+    "category": "材料",
+    "description": "银灰色金属，在地壳中含量最高的一种稀土元素。在空气中容易氧化，是打火石的主要成分。",
+    "type": [
+      "material"
+    ],
+    "elemental": 58,
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "name": "混合稀土硫酸盐溶液",
+    "key": "mixed_rare_earth_solution",
+    "category": "液体",
+    "description": "独居石经硫酸浸出后的混合溶液。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "thorium_residue",
+    "name": "含钍废渣",
+    "category": "材料",
+    "type": [
+      "material"
+    ],
+    "description": "具有放射性，需铅封容器储存。提炼稀土的副产物。"
+  },
+  {
+    "key": "mixed_rare_earth_oxalate",
+    "name": "混合稀土草酸盐",
+    "category": "材料",
+    "type": [
+      "material"
+    ],
+    "description": "白色沉淀，所有稀土元素的草酸盐混合物。"
+  },
+  {
+    "key": "mixed_rare_earth_oxide",
+    "name": "混合稀土氧化物",
+    "category": "材料",
+    "type": [
+      "material"
+    ],
+    "description": "经煅烧获得的粗氧化物结晶。"
+  },
+  {
+    "key": "lanthanum_chloride",
+    "name": "氯化镧",
+    "category": "材料",
+    "type": [
+      "material"
+    ],
+    "description": "无水氯化物，用于电解。"
+  },
+  {
+    "key": "cerium_chloride",
+    "name": "氯化铈",
+    "category": "材料",
+    "type": [
+      "material"
+    ],
+    "description": "无水氯化物，用于电解。"
+  },
+  {
+    "key": "rare_earth_nitrate_solution",
+    "name": "混合稀土硝酸溶液",
+    "description": "含有多种稀土元素的硝酸盐溶液，是分步结晶的原料。",
+    "category": "液体",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "lanthanum_nitrate",
+    "name": "硝酸镧",
+    "description": "硝酸镧晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "cerium_nitrate",
+    "name": "硝酸铈",
+    "description": "硝酸铈晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "praseodymium",
+    "name": "镨",
+    "description": "高纯度的金属镨，可以用于制造高性能磁性材料。",
+    "type": [
+      "element"
+    ],
+    "elemental": 59,
+    "category": "材料",
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "praseodymium_oxide",
+    "name": "氧化镨",
+    "description": "高纯度的氧化镨粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "praseodymium_nitrate",
+    "name": "硝酸镨",
+    "description": "硝酸镨晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "praseodymium_chloride",
+    "name": "氯化镨",
+    "description": "无水氯化镨，用于熔盐电解制取金属。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "neodymium",
+    "name": "钕",
+    "description": "高纯度的金属钕，可以用于制造高性能磁性材料。",
+    "type": [
+      "element"
+    ],
+    "elemental": 60,
+    "category": "材料",
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "neodymium_oxide",
+    "name": "氧化钕",
+    "description": "高纯度的氧化钕粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "neodymium_nitrate",
+    "name": "硝酸钕",
+    "description": "硝酸钕晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "neodymium_chloride",
+    "name": "氯化钕",
+    "description": "无水氯化钕，用于熔盐电解制取金属。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "samarium",
+    "name": "钐",
+    "description": "高纯度的金属钐，可以用于制造高性能磁性材料。",
+    "type": [
+      "element"
+    ],
+    "elemental": 62,
+    "category": "材料",
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "samarium_oxide",
+    "name": "氧化钐",
+    "description": "高纯度的氧化钐粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "samarium_nitrate",
+    "name": "硝酸钐",
+    "description": "硝酸钐晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "europium",
+    "name": "铕",
+    "description": "高纯度的金属铕，可以用于中子吸收剂。",
+    "type": [
+      "element"
+    ],
+    "elemental": 63,
+    "category": "材料",
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "europium_oxide",
+    "name": "氧化铕",
+    "description": "高纯度的氧化铕粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "europium_nitrate",
+    "name": "硝酸铕",
+    "description": "硝酸铕晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "gadolinium",
+    "name": "钆",
+    "description": "高纯度的金属钆，可以用于制造高性能磁性材料。",
+    "type": [
+      "element"
+    ],
+    "elemental": 64,
+    "category": "材料",
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "gadolinium_oxide",
+    "name": "氧化钆",
+    "description": "高纯度的氧化钆粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "gadolinium_nitrate",
+    "name": "硝酸钆",
+    "description": "硝酸钆晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "gadolinium_fluoride",
+    "name": "氟化钆",
+    "description": "氟化钆，用于金属还原制取金属。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "terbium",
+    "name": "铽",
+    "description": "高纯度的金属铽，可以用于制造高性能磁性材料。",
+    "type": [
+      "element"
+    ],
+    "elemental": 65,
+    "category": "材料",
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "terbium_oxide",
+    "name": "氧化铽",
+    "description": "高纯度的氧化铽粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "terbium_nitrate",
+    "name": "硝酸铽",
+    "description": "硝酸铽晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "terbium_fluoride",
+    "name": "氟化铽",
+    "description": "氟化铽，用于金属还原制取金属。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "dysprosium",
+    "name": "镝",
+    "description": "高纯度的金属镝。原子序数66。",
+    "type": [
+      "element"
+    ],
+    "elemental": 66,
+    "category": "材料",
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "dysprosium_oxide",
+    "name": "氧化镝",
+    "description": "高纯度的氧化镝粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "dysprosium_nitrate",
+    "name": "硝酸镝",
+    "description": "硝酸镝晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "dysprosium_fluoride",
+    "name": "氟化镝",
+    "description": "氟化镝，用于金属还原制取金属。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "holmium",
+    "name": "钬",
+    "description": "高纯度的金属钬。原子序数67。",
+    "type": [
+      "element"
+    ],
+    "elemental": 67,
+    "category": "材料",
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "holmium_oxide",
+    "name": "氧化钬",
+    "description": "高纯度的氧化钬粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "holmium_nitrate",
+    "name": "硝酸钬",
+    "description": "硝酸钬晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "holmium_fluoride",
+    "name": "氟化钬",
+    "description": "氟化钬，用于金属还原制取金属。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "erbium",
+    "name": "铒",
+    "description": "高纯度的金属铒。原子序数68。",
+    "type": [
+      "element"
+    ],
+    "elemental": 68,
+    "category": "材料",
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "erbium_oxide",
+    "name": "氧化铒",
+    "description": "高纯度的氧化铒粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "erbium_nitrate",
+    "name": "硝酸铒",
+    "description": "硝酸铒晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "erbium_fluoride",
+    "name": "氟化铒",
+    "description": "氟化铒，用于金属还原制取金属。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "thulium",
+    "name": "铥",
+    "description": "高纯度的金属铥。原子序数69。",
+    "type": [
+      "element"
+    ],
+    "elemental": 69,
+    "category": "材料",
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "thulium_oxide",
+    "name": "氧化铥",
+    "description": "高纯度的氧化铥粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "thulium_nitrate",
+    "name": "硝酸铥",
+    "description": "硝酸铥晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "thulium_fluoride",
+    "name": "氟化铥",
+    "description": "氟化铥，用于金属还原制取金属。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "ytterbium",
+    "name": "镱",
+    "description": "高纯度的金属镱。原子序数70。",
+    "type": [
+      "element"
+    ],
+    "elemental": 70,
+    "category": "材料",
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "ytterbium_oxide",
+    "name": "氧化镱",
+    "description": "高纯度的氧化镱粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "ytterbium_nitrate",
+    "name": "硝酸镱",
+    "description": "硝酸镱晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "ytterbium_fluoride",
+    "name": "氟化镱",
+    "description": "氟化镱，用于金属还原制取金属。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "lutetium",
+    "name": "镥",
+    "description": "高纯度的金属镥。原子序数71。",
+    "type": [
+      "element"
+    ],
+    "elemental": 71,
+    "category": "材料",
+    "milestone": "separate_rare_earth"
+  },
+  {
+    "key": "lutetium_oxide",
+    "name": "氧化镥",
+    "description": "高纯度的氧化镥粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "lutetium_nitrate",
+    "name": "硝酸镥",
+    "description": "硝酸镥晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "lutetium_fluoride",
+    "name": "氟化镥",
+    "description": "氟化镥，用于金属还原制取金属。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "yttrium_oxide",
+    "name": "氧化钇",
+    "description": "高纯度的氧化钇粉末。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "yttrium_nitrate",
+    "name": "硝酸钇",
+    "description": "硝酸钇晶体，通过分步结晶获得。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "yttrium_fluoride",
+    "name": "氟化钇",
+    "description": "氟化钇，用于金属还原制取金属。",
+    "type": [
+      "material"
+    ],
+    "category": "材料"
+  },
+  {
+    "key": "reaction_kettle",
+    "name": "反应釜",
+    "category": "工具",
+    "description": "耐酸碱高温的工业反应容器。",
+    "type": [
+      "tool",
+      "container"
+    ],
+    "durable": 100,
+    "attrs": {
+      "can_heat": true
+    }
+  },
+  {
+    "key": "evaporating_dish",
+    "name": "蒸发皿",
+    "category": "工具",
+    "description": "用于浓缩溶液的瓷质器皿。",
+    "type": [
+      "tool",
+      "container"
+    ],
+    "durable": 50,
+    "attrs": {
+      "can_heat": true
+    }
+  },
+  {
+    "key": "sealed_tube",
+    "name": "石英反应管",
+    "category": "工具",
+    "description": "耐高温石英管，适用于通气反应。",
+    "type": [
+      "tool",
+      "container"
+    ],
+    "durable": 20,
+    "attrs": {
+      "can_heat": true
+    }
+  },
+  {
+    "key": "graphite_electrolytic_cell",
+    "name": "石墨电解槽",
+    "category": "工具",
+    "description": "用于熔盐电解的专用容器。",
+    "type": [
+      "tool",
+      "container"
+    ],
+    "durable": 30,
+    "attrs": {
+      "can_heat": true
+    }
+  },
+  {
+    "name": "石墨",
+    "key": "graphite",
+    "category": "材料",
+    "description": "深灰色至黑色的不透明固体，质软且具有滑腻感。它是碳的一种同素异形体，具有极佳的导电性、耐氧化性及耐高温性，是制造电极和坩埚的理想材料。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "key": "fractionating_column",
+    "name": "分馏柱",
+    "category": "工具",
+    "description": "用于分馏操作，增加汽液接触面积以提高分离效率。",
+    "type": [
+      "tool",
+      "container"
+    ],
+    "durable": 50,
+    "attrs": {
+      "can_heat": true
+    }
+  },
+  {
+    "key": "reactor_vessel",
+    "name": "核反应堆",
+    "category": "容器",
+    "description": "厚重的钢制容器，内壁衬有耐辐射材料，用于容纳核裂变反应。",
+    "type": [
+      "container"
+    ],
+    "durable": 1000
+  },
+  {
+    "name": "控制棒",
+    "key": "control_rod",
+    "category": "工具",
+    "description": "用硼或镉制成的棒状组件，插入反应堆可吸收中子，调节反应速率。",
+    "type": [
+      "tool"
+    ]
+  },
+  {
+    "name": "核燃料棒",
+    "key": "nuclear_fuel_rod",
+    "category": "材料",
+    "description": "锆合金包壳内装有二氧化铀芯块，是反应堆的核心燃料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "promethium",
+    "name": "钷",
+    "category": "材料",
+    "description": "人造放射性稀土元素。在自然界中极度罕见，通常作为裂变产物或通过中子轰击产生。",
+    "type": [
+      "material",
+      "element"
+    ],
+    "elemental": 61
+  },
+  {
+    "key": "radium",
+    "name": "镭",
+    "category": "材料",
+    "description": "银白色放射性碱土金属，由居里夫人发现。其放射性极强，曾在历史上用于夜光涂料。",
+    "type": [
+      "material",
+      "element"
+    ],
+    "elemental": 88,
+    "milestone": "isolate_radium"
+  },
+  {
+    "key": "polonium",
+    "name": "钋",
+    "category": "材料",
+    "description": "银灰色放射性金属，极具毒性。它是第一个由居里夫妇发现的放射性元素。",
+    "type": [
+      "material",
+      "element"
+    ],
+    "milestone": "atomic_age",
+    "elemental": 84
+  },
+  {
+    "key": "radon",
+    "name": "氡",
+    "category": "气体",
+    "description": "无色无味放射性惰性气体，由镭衰变产生。由于是气体，极易扩散并造成放射性污染。",
+    "type": [
+      "material",
+      "element"
+    ],
+    "milestone": "atomic_age",
+    "elemental": 86
+  },
+  {
+    "key": "helium",
+    "name": "氦",
+    "category": "气体",
+    "description": "无色无味惰性气体，是宇宙中含量第二多的元素。由铀矿石中的α衰变产生并被岩石捕获。",
+    "type": [
+      "material",
+      "element"
+    ],
+    "elemental": 2
+  },
+  {
+    "key": "grinded_pitchblende",
+    "name": "粉碎的沥青铀矿",
+    "category": "材料",
+    "description": "经过粉碎处理的沥青铀矿粉末，增加了酸浸的反应面积。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "radioactive_acid_solution",
+    "name": "放射性酸浸液",
+    "category": "材料",
+    "description": "含有铀、镭、钋等多种放射性元素的浓硫酸-硝酸浸出液。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "radium_carbonate_precipitate",
+    "name": "粗碳酸镭沉淀",
+    "category": "材料",
+    "description": "加入碳酸钠后形成的混合沉淀，包含碳酸镭及大量钡、钙等杂质。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "uranyl_sodium_solution",
+    "name": "铀酰钠溶液",
+    "category": "材料",
+    "description": "沉淀分离后的上清液，含有铀资源。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "radium_chloride_solution",
+    "name": "氯化镭溶液",
+    "category": "液体",
+    "description": "溶解于盐酸后的溶液，准备进行分步结晶。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "pure_radium_chloride",
+    "name": "纯氯化镭",
+    "category": "材料",
+    "description": "通过数千次分步结晶获得的极高纯度氯化镭，呈白色晶体。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "crude_helium",
+    "name": "粗氦气",
+    "category": "气体",
+    "description": "从铀矿石中释放出的气体，含有空气杂质。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "helium_deoxidized",
+    "name": "除氧氦气",
+    "category": "气体",
+    "description": "通过灼热铜网后除去氧气的氦气。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "polonium_residue",
+    "name": "含钋残渣",
+    "category": "材料",
+    "description": "酸浸后剩余的固体残渣，富集了钋元素。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "polonium_acid_solution",
+    "name": "含钋酸溶液",
+    "category": "材料",
+    "description": "残渣经盐酸溶解后的溶液，含有钋。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "polonium_on_bismuth",
+    "name": "吸附钋的铋片",
+    "category": "材料",
+    "description": "表面沉积了一层薄薄钋原子的铋片。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "vacuum_pump",
+    "name": "真空泵",
+    "category": "工具",
+    "description": "用于抽取容器空气，制造真空环境。",
+    "type": [
+      "tool"
+    ],
+    "durable": 10
+  },
+  {
+    "key": "steel_cylinder",
+    "name": "钢制气瓶",
+    "category": "工具",
+    "description": "高压容器，用于储存和运输各种气体。",
+    "type": [
+      "tool",
+      "durable"
+    ],
+    "durable": 10
+  },
+  {
+    "key": "liquid_nitrogen",
+    "name": "液氮",
+    "category": "液体",
+    "description": "极低温液体，用于冷阱吸附和低温物理研究。",
+    "type": [
+      "material"
+    ],
+    "elemental": 7
+  },
+  {
+    "key": "activated_charcoal",
+    "name": "活性炭",
+    "category": "材料",
+    "description": "具有高度发达孔隙结构的碳材料，能强力吸附气体杂质。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "radon_gas_mixture",
+    "name": "氡气混合物",
+    "category": "气体",
+    "description": "含有氡气的混合气体，需在密闭容器中储存，避免放射性污染。",
+    "type": [
+      "material",
+      "gas"
+    ]
+  },
+  {
+    "key": "rubber",
+    "name": "橡胶",
+    "category": "材料",
+    "description": "具有高弹性的高分子材料，用于密封和绝缘。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "magnesium_fluoride",
+    "name": "氟化镁",
+    "category": "材料",
+    "description": "无机化合物，常用于光学镀膜和冶金助剂。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "samarium_fluoride",
+    "name": "氟化钐",
+    "category": "材料",
+    "description": "稀土氟化物，用于制备金属钐。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "europium_fluoride",
+    "name": "氟化铕",
+    "category": "材料",
+    "description": "稀土氟化物，用于制备金属铕。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "argon",
+    "name": "氩气",
+    "category": "气体",
+    "description": "稀有气体，化学性质极不活泼，常用于保护气。",
+    "type": [
+      "material"
+    ],
+    "elemental": 18
+  },
+  {
+    "key": "neon",
+    "name": "氖气",
+    "category": "气体",
+    "description": "稀有气体，通电时发出橙红色的光，用于霓虹灯。",
+    "type": [
+      "material"
+    ],
+    "elemental": 10
+  },
+  {
+    "key": "krypton",
+    "name": "氪气",
+    "category": "气体",
+    "description": "稀有气体，化学性质非常不活泼，用于高功率激光器。",
+    "type": [
+      "material"
+    ],
+    "elemental": 36
+  },
+  {
+    "key": "xenon",
+    "name": "氙气",
+    "category": "气体",
+    "description": "稀有气体，在特殊条件下可形成化合物，用于高强度放电灯。",
+    "type": [
+      "material"
+    ],
+    "elemental": 54
+  },
+  {
+    "key": "thorium",
+    "name": "金属钍",
+    "category": "元素",
+    "description": "银白色放射性金属，化学性质较活泼。主要存在于独居石中，是未来核反应堆极具潜力的核燃料替代品。",
+    "type": [
+      "material",
+      "element"
+    ],
+    "elemental": 90
+  },
+  {
+    "key": "protactinium",
+    "name": "金属镤",
+    "category": "元素",
+    "description": "极罕见的放射性金属，是铀衰变过程中的中间产物。具有强放射性和高化学毒性，在黑暗中常伴有荧光。",
+    "type": [
+      "material",
+      "element"
+    ],
+    "elemental": 91
+  },
+  {
+    "key": "actinium",
+    "name": "金属锕",
+    "category": "元素",
+    "description": "银白色放射性元素，具有极强的放射性。其活性极高，在黑暗中会因激发空气分子而发出迷人的蓝色荧光。",
+    "type": [
+      "material",
+      "element"
+    ],
+    "elemental": 89
+  },
+  {
+    "key": "thorium_sulfate_solution",
+    "name": "硫酸钍溶液",
+    "category": "化工",
+    "description": "独居石经硫酸处理后获得的放射性溶液，富含钍离子。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "technetium",
+    "name": "金属锝",
+    "category": "元素",
+    "description": "银灰色放射性金属，是第一个由人工合成的元素。在核燃料裂变产物中较为丰富。",
+    "type": [
+      "material",
+      "element"
+    ],
+    "elemental": 43
+  },
+  {
+    "key": "astatine",
+    "name": "砹",
+    "category": "元素",
+    "description": "极罕见的放射性卤素，是地球上最稀有的天然元素之一。由于其极短的半衰期，通常只能在实验室内制备。",
+    "type": [
+      "material",
+      "element"
+    ],
+    "elemental": 85
+  },
+  {
+    "key": "francium",
+    "name": "钫",
+    "category": "元素",
+    "description": "极不稳定的放射性碱金属，是自然界中发现的最后一种元素。它是已知电负性最低的元素。",
+    "type": [
+      "material",
+      "element"
+    ],
+    "elemental": 87
+  },
+  {
+    "key": "cyclotron",
+    "name": "回旋加速器",
+    "category": "装置",
+    "description": "利用磁场使带电粒子在回旋轨道中被电场反复加速的高能物理装置。",
+    "type": [
+      "tool"
+    ],
+    "milestone": "atomic_age"
+  },
+  {
+    "key": "lead_bricks",
+    "name": "铅砖",
+    "category": "材料",
+    "description": "高纯度的铅制成的砖块，用于屏蔽放射性射线。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "geiger_counter",
+    "name": "盖革计数器",
+    "category": "装置",
+    "description": "用于探测和测量电离辐射的监测装置。",
+    "type": [
+      "tool"
+    ]
+  },
+  {
+    "key": "superconducting_magnet",
+    "name": "超导磁体",
+    "category": "装置",
+    "description": "利用超导导线绕制的电磁铁，能产生极强的稳定磁场。",
+    "type": [
+      "tool"
+    ]
+  },
+  {
+    "name": "硫酸镉",
+    "key": "cadmium_sulfate",
+    "category": "材料",
+    "description": "白色晶体粉末，易溶于水，溶液有甜味但剧毒。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氢氧化镍",
+    "key": "nickel_hydroxide",
+    "category": "材料",
+    "description": "翠绿色粉末，不溶于水，常用于电池正极材料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氢氧化镉",
+    "key": "cadmium_hydroxide",
+    "category": "材料",
+    "description": "白色粉末，不溶于水，遇酸分解，用于电池负极。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "nickel_cadmium_battery",
+    "name": "镍镉电池",
+    "category": "工具",
+    "description": "一种可充电电池，正极为氢氧化镍，负极为镉，电解液为氢氧化钾。耐用且能承受大电流放电。",
+    "type": [
+      "tool",
+      "battery"
+    ],
+    "durable": 50
+  },
+  {
+    "key": "pottery_mold",
+    "name": "陶模",
+    "category": "工具",
+    "type": [
+      "material",
+      "tool"
+    ],
+    "description": "用精细粘土制成的铸造模具，可用于熔铸复杂的形状。",
+    "durable": 1
+  },
+  {
+    "key": "four_goat_zun",
+    "name": "四羊方尊",
+    "category": "奇观",
+    "description": "青铜铸造技术的巅峰之作，四角各有一只卷角神羊，造型雄奇。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true,
+    "attrs": {
+      "level": 3
+    }
+  },
+  {
+    "key": "blue_brick",
+    "name": "青砖",
+    "category": "材料",
+    "type": [
+      "material"
+    ],
+    "description": "经过高温还原焙烧而成的青色砖块，比一般的红砖具有更强的抗氧化性和耐腐蚀性，质地致密且耐久。",
+    "milestone": 2,
+    "is_discovery": true
+  },
+  {
+    "key": "sticky_rice",
+    "name": "糯米",
+    "category": "材料",
+    "type": [
+      "material"
+    ],
+    "description": "富含支链淀粉的稻米，蒸熟后极具粘性，是制作中国古代传统强力胶合材料的关键原料。",
+    "milestone": 2,
+    "is_discovery": true
+  },
+  {
+    "key": "sticky_rice_mortar",
+    "name": "糯米灰浆",
+    "category": "材料",
+    "type": [
+      "material"
+    ],
+    "description": "将糯米汁与熟石灰、沙石混合制成的强力建筑胶凝材料。它具有极高的强度和韧性，是万里长城千年不倒的秘密。",
+    "milestone": 2,
+    "is_discovery": true
+  },
+  {
+    "key": "ming_great_wall",
+    "name": "万里长城",
+    "category": "奇观",
+    "description": "明代修筑的砖石结构长城，不仅是边防防线，更是中华工程技术的丰碑。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true,
+    "milestone": 2,
+    "attrs": {
+      "level": 5
+    }
+  },
+  {
+    "key": "roman_concrete",
+    "name": "混凝土",
+    "category": "材料",
+    "description": "由石灰、火山灰、砂石混合而成的古代混凝土，干燥后异常坚固，带有灰白色的斑驳质感。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "pantheon",
+    "name": "罗马万神殿",
+    "category": "奇观",
+    "description": "宏伟的穹顶建筑，巨大的圆形拱顶在没有现代机械的情况下精确落成，象征着罗马帝国的辉煌。",
+    "type": [
+      "material",
+      "building"
+    ],
+    "attrs": {
+      "level": 2
+    }
+  },
+  {
+    "key": "eiffel_tower",
+    "name": "埃菲尔铁塔",
+    "category": "奇观",
+    "description": "一座由锻铁构成的宏伟塔楼，高耸入云，象征着工业时代的辉煌。",
+    "type": [
+      "material",
+      "building"
+    ],
+    "attrs": {
+      "level": 6
+    }
+  },
+  {
+    "name": "铆钉",
+    "key": "rivet",
+    "category": "材料",
+    "description": "小巧而坚固的金属连接件，用于将钢梁紧密固定在一起。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "凿子",
+    "key": "chisel",
+    "category": "工具",
+    "description": "用铁锻造成的凿子，刃口锋利，适合在木材上凿孔、雕刻榫卯。",
+    "type": [
+      "tool"
+    ],
+    "durable": 1
+  },
+  {
+    "name": "榫卯构件",
+    "key": "tenon_mortise",
+    "category": "材料",
+    "description": "经过精密加工的木质构件，利用榫头与卯眼的凹凸结合，使木料牢固连接，无需铁钉。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "yinxian_pagoda",
+    "name": "应县木塔",
+    "category": "奇观",
+    "description": "全木结构的楼阁式古塔，塔高67米，历经千年风雨依旧巍然屹立，是中国古代木构建筑的瑰宝。",
+    "type": [
+      "material",
+      "building"
+    ],
+    "attrs": {
+      "level": 1
+    }
+  },
+  {
+    "name": "硫化钠",
+    "key": "sodium_sulfide",
+    "category": "材料",
+    "description": "又称“红碱”，具有强还原性，在湿法冶金中常用作沉淀剂，或作为硫酸盐还原法的副产物。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "铬酸钠",
+    "key": "sodium_chromate",
+    "category": "材料",
+    "description": "黄色晶体，是铬铁矿在有氧条件下与碳酸钠焙烧后的产物，易溶于水。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "重铬酸钠",
+    "key": "sodium_dichromate",
+    "category": "材料",
+    "description": "桔红色晶体，通常由铬酸钠溶液经酸化制得，是工业生产三氧化二铬的关键原料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氯化铍",
+    "key": "beryllium_chloride",
+    "category": "材料",
+    "description": "白色针状晶体，极易潮解。在工业上通过氧化铍、焦炭与氯气的高温热解反应制得，用于熔盐电解法制取金属铍。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "含碲碱熔块",
+    "key": "tellurium_flux",
+    "category": "材料",
+    "description": "碲金矿或阳极泥与碳酸钠焙烧后形成的块状物，含有可溶性的碲酸碱金属盐。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "草酸钍",
+    "key": "thorium_oxalate",
+    "category": "材料",
+    "description": "白色沉淀，由钍盐溶液与草酸反应生成，是提取高纯度氧化钍的必经步骤。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氧化钍",
+    "key": "thorium_oxide",
+    "category": "材料",
+    "description": "白色固体，具有极高的熔点和极强的化学稳定性，是原子能工业中的重要原料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硝酸铀酰",
+    "key": "uranyl_nitrate",
+    "category": "材料",
+    "description": "黄色晶体，具有荧光性质。由铀矿物或铀氧化物与硝酸反应制得，是铀燃料循环中的核心中间产物。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "重铀酸钠",
+    "key": "sodium_diuranate",
+    "category": "材料",
+    "description": "黄色固体，又称“黄饼”成分之一。由硝酸铀酰溶液加过量氢氧化钠沉淀而得。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硫酸钾",
+    "key": "potassium_sulfate",
+    "category": "材料",
+    "description": "白色结晶性粉末，味苦，易溶于水，是重要的钾肥和工业原料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氯化钾",
+    "key": "potassium_chloride",
+    "category": "材料",
+    "description": "无色立方晶体或白色粉末，味咸，易溶于水，天然存在于钾石盐中。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硫酸铵",
+    "key": "ammonium_sulfate",
+    "category": "材料",
+    "description": "白色结晶，无臭，易溶于水，是一种常用的氮肥。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氯化铵",
+    "key": "ammonium_chloride",
+    "category": "材料",
+    "description": "白色晶体，受热时分解，冷却时重新凝结，散发出刺鼻的白烟。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硝酸钠",
+    "key": "sodium_nitrate",
+    "category": "材料",
+    "description": "无色透明或白色微带黄色立方晶体，味苦咸，易潮解。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硫酸锌溶液",
+    "key": "zinc_sulfate_solution",
+    "category": "液体",
+    "description": "硫酸锌的水溶液，澄清透明，具有收敛性金属味。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "碳酸锌",
+    "key": "zinc_carbonate",
+    "category": "材料",
+    "description": "白色微细粉末，不溶于水，是菱锌矿的主要成分。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氧化铜",
+    "key": "copper_oxide",
+    "category": "材料",
+    "description": "黑色粉末，稍有吸湿性。它是铜的稳定氧化物。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "氧化锡",
+    "key": "tin_oxide",
+    "category": "材料",
+    "description": "白色或淡黄色粉末，不溶于水，是提取锡的重要原料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "硫酸铜溶液",
+    "key": "copper_sulfate_solution",
+    "category": "液体",
+    "description": "深蓝色的透明液体，具有强烈的金属酸味，常用于湿法炼铜。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "碳酸铅",
+    "key": "lead_carbonate",
+    "category": "材料",
+    "description": "白色粉末，高折射率，不溶于水，天然存在于白铅矿中。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "碳酸铁",
+    "key": "iron_carbonate",
+    "category": "材料",
+    "description": "菱铁矿的主要成分，通常为灰白色粉末，在空气中易氧化变色。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "碳酸锰",
+    "key": "manganese_carbonate",
+    "category": "材料",
+    "description": "粉红色结晶或米黄色粉末，不溶于水，常用于制造锰盐。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "碳酸水",
+    "key": "carbonated_water",
+    "category": "液体",
+    "description": "溶解了二氧化碳的水，微微冒泡，带有弱酸性。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "亚硫酸",
+    "key": "sulfurous_acid",
+    "category": "液体",
+    "description": "二氧化硫的水溶液，具有强烈的刺激性气味和还原性。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "发烟硫酸",
+    "key": "fuming_sulfuric_acid",
+    "category": "液体",
+    "description": "溶解了三氧化硫的浓硫酸，在空气中冒出浓烈的酸雾，具有极强的腐蚀性。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "碳酸氢铵",
+    "key": "ammonium_bicarbonate",
+    "category": "材料",
+    "description": "白色结晶，具有强烈的氨味，易溶于水，受热易分解。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "次氯酸钠",
+    "key": "sodium_hypochlorite",
+    "category": "液体",
+    "description": "微黄色溶液，具有强烈的氯气味，有氧化性和漂白作用。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "氨水",
+    "key": "ammonia_water",
+    "category": "液体",
+    "description": "氨的水溶液，透明澄清，具有强烈的刺激性氨味。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "铜氨溶液",
+    "key": "cuprammonium_solution",
+    "category": "液体",
+    "description": "深蓝色的透明液体，由铜盐溶于氨水制得，能溶解纤维素。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "氯化银",
+    "key": "silver_chloride",
+    "category": "材料",
+    "description": "白色粉末状固体，见光逐渐分解变黑，几乎不溶于水。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "银氨溶液",
+    "key": "silver_ammonia_solution",
+    "category": "液体",
+    "description": "无色透明液体，具有弱碱性，常用于银镜反应。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "铝酸钠",
+    "key": "sodium_aluminate",
+    "category": "材料",
+    "description": "白色颗粒或粉末，易溶于水，溶液呈强碱性，是拜耳法生产中的中间体。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "锌酸钾",
+    "key": "potassium_zincate",
+    "category": "材料",
+    "description": "由氧化锌或锌盐在浓氢氧化钾溶液中反应得到，展示了锌的两性。通常存在于强碱溶液中。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "含钪酸浸液",
+    "key": "scandium_leach_solution",
+    "category": "液体",
+    "description": "赤泥经硫酸浸出后的过滤液，含有低浓度的钪离子及多种金属杂质。",
+    "type": [
+      "material",
+      "liquid"
+    ]
+  },
+  {
+    "name": "钪富集沉淀",
+    "key": "scandium_concentrate",
+    "category": "材料",
+    "description": "通过向酸浸液中加入碱（如氨水）获得的粗钪沉淀物，钪含量显著提高。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "name": "草酸钪",
+    "key": "scandium_oxalate",
+    "category": "材料",
+    "description": "白色难溶固体，由钪溶液与草酸反应得到，用于高温分解制取氧化钪。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "magnesium_aluminum_alloy",
+    "name": "镁铝合金",
+    "category": "材料",
+    "description": "一种由镁和铝组成的轻质合金，具有高强度和优良的耐腐蚀性，是航空航天工业的重要材料。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "liquid_hydrogen",
+    "name": "液氢",
+    "category": "液体",
+    "description": "处于液态的氢气，具有极高的能量密度，常用作火箭的低温燃料。",
+    "type": [
+      "material",
+      "liquid"
+    ],
+    "elemental": 1
+  },
+  {
+    "key": "liquid_oxygen",
+    "name": "液氧",
+    "category": "液体",
+    "description": "处于液态的氧气，呈淡蓝色，是强大的助燃剂，广泛用于火箭推进系统。",
+    "type": [
+      "material",
+      "liquid"
+    ],
+    "elemental": 8
+  },
+  {
+    "key": "liquid_helium",
+    "name": "液氦",
+    "category": "液体",
+    "description": "极低温的液体氦，沸点接近绝对零度，用于超导技术和深低温物理实验。",
+    "type": [
+      "material",
+      "liquid"
+    ],
+    "elemental": 2
+  },
+  {
+    "key": "solar_cell",
+    "name": "太阳能电池",
+    "category": "材料",
+    "description": "利用半导体的光生伏特效应将光能直接转变为电能的器件。",
+    "type": [
+      "material"
+    ]
+  },
+  {
+    "key": "launch_vehicle",
+    "name": "运载火箭",
+    "category": "工具",
+    "description": "用于携带有效载荷离开地球大气层并进入预定轨道的飞行器。",
+    "type": [
+      "material",
+      "tool"
+    ]
+  },
+  {
+    "key": "space_station",
+    "name": "空间站",
+    "category": "工具",
+    "description": "在轨道上运行，供宇航员长期工作和生活的实验室。",
+    "type": [
+      "material",
+      "building"
+    ],
+    "milestone": "launch_space_station"
+  },
+  {
+    "key": "launched_space_station",
+    "name": "和平号空间站",
+    "category": "奇观",
+    "description": "已成功发射并进入轨道的空间站，人类文明的象征。",
+    "type": [
+      "material"
+    ],
+    "attrs": {
+      "level": 7
+    }
+  },
+  {
+    "name": "氧化铁",
+    "key": "iron_oxide",
+    "category": "材料",
+    "description": "细腻的红棕色粉末，手感微涩，轻轻抖动会扬起淡红色的烟尘，像凝固的锈迹。",
+    "type": [
+      "material"
+    ],
+    "elemental": 26
+  },
+  {
+    "name": "煤焦油",
+    "key": "coal_tar",
+    "category": "液体",
+    "description": "黑褐色、黏稠如膏的液体，带有刺鼻的焦臭味，指尖沾上便难以洗去。",
+    "type": [
+      "material",
+      "liquid"
+    ],
+    "attrs": {
+      "burn_time": 80
+    }
+  },
+  {
+    "name": "焦炉气",
+    "key": "coal_gas",
+    "category": "气体",
+    "description": "无色气体，带着一股刺鼻的怪味，靠近时感到头晕目眩，似乎随时会被点燃。",
+    "type": [
+      "material",
+      "gas",
+      "fuel"
+    ],
+    "attrs": {
+      "burn_time": 30
+    }
+  }
+]

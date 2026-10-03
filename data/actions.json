@@ -1,0 +1,4151 @@
+[
+  {
+    "key": "pick_stone",
+    "name": "捡石头",
+    "category": "采集",
+    "description": "在地上捡起石头，可以用来建造和制作工具。",
+    "time_required": 0,
+    "required_items": [],
+    "rewards": [
+      {
+        "key": "stone",
+        "quantity": 1,
+        "probability": 1000
+      },
+      {
+        "key": "flint",
+        "quantity": 1,
+        "probability": 200,
+        "map": [
+          "volcano",
+          "river_side"
+        ]
+      },
+      {
+        "key": "clay",
+        "quantity": 1,
+        "probability": 100,
+        "map": [
+          "river_side"
+        ]
+      }
+    ]
+  },
+  {
+    "name": "捡树枝",
+    "key": "pick_branch",
+    "category": "采集",
+    "description": "在地上捡起树枝，可以用来建造和制作工具。",
+    "required_items": [],
+    "rewards": [
+      {
+        "key": "wood",
+        "quantity": 1,
+        "probability": 990
+      },
+      {
+        "key": "bark",
+        "quantity": 1,
+        "probability": 500
+      },
+      {
+        "key": "resin",
+        "quantity": 1,
+        "probability": 100,
+        "map": [
+          {
+            "key": "forest"
+          }
+        ]
+      }
+    ],
+    "time_required": 0
+  },
+  {
+    "key": "mining",
+    "name": "挖掘",
+    "category": "采集",
+    "description": "使用镐类工具挖掘地面，根据工具的差异获取不同的矿物资源。",
+    "time_required": 10,
+    "required_items": [
+      {
+        "key": [
+          "stone_pickaxe",
+          "iron_pickaxe",
+          "bronze_pickaxe",
+          "brass_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "quantity": 1,
+        "use": 0.01
+      }
+    ],
+    "rewards": [
+      {
+        "key": "quartz",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 200
+      },
+      {
+        "key": "mud",
+        "quantity": 1,
+        "probability": 300,
+        "guaranteed": true,
+        "map": [
+          "forest",
+          "river_side",
+          "island",
+          "mountain"
+        ]
+      },
+      {
+        "key": "clay",
+        "quantity": 1,
+        "probability": 200,
+        "map": [
+          "river_side"
+        ]
+      },
+      {
+        "key": "flint",
+        "quantity": 1,
+        "probability": 200,
+        "map": [
+          {
+            "key": "river_side",
+            "probability": 400
+          },
+          "forest",
+          {
+            "key": "volcano",
+            "probability": 400
+          },
+          "mountain"
+        ]
+      },
+      {
+        "key": "hematite",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 800,
+        "required_era": "alchemy",
+        "required_item": [
+          "bronze_pickaxe",
+          "brass_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "limestone",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 500,
+        "required_era": "alchemy",
+        "map": [
+          "mountain",
+          "cave",
+          "basin"
+        ]
+      },
+      {
+        "key": "cassiterite",
+        "quantity": 1,
+        "probability": 200,
+        "required_era": "alchemy",
+        "map": [
+          "mountain"
+        ]
+      },
+      {
+        "key": "sphalerite",
+        "quantity": 1,
+        "probability": 200,
+        "required_era": "alchemy",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave",
+          "mountain"
+        ]
+      },
+      {
+        "key": "galena",
+        "quantity": 1,
+        "probability": 200,
+        "required_era": "alchemy",
+        "map": [
+          "cave"
+        ]
+      },
+      {
+        "key": "stibnite",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "alchemy",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave",
+          "volcano"
+        ]
+      },
+      {
+        "key": "cobaltite",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "alchemy",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave",
+          "volcano"
+        ]
+      },
+      {
+        "key": "bismuthite",
+        "quantity": 1,
+        "probability": 150,
+        "required_era": "alchemy",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave",
+          "mountain"
+        ]
+      },
+      {
+        "key": "arsenopyrite",
+        "quantity": 1,
+        "probability": 200,
+        "required_era": "alchemy",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave",
+          "volcano"
+        ]
+      },
+      {
+        "key": "green_vitriol",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 200,
+        "required_era": "alchemy",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave"
+        ]
+      },
+      {
+        "key": "mirabilite",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 200,
+        "required_era": "alchemy",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave"
+        ]
+      },
+      {
+        "key": "sulfur",
+        "quantity": 1,
+        "probability": 300,
+        "required_era": "alchemy",
+        "required_item": [
+          "iron_pickaxe",
+          "bronze_pickaxe",
+          "brass_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "volcano"
+        ]
+      },
+      {
+        "key": "realgar",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "alchemy",
+        "required_item": [
+          "bronze_pickaxe",
+          "brass_pickaxe",
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "volcano"
+        ]
+      },
+      {
+        "key": "orpiment",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "alchemy",
+        "required_item": [
+          "brass_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe",
+          "iron_pickaxe"
+        ],
+        "map": [
+          "volcano"
+        ]
+      },
+      {
+        "key": "rock_salt",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 300,
+        "required_era": "alchemy",
+        "required_item": [
+          "chromium_pickaxe",
+          "titanium_pickaxe",
+          "manganese_pickaxe",
+          "iron_pickaxe"
+        ],
+        "map": [
+          "salt_lake",
+          "basin"
+        ]
+      },
+      {
+        "key": "limestone",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 300,
+        "required_era": "alchemy",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "basin"
+        ]
+      },
+      {
+        "key": "niter",
+        "quantity": [
+          1,
+          2
+        ],
+        "probability": 150,
+        "required_era": "alchemy",
+        "required_item": [
+          "brass_pickaxe",
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "basin",
+          {
+            "key": "cave",
+            "probability": 250
+          }
+        ]
+      },
+      {
+        "key": "molybdenite",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain"
+        ]
+      },
+      {
+        "key": "scheelite",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain"
+        ]
+      },
+      {
+        "key": "chromite",
+        "quantity": [
+          1,
+          2
+        ],
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": [
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain"
+        ]
+      },
+      {
+        "key": "barite",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 200,
+        "required_era": "modern_chem",
+        "required_item": [
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave"
+        ]
+      },
+      {
+        "key": "cinnabar",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "modern_chem",
+        "map": [
+          "volcano"
+        ]
+      },
+      {
+        "key": "rutile",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "volcano",
+          "mountain"
+        ]
+      },
+      {
+        "key": "borax",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 150,
+        "required_era": "modern_chem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "volcano"
+        ]
+      },
+      {
+        "key": "phosphorite",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 300,
+        "required_era": "modern_chem",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "island",
+          "basin"
+        ]
+      },
+      {
+        "key": "diatomaceous_earth",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 300,
+        "required_era": "modern_chem",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "island"
+        ]
+      },
+      {
+        "key": "sylvite",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 200,
+        "required_era": "modern_chem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "salt_lake"
+        ]
+      },
+      {
+        "key": "celestine",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "salt_lake",
+          "cave"
+        ]
+      },
+      {
+        "key": "strontianite",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "basin",
+          "salt_lake"
+        ]
+      },
+      {
+        "key": "sperrylite",
+        "quantity": 1,
+        "probability": 30,
+        "required_era": "modern_chem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "meteor_crater",
+          "mountain"
+        ]
+      },
+      {
+        "key": "pentlandite",
+        "quantity": 1,
+        "probability": 200,
+        "required_era": "modern_chem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "meteor_crater",
+          "volcano"
+        ]
+      },
+      {
+        "key": "struvite",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 200,
+        "required_era": "modern_chem",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "chromium_pickaxe",
+          "titanium_pickaxe"
+        ],
+        "map": [
+          "island",
+          "cave"
+        ]
+      },
+      {
+        "key": "spodumene",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "electrochem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain"
+        ]
+      },
+      {
+        "key": "bauxite",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 300,
+        "required_era": "electrochem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave",
+          "mountain"
+        ]
+      },
+      {
+        "key": "cryolite",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "electrochem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave",
+          "volcano"
+        ]
+      },
+      {
+        "key": "carnallite",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 150,
+        "required_era": "electrochem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "salt_lake"
+        ]
+      },
+      {
+        "key": "beryl",
+        "quantity": 1,
+        "probability": 50,
+        "required_era": "rare_earth",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain"
+        ]
+      },
+      {
+        "key": "zircon",
+        "quantity": 1,
+        "probability": 50,
+        "required_era": "rare_earth",
+        "required_item": [
+          "titanium_pickaxe",
+          "chromium_pickaxe",
+          "manganese_pickaxe"
+        ],
+        "map": [
+          "mountain"
+        ]
+      },
+      {
+        "key": "magnesite",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 200,
+        "required_era": "rare_earth",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain"
+        ]
+      },
+      {
+        "key": "zircon",
+        "quantity": 1,
+        "probability": 50,
+        "required_era": "rare_earth",
+        "required_item": [
+          "titanium_pickaxe",
+          "chromium_pickaxe",
+          "manganese_pickaxe"
+        ],
+        "map": [
+          "beach",
+          "mountain"
+        ]
+      },
+      {
+        "key": "pollucite",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 80,
+        "required_era": "rare_earth",
+        "required_item": [
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "pyrolusite",
+        "probability": 200,
+        "required_era": "modern_chem",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "malachite",
+        "quantity": [
+          1,
+          2
+        ],
+        "probability": 200,
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "witherite",
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": [
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave"
+        ]
+      },
+      {
+        "key": "chalcopyrite",
+        "probability": 100,
+        "map": [
+          "mountain",
+          {
+            "key": "cave",
+            "probability": 300
+          },
+          {
+            "key": "volcano",
+            "probability": 20
+          }
+        ]
+      },
+      {
+        "key": "lepidolite",
+        "quantity": 1,
+        "probability": 120,
+        "required_era": "modern_chem",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "lorandite",
+        "quantity": 1,
+        "probability": 80,
+        "required_era": "electrochem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave",
+          "volcano"
+        ]
+      },
+      {
+        "key": "fluorite",
+        "quantity": [
+          1,
+          2
+        ],
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain"
+        ]
+      },
+      {
+        "key": "tantalite_columbite",
+        "quantity": 1,
+        "probability": 50,
+        "required_era": "modern_chem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          {
+            "key": "mountain",
+            "probability": 80
+          }
+        ]
+      },
+      {
+        "key": "stone",
+        "quantity": 1,
+        "probability": 1000,
+        "guaranteed": true,
+        "map": [
+          "mountain",
+          "cave",
+          "volcano",
+          "meteor_crater"
+        ]
+      },
+      {
+        "key": "coal",
+        "probability": 1,
+        "required_era": "modern_chem",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain",
+          "cave",
+          "basin"
+        ]
+      },
+      {
+        "key": "graphite",
+        "quantity": [
+          1,
+          2
+        ],
+        "probability": 150,
+        "required_era": "modern_chem",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave",
+          "mountain",
+          "meteor_crater",
+          "basin"
+        ]
+      },
+      {
+        "key": "native_silver",
+        "quantity": 1,
+        "probability": 50,
+        "required_era": "alchemy",
+        "map": [
+          "mountain",
+          "river_side"
+        ]
+      },
+      {
+        "key": "argentite",
+        "quantity": 1,
+        "probability": 100,
+        "required_era": "modern_chemistry",
+        "required_item": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      }
+    ]
+  },
+  {
+    "key": "fetch_water",
+    "name": "打水",
+    "category": "采集",
+    "description": "使用工具从水源打水，可以获得水资源。",
+    "time_required": 5,
+    "required_items": [
+      {
+        "key": "wooden_bucket",
+        "quantity": 1,
+        "use": 0.01
+      }
+    ],
+    "rewards": [
+      {
+        "key": "water",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "map": [
+      "river_side"
+    ]
+  },
+  {
+    "key": "chop_wood",
+    "name": "伐木",
+    "category": "采集",
+    "description": "使用石斧砍伐树木，可以获得更多的木材。",
+    "time_required": 5,
+    "required_items": [
+      {
+        "key": [
+          "stone_axe",
+          "bronze_axe",
+          "brass_axe",
+          "iron_axe"
+        ],
+        "quantity": 1,
+        "use": 0.01
+      }
+    ],
+    "rewards": [
+      {
+        "key": "wood",
+        "quantity": [
+          5,
+          7,
+          8,
+          9,
+          10
+        ],
+        "probability": 10
+      },
+      {
+        "key": "bark",
+        "quantity": [
+          1,
+          2,
+          3
+        ],
+        "probability": 5
+      },
+      {
+        "key": "resin",
+        "quantity": [
+          1,
+          2,
+          3
+        ],
+        "probability": 6,
+        "required_era": "alchemy"
+      }
+    ],
+    "map": [
+      "forest"
+    ]
+  },
+  {
+    "name": "打造石斧",
+    "key": "craft_stone_axe",
+    "category": "制作",
+    "description": "使用石头和木材制作石斧，可以用来砍树和挖掘。",
+    "required_items": [
+      {
+        "key": "stone",
+        "quantity": 5
+      },
+      {
+        "key": "wood",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "stone_tool_crafting"
+    ],
+    "rewards": [
+      {
+        "key": "stone_axe",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 10
+  },
+  {
+    "name": "打造石镐",
+    "key": "craft_stone_pickaxe",
+    "category": "制作",
+    "description": "使用石头和木材制作石镐，可以用来挖掘和采矿。",
+    "required_items": [
+      {
+        "key": "stone",
+        "quantity": 5
+      },
+      {
+        "key": "wood",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "stone_tool_crafting"
+    ],
+    "rewards": [
+      {
+        "key": "stone_pickaxe",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 10
+  },
+  {
+    "name": "制作木桶",
+    "key": "craft_wooden_bucket",
+    "category": "制作",
+    "description": "使用木材制作木桶，可以用来装水和其他物品。",
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 20
+      }
+    ],
+    "required_techs": [
+      "wood_processing"
+    ],
+    "rewards": [
+      {
+        "key": "wooden_bucket",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 15
+  },
+  {
+    "name": "制作火种",
+    "key": "craft_fire_seed",
+    "category": "制作",
+    "description": "使用燧石和木材制作火种，可以用来生火。",
+    "required_items": [
+      {
+        "key": "flint",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 5
+      }
+    ],
+    "required_techs": [
+      "fire_starting"
+    ],
+    "rewards": [
+      {
+        "key": "fire_seed",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 8
+  },
+  {
+    "name": "制作陶罐",
+    "key": "craft_clay_pot",
+    "category": "制作",
+    "description": "使用粘土制作陶罐，可以用来装水和其他物品。",
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 5
+      },
+      {
+        "key": "kiln",
+        "quantity": 1,
+        "use": 0.1
+      }
+    ],
+    "required_techs": [
+      "pottery"
+    ],
+    "rewards": [
+      {
+        "key": "clay_pot",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 12
+  },
+  {
+    "name": "制作窑炉",
+    "key": "craft_kiln",
+    "category": "制作",
+    "description": "使用粘土制作窑炉，可以用来烧制陶器和其他物品。",
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 20
+      },
+      {
+        "key": "wood",
+        "quantity": 10
+      },
+      {
+        "key": "stone",
+        "quantity": 10
+      },
+      {
+        "key": "fire_seed",
+        "quantity": 1,
+        "use": 0.01
+      }
+    ],
+    "required_techs": [
+      "pottery"
+    ],
+    "rewards": [
+      {
+        "key": "kiln",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 30
+  },
+  {
+    "key": "craft_pottery_mold",
+    "name": "制作陶模",
+    "category": "制作",
+    "description": "细心捏制并阴干陶土，制作出复杂的青铜器铸模。",
+    "time_required": 60,
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 10
+      }
+    ],
+    "rewards": [
+      {
+        "key": "pottery_mold",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "mold_making"
+    ]
+  },
+  {
+    "key": "cast_four_goat_zun",
+    "name": "铸造四羊方尊",
+    "category": "奇观",
+    "description": "将熔融的青铜注入精密的陶模中，铸造传世重器。",
+    "time_required": 1200,
+    "required_items": [
+      {
+        "key": "bronze",
+        "quantity": 100
+      },
+      {
+        "key": "pottery_mold",
+        "quantity": 2
+      }
+    ],
+    "rewards": [
+      {
+        "key": "four_goat_zun",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "mold_making"
+    ]
+  },
+  {
+    "key": "cut_store",
+    "name": "石材加工",
+    "category": "制作",
+    "description": "掌握了石材加工技术后，可以将石头切割成合适的大型石块。",
+    "time_required": 30,
+    "required_items": [
+      {
+        "key": "stone",
+        "quantity": 2
+      }
+    ],
+    "rewards": [
+      {
+        "key": "cut_stone",
+        "quantity": [
+          2,
+          5
+        ],
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "stone_masonry"
+    ]
+  },
+  {
+    "key": "build_pyramid",
+    "name": "建造埃及金字塔",
+    "category": "奇观",
+    "description": "集结庞大的人力与物力，在沙漠中建立起永恒的丰碑。金字塔不仅是权力的象征，更是几何学与工程学的杰作。",
+    "time_required": 3600,
+    "required_items": [
+      {
+        "key": "cut_stone",
+        "quantity": 2000
+      }
+    ],
+    "rewards": [
+      {
+        "key": "giza_pyramid",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "stone_masonry"
+    ]
+  },
+  {
+    "key": "blue_brick_production",
+    "name": "烧制青砖",
+    "category": "制作",
+    "description": "将粘土制成砖坯，入窑高温焙烧，出窑青砖。",
+    "time_required": 10,
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 4
+      }
+    ],
+    "rewards": [
+      {
+        "key": "blue_brick",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "stone_masonry"
+    ]
+  },
+  {
+    "key": "forage_sticky_rice",
+    "name": "采集糯米",
+    "category": "采集",
+    "description": "在河边湿地采集野生稻谷，获得糯米。",
+    "time_required": 10,
+    "required_items": [],
+    "rewards": [
+      {
+        "key": "sticky_rice",
+        "quantity": 1,
+        "probability": 900
+      }
+    ],
+    "required_techs": [
+      "stone_tool_crafting",
+      "stone_masonry"
+    ],
+    "map": [
+      "river_side"
+    ]
+  },
+  {
+    "name": "制作糯米灰浆",
+    "key": "craft_sticky_rice_mortar",
+    "category": "制作",
+    "description": "将糯米蒸煮成浆，与熟石灰充分搅拌，制成糯米灰浆。",
+    "required_items": [
+      {
+        "key": "sticky_rice",
+        "quantity": 3
+      },
+      {
+        "key": "slaked_lime",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "rammed_earth_technology"
+    ],
+    "rewards": [
+      {
+        "key": "sticky_rice_mortar",
+        "quantity": 2
+      }
+    ],
+    "time_required": 30
+  },
+  {
+    "key": "build_ming_great_wall",
+    "name": "建造长城",
+    "category": "奇观",
+    "description": "动用大量人力，用糯米灰浆砌筑青砖和条石，分段建造长城。",
+    "time_required": 3600,
+    "required_items": [
+      {
+        "key": "blue_brick",
+        "quantity": 2000
+      },
+      {
+        "key": "sticky_rice_mortar",
+        "quantity": 200
+      }
+    ],
+    "rewards": [
+      {
+        "key": "ming_great_wall",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "rammed_earth_technology"
+    ]
+  },
+  {
+    "key": "craft_chisel",
+    "name": "打造凿子",
+    "category": "制作",
+    "description": "将铁块锻造成锋利的凿子，用于木材的精细加工。",
+    "time_required": 30,
+    "required_items": [
+      {
+        "key": "pig_iron",
+        "quantity": 1
+      },
+      {
+        "key": "wood",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "chisel",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "iron_tool_crafting"
+    ]
+  },
+  {
+    "key": "craft_tenon_mortise",
+    "name": "制作榫卯构件",
+    "category": "制作",
+    "description": "使用凿子将木材加工成榫头或卯眼形状的构件，用于木构建筑。",
+    "time_required": 15,
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 2
+      },
+      {
+        "key": "chisel",
+        "quantity": 1,
+        "use": 0.02
+      }
+    ],
+    "rewards": [
+      {
+        "key": "tenon_mortise",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "tenon_mortise_tech"
+    ]
+  },
+  {
+    "key": "build_yinxian_pagoda",
+    "name": "建造应县木塔",
+    "category": "奇观",
+    "description": "使用大量木材和榫卯构件，按照传统木构工艺建造应县木塔。",
+    "time_required": 2400,
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 1000
+      },
+      {
+        "key": "tenon_mortise",
+        "quantity": 200
+      },
+      {
+        "key": "cut_stone",
+        "quantity": 50
+      }
+    ],
+    "rewards": [
+      {
+        "key": "yinxian_pagoda",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "tenon_mortise_tech"
+    ]
+  },
+  {
+    "key": "craft_fiber_cloth",
+    "name": "制作纤维布",
+    "category": "制作",
+    "description": "使用树皮制作纤维布，可以用来制作衣物和其他物品。",
+    "time_required": 20,
+    "required_items": [
+      {
+        "key": "bark",
+        "quantity": 5
+      },
+      {
+        "key": "alkaline_solution",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "fiber_cloth",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "wood_processing",
+      "bark_processing"
+    ]
+  },
+  {
+    "name": "制作鼓风机",
+    "key": "craft_bellows",
+    "category": "制作",
+    "description": "使用木材和树皮制作鼓风机，可以用来增加火焰的温度。",
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 10
+      },
+      {
+        "key": "fiber_cloth",
+        "quantity": 5
+      }
+    ],
+    "required_techs": [
+      "wood_processing",
+      "bark_processing"
+    ],
+    "rewards": [
+      {
+        "key": "bellows",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 30
+  },
+  {
+    "name": "烧制耐火砖",
+    "key": "fire_brick_production",
+    "category": "制作",
+    "description": "将粘土在窑炉中焙烧制成耐火砖。",
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 5
+      }
+    ],
+    "required_techs": [
+      "refractory_materials"
+    ],
+    "time_required": 60,
+    "rewards": [
+      {
+        "key": "fire_brick",
+        "quantity": 5,
+        "probability": 1000
+      }
+    ]
+  },
+  {
+    "key": "craft_blast_furnace",
+    "name": "制作高炉",
+    "category": "制作",
+    "description": "使用耐火砖和粘土建造一座高炉，用于高温冶炼。",
+    "time_required": 100,
+    "required_items": [
+      {
+        "key": "fire_brick",
+        "quantity": 10
+      },
+      {
+        "key": "clay",
+        "quantity": 5
+      },
+      {
+        "key": "bellows",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "blast_furnace",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "high_temp_furnace"
+    ]
+  },
+  {
+    "name": "打造铁镐",
+    "key": "craft_iron_pickaxe",
+    "category": "制作",
+    "description": "使用生铁和木材打造一把铁镐。",
+    "required_items": [
+      {
+        "key": "pig_iron",
+        "quantity": 2,
+        "use": 1
+      },
+      {
+        "key": "wood",
+        "quantity": 1,
+        "use": 1
+      }
+    ],
+    "required_techs": [
+      "iron_tool_crafting"
+    ],
+    "rewards": [
+      {
+        "key": "iron_pickaxe",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 30
+  },
+  {
+    "name": "打造标枪",
+    "key": "craft_javelin",
+    "category": "制作",
+    "description": "使用木材和钢制作一把标枪。",
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 2
+      },
+      {
+        "key": "steel",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "iron_tool_crafting"
+    ],
+    "rewards": [
+      {
+        "key": "javelin",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 30
+  },
+  {
+    "key": "craft_crucible",
+    "name": "制作坩埚",
+    "category": "制作",
+    "description": "使用粘土和耐火砖制作耐高温的坩埚，用于金属熔炼。",
+    "time_required": 60,
+    "required_items": [
+      {
+        "key": [
+          "clay",
+          "pig_iron"
+        ],
+        "quantity": 5
+      },
+      {
+        "key": "fire_brick",
+        "quantity": 3
+      }
+    ],
+    "rewards": [
+      {
+        "key": "crucible",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ]
+  },
+  {
+    "key": "craft_gas_bottle",
+    "name": "制作集气瓶",
+    "category": "制作",
+    "description": "利用粘土和火制作一个集气瓶。",
+    "time_required": 30,
+    "required_items": [
+      {
+        "key": [
+          "clay",
+          "glass"
+        ],
+        "quantity": 2
+      }
+    ],
+    "rewards": [
+      {
+        "key": "gas_bottle",
+        "quantity": 1,
+        "probability": 1
+      }
+    ],
+    "required_techs": [
+      "pottery",
+      "gas_collection"
+    ]
+  },
+  {
+    "name": "打造青铜斧",
+    "key": "craft_bronze_axe",
+    "category": "制作",
+    "description": "使用青铜和木材制作一把青铜斧。",
+    "required_items": [
+      {
+        "key": "bronze",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "bronze_tool_crafting"
+    ],
+    "rewards": [
+      {
+        "key": "bronze_axe",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 8
+  },
+  {
+    "name": "打造青铜镐",
+    "key": "craft_bronze_pickaxe",
+    "category": "制作",
+    "description": "使用青铜和木材制作一把青铜镐。",
+    "required_items": [
+      {
+        "key": "bronze",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "bronze_tool_crafting"
+    ],
+    "rewards": [
+      {
+        "key": "bronze_pickaxe",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 8
+  },
+  {
+    "name": "打造黄铜镐",
+    "key": "craft_brass_pickaxe",
+    "category": "制作",
+    "description": "使用黄铜和木材制作一把黄铜镐。",
+    "required_items": [
+      {
+        "key": "brass",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "brass_tool_crafting"
+    ],
+    "rewards": [
+      {
+        "key": "brass_pickaxe",
+        "quantity": 1
+      }
+    ],
+    "time_required": 30
+  },
+  {
+    "name": "打造黄铜斧",
+    "key": "craft_brass_axe",
+    "category": "制作",
+    "description": "使用黄铜和木材制作一把黄铜斧。",
+    "required_items": [
+      {
+        "key": "brass",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "brass_tool_crafting"
+    ],
+    "rewards": [
+      {
+        "key": "brass_axe",
+        "quantity": 1
+      }
+    ],
+    "time_required": 30
+  },
+  {
+    "key": "craft_brass_condenser",
+    "name": "制作冷凝管",
+    "category": "制作",
+    "description": "将黄铜或玻璃锻造成螺旋冷凝管，用于实验室蒸馏。",
+    "time_required": 45,
+    "required_items": [
+      {
+        "key": [
+          "glass",
+          "brass"
+        ],
+        "quantity": 3
+      }
+    ],
+    "rewards": [
+      {
+        "key": "brass_condenser",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "brass_tool_crafting"
+    ]
+  },
+  {
+    "key": "dig_sand_on_beach",
+    "name": "挖沙",
+    "category": "采集",
+    "description": "在海滩上挖掘沙子，收集普通的砂粒。",
+    "time_required": 10,
+    "required_items": [
+      {
+        "key": [
+          "wooden_bucket",
+          "clay_pot"
+        ],
+        "quantity": 1,
+        "use": 0.1
+      },
+      {
+        "key": "iron_shovel",
+        "quantity": 1,
+        "use": 0.1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "sand",
+        "quantity": [
+          5,
+          10
+        ],
+        "probability": 900
+      },
+      {
+        "key": "gold_sand",
+        "probability": 50,
+        "map": [
+          "beach"
+        ]
+      },
+      {
+        "key": "monazite",
+        "quantity": 1,
+        "probability": 20,
+        "required_era": "rare_earth",
+        "map": [
+          "beach"
+        ]
+      },
+      {
+        "key": "quartz",
+        "probability": 500,
+        "map": [
+          "beach"
+        ]
+      }
+    ],
+    "map": [
+      "beach"
+    ]
+  },
+  {
+    "name": "制作筛子",
+    "key": "craft_sieve",
+    "category": "制作",
+    "description": "用木框和纤维布制作一个简易筛子。",
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 2
+      },
+      {
+        "key": "fiber_cloth",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "sifting_technology"
+    ],
+    "rewards": [
+      {
+        "key": "sieve",
+        "quantity": 1
+      }
+    ],
+    "time_required": 20
+  },
+  {
+    "key": "blasting",
+    "name": "爆破",
+    "category": "采集",
+    "description": "使用炸药炸开山体，获得大量矿石。",
+    "time_required": 30,
+    "required_items": [
+      {
+        "key": [
+          "dynamite",
+          "high_explosive"
+        ],
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "stone",
+        "quantity": [
+          100,
+          200
+        ],
+        "probability": 1000,
+        "guaranteed": true
+      },
+      {
+        "key": "coal",
+        "quantity": 100,
+        "probability": 500,
+        "required_item": "dynamite",
+        "map": [
+          "mountain",
+          "cave",
+          "basin"
+        ]
+      },
+      {
+        "key": "limestone",
+        "quantity": [
+          100,
+          30
+        ],
+        "probability": 400,
+        "required_item": "dynamite",
+        "map": [
+          "mountain",
+          "basin"
+        ]
+      },
+      {
+        "key": "quartz",
+        "quantity": [
+          100,
+          300
+        ],
+        "probability": 300,
+        "required_item": "high_explosive",
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "green_vitriol",
+        "quantity": [
+          100,
+          300
+        ],
+        "probability": 300,
+        "required_era": "alchemy",
+        "required_item": "dynamite",
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "cassiterite",
+        "quantity": 100,
+        "probability": 300,
+        "required_era": "alchemy",
+        "required_item": "dynamite",
+        "map": [
+          "mountain"
+        ]
+      },
+      {
+        "key": "sphalerite",
+        "quantity": 100,
+        "probability": 300,
+        "required_era": "alchemy",
+        "required_item": "dynamite",
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "galena",
+        "quantity": 100,
+        "probability": 300,
+        "required_era": "alchemy",
+        "required_item": "dynamite",
+        "map": [
+          "cave"
+        ]
+      },
+      {
+        "key": "cobaltite",
+        "quantity": 100,
+        "probability": 200,
+        "required_era": "alchemy",
+        "required_item": "high_explosive",
+        "map": [
+          "cave",
+          "volcano"
+        ]
+      },
+      {
+        "key": "stibnite",
+        "quantity": 100,
+        "probability": 150,
+        "required_era": "alchemy",
+        "required_item": "dynamite",
+        "map": [
+          "cave",
+          "volcano"
+        ]
+      },
+      {
+        "key": "sulfur",
+        "quantity": 100,
+        "probability": 400,
+        "required_era": "alchemy",
+        "required_item": "dynamite",
+        "map": [
+          "volcano"
+        ]
+      },
+      {
+        "key": "realgar",
+        "quantity": 100,
+        "probability": 150,
+        "required_era": "alchemy",
+        "required_item": "dynamite",
+        "map": [
+          "volcano"
+        ]
+      },
+      {
+        "key": "orpiment",
+        "quantity": 100,
+        "probability": 150,
+        "required_era": "alchemy",
+        "required_item": "dynamite",
+        "map": [
+          "volcano"
+        ]
+      },
+      {
+        "key": "niter",
+        "quantity": [
+          100,
+          200
+        ],
+        "probability": 200,
+        "required_era": "alchemy",
+        "map": [
+          "basin",
+          "cave"
+        ]
+      },
+      {
+        "key": "rock_salt",
+        "quantity": [
+          100,
+          300
+        ],
+        "probability": 300,
+        "required_era": "alchemy",
+        "map": [
+          "basin",
+          "salt_lake"
+        ]
+      },
+      {
+        "key": "chromite",
+        "quantity": [
+          100,
+          200
+        ],
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": "high_explosive",
+        "map": [
+          "mountain",
+          "volcano"
+        ]
+      },
+      {
+        "key": "pyrolusite",
+        "quantity": 100,
+        "probability": 200,
+        "required_era": "modern_chem",
+        "required_item": "high_explosive",
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "barite",
+        "quantity": [
+          100,
+          120
+        ],
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": "high_explosive",
+        "map": [
+          "cave",
+          "mountain"
+        ]
+      },
+      {
+        "key": "pentlandite",
+        "quantity": 100,
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": "high_explosive",
+        "map": [
+          "cave",
+          "volcano"
+        ]
+      },
+      {
+        "key": "cinnabar",
+        "quantity": 100,
+        "probability": 200,
+        "required_era": "modern_chem",
+        "map": [
+          "volcano",
+          "mountain"
+        ]
+      },
+      {
+        "key": "borax",
+        "quantity": [
+          100,
+          300
+        ],
+        "probability": 200,
+        "required_era": "modern_chem",
+        "required_item": "dynamite",
+        "map": [
+          "volcano"
+        ]
+      },
+      {
+        "key": "rutile",
+        "quantity": 100,
+        "probability": 150,
+        "required_era": "modern_chem",
+        "required_item": "high_explosive",
+        "map": [
+          "volcano",
+          "mountain"
+        ]
+      },
+      {
+        "key": "phosphorite",
+        "quantity": [
+          100,
+          300
+        ],
+        "probability": 200,
+        "required_era": "modern_chem",
+        "required_item": "dynamite",
+        "map": [
+          "basin",
+          "island"
+        ]
+      },
+      {
+        "key": "sperrylite",
+        "quantity": 100,
+        "probability": 50,
+        "required_era": "modern_chem",
+        "required_item": "high_explosive",
+        "map": [
+          "meteor_crater",
+          "mountain"
+        ]
+      },
+      {
+        "key": "molybdenite",
+        "quantity": 100,
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": "high_explosive",
+        "map": [
+          "mountain",
+          "meteor_crater"
+        ]
+      },
+      {
+        "key": "scheelite",
+        "quantity": 100,
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": "high_explosive",
+        "map": [
+          "mountain",
+          "meteor_crater"
+        ]
+      },
+      {
+        "key": "struvite",
+        "quantity": [
+          100,
+          300
+        ],
+        "probability": 300,
+        "required_era": "modern_chem",
+        "required_item": "dynamite",
+        "map": [
+          "island",
+          "cave"
+        ]
+      },
+      {
+        "key": "bauxite",
+        "quantity": [
+          100,
+          300
+        ],
+        "probability": 400,
+        "required_era": "electrochem",
+        "required_item": "high_explosive",
+        "map": [
+          "cave",
+          "mountain"
+        ]
+      },
+      {
+        "key": "spodumene",
+        "quantity": 100,
+        "probability": 200,
+        "required_era": "electrochem",
+        "required_item": "high_explosive",
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "cryolite",
+        "quantity": 100,
+        "probability": 150,
+        "required_era": "electrochem",
+        "required_item": "high_explosive",
+        "map": [
+          "cave",
+          "volcano"
+        ]
+      },
+      {
+        "key": "magnesite",
+        "quantity": [
+          100,
+          300
+        ],
+        "probability": 400,
+        "required_era": "rare_earth",
+        "required_item": "high_explosive",
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "beryl",
+        "quantity": 100,
+        "probability": 100,
+        "required_era": "rare_earth",
+        "required_item": "high_explosive",
+        "map": [
+          "mountain",
+          "meteor_crater"
+        ]
+      },
+      {
+        "key": "chalcopyrite",
+        "quantity": 100,
+        "probability": 400,
+        "required_item": "dynamite",
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "vanadinite",
+        "quantity": [
+          10,
+          20
+        ],
+        "probability": 100,
+        "required_era": "modern_chem",
+        "required_item": "high_explosive",
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "xenotime",
+        "quantity": [
+          10,
+          20
+        ],
+        "probability": 80,
+        "required_era": "rare_earth",
+        "required_item": "high_explosive",
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "monazite",
+        "quantity": [
+          10,
+          30
+        ],
+        "probability": 80,
+        "required_era": "rare_earth",
+        "required_item": "high_explosive",
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      }
+    ],
+    "required_techs": [
+      "explosives"
+    ],
+    "map": [
+      "mountain",
+      "cave",
+      "volcano",
+      "basin",
+      "meteor_crater"
+    ]
+  },
+  {
+    "key": "craft_dynamite",
+    "name": "制作炸药",
+    "category": "制作",
+    "description": "将火药装入纸筒，插入导火索，制成可用于爆破的炸药卷。",
+    "time_required": 10,
+    "required_items": [
+      {
+        "key": "gunpowder",
+        "quantity": 1
+      },
+      {
+        "key": "pig_iron",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "dynamite",
+        "quantity": 3,
+        "probability": 1000,
+        "guaranteed": true
+      }
+    ],
+    "required_techs": [
+      "explosives"
+    ]
+  },
+  {
+    "key": "craft_battery",
+    "name": "制作电池",
+    "category": "制作",
+    "description": "将锌片和铜片插入稀硫酸中，用导线连接，制成简易电池。",
+    "time_required": 10,
+    "required_items": [
+      {
+        "key": "zinc",
+        "quantity": 1
+      },
+      {
+        "key": "copper",
+        "quantity": 1
+      },
+      {
+        "key": "dilute_sulfuric_acid",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "battery",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "electrochemistry"
+    ]
+  },
+  {
+    "key": "extract_salt",
+    "name": "采盐",
+    "category": "采集",
+    "description": "在盐湖边缘采集结晶的盐块。",
+    "time_required": 10,
+    "required_items": [
+      {
+        "key": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "quantity": 1,
+        "use": 0.1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "rock_salt",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 900
+      }
+    ],
+    "map": [
+      "salt_lake"
+    ]
+  },
+  {
+    "name": "打造锰镐",
+    "key": "craft_manganese_pickaxe",
+    "category": "制作",
+    "description": "用锰钢制作一把坚固的镐，适合高强度挖掘。",
+    "required_items": [
+      {
+        "key": "manganese_steel",
+        "quantity": 3
+      },
+      {
+        "key": "wood",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "manganese_alloy_smithing"
+    ],
+    "rewards": [
+      {
+        "key": "manganese_pickaxe",
+        "quantity": 1
+      }
+    ],
+    "time_required": 60
+  },
+  {
+    "key": "craft_titanium_pickaxe",
+    "name": "打造钛镐",
+    "category": "制作",
+    "description": "将钛加热锻造，打磨成坚固的镐头，安装在木柄上。",
+    "time_required": 90,
+    "required_items": [
+      {
+        "key": "titanium",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "titanium_pickaxe",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "titanium_alloy_smithing"
+    ]
+  },
+  {
+    "key": "craft_chromium_pickaxe",
+    "name": "打造铬镐",
+    "category": "制作",
+    "description": "将铬锭熔炼成型，锻造成坚固的镐头，再安装木柄，制成一把耐用的铬镐。",
+    "time_required": 100,
+    "required_items": [
+      {
+        "key": "stainless_steel",
+        "quantity": 2
+      },
+      {
+        "key": "steel",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "chromium_pickaxe",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "chrome_alloy_smithing"
+    ]
+  },
+  {
+    "key": "hunting",
+    "name": "狩猎",
+    "category": "采集",
+    "description": "在森林中使用工具捕猎动物，获取动物油脂。",
+    "time_required": 30,
+    "required_items": [
+      {
+        "key": "javelin",
+        "quantity": 1,
+        "use": 0.01
+      }
+    ],
+    "rewards": [
+      {
+        "key": "animal_fat",
+        "quantity": [
+          1,
+          3
+        ],
+        "probability": 800
+      }
+    ],
+    "map": [
+      "forest"
+    ]
+  },
+  {
+    "name": "制作高爆炸药",
+    "key": "craft_high_explosive",
+    "category": "制作",
+    "description": "将硝化甘油小心地混入硅藻土中，制成稳定的高爆炸药。",
+    "required_items": [
+      {
+        "key": "nitroglycerin",
+        "quantity": 1
+      },
+      {
+        "key": "diatomaceous_earth",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "high_explosive_tech"
+    ],
+    "rewards": [
+      {
+        "key": "high_explosive",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 30,
+    "formula": null
+  },
+  {
+    "name": "采集海藻",
+    "key": "harvest_seaweed",
+    "category": "采集",
+    "description": "在海边或岛屿的潮间带采集生长茂盛的海藻。",
+    "rewards": [
+      {
+        "key": "seaweed",
+        "quantity": [
+          2,
+          5
+        ],
+        "probability": 800
+      }
+    ],
+    "time_required": 10,
+    "map": [
+      "beach",
+      "island"
+    ],
+    "required_items": [
+      {
+        "key": "wooden_bucket",
+        "quantity": 1,
+        "use": 0.05
+      }
+    ]
+  },
+  {
+    "name": "制作锂离子电池",
+    "key": "craft_lithium_battery",
+    "category": "制作",
+    "description": "将锂片、铜箔、铝箔和电解质组装成锂离子电池。",
+    "required_items": [
+      {
+        "key": "lithium",
+        "quantity": 1
+      },
+      {
+        "key": "copper",
+        "quantity": 1
+      },
+      {
+        "key": "fiber_cloth",
+        "quantity": 1
+      },
+      {
+        "key": "dilute_sulfuric_acid",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "lithium_battery_tech"
+    ],
+    "rewards": [
+      {
+        "key": "lithium_ion_battery",
+        "quantity": 1
+      }
+    ],
+    "time_required": 120
+  },
+  {
+    "name": "吹制玻璃烧杯",
+    "key": "craft_beaker",
+    "category": "制作",
+    "description": "利用玻璃熔融状态吹制成烧杯形状。",
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "glassworking"
+    ],
+    "rewards": [
+      {
+        "key": "beaker",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 20,
+    "formula": null
+  },
+  {
+    "key": "craft_iron_tank",
+    "name": "制作铁罐",
+    "category": "制作",
+    "description": "通过焊接和锻造制作坚固的铁罐，用于储存某些特殊的腐蚀性的化学品。",
+    "time_required": 20,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 2
+      }
+    ],
+    "rewards": [
+      {
+        "key": "iron_tank",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ]
+  },
+  {
+    "name": "拉制玻璃试管",
+    "key": "craft_test_tube",
+    "category": "制作",
+    "description": "将熔融玻璃拉制成细管并封闭一端。",
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "glassworking"
+    ],
+    "rewards": [
+      {
+        "key": "test_tube",
+        "quantity": 3,
+        "probability": 1000
+      }
+    ],
+    "time_required": 15,
+    "formula": null
+  },
+  {
+    "name": "制作玻璃蒸馏瓶",
+    "key": "craft_distilling_flask",
+    "category": "制作",
+    "description": "吹制带有侧管的蒸馏瓶。",
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 3
+      }
+    ],
+    "required_techs": [
+      "glassworking"
+    ],
+    "rewards": [
+      {
+        "key": "distilling_flask",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 25,
+    "formula": null
+  },
+  {
+    "name": "拉制玻璃棒",
+    "key": "craft_glass_rod",
+    "category": "制作",
+    "description": "将熔融玻璃拉制成细棒。",
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "glassworking"
+    ],
+    "rewards": [
+      {
+        "key": "glass_rod",
+        "quantity": 2,
+        "probability": 1000
+      }
+    ],
+    "time_required": 10,
+    "formula": null
+  },
+  {
+    "name": "制作雷管",
+    "key": "craft_detonator",
+    "category": "制作",
+    "description": "用铜片包裹雷酸汞，制成雷管。",
+    "required_items": [
+      {
+        "key": "mercury_fulminate",
+        "quantity": 1
+      },
+      {
+        "key": "copper",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "detonation_tech"
+    ],
+    "rewards": [
+      {
+        "key": "detonator",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 10
+  },
+  {
+    "key": "directional_blasting",
+    "name": "定向爆破",
+    "category": "采集",
+    "description": "使用定向爆破技术精确开采特定矿脉，有几率获得稀有矿物。",
+    "time_required": 45,
+    "required_items": [
+      {
+        "key": "detonator",
+        "quantity": 2
+      },
+      {
+        "key": [
+          "iron_pickaxe",
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "quantity": 1,
+        "use": 0.1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "stone",
+        "quantity": [
+          400,
+          800
+        ],
+        "probability": 1000,
+        "guaranteed": true
+      },
+      {
+        "key": "bismuthite",
+        "quantity": 400,
+        "probability": 200,
+        "required_era": "alchemy",
+        "required_item": [
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave"
+        ]
+      },
+      {
+        "key": "cinnabar",
+        "quantity": 100,
+        "probability": 200,
+        "required_era": "alchemy",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          {
+            "key": "cave",
+            "probability": 400
+          },
+          {
+            "key": "volcano",
+            "probability": 300
+          }
+        ]
+      },
+      {
+        "key": "niter",
+        "quantity": 400,
+        "probability": 300,
+        "required_era": "alchemy",
+        "map": [
+          {
+            "key": "cave",
+            "probability": 500
+          }
+        ]
+      },
+      {
+        "key": "green_vitriol",
+        "quantity": 400,
+        "probability": 300,
+        "required_era": "alchemy",
+        "map": [
+          {
+            "key": "cave",
+            "probability": 400
+          }
+        ]
+      },
+      {
+        "key": "sperrylite",
+        "quantity": 400,
+        "probability": 80,
+        "required_era": "modern_chem",
+        "map": [
+          {
+            "key": "meteor_crater",
+            "probability": 150
+          },
+          {
+            "key": "mountain",
+            "probability": 50
+          }
+        ]
+      },
+      {
+        "key": "scheelite",
+        "quantity": 400,
+        "probability": 300,
+        "required_era": "modern_chem",
+        "map": [
+          {
+            "key": "mountain",
+            "probability": 400
+          }
+        ]
+      },
+      {
+        "key": "molybdenite",
+        "quantity": 400,
+        "probability": 300,
+        "required_era": "modern_chem",
+        "map": [
+          {
+            "key": "mountain",
+            "probability": 400
+          }
+        ]
+      },
+      {
+        "key": "chromite",
+        "quantity": [
+          400,
+          800
+        ],
+        "probability": 400,
+        "required_era": "modern_chem",
+        "required_item": [
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          {
+            "key": "mountain",
+            "probability": 500
+          }
+        ]
+      },
+      {
+        "key": "rutile",
+        "quantity": 400,
+        "probability": 300,
+        "required_era": "modern_chem",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          {
+            "key": "volcano",
+            "probability": 400
+          },
+          {
+            "key": "mountain",
+            "probability": 300
+          }
+        ]
+      },
+      {
+        "key": "phosphorite",
+        "quantity": [
+          400,
+          1200
+        ],
+        "probability": 400,
+        "required_era": "modern_chem",
+        "map": [
+          {
+            "key": "island",
+            "probability": 600
+          }
+        ]
+      },
+      {
+        "key": "beryl",
+        "quantity": 40,
+        "probability": 250,
+        "required_era": "rare_earth",
+        "required_item": [
+          "manganese_pickaxe",
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          {
+            "key": "mountain",
+            "probability": 300
+          },
+          {
+            "key": "meteor_crater",
+            "probability": 200
+          }
+        ]
+      },
+      {
+        "key": "tellurium_gold_ore",
+        "quantity": [
+          40,
+          80
+        ],
+        "probability": 200,
+        "required_era": "rare_earth",
+        "map": [
+          {
+            "key": "mountain",
+            "probability": 300
+          },
+          {
+            "key": "volcano",
+            "probability": 200
+          }
+        ]
+      },
+      {
+        "key": "zircon",
+        "quantity": 40,
+        "probability": 250,
+        "required_era": "rare_earth",
+        "map": [
+          {
+            "key": "mountain",
+            "probability": 300
+          },
+          {
+            "key": "volcano",
+            "probability": 200
+          }
+        ]
+      },
+      {
+        "key": "pollucite",
+        "quantity": [
+          40,
+          120
+        ],
+        "probability": 250,
+        "required_era": "rare_earth",
+        "required_item": [
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "mountain"
+        ]
+      },
+      {
+        "key": "pitchblende",
+        "quantity": [
+          18,
+          20
+        ],
+        "probability": 200,
+        "required_era": "rare_earth",
+        "required_item": "chromium_pickaxe",
+        "map": [
+          {
+            "key": "basin",
+            "probability": 299
+          },
+          "cave"
+        ]
+      },
+      {
+        "key": "barite",
+        "quantity": [
+          400,
+          1200
+        ],
+        "probability": 300,
+        "required_era": "modern_chem",
+        "required_item": [
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave"
+        ]
+      },
+      {
+        "key": "vanadinite",
+        "quantity": [
+          140,
+          180
+        ],
+        "probability": 200,
+        "required_era": "modern_chem",
+        "map": [
+          "mountain",
+          "cave"
+        ]
+      },
+      {
+        "key": "monazite",
+        "quantity": 100,
+        "probability": 200,
+        "required_era": "rare_earth",
+        "required_item": [
+          "titanium_pickaxe",
+          "chromium_pickaxe"
+        ],
+        "map": [
+          "cave",
+          "mountain"
+        ]
+      }
+    ],
+    "required_techs": [
+      "explosives"
+    ],
+    "map": [
+      "mountain",
+      "cave",
+      "volcano",
+      "island",
+      "basin",
+      "meteor_crater"
+    ]
+  },
+  {
+    "key": "fetch_seawater",
+    "name": "打海水",
+    "category": "采集",
+    "description": "用容器从海里舀取海水。",
+    "time_required": 5,
+    "required_items": [
+      {
+        "key": "wooden_bucket",
+        "quantity": 1,
+        "use": 0.01
+      }
+    ],
+    "rewards": [
+      {
+        "key": "brine",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "map": [
+      "beach",
+      "island"
+    ]
+  },
+  {
+    "key": "panning",
+    "name": "淘洗",
+    "category": "采集",
+    "description": "在河边或特定地带使用淘洗盘，利用比重差异分离出重矿物颗粒。",
+    "time_required": 15,
+    "required_items": [
+      {
+        "key": "panning_dish",
+        "quantity": 1,
+        "use": 0.02
+      }
+    ],
+    "rewards": [
+      {
+        "key": "gold_sand",
+        "quantity": [
+          1,
+          2
+        ],
+        "probability": 100,
+        "required_era": "modern_chem",
+        "map": [
+          "river_side"
+        ]
+      },
+      {
+        "key": "crude_platinum_sand",
+        "quantity": 1,
+        "probability": 50,
+        "required_era": "modern_chem",
+        "map": [
+          "river_side",
+          "mountain"
+        ]
+      },
+      {
+        "key": "sand",
+        "quantity": [
+          2,
+          5
+        ],
+        "probability": 800
+      }
+    ],
+    "required_techs": [
+      "sifting_technology"
+    ],
+    "map": [
+      "river_side",
+      "mountain"
+    ]
+  },
+  {
+    "key": "craft_panning_dish",
+    "name": "制作淘洗盘",
+    "category": "制作",
+    "description": "使用木材或硬质材料制作简易的淘洗盘，用于在水中分离重矿砂。",
+    "time_required": 10,
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 5
+      },
+      {
+        "key": "sieve",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "panning_dish",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "sifting_technology"
+    ]
+  },
+  {
+    "name": "制作高压釜",
+    "key": "craft_autoclave",
+    "category": "制作",
+    "description": "利用钢材锻造密封耐压的高压釜。",
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 3
+      }
+    ],
+    "required_techs": [
+      "high_pressure_tech"
+    ],
+    "rewards": [
+      {
+        "key": "autoclave",
+        "quantity": 1
+      }
+    ],
+    "time_required": 30
+  },
+  {
+    "key": "craft_platinum_rhodium_catalyst",
+    "name": "制作铂铑催化剂",
+    "category": "制作",
+    "description": "将铂金锭和铑熔融拉丝制成催化网。",
+    "time_required": 60,
+    "required_items": [
+      {
+        "key": "platinum_ingot",
+        "quantity": 1,
+        "use": 0.01
+      },
+      {
+        "key": "rhodium",
+        "quantity": 0.1,
+        "use": 0.01
+      }
+    ],
+    "rewards": [
+      {
+        "key": "platinum_rhodium_catalyst",
+        "quantity": 1
+      }
+    ]
+  },
+  {
+    "key": "collect_air",
+    "name": "收集空气",
+    "category": "采集",
+    "description": "使用集气瓶收集周围的空气。",
+    "time_required": 2,
+    "required_items": [
+      {
+        "key": "gas_bottle",
+        "quantity": 1,
+        "use": 0.05
+      }
+    ],
+    "rewards": [
+      {
+        "key": "air",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ]
+  },
+  {
+    "name": "制造反应釜",
+    "key": "craft_reaction_kettle",
+    "category": "制作",
+    "description": "使用锰钢制造坚固的外壳，并衬以高硼硅玻璃，用于大规模的化学反应。",
+    "required_items": [
+      {
+        "key": "manganese_steel",
+        "quantity": 4
+      },
+      {
+        "key": "glass",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "advanced_chemical_equipment"
+    ],
+    "rewards": [
+      {
+        "key": "reaction_kettle",
+        "quantity": 1
+      }
+    ],
+    "time_required": 120
+  },
+  {
+    "name": "烧制蒸发皿",
+    "key": "craft_evaporating_dish",
+    "category": "制作",
+    "description": "使用精制陶瓷或耐热玻璃烧制，用于液体的浓缩结晶。",
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "advanced_chemical_equipment"
+    ],
+    "rewards": [
+      {
+        "key": "evaporating_dish",
+        "quantity": 1
+      }
+    ],
+    "time_required": 60
+  },
+  {
+    "key": "craft_sealed_tube",
+    "name": "制作封管",
+    "category": "制作",
+    "description": "制作能够承受一定压力的厚壁石英反应管，用于高温高压密闭反应。",
+    "time_required": 45,
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "sealed_tube",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "advanced_chemical_equipment"
+    ]
+  },
+  {
+    "name": "制造石墨电解槽",
+    "key": "craft_graphite_electrolytic_cell",
+    "category": "制作",
+    "description": "以高纯度石墨作为电极，锰钢作为槽体，构建高性能的电解设备。",
+    "required_items": [
+      {
+        "key": "graphite",
+        "quantity": 4
+      },
+      {
+        "key": "manganese_steel",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "advanced_chemical_equipment"
+    ],
+    "rewards": [
+      {
+        "key": "graphite_electrolytic_cell",
+        "quantity": 1
+      }
+    ],
+    "time_required": 150
+  },
+  {
+    "key": "craft_reactor_vessel",
+    "name": "制造核反应堆",
+    "category": "制作",
+    "description": "使用高强度钢材和铅衬里制作可承受高压和辐射的反应堆容器。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 10
+      },
+      {
+        "key": "lead",
+        "quantity": 5
+      },
+      {
+        "key": "stainless_steel",
+        "quantity": 3
+      },
+      {
+        "key": "uranium_oxide",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "reactor_vessel",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "nuclear_reactor_tech"
+    ]
+  },
+  {
+    "key": "craft_control_rod",
+    "name": "制造控制棒",
+    "category": "制作",
+    "description": "将硼或镉加工成棒状，用于核反应堆中子吸收控制。",
+    "time_required": 60,
+    "required_items": [
+      {
+        "key": [
+          "boron",
+          "cadmium"
+        ],
+        "quantity": 2
+      },
+      {
+        "key": "steel",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "control_rod",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "nuclear_physics"
+    ]
+  },
+  {
+    "key": "craft_nuclear_fuel_rod",
+    "name": "制造核燃料棒",
+    "category": "制作",
+    "description": "将二氧化铀粉末压制、烧结成芯块，并封装在锆合金包壳中。",
+    "time_required": 90,
+    "required_items": [
+      {
+        "key": "uranium_oxide",
+        "quantity": 5
+      },
+      {
+        "key": "zirconium",
+        "quantity": 1
+      },
+      {
+        "key": "graphite",
+        "quantity": 2
+      }
+    ],
+    "rewards": [
+      {
+        "key": "nuclear_fuel_rod",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "nuclear_physics"
+    ]
+  },
+  {
+    "name": "制作铁铲",
+    "key": "craft_iron_shovel",
+    "category": "制作",
+    "description": "打造一把铁铲，用于挖掘泥土和沙子。",
+    "required_items": [
+      {
+        "key": "pig_iron",
+        "quantity": 1,
+        "use": 1
+      },
+      {
+        "key": "wood",
+        "quantity": 1,
+        "use": 1
+      }
+    ],
+    "required_techs": [
+      "iron_tool_crafting"
+    ],
+    "rewards": [
+      {
+        "key": "iron_shovel",
+        "quantity": 1
+      }
+    ],
+    "time_required": 10
+  },
+  {
+    "name": "制作铁斧",
+    "key": "craft_iron_axe",
+    "category": "制作",
+    "description": "打造一把铁斧，用于砍伐树木。",
+    "required_items": [
+      {
+        "key": "pig_iron",
+        "quantity": 2,
+        "use": 1
+      },
+      {
+        "key": "wood",
+        "quantity": 1,
+        "use": 1
+      }
+    ],
+    "required_techs": [
+      "iron_tool_crafting"
+    ],
+    "rewards": [
+      {
+        "key": "iron_axe",
+        "quantity": 1
+      }
+    ],
+    "time_required": 10
+  },
+  {
+    "name": "组装真空泵",
+    "key": "craft_vacuum_pump",
+    "category": "制作",
+    "description": "依靠精密机械结构组装真空泵。",
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 2,
+        "use": 1
+      },
+      {
+        "key": "rubber",
+        "quantity": 1,
+        "use": 1
+      },
+      {
+        "key": "copper",
+        "quantity": 1,
+        "use": 1
+      }
+    ],
+    "required_techs": [
+      "precision_machinery"
+    ],
+    "rewards": [
+      {
+        "key": "vacuum_pump",
+        "quantity": 1
+      }
+    ],
+    "time_required": 30
+  },
+  {
+    "key": "craft_steel_cylinder",
+    "name": "制作钢制气瓶",
+    "category": "制作",
+    "description": "制造用于储存高压气体的钢瓶。",
+    "time_required": 20,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 2,
+        "use": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "steel_cylinder",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "precision_machinery"
+    ]
+  },
+  {
+    "key": "craft_lab_glassware",
+    "name": "制作分馏柱",
+    "category": "制作",
+    "description": "吹制更加精细的实验室玻璃器皿。",
+    "time_required": 20,
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 2,
+        "use": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "fractionating_column",
+        "quantity": 1,
+        "probability": 500
+      }
+    ],
+    "required_techs": [
+      "advanced_chemical_equipment"
+    ]
+  },
+  {
+    "key": "craft_cyclotron",
+    "name": "制造回旋加速器",
+    "category": "制作",
+    "description": "整合大型电磁铁、真空室和高频电源，搭建粒子加速装置。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 10
+      },
+      {
+        "key": "copper",
+        "quantity": 5
+      },
+      {
+        "key": "superconducting_magnet",
+        "quantity": 1
+      },
+      {
+        "key": "geiger_counter",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "cyclotron",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "particle_accelerator_tech",
+      "precision_machinery"
+    ]
+  },
+  {
+    "key": "craft_superconducting_magnet",
+    "name": "制作超导磁体",
+    "category": "制作",
+    "description": "利用铌、钛、铜等材料，通过精密绕制和低温封装工艺，制造强磁场超导磁体。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "niobium",
+        "quantity": 5
+      },
+      {
+        "key": "titanium",
+        "quantity": 3
+      },
+      {
+        "key": "copper",
+        "quantity": 10
+      },
+      {
+        "key": "helium",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "superconducting_magnet",
+        "quantity": 1,
+        "probability": 200
+      }
+    ],
+    "required_techs": [
+      "particle_accelerator_tech"
+    ]
+  },
+  {
+    "key": "craft_geiger_counter",
+    "name": "组装盖革计数器",
+    "category": "制作",
+    "description": "将金属外壳、玻璃管、电池和氩气组装成能够探测电离辐射的仪器。",
+    "time_required": 5,
+    "required_items": [
+      {
+        "key": "copper",
+        "quantity": 2
+      },
+      {
+        "key": "steel",
+        "quantity": 1
+      },
+      {
+        "key": "glass",
+        "quantity": 1
+      },
+      {
+        "key": "lithium_ion_battery",
+        "quantity": 1
+      },
+      {
+        "key": "argon",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "geiger_counter",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "precision_machinery"
+    ]
+  },
+  {
+    "name": "制作镍镉电池",
+    "key": "craft_nickel_cadmium_battery",
+    "category": "制作",
+    "description": "将氢氧化镍、镉粉和氢氧化钾电解液组装成镍镉电池。",
+    "required_items": [
+      {
+        "key": "nickel_hydroxide",
+        "quantity": 2,
+        "use": 0
+      },
+      {
+        "key": "cadmium",
+        "quantity": 1,
+        "use": 0
+      },
+      {
+        "key": "potassium_hydroxide",
+        "quantity": 1,
+        "use": 0
+      }
+    ],
+    "required_techs": [
+      "nickel_cadmium_battery_tech"
+    ],
+    "rewards": [
+      {
+        "key": "nickel_cadmium_battery",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "time_required": 30
+  },
+  {
+    "key": "nickel_chrome_battery_charging",
+    "name": "镍镉电池充电",
+    "category": "制作",
+    "description": "可对镍镉充电电池进行充电，恢复满电",
+    "time_required": 100,
+    "required_items": [
+      {
+        "key": "nickel_cadmium_battery",
+        "quantity": 1
+      },
+      {
+        "key": "battery",
+        "quantity": 5,
+        "use": 1.02
+      }
+    ],
+    "rewards": [
+      {
+        "key": "nickel_cadmium_battery",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ]
+  },
+  {
+    "key": "charging_lithium_battery",
+    "name": "锂电池充电",
+    "category": "制作",
+    "description": "给锂离子电池充电，使其恢复满电",
+    "time_required": 10,
+    "required_items": [
+      {
+        "key": "lithium_ion_battery",
+        "quantity": 1
+      },
+      {
+        "key": "battery",
+        "quantity": 7,
+        "use": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "lithium_ion_battery",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ]
+  },
+  {
+    "key": "build_pantheon",
+    "name": "建造罗马万神殿",
+    "category": "奇观",
+    "description": "按照古罗马的工艺，使用加工石块和罗马混凝土建造一座带有巨大穹顶的神殿。",
+    "time_required": 1200,
+    "required_items": [
+      {
+        "key": "cut_stone",
+        "quantity": 100
+      },
+      {
+        "key": "roman_concrete",
+        "quantity": 200
+      },
+      {
+        "key": "wood",
+        "quantity": 50
+      }
+    ],
+    "rewards": [
+      {
+        "key": "pantheon",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "stone_masonry",
+      "roman_architecture"
+    ]
+  },
+  {
+    "key": "roman_concrete_production",
+    "name": "制作混凝土",
+    "category": "制作",
+    "description": "将水泥、石灰石、砂子和水按比例混合搅拌，形成可塑的混凝土。",
+    "time_required": 10,
+    "required_items": [
+      {
+        "key": "cement",
+        "quantity": 2
+      },
+      {
+        "key": "limestone",
+        "quantity": 2
+      },
+      {
+        "key": "water",
+        "quantity": 1
+      },
+      {
+        "key": "sand",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "roman_concrete",
+        "quantity": 4,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "roman_architecture"
+    ]
+  },
+  {
+    "key": "build_eiffel_tower",
+    "name": "建造埃菲尔铁塔",
+    "category": "奇观",
+    "description": "使用大量钢梁和铆钉，按照埃菲尔的设计建造一座举世闻名的铁塔。",
+    "time_required": 2400,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 7300
+      },
+      {
+        "key": "rivet",
+        "quantity": 2500
+      }
+    ],
+    "rewards": [
+      {
+        "key": "eiffel_tower",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "steel_construction"
+    ]
+  },
+  {
+    "key": "make_rivet",
+    "name": "制作铆钉",
+    "category": "制作",
+    "description": "将钢条加热后放入陶模中锻造成铆钉形状。",
+    "time_required": 10,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 1
+      },
+      {
+        "key": "pottery_mold",
+        "quantity": 1,
+        "use": 0.01
+      }
+    ],
+    "rewards": [
+      {
+        "key": "rivet",
+        "quantity": 10,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "iron_tool_crafting"
+    ]
+  },
+  {
+    "key": "gas_liquefaction_process",
+    "name": "气体液化",
+    "category": "制作",
+    "description": "使用深冷设备将氢气、氧气和氦气液化储存。",
+    "time_required": 60,
+    "required_items": [
+      {
+        "key": [
+          "hydrogen",
+          "oxygen",
+          "helium"
+        ],
+        "quantity": 10
+      },
+      {
+        "key": "steel_cylinder",
+        "quantity": 1,
+        "use": 0.1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "liquid_hydrogen",
+        "quantity": 5,
+        "probability": 1000,
+        "required_item": "hydrogen"
+      },
+      {
+        "key": "liquid_oxygen",
+        "quantity": 5,
+        "probability": 1000,
+        "required_item": "oxygen"
+      },
+      {
+        "key": "liquid_helium",
+        "quantity": 5,
+        "probability": 1000,
+        "required_item": "helium"
+      }
+    ],
+    "required_techs": [
+      "gas_liquefaction"
+    ]
+  },
+  {
+    "key": "magnesium_aluminum_alloy_production",
+    "name": "制造镁铝合金",
+    "category": "制作",
+    "description": "在高温熔炉中将镁和铝按照特定比例熔合，并加入适量微量元素，制造航天级轻质合金。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "magnesium",
+        "quantity": 5
+      },
+      {
+        "key": "aluminum",
+        "quantity": 10
+      }
+    ],
+    "rewards": [
+      {
+        "key": "magnesium_aluminum_alloy",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "magnesium_aluminum_alloying"
+    ]
+  },
+  {
+    "key": "solar_cell_production",
+    "name": "制造太阳能电池",
+    "category": "制作",
+    "description": "利用高纯度硅片和玻璃，通过精密的半导体工艺制造高效能光伏电池。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "silicon",
+        "quantity": 2
+      },
+      {
+        "key": "glass",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "solar_cell",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "solar_cell_manufacturing"
+    ]
+  },
+  {
+    "key": "launch_vehicle_manufacturing",
+    "name": "运载火箭制造",
+    "category": "制作",
+    "description": "组装高强度的镁铝合金箭体、推进系统和精密电子控制设备。",
+    "time_required": 600,
+    "required_items": [
+      {
+        "key": "magnesium_aluminum_alloy",
+        "quantity": 100
+      },
+      {
+        "key": "liquid_hydrogen",
+        "quantity": 50
+      },
+      {
+        "key": "liquid_oxygen",
+        "quantity": 50
+      }
+    ],
+    "rewards": [
+      {
+        "key": "launch_vehicle",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "jet_propulsion_tech"
+    ]
+  },
+  {
+    "key": "space_station_manufacturing",
+    "name": "制造空间站",
+    "category": "制作",
+    "description": "制造空间站的核心舱段、生活舱以及用于能量供应的巨大太阳能帆板。",
+    "time_required": 1200,
+    "required_items": [
+      {
+        "key": "magnesium_aluminum_alloy",
+        "quantity": 200
+      },
+      {
+        "key": "solar_cell",
+        "quantity": 50
+      },
+      {
+        "key": "steel",
+        "quantity": 100
+      }
+    ],
+    "rewards": [
+      {
+        "key": "space_station",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "solar_cell_manufacturing"
+    ]
+  },
+  {
+    "key": "launch_space_station",
+    "name": "发射空间站",
+    "category": "奇观",
+    "description": "利用运载火箭将巨大的空间站送入地球近地轨道，开启人类迈向深空的纪元。",
+    "time_required": 3600,
+    "required_items": [
+      {
+        "key": "launch_vehicle",
+        "quantity": 1
+      },
+      {
+        "key": "space_station",
+        "quantity": 1
+      }
+    ],
+    "rewards": [
+      {
+        "key": "launched_space_station",
+        "quantity": 1,
+        "probability": 1000
+      }
+    ],
+    "required_techs": [
+      "jet_propulsion_tech"
+    ]
+  }
+]

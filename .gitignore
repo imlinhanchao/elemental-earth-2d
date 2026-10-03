@@ -1,0 +1,3 @@
+# Godot 4 忽略配置
+.godot/
+*.translation

@@ -1,0 +1,764 @@
+[
+  {
+    "name": "石器制作",
+    "key": "stone_tool_crafting",
+    "description": "掌握将石块打磨成锋利工具的技术。",
+    "required_items": [
+      {
+        "key": "stone",
+        "quantity": 20
+      },
+      {
+        "key": "wood",
+        "quantity": 10
+      }
+    ],
+    "time_required": 10
+  },
+  {
+    "name": "石材加工技术",
+    "key": "stone_masonry",
+    "description": "掌握了切割和打磨大型石料的技术，能够制作规整的建筑石材，为大型工程奠定基础。",
+    "required_items": [
+      {
+        "key": "stone",
+        "quantity": 50
+      },
+      {
+        "key": "wood",
+        "quantity": 20
+      }
+    ],
+    "required_techs": [
+      "stone_tool_crafting"
+    ],
+    "time_required": 120
+  },
+  {
+    "key": "rammed_earth_technology",
+    "name": "夯土版筑",
+    "description": "掌握了用木板夹土夯实的板筑技术，并结合砖石砌筑工艺，能够建造大型防御工事。",
+    "time_required": 300,
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 5
+      },
+      {
+        "key": "cut_stone",
+        "quantity": 5
+      },
+      {
+        "key": "wood",
+        "quantity": 10
+      }
+    ],
+    "required_techs": [
+      "stone_masonry"
+    ]
+  },
+  {
+    "name": "木材加工",
+    "key": "wood_processing",
+    "description": "学会了如何将原木分解加工为更规整的材料。",
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 15
+      }
+    ],
+    "time_required": 15
+  },
+  {
+    "name": "火种制作",
+    "key": "fire_starting",
+    "description": "领悟了摩擦生火的原理，能够制作火种随时随地点燃火焰。",
+    "required_items": [
+      {
+        "key": "flint",
+        "quantity": 5
+      },
+      {
+        "key": "wood",
+        "quantity": 10
+      }
+    ],
+    "time_required": 8
+  },
+  {
+    "name": "陶器制作",
+    "key": "pottery",
+    "description": "掌握了用粘土塑形并烧制成器的技艺。",
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 20
+      }
+    ],
+    "time_required": 12,
+    "milestone": "research_pottery"
+  },
+  {
+    "key": "mold_making",
+    "name": "模具制造",
+    "description": "掌握了利用细致粘土制作阴阳模的翻砂铸造技术，能够制造复杂的器物。",
+    "time_required": 60,
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 10
+      },
+      {
+        "key": "bronze",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "pottery",
+      "bronze_tool_crafting"
+    ]
+  },
+  {
+    "name": "树皮揉制",
+    "key": "bark_processing",
+    "description": "发现了通过揉制和浸泡使树皮纤维变得柔韧的工艺。",
+    "required_items": [
+      {
+        "key": "bark",
+        "quantity": 20
+      },
+      {
+        "key": "alkaline_solution",
+        "quantity": 10
+      }
+    ],
+    "time_required": 20
+  },
+  {
+    "name": "耐火材料",
+    "key": "refractory_materials",
+    "description": "发现了能够承受高温的矿物配方，可用于建造耐热结构。",
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 10
+      }
+    ],
+    "required_techs": [
+      "pottery"
+    ],
+    "time_required": 120
+  },
+  {
+    "name": "高温熔炉",
+    "key": "high_temp_furnace",
+    "description": "设计出了能够达到更高温度的熔炉结构。",
+    "required_items": [
+      {
+        "key": "kiln",
+        "quantity": 1
+      },
+      {
+        "key": "bellows",
+        "quantity": 4
+      },
+      {
+        "key": "fire_brick",
+        "quantity": 20
+      }
+    ],
+    "required_techs": [
+      "refractory_materials"
+    ],
+    "time_required": 180
+  },
+  {
+    "key": "iron_tool_crafting",
+    "name": "铁器制作",
+    "description": "掌握了将铁锻造成形的方法。",
+    "time_required": 200,
+    "required_items": [
+      {
+        "key": "pig_iron",
+        "quantity": 5
+      },
+      {
+        "key": "wood",
+        "quantity": 10
+      }
+    ],
+    "required_techs": [
+      "refractory_materials",
+      "bronze_tool_crafting"
+    ]
+  },
+  {
+    "key": "gas_collection",
+    "name": "气体收集",
+    "description": "掌握了制作气密容器的技术，能够捕获反应中释放的气体。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 5
+      },
+      {
+        "key": "wood",
+        "quantity": 3
+      }
+    ],
+    "required_techs": [
+      "pottery",
+      "iron_tool_crafting"
+    ],
+    "milestone": "research_gas_collection"
+  },
+  {
+    "key": "bronze_tool_crafting",
+    "name": "青铜器制作",
+    "description": "掌握了将铜和锡熔炼成青铜，并利用青铜铸造更坚固工具的技术。",
+    "time_required": 60,
+    "required_items": [
+      {
+        "key": "bronze",
+        "quantity": 4
+      }
+    ],
+    "required_techs": [
+      "pottery"
+    ]
+  },
+  {
+    "name": "黄铜锻造",
+    "key": "brass_tool_crafting",
+    "description": "掌握了黄铜的冶炼与锻造技术，可制作黄铜工具和器具。",
+    "required_items": [
+      {
+        "key": "brass",
+        "quantity": 5
+      }
+    ],
+    "required_techs": [
+      "bronze_tool_crafting",
+      "high_temp_furnace"
+    ],
+    "time_required": 120
+  },
+  {
+    "key": "sifting_technology",
+    "name": "筛选技术",
+    "description": "掌握了用筛网分离不同粒度颗粒的技术。",
+    "time_required": 60,
+    "required_items": [
+      {
+        "key": "fiber_cloth",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 4
+      }
+    ],
+    "required_techs": [
+      "wood_processing",
+      "bark_processing"
+    ]
+  },
+  {
+    "key": "explosives",
+    "name": "爆破技术",
+    "description": "掌握了硝石和硫磺的混合配比，能够制造出具有强大破坏力的炸药。",
+    "time_required": 60,
+    "required_items": [
+      {
+        "key": "gunpowder",
+        "quantity": 10
+      },
+      {
+        "key": "wood",
+        "quantity": 5
+      }
+    ],
+    "required_techs": [
+      "high_temp_furnace"
+    ]
+  },
+  {
+    "key": "electrochemistry",
+    "name": "电化学",
+    "description": "掌握了利用化学反应产生电流的方法，以及电流对物质的作用。",
+    "time_required": 60,
+    "required_items": [
+      {
+        "key": "zinc",
+        "quantity": 2
+      },
+      {
+        "key": "copper",
+        "quantity": 2
+      },
+      {
+        "key": "dilute_sulfuric_acid",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "glassworking"
+    ]
+  },
+  {
+    "key": "manganese_alloy_smithing",
+    "name": "锰合金锻造",
+    "description": "掌握了将锰融入钢中形成高强度合金的技术。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "manganese_steel",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "high_temp_furnace",
+      "iron_tool_crafting"
+    ]
+  },
+  {
+    "key": "titanium_alloy_smithing",
+    "name": "钛合金锻造",
+    "description": "掌握了高温下锻造钛金属的技术，能够将钛加工成耐用的工具。",
+    "time_required": 180,
+    "required_items": [
+      {
+        "key": "titanium",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "high_temp_furnace",
+      "manganese_alloy_smithing"
+    ]
+  },
+  {
+    "key": "chrome_alloy_smithing",
+    "name": "铬合金锻造",
+    "description": "掌握了将铬与铁熔炼成坚韧合金的技术，能够制作铬制工具。",
+    "time_required": 60,
+    "required_items": [
+      {
+        "key": "stainless_steel",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "high_temp_furnace",
+      "titanium_alloy_smithing"
+    ]
+  },
+  {
+    "key": "high_explosive_tech",
+    "name": "高能炸药",
+    "description": "掌握了将硝化甘油与硅藻土结合制成稳定高爆炸药的技术。",
+    "time_required": 60,
+    "required_items": [
+      {
+        "key": "diatomaceous_earth",
+        "quantity": 2
+      },
+      {
+        "key": "nitroglycerin",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "explosives"
+    ]
+  },
+  {
+    "key": "lithium_battery_tech",
+    "name": "锂离子电池技术",
+    "description": "掌握了锂离子电池的组装和电解质配方技术。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "lithium",
+        "quantity": 2
+      },
+      {
+        "key": "copper",
+        "quantity": 3
+      }
+    ],
+    "required_techs": [
+      "electrochemistry",
+      "high_explosive_tech"
+    ]
+  },
+  {
+    "key": "glassworking",
+    "name": "玻璃加工技术",
+    "description": "掌握了高温下对玻璃进行吹制、拉制和压制的技术，能够制作各种玻璃器材。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 5
+      }
+    ],
+    "required_techs": [
+      "high_temp_furnace",
+      "gas_collection"
+    ]
+  },
+  {
+    "key": "production_tech",
+    "name": "生产线建造科技",
+    "description": "通过对机械传动和工艺流程的深入研究，你构思出了可以自动化连续作业的生产线系统。",
+    "time_required": 180,
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 10
+      },
+      {
+        "key": "copper",
+        "quantity": 20
+      }
+    ],
+    "required_techs": [
+      "glassworking"
+    ]
+  },
+  {
+    "key": "detonation_tech",
+    "name": "起爆技术",
+    "description": "掌握了通过起爆药安全引爆高能炸药的技术。",
+    "time_required": 30,
+    "required_items": [
+      {
+        "key": "gunpowder",
+        "quantity": 5
+      },
+      {
+        "key": "high_explosive",
+        "quantity": 5
+      }
+    ],
+    "required_techs": [
+      "explosives"
+    ]
+  },
+  {
+    "key": "crystallization_tech",
+    "name": "结晶工艺",
+    "description": "掌握了利用物质溶解度差异进行分离提纯的技术，能够通过反复结晶获得高纯度物质。",
+    "time_required": 60,
+    "milestone": "crystallization_tech",
+    "required_items": [
+      {
+        "key": "water",
+        "quantity": 10
+      },
+      {
+        "key": "beaker",
+        "quantity": 1
+      },
+      {
+        "key": "test_tube",
+        "quantity": 1
+      },
+      {
+        "key": "glass_rod",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "glassworking"
+    ]
+  },
+  {
+    "key": "high_pressure_tech",
+    "name": "高压技术",
+    "description": "掌握了高压容器的密封与耐压原理，能够利用高压促进化学反应。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "manganese_steel",
+        "quantity": 3
+      }
+    ],
+    "required_techs": [
+      "gas_collection",
+      "manganese_alloy_smithing"
+    ]
+  },
+  {
+    "key": "advanced_chemical_equipment",
+    "name": "高级化学器材",
+    "description": "掌握了制造耐腐蚀反应釜、精密蒸发皿以及耐高温石墨电极的技术，为工业化化学生产奠定基础。",
+    "time_required": 180,
+    "milestone": "unlock_advanced_chem_tools",
+    "required_items": [
+      {
+        "key": "manganese_steel",
+        "quantity": 5
+      },
+      {
+        "key": "glass",
+        "quantity": 10
+      },
+      {
+        "key": "graphite",
+        "quantity": 5
+      }
+    ],
+    "required_techs": [
+      "glassworking",
+      "high_pressure_tech"
+    ]
+  },
+  {
+    "name": "核物理",
+    "key": "nuclear_physics",
+    "description": "掌握了原子核裂变、链式反应的基本原理。",
+    "required_items": [
+      {
+        "key": "uranium",
+        "quantity": 3
+      },
+      {
+        "key": "graphite",
+        "quantity": 5
+      }
+    ],
+    "required_techs": [
+      "advanced_chemical_equipment"
+    ],
+    "time_required": 300
+  },
+  {
+    "key": "nuclear_reactor_tech",
+    "name": "核反应堆技术",
+    "description": "掌握了建造和控制核裂变反应堆的技术。",
+    "time_required": 600,
+    "required_items": [
+      {
+        "key": "nuclear_fuel_rod",
+        "quantity": 2
+      },
+      {
+        "key": "control_rod",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "nuclear_physics"
+    ]
+  },
+  {
+    "key": "precision_machinery",
+    "name": "精密机械",
+    "description": "掌握了制造精密零件和机械结构的技术，是现代工业的基石。",
+    "time_required": 30,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 5
+      },
+      {
+        "key": "copper",
+        "quantity": 5
+      }
+    ],
+    "required_techs": [
+      "advanced_chemical_equipment"
+    ]
+  },
+  {
+    "key": "particle_accelerator_tech",
+    "name": "粒子加速器技术",
+    "description": "掌握高能物理所需的电磁加速与真空探测技术。",
+    "time_required": 30,
+    "milestone": "atomic_age",
+    "required_items": [
+      {
+        "key": "helium",
+        "quantity": 1
+      },
+      {
+        "key": "copper",
+        "quantity": 100
+      },
+      {
+        "key": "niobium",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "nuclear_physics",
+      "precision_machinery"
+    ]
+  },
+  {
+    "key": "nickel_cadmium_battery_tech",
+    "name": "镍镉电池技术",
+    "description": "掌握了可充电镍镉电池的原理与制造工艺，利用氢氧化镍和镉在碱性电解液中的可逆反应。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "battery",
+        "quantity": 1
+      },
+      {
+        "key": "nickel_hydroxide",
+        "quantity": 1
+      },
+      {
+        "key": "cadmium",
+        "quantity": 1
+      },
+      {
+        "key": "potassium_hydroxide",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "electrochemistry"
+    ]
+  },
+  {
+    "key": "roman_architecture",
+    "name": "混凝土制造技术",
+    "description": "掌握了混凝土配制的技术，能够建造大型建筑。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "stone",
+        "quantity": 10
+      },
+      {
+        "key": "cement",
+        "quantity": 10
+      }
+    ],
+    "required_techs": [
+      "stone_masonry"
+    ]
+  },
+  {
+    "key": "steel_construction",
+    "name": "钢结构建筑技术",
+    "description": "掌握了利用钢梁和铆接技术建造大型结构的能力。",
+    "time_required": 120,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 4
+      },
+      {
+        "key": "rivet",
+        "quantity": 10
+      }
+    ],
+    "required_techs": [
+      "high_temp_furnace",
+      "iron_tool_crafting"
+    ]
+  },
+  {
+    "name": "榫卯构造技艺",
+    "key": "tenon_mortise_tech",
+    "description": "掌握了利用榫卯结构进行木构建筑连接的技术，无需金属即可实现稳固的承重与抗扭。",
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 50
+      },
+      {
+        "key": "chisel",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "wood_processing",
+      "iron_tool_crafting"
+    ],
+    "time_required": 120
+  },
+  {
+    "key": "magnesium_aluminum_alloying",
+    "name": "镁铝合金锻造",
+    "description": "通过精确控制镁与铝的比例并添加微量元素，冶炼出轻质、高强度的合金。",
+    "time_required": 180,
+    "required_items": [
+      {
+        "key": "magnesium",
+        "quantity": 10
+      },
+      {
+        "key": "aluminum",
+        "quantity": 20
+      }
+    ],
+    "required_techs": [
+      "precision_machinery"
+    ]
+  },
+  {
+    "key": "gas_liquefaction",
+    "name": "压缩液化气体",
+    "description": "利用高压和深冷技术，将常温下的气体转化为高能量密度的低温液体。",
+    "time_required": 240,
+    "required_items": [
+      {
+        "key": "liquid_nitrogen",
+        "quantity": 5
+      },
+      {
+        "key": "steel",
+        "quantity": 10
+      }
+    ],
+    "required_techs": [
+      "precision_machinery"
+    ]
+  },
+  {
+    "key": "jet_propulsion_tech",
+    "name": "喷气推进技术",
+    "description": "基于动量守恒原理，深入研究燃气膨胀与喷嘴设计，实现强大的推力输出。",
+    "time_required": 300,
+    "required_items": [
+      {
+        "key": "magnesium_aluminum_alloy",
+        "quantity": 20
+      },
+      {
+        "key": "steel",
+        "quantity": 50
+      }
+    ],
+    "required_techs": [
+      "precision_machinery",
+      "gas_liquefaction"
+    ]
+  },
+  {
+    "key": "solar_cell_manufacturing",
+    "name": "太阳能电池制造",
+    "description": "利用光伏效应，制备高纯度硅片并构建P-N结，将光能转化为电能。",
+    "time_required": 240,
+    "required_items": [
+      {
+        "key": "silicon",
+        "quantity": 20
+      },
+      {
+        "key": "glass",
+        "quantity": 10
+      }
+    ],
+    "required_techs": [
+      "precision_machinery"
+    ]
+  }
+]
