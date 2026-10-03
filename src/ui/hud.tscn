@@ -1,0 +1,123 @@
+[gd_scene load_steps=2 format=3 uid="uid://ci8v43187140w"]
+
+[ext_resource type="Script" path="res://src/ui/hud.gd" id="1_hud"]
+
+[node name="HUD" type="CanvasLayer"]
+script = ExtResource("1_hud")
+
+[node name="Margin" type="MarginContainer" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="TopBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+size_flags_vertical = 0
+alignment = 1
+
+[node name="NoticeLabel" type="Label" parent="Margin/TopBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "【WASD】移动角色，点击【矿脉】采集矿石，靠近【陶土熔炉】进行还原冶炼！"
+horizontal_alignment = 1
+
+[node name="HBox" type="HBoxContainer" parent="Margin"]
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+
+[node name="LeftBox" type="VBoxContainer" parent="Margin/HBox"]
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="InvPanel" type="PanelContainer" parent="Margin/HBox/LeftBox"]
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="Margin/HBox/LeftBox/InvPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="Margin/HBox/LeftBox/InvPanel/Margin"]
+layout_mode = 2
+
+[node name="InvLabel" type="RichTextLabel" parent="Margin/HBox/LeftBox/InvPanel/Margin/VBox"]
+layout_mode = 2
+fit_content = true
+text = "🎒 玩家行囊:"
+
+[node name="ElementsPanel" type="PanelContainer" parent="Margin/HBox/LeftBox"]
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="Margin/HBox/LeftBox/ElementsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="Margin/HBox/LeftBox/ElementsPanel/Margin"]
+layout_mode = 2
+
+[node name="ElementsLabel" type="RichTextLabel" parent="Margin/HBox/LeftBox/ElementsPanel/Margin/VBox"]
+layout_mode = 2
+fit_content = true
+text = "🌟 已点亮化学元素 (0/118):"
+
+[node name="CenterSpacer" type="Control" parent="Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="RightBox" type="VBoxContainer" parent="Margin/HBox"]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+alignment = 2
+
+[node name="FurnacePanel" type="PanelContainer" parent="Margin/HBox/RightBox"]
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="Margin/HBox/RightBox/FurnacePanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="VBox" type="VBoxContainer" parent="Margin/HBox/RightBox/FurnacePanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="Label" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "🔥 陶土熔炉控制面板"
+
+[node name="FurnaceInfo" type="Label" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
+layout_mode = 2
+text = "炉膛状态..."
+
+[node name="BtnAddFuel" type="Button" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
+layout_mode = 2
+text = "+ 加木炭生火升温"
+
+[node name="BtnAddMalachite" type="Button" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
+layout_mode = 2
+text = "+ 投入孔雀石 (炼铜)"
+
+[node name="BtnAddIronOre" type="Button" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
+layout_mode = 2
+text = "+ 投入铁矿石 (炼铁)"
+
+[connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddFuel" to="." method="_on_btn_add_fuel_pressed"]
+[connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddMalachite" to="." method="_on_btn_add_malachite_pressed"]
+[connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddIronOre" to="." method="_on_btn_add_iron_ore_pressed"]

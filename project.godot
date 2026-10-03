@@ -9,9 +9,13 @@ config_version=5
 config/name="Elemental Earth 2D"
 config/description="A 2D Chemical Simulation & Industrial Sandbox Game"
 config/version="0.1.0"
-run/main_scene="res://src/scenes/main.tscn"
+run/main_scene="res://src/scenes/world.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://icon.svg"
+
+[autoload]
+
+GameState="*res://src/core/game_state.gd"
 
 [display]
 

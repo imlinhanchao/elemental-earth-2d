@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=3 uid="uid://bd33w24j6l80w"]
+
+[ext_resource type="Script" path="res://src/scenes/furnace.gd" id="1_furnace"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_f8u1d"]
+radius = 48.0
+
+[node name="Furnace" type="Area2D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_furnace")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_f8u1d")
+
+[node name="StatusLabel" type="Label" parent="."]
+offset_left = -60.0
+offset_top = 40.0
+offset_right = 60.0
+offset_bottom = 90.0
+theme_override_font_sizes/font_size = 12
+text = "陶土熔炉"
+horizontal_alignment = 1

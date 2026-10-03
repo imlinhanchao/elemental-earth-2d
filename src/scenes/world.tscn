@@ -1,0 +1,50 @@
+[gd_scene load_steps=6 format=3 uid="uid://bvyfx3k44b2m2"]
+
+[ext_resource type="Script" path="res://src/scenes/world.gd" id="1_world"]
+[ext_resource type="PackedScene" uid="uid://ci8x72421390p" path="res://src/scenes/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://bd33w24j6l80w" path="res://src/scenes/furnace.tscn" id="3_furnace"]
+[ext_resource type="PackedScene" uid="uid://ci8w7g06x26h5" path="res://src/scenes/resource_node.tscn" id="4_node"]
+[ext_resource type="PackedScene" uid="uid://ci8v43187140w" path="res://src/ui/hud.tscn" id="5_hud"]
+
+[node name="World" type="Node2D"]
+script = ExtResource("1_world")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(0, 0)
+
+[node name="Furnace" parent="." instance=ExtResource("3_furnace")]
+position = Vector2(160, 0)
+
+[node name="MalachiteNode1" parent="." instance=ExtResource("4_node")]
+position = Vector2(-220, -120)
+item_key = "malachite"
+item_name = "孔雀石矿床"
+node_color = Color(0.12, 0.75, 0.45, 1)
+
+[node name="MalachiteNode2" parent="." instance=ExtResource("4_node")]
+position = Vector2(-260, 100)
+item_key = "malachite"
+item_name = "孔雀石矿床"
+node_color = Color(0.12, 0.75, 0.45, 1)
+
+[node name="IronNode1" parent="." instance=ExtResource("4_node")]
+position = Vector2(300, -150)
+item_key = "iron_ore"
+item_name = "赤铁矿脉"
+node_color = Color(0.78, 0.32, 0.22, 1)
+
+[node name="TreeNode1" parent="." instance=ExtResource("4_node")]
+position = Vector2(40, -220)
+item_key = "wood"
+item_name = "古老橡木"
+node_color = Color(0.2, 0.55, 0.25, 1)
+yield_amount = 4
+
+[node name="TreeNode2" parent="." instance=ExtResource("4_node")]
+position = Vector2(20, 240)
+item_key = "wood"
+item_name = "古老橡木"
+node_color = Color(0.2, 0.55, 0.25, 1)
+yield_amount = 4
+
+[node name="HUD" parent="." instance=ExtResource("5_hud")]
