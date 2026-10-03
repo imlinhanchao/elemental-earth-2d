@@ -1,5 +1,5 @@
 # furnace.gd
-# 像素陶土熔炉实体
+# 严丝合缝对齐六边形网格的陶土熔炉实体
 extends Area2D
 
 const MixtureBuffer = preload("res://src/core/mixture_buffer.gd")
@@ -11,22 +11,15 @@ var is_player_nearby: bool = false
 var is_active_fire: bool = false
 var burn_timer: float = 0.0
 
-@onready var sprite = $Sprite2D
 @onready var label_status = $StatusLabel
-
-var tex_hot: Texture2D
-var tex_cold: Texture2D
 
 func _ready() -> void:
 	add_to_group("furnace")
-	tex_hot = load("res://assets/sprites/furnace_hot.png")
-	tex_cold = load("res://assets/sprites/furnace_cold.png")
-	
 	buffer = MixtureBuffer.new()
 	buffer.temperature = 293.15
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
-	_update_visuals()
+	queue_redraw()
 
 func _process(delta: float) -> void:
 	if is_active_fire:
@@ -41,32 +34,35 @@ func _process(delta: float) -> void:
 	if buffer.total_moles() > 0:
 		var res = GameState.solver.solve(buffer, delta)
 		if res["occurred"]:
-			# 检查是否炼出单质铜 (Cu)
 			if buffer.has_substance("copper", 0.1):
 				var cu_amount = buffer.consume_substance("copper", 10.0)
 				GameState.inventory.add_item("copper", int(ceil(cu_amount)))
 				GameState.post_notice("✨ 熔炉炼制完成！成功收获金属铜 x%d，已收入背包！" % int(ceil(cu_amount)), Color(0.9, 0.6, 0.2))
 
-			# 检查是否炼出单质铁 (Fe)
 			if buffer.has_substance("iron", 0.1):
 				var fe_amount = buffer.consume_substance("iron", 10.0)
 				GameState.inventory.add_item("iron", int(ceil(fe_amount)))
 				GameState.post_notice("⚒️ 高炉炼铁完成！成功收获金属铁 x%d，已收入背包！" % int(ceil(fe_amount)), Color(0.7, 0.8, 0.9))
 
-	_update_visuals()
-
-func _update_visuals() -> void:
-	if sprite != null:
-		if buffer.temperature > 500.0:
-			sprite.texture = tex_hot
-			sprite.scale = Vector2(0.32, 0.32) * (1.0 + 0.03 * sin(Time.get_ticks_msec() * 0.01))
-		else:
-			sprite.texture = tex_cold
-			sprite.scale = Vector2(0.32, 0.32)
-
-	if label_status != null:
+	if label_status:
 		var fuel_hint = " [E 打开/按1加火]" if is_player_nearby else ""
 		label_status.text = "陶土熔炉\n%d K (%d ℃)%s" % [int(buffer.temperature), int(buffer.temperature - 273.15), fuel_hint]
+
+	queue_redraw()
+
+func _draw() -> void:
+	# 绘制贴合六边形尺寸的陶土圆窑 (底座半径 24.0)
+	draw_circle(Vector2(0, 4), 26.0, Color(0.1, 0.08, 0.06, 0.5)) # 地面阴影
+	draw_circle(Vector2.ZERO, 25.0, Color(0.42, 0.26, 0.15))       # 粗陶土外壁
+	draw_circle(Vector2.ZERO, 21.0, Color(0.55, 0.35, 0.20))       # 耐火砖层
+	draw_circle(Vector2.ZERO, 15.0, Color(0.15, 0.10, 0.08))       # 炉膛深处暗腔
+	
+	# 炉膛火焰动态效果
+	if buffer.temperature > 500.0:
+		var intensity = clamp((buffer.temperature - 500.0) / 600.0, 0.3, 1.0)
+		var fire_r = 13.0 * (0.9 + 0.12 * sin(Time.get_ticks_msec() * 0.02))
+		draw_circle(Vector2(0, 1), fire_r, Color(1.0, 0.4 * intensity, 0.05, 0.95))
+		draw_circle(Vector2(0, 0), fire_r * 0.6, Color(1.0, 0.85, 0.2, 1.0)) # 白炽金内焰
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:

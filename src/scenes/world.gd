@@ -9,7 +9,6 @@ const IndustrialReactorScene = preload("res://src/scenes/industrial_reactor.tscn
 
 @onready var player = $Player
 @onready var hud = $HUD
-@onready var furnace = $Furnace
 
 var hex_gen: HexWorldGenerator
 var generated_hexes: Dictionary = {} # Vector2i(q, r) -> BiomeType
@@ -21,8 +20,6 @@ func _ready() -> void:
 	hex_gen = HexWorldGenerator.new(12345)
 	
 	_generate_hex_world()
-	if furnace:
-		_bind_furnace_events(furnace)
 	
 	hud.build_furnace_requested.connect(_on_build_furnace_requested)
 	hud.build_reactor_requested.connect(_on_build_reactor_requested)
