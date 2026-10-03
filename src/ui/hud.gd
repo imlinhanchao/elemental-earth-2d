@@ -1,12 +1,15 @@
 # hud.gd
-# 游戏主界面 HUD
+# 游戏主界面 HUD 控制器
 extends CanvasLayer
+
+signal build_furnace_requested
 
 @onready var inventory_label = $Margin/HBox/LeftBox/InvPanel/Margin/VBox/InvLabel
 @onready var notice_label = $Margin/TopBox/NoticeLabel
 @onready var furnace_panel = $Margin/HBox/RightBox/FurnacePanel
 @onready var furnace_info = $Margin/HBox/RightBox/FurnacePanel/Margin/VBox/FurnaceInfo
 @onready var elements_label = $Margin/HBox/LeftBox/ElementsPanel/Margin/VBox/ElementsLabel
+@onready var periodic_modal = $PeriodicTableModal
 
 var current_nearby_furnace: Node2D = null
 
@@ -18,6 +21,15 @@ func _ready() -> void:
 	furnace_panel.visible = false
 	_update_inventory_ui()
 	_update_elements_ui()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_P:
+			periodic_modal.toggle()
+		elif event.keycode == KEY_ESCAPE and periodic_modal.visible:
+			periodic_modal.visible = false
+		elif event.keycode == KEY_C or event.keycode == KEY_B:
+			_on_btn_build_furnace_pressed()
 
 func _process(_delta: float) -> void:
 	if current_nearby_furnace != null:
@@ -41,7 +53,7 @@ func _update_inventory_ui() -> void:
 	inventory_label.text = text
 
 func _update_elements_ui() -> void:
-	var text = "🌟 已点亮化学元素 (%d/118):\n" % GameState.discovered_elements.size()
+	var text = "🌟 已点亮化学元素 (%d/118) [按 P 查看]:\n" % GameState.discovered_elements.size()
 	for num in GameState.discovered_elements:
 		var elem = DataDB.get_element(num)
 		text += "[#%d %s %s] " % [num, elem.get("symbol", ""), elem.get("name", "")]
@@ -57,7 +69,7 @@ func _on_notification_posted(msg: String, col: Color) -> void:
 	notice_label.text = msg
 	notice_label.modulate = col
 	var tw = create_tween()
-	notice_label.scale = Vector2(1.2, 1.2)
+	notice_label.scale = Vector2(1.15, 1.15)
 	tw.tween_property(notice_label, "scale", Vector2.ONE, 0.2)
 
 func show_furnace_ui(furnace: Node2D) -> void:
@@ -79,3 +91,9 @@ func _on_btn_add_malachite_pressed() -> void:
 func _on_btn_add_iron_ore_pressed() -> void:
 	if current_nearby_furnace:
 		current_nearby_furnace.add_ore("iron_ore", 1)
+
+func _on_btn_build_furnace_pressed() -> void:
+	build_furnace_requested.emit()
+
+func _on_btn_periodic_table_pressed() -> void:
+	periodic_modal.toggle()

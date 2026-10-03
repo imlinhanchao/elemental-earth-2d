@@ -1,30 +1,41 @@
 # resource_node.gd
-# 自然资源节点：支持玩家点击敲击采集
+# 像素自然资源节点：矿脉与古代橡树
 extends Area2D
 
 @export var item_key: String = "malachite"
-@export var item_name: String = "孔雀石矿脉"
-@export var node_color: Color = Color(0.12, 0.75, 0.45)
+@export var item_name: String = "孔雀石矿床"
 @export var max_health: int = 3
 @export var yield_amount: int = 2
 
 var current_health: int
-
-@onready var shape = $CollisionShape2D
 var is_player_nearby: bool = false
+
+@onready var sprite = $Sprite2D
+@onready var label = $NameLabel
 
 func _ready() -> void:
 	current_health = max_health
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
-	queue_redraw()
+	
+	_setup_sprite()
+	if label:
+		label.text = item_name
 
-func _draw() -> void:
-	# 绘制独特的资源图标图形
-	draw_circle(Vector2.ZERO, 24.0, node_color)
-	draw_circle(Vector2.ZERO, 20.0, node_color.darkened(0.2))
-	# 内部高光晶体斑纹
-	draw_rect(Rect2(-8, -8, 16, 16), node_color.lightened(0.3))
+func _setup_sprite() -> void:
+	if sprite == null:
+		return
+		
+	if item_key == "malachite":
+		sprite.texture = load("res://assets/sprites/malachite_ore.png")
+		sprite.scale = Vector2(0.5, 0.5)
+	elif item_key == "iron_ore":
+		sprite.texture = load("res://assets/sprites/hematite_ore.png")
+		sprite.scale = Vector2(0.5, 0.5)
+	elif item_key == "wood":
+		sprite.texture = load("res://assets/sprites/oak_tree.png")
+		sprite.scale = Vector2(0.28, 0.28)
+		sprite.position = Vector2(0, -40) # 向上偏移树冠
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -33,23 +44,23 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 
 func mine_node() -> void:
 	current_health -= 1
-	# 简单的敲击受击缩放动画
-	var tw = create_tween()
-	scale = Vector2(1.2, 0.8)
-	tw.tween_property(self, "scale", Vector2.ONE, 0.15)
 	
+	# 受击弹性挤压动画
+	if sprite:
+		var tw = create_tween()
+		sprite.scale *= Vector2(1.25, 0.8)
+		tw.tween_property(sprite, "scale", Vector2(0.5, 0.5) if item_key != "wood" else Vector2(0.28, 0.28), 0.15)
+
 	if current_health <= 0:
-		# 采集完毕
 		GameState.inventory.add_item(item_key, yield_amount)
-		GameState.post_notice("⛏️ 成功开采获得: %s x%d" % [item_name, yield_amount], node_color)
+		GameState.post_notice("⛏️ 成功开采获得: %s x%d" % [item_name, yield_amount], Color(0.2, 0.9, 0.5))
 		
-		# 播放粉碎动画后重生或消失
 		current_health = max_health
 		visible = false
-		await get_tree().create_timer(5.0).timeout
+		await get_tree().create_timer(8.0).timeout
 		visible = true
 	else:
-		GameState.post_notice("正在开采 %s... (%d/%d)" % [item_name, current_health, max_health], Color.GRAY)
+		GameState.post_notice("正在开采 %s... 耐久剩余: %d/%d" % [item_name, current_health, max_health], Color.LIGHT_GRAY)
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):

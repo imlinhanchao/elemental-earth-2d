@@ -1,9 +1,10 @@
 # player.gd
-# 玩家移动与交互控制器
+# 像素科考探险员角色控制器
 extends CharacterBody2D
 
 @export var speed: float = 240.0
 
+@onready var sprite = $Sprite2D
 @onready var camera = $Camera2D
 
 func _ready() -> void:
@@ -22,14 +23,13 @@ func _physics_process(_delta: float) -> void:
 	
 	velocity = dir.normalized() * speed
 	move_and_slide()
-	queue_redraw()
-
-func _draw() -> void:
-	# 绘制极具辨识度的探险科研人员俯视形象
-	# 阴影
-	draw_circle(Vector2(0, 4), 16.0, Color(0, 0, 0, 0.25))
-	# 身体/披肩 (复古科学蓝)
-	draw_circle(Vector2.ZERO, 16.0, Color(0.18, 0.48, 0.72))
-	# 头部/护目镜
-	draw_circle(Vector2(0, -2), 10.0, Color(0.9, 0.8, 0.65))
-	draw_rect(Rect2(-6, -6, 12, 4), Color(0.2, 0.7, 0.9)) # 护目镜
+	
+	# 根据移动方向平滑翻转朝向
+	if dir.x != 0 and sprite != null:
+		sprite.flip_h = dir.x < 0
+		
+	# 行走微小摆动动画
+	if dir != Vector2.ZERO and sprite != null:
+		sprite.rotation = sin(Time.get_ticks_msec() * 0.015) * 0.08
+	elif sprite != null:
+		sprite.rotation = move_toward(sprite.rotation, 0.0, 0.05)

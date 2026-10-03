@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://ci8v43187140w"]
+[gd_scene load_steps=3 format=3 uid="uid://ci8v43187140w"]
 
 [ext_resource type="Script" path="res://src/ui/hud.gd" id="1_hud"]
+[ext_resource type="PackedScene" uid="uid://ci8v42187654x" path="res://src/ui/periodic_table_modal.tscn" id="2_modal"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -11,6 +12,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
@@ -24,7 +26,7 @@ alignment = 1
 [node name="NoticeLabel" type="Label" parent="Margin/TopBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-text = "【WASD】移动角色，点击【矿脉】采集矿石，靠近【陶土熔炉】进行还原冶炼！"
+text = "【WASD】移动 | 左键开采矿石 | 靠近熔炉冶炼 | 【P】查看周期表 | 【C】现场建造"
 horizontal_alignment = 1
 
 [node name="HBox" type="HBoxContainer" parent="Margin"]
@@ -71,7 +73,19 @@ layout_mode = 2
 [node name="ElementsLabel" type="RichTextLabel" parent="Margin/HBox/LeftBox/ElementsPanel/Margin/VBox"]
 layout_mode = 2
 fit_content = true
-text = "🌟 已点亮化学元素 (0/118):"
+text = "🌟 已点亮化学元素 (0/118) [按 P]:"
+
+[node name="ActionButtons" type="VBoxContainer" parent="Margin/HBox/LeftBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BtnPeriodic" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
+layout_mode = 2
+text = "🏛️ 118 周期表墙 (P)"
+
+[node name="BtnBuild" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
+layout_mode = 2
+text = "🔨 建造陶土熔炉 (C) [-4木材]"
 
 [node name="CenterSpacer" type="Control" parent="Margin/HBox"]
 layout_mode = 2
@@ -112,12 +126,17 @@ text = "+ 加木炭生火升温"
 
 [node name="BtnAddMalachite" type="Button" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
 layout_mode = 2
-text = "+ 投入孔雀石 (炼铜)"
+text = "+ 投入孔雀石 (炼铜 Cu)"
 
 [node name="BtnAddIronOre" type="Button" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
 layout_mode = 2
-text = "+ 投入铁矿石 (炼铁)"
+text = "+ 投入赤铁矿 (炼铁 Fe)"
 
+[node name="PeriodicTableModal" parent="." instance=ExtResource("2_modal")]
+visible = false
+
+[connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnPeriodic" to="." method="_on_btn_periodic_table_pressed"]
+[connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnBuild" to="." method="_on_btn_build_furnace_pressed"]
 [connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddFuel" to="." method="_on_btn_add_fuel_pressed"]
 [connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddMalachite" to="." method="_on_btn_add_malachite_pressed"]
 [connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddIronOre" to="." method="_on_btn_add_iron_ore_pressed"]
