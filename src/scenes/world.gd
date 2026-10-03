@@ -21,21 +21,26 @@ func _ready() -> void:
 	hex_gen = HexWorldGenerator.new(12345)
 	
 	_generate_hex_world()
-	_bind_furnace_events(furnace)
+	if furnace:
+		_bind_furnace_events(furnace)
 	
 	hud.build_furnace_requested.connect(_on_build_furnace_requested)
 	hud.build_reactor_requested.connect(_on_build_reactor_requested)
 	
-	# 在初始基地右侧放置一座工业反应塔供测试连续量产
-	var start_reactor = IndustrialReactorScene.instantiate()
-	start_reactor.position = Vector2(260, 40)
-	add_child(start_reactor)
+	GameState.post_notice("🌟 [开局引导] 赤手空拳！请走向地表【枯树枝】与【碎石】，按 [空格] 拾取，按 [C] 制作工具！", Color(1.0, 0.88, 0.4))
 	
-	# 如果有初始蓝图，自动插装并开机
-	if GameState.unlocked_blueprints.has("bp_charcoal"):
-		start_reactor.install_blueprint(GameState.unlocked_blueprints["bp_charcoal"])
-	
-	GameState.post_notice("欢迎探索六边形大地！按 [WASD] 探索群落，[空格] 采矿，[L] 打开微观实验台，[T] 锻造工具，[R] 建造工业塔！", Color.WHITE)
+	# 如果携带 --screenshot 参数，则在1.5秒后截取当前画面并退出
+	for arg in OS.get_cmdline_user_args():
+		if arg == "--screenshot":
+			_capture_screenshot_after_delay()
+
+func _capture_screenshot_after_delay() -> void:
+	await get_tree().create_timer(1.2).timeout
+	var img = get_viewport().get_texture().get_image()
+	if img:
+		img.save_png("/Users/hancel/Documents/project/elemental-earth-2d/screenshot_current.png")
+		print("✅ [Screenshot] 实机渲染截图成功生成: /Users/hancel/Documents/project/elemental-earth-2d/screenshot_current.png")
+	get_tree().quit(0)
 
 func _generate_hex_world() -> void:
 	for q in range(-WORLD_HEX_RADIUS, WORLD_HEX_RADIUS + 1):
@@ -102,20 +107,24 @@ func _bind_furnace_events(f_node: Node2D) -> void:
 	)
 
 func _on_build_furnace_requested() -> void:
-	if GameState.inventory.remove_item("wood", 4):
+	if GameState.inventory.has_item("wood", 4) and GameState.inventory.has_item("flint", 4):
+		GameState.inventory.remove_item("wood", 4)
+		GameState.inventory.remove_item("flint", 4)
 		var new_f = FurnaceScene.instantiate()
 		new_f.position = player.position + Vector2(40, 20)
 		add_child(new_f)
 		_bind_furnace_events(new_f)
-		GameState.post_notice("🔨 现场施工完成！成功消耗 4 块木材建造了一座新的陶土熔炉！", Color.GREEN)
+		GameState.post_notice("🔨 现场施工完成！消耗原木 x4 与碎石 x4 堆砌起【陶土熔炉】！", Color.GREEN)
 	else:
-		GameState.post_notice("❌ 建造失败！需要至少 4 块木材 (先去砍伐橡树吧)", Color.RED)
+		GameState.post_notice("❌ 建造土窑原料不足！需要: 原木 x4, 碎石 x4", Color.RED)
 
 func _on_build_reactor_requested() -> void:
-	if GameState.inventory.remove_item("wood", 6):
+	if GameState.inventory.has_item("wood", 8) and GameState.inventory.has_item("copper", 2):
+		GameState.inventory.remove_item("wood", 8)
+		GameState.inventory.remove_item("copper", 2)
 		var new_r = IndustrialReactorScene.instantiate()
 		new_r.position = player.position + Vector2(40, 20)
 		add_child(new_r)
-		GameState.post_notice("🏭 施工完成！消耗 6 块木材建造了一座新的工业反应塔！", Color(0.2, 0.8, 1.0))
+		GameState.post_notice("🏭 近代工业巨构施工完成！消耗原木 x8 与金属铜 x2 建立【工业连续反应塔】！", Color(0.2, 0.8, 1.0))
 	else:
-		GameState.post_notice("❌ 建造工业反应塔失败！需要至少 6 块木材！", Color.RED)
+		GameState.post_notice("❌ 建造反应塔原料不足！需要: 原木 x8, 金属铜 x2 (请先在土窑炼铜)", Color.RED)

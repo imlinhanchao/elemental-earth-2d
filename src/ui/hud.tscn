@@ -24,19 +24,25 @@ theme_override_constants/margin_bottom = 16
 [node name="TopBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
 size_flags_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 6
 alignment = 1
 
-[node name="EraLabel" type="Label" parent="Margin/TopBox"]
+[node name="EraPanel" type="PanelContainer" parent="Margin/TopBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+size_flags_horizontal = 4
+
+[node name="EraLabel" type="Label" parent="Margin/TopBox/EraPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.4, 1)
 theme_override_font_sizes/font_size = 14
 text = "🏛️ 文明纪元: 石器时代 (Stone Age)"
 horizontal_alignment = 1
 
 [node name="NoticeLabel" type="Label" parent="Margin/TopBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 17
-text = "【WASD】移动 | 【空格/J】采矿 | 【E】交互 | 【L】微观实验 | 【T】工具锻造 | 【P】周期表 | 【C】建造"
+theme_override_font_sizes/font_size = 15
+text = "【WASD】移动 | 【空格/J】采矿 | 【E】交互 | 【L】实验台 | 【T】锻造 | 【P】周期表 | 【C/R】建造"
 horizontal_alignment = 1
 
 [node name="HBox" type="HBoxContainer" parent="Margin"]
@@ -45,7 +51,7 @@ size_flags_vertical = 3
 mouse_filter = 2
 
 [node name="LeftBox" type="VBoxContainer" parent="Margin/HBox"]
-custom_minimum_size = Vector2(260, 0)
+custom_minimum_size = Vector2(230, 0)
 layout_mode = 2
 theme_override_constants/separation = 10
 
@@ -55,9 +61,9 @@ layout_mode = 2
 [node name="Margin" type="MarginContainer" parent="Margin/HBox/LeftBox/InvPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
+theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_bottom = 8
 
 [node name="VBox" type="VBoxContainer" parent="Margin/HBox/LeftBox/InvPanel/Margin"]
 layout_mode = 2
@@ -65,7 +71,7 @@ layout_mode = 2
 [node name="InvLabel" type="RichTextLabel" parent="Margin/HBox/LeftBox/InvPanel/Margin/VBox"]
 layout_mode = 2
 fit_content = true
-text = "🎒 玩家行囊:"
+text = "🎒 行囊清单:"
 
 [node name="ElementsPanel" type="PanelContainer" parent="Margin/HBox/LeftBox"]
 layout_mode = 2
@@ -73,9 +79,9 @@ layout_mode = 2
 [node name="Margin" type="MarginContainer" parent="Margin/HBox/LeftBox/ElementsPanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
+theme_override_constants/margin_top = 8
 theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_bottom = 8
 
 [node name="VBox" type="VBoxContainer" parent="Margin/HBox/LeftBox/ElementsPanel/Margin"]
 layout_mode = 2
@@ -83,7 +89,7 @@ layout_mode = 2
 [node name="ElementsLabel" type="RichTextLabel" parent="Margin/HBox/LeftBox/ElementsPanel/Margin/VBox"]
 layout_mode = 2
 fit_content = true
-text = "🌟 已点亮化学元素 (0/118) [按 P]:"
+text = "🌟 点亮元素 (0/118) [P]:"
 
 [node name="ActionButtons" type="VBoxContainer" parent="Margin/HBox/LeftBox"]
 layout_mode = 2
@@ -103,11 +109,11 @@ text = "🏛️ 118 周期表墙 (P)"
 
 [node name="BtnBuild" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
 layout_mode = 2
-text = "🔨 建造陶土熔炉 (C) [-4木材]"
+text = "🔨 建造陶土熔炉 (C) [-4木 -4石]"
 
 [node name="BtnBuildReactor" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
 layout_mode = 2
-text = "🏭 建造工业反应塔 (R) [-6木材]"
+text = "🏭 建造工业反应塔 (R) [-8木 -2铜]"
 
 [node name="CenterSpacer" type="Control" parent="Margin/HBox"]
 layout_mode = 2
@@ -125,18 +131,18 @@ layout_mode = 2
 [node name="Margin" type="MarginContainer" parent="Margin/HBox/RightBox/FurnacePanel"]
 layout_mode = 2
 theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 12
+theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 12
+theme_override_constants/margin_bottom = 10
 
 [node name="VBox" type="VBoxContainer" parent="Margin/HBox/RightBox/FurnacePanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="Header" type="Label" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "🔥 陶土熔炉控制面板"
+theme_override_font_sizes/font_size = 15
+text = "🔥 陶土熔炉控制台"
 
 [node name="FurnaceInfo" type="Label" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
 layout_mode = 2
@@ -170,7 +176,7 @@ visible = false
 [connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnTools" to="." method="_on_btn_tools_pressed"]
 [connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnPeriodic" to="." method="_on_btn_periodic_table_pressed"]
 [connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnBuild" to="." method="_on_btn_build_furnace_pressed"]
-[connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnBuildReactor" to="." method="_on_btn_build_reactor_pressed"]
+[connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnBuildReactor" to="." method="_on_btn_build_reactor_requested"]
 [connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddFuel" to="." method="_on_btn_add_fuel_pressed"]
 [connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddMalachite" to="." method="_on_btn_add_malachite_pressed"]
 [connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddIronOre" to="." method="_on_btn_add_iron_ore_pressed"]

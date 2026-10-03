@@ -58,7 +58,13 @@ static func _load_eras(path: String) -> void:
 			eras = parsed
 
 static func get_item(key: String) -> Dictionary:
-	return items.get(key, {})
+	if items.has(key):
+		return items[key]
+	if key == "flint":
+		return {"key": "flint", "name": "碎石/燧石", "category": "材料"}
+	elif key == "stick":
+		return {"key": "stick", "name": "枯树枝", "category": "材料"}
+	return {}
 
 static func get_element(number: int) -> Dictionary:
 	return elements.get(number, {})

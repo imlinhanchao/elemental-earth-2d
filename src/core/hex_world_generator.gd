@@ -89,26 +89,31 @@ static func get_biome_color(biome: BiomeType) -> Color:
 
 # 根据群落决定伴生生成的资源类型 (若返回空字符串则不生成)
 func determine_resource_spawn(q: int, r: int, biome: BiomeType) -> String:
-	# 使用高频哈希散列避免过于集中
 	var rand_val = abs(sin(float(q * 374761393 + r * 668265263)))
 	
+	# 首先在所有群落中分布一定密度的散落碎石与断枝 (供开局一穷二白拾取)
+	if rand_val > 0.94:
+		return "flint"        # 散落碎石 (徒手可拾取)
+	elif rand_val < 0.06:
+		return "stick"        # 地表断枝 (徒手可拾取)
+		
 	match biome:
 		BiomeType.PLAINS:
 			if rand_val > 0.88:
 				return "malachite"    # 孔雀石
-			elif rand_val < 0.15:
+			elif rand_val < 0.14:
 				return "wood"         # 散落橡树
 		BiomeType.VOLCANO:
-			if rand_val > 0.82:
+			if rand_val > 0.86:
 				return "sulfur"       # 硫磺矿床
-			elif rand_val < 0.20:
+			elif rand_val < 0.12:
 				return "iron_ore"     # 伴生赤铁矿
 		BiomeType.SALT_LAKE:
-			if rand_val > 0.80:
-				return "halite"       # 石盐矿床 (NaCl，电解氯气与钠的核心)
+			if rand_val > 0.85:
+				return "halite"       # 石盐矿床
 		BiomeType.DEEP_FOREST:
-			if rand_val > 0.65:
-				return "wood"         # 高密度林木
-			elif rand_val < 0.18:
-				return "coal"         # 浅层泥炭/煤炭
+			if rand_val > 0.80:
+				return "wood"         # 原始大橡树
+			elif rand_val < 0.10:
+				return "coal"         # 浅层煤矿
 	return ""

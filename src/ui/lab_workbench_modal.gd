@@ -28,6 +28,12 @@ func _ready() -> void:
 	btn_export_bp.pressed.connect(_on_export_blueprint_pressed)
 	vessel_draw.draw.connect(_on_vessel_draw)
 
+	var bar = $Margin/HBox/LeftView/ReagentBar
+	bar.get_node("BtnAddMalachite").pressed.connect(func(): add_reagent("malachite", 1.0))
+	bar.get_node("BtnAddIron").pressed.connect(func(): add_reagent("iron_ore", 1.0))
+	bar.get_node("BtnAddCharcoal").pressed.connect(func(): add_reagent("charcoal", 1.0))
+	bar.get_node("BtnClear").pressed.connect(clear_vessel)
+
 func toggle() -> void:
 	visible = not visible
 	if visible:

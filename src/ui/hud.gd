@@ -1,13 +1,15 @@
 # hud.gd
-# 游戏主界面 HUD 控制器 (支持全套微观实验、工具锻造、工业反应塔与时代跃迁)
+# 游戏主界面 HUD 控制器 (注入复古科学工业 Theme)
 extends CanvasLayer
 
 signal build_furnace_requested
 signal build_reactor_requested
 
+const ThemeStyler = preload("res://src/ui/theme_styler.gd")
+
 @onready var inventory_label = $Margin/HBox/LeftBox/InvPanel/Margin/VBox/InvLabel
 @onready var notice_label = $Margin/TopBox/NoticeLabel
-@onready var era_label = $Margin/TopBox/EraLabel
+@onready var era_label = $Margin/TopBox/EraPanel/EraLabel
 @onready var furnace_panel = $Margin/HBox/RightBox/FurnacePanel
 @onready var furnace_info = $Margin/HBox/RightBox/FurnacePanel/Margin/VBox/FurnaceInfo
 @onready var elements_label = $Margin/HBox/LeftBox/ElementsPanel/Margin/VBox/ElementsLabel
@@ -20,6 +22,14 @@ signal build_reactor_requested
 var current_nearby_furnace: Node2D = null
 
 func _ready() -> void:
+	# 全局注入维多利亚科学 UI 主题
+	var sc_theme = ThemeStyler.create_scientific_theme()
+	$Margin.theme = sc_theme
+	periodic_modal.theme = sc_theme
+	lab_modal.theme = sc_theme
+	tool_modal.theme = sc_theme
+	era_modal.theme = sc_theme
+	
 	GameState.notification_posted.connect(_on_notification_posted)
 	GameState.element_discovered.connect(_on_element_discovered)
 	GameState.inventory.item_changed.connect(_on_item_changed)
@@ -41,7 +51,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		elif event.keycode == KEY_C or event.keycode == KEY_B:
 			_on_btn_build_furnace_pressed()
 		elif event.keycode == KEY_R:
-			_on_btn_build_reactor_pressed()
+			_on_btn_build_reactor_requested()
 		elif event.keycode == KEY_ESCAPE:
 			_close_all_modals()
 	
@@ -65,7 +75,7 @@ func _close_all_modals() -> void:
 func _process(_delta: float) -> void:
 	if current_nearby_furnace != null and furnace_panel.visible:
 		var buf = current_nearby_furnace.buffer
-		furnace_info.text = "【炉膛状态】\n温度: %d K (%d ℃)\n状态: %s\n物料: %s\n快捷键: [1]生火 [2]铜 [3]铁" % [
+		furnace_info.text = "【炉膛状态】\n温度: %d K (%d ℃)\n状态: %s\n物料: %s\n快捷键: [1]加柴生火 [2]铜 [3]铁" % [
 			int(buf.temperature),
 			int(buf.temperature - 273.15),
 			("🔥 燃烧中" if current_nearby_furnace.is_active_fire else "❄️ 未生火"),
@@ -73,25 +83,25 @@ func _process(_delta: float) -> void:
 		]
 
 func _update_inventory_ui() -> void:
-	var text = "🎒 玩家行囊:\n"
+	var text = "🎒 行囊清单:\n"
 	if GameState.inventory.items.is_empty():
 		text += "（空）\n"
 	else:
 		for k in GameState.inventory.items.keys():
 			var item = DataDB.get_item(k)
 			var iname = item.get("name", k)
-			text += "• %s x%d\n" % [iname, GameState.inventory.items[k]]
+			text += "• %s: %d\n" % [iname, GameState.inventory.items[k]]
 	inventory_label.text = text
 
 func _update_elements_ui() -> void:
-	var text = "🌟 已点亮化学元素 (%d/118) [按 P 查看]:\n" % GameState.discovered_elements.size()
+	var text = "🌟 点亮元素 (%d/118) [P]:\n" % GameState.discovered_elements.size()
 	for num in GameState.discovered_elements:
 		var elem = DataDB.get_element(num)
-		text += "[#%d %s %s] " % [num, elem.get("symbol", ""), elem.get("name", "")]
+		text += "[#%d %s] " % [num, elem.get("symbol", "")]
 	elements_label.text = text
 
 func _update_era_label() -> void:
-	era_label.text = "🏛️ 文明纪元: %s" % GameState.ERA_NAMES[GameState.current_era]
+	era_label.text = "  🏛️ 文明纪元: %s  " % GameState.ERA_NAMES[GameState.current_era]
 
 func _on_era_advanced(_old: int, _new: int, _name: String) -> void:
 	_update_era_label()
@@ -132,7 +142,7 @@ func _on_btn_add_iron_ore_pressed() -> void:
 func _on_btn_build_furnace_pressed() -> void:
 	build_furnace_requested.emit()
 
-func _on_btn_build_reactor_pressed() -> void:
+func _on_btn_build_reactor_requested() -> void:
 	build_reactor_requested.emit()
 
 func _on_btn_periodic_table_pressed() -> void:
