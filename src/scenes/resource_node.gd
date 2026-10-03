@@ -1,10 +1,10 @@
 # resource_node.gd
-# 像素自然资源节点：矿脉与古代橡树
+# 像素自然资源节点：矿脉与古代橡树 (支持工具威力倍率与开采特效)
 extends Area2D
 
 @export var item_key: String = "malachite"
 @export var item_name: String = "孔雀石矿床"
-@export var max_health: int = 3
+@export var max_health: int = 4
 @export var yield_amount: int = 2
 
 var current_health: int
@@ -35,7 +35,7 @@ func _setup_sprite() -> void:
 	elif item_key == "wood":
 		sprite.texture = load("res://assets/sprites/oak_tree.png")
 		sprite.scale = Vector2(0.28, 0.28)
-		sprite.position = Vector2(0, -40) # 向上偏移树冠
+		sprite.position = Vector2(0, -40)
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -43,24 +43,34 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 			mine_node()
 
 func mine_node() -> void:
-	current_health -= 1
+	# 根据玩家当前装备的工具计算挖掘伤害
+	var tool_key = GameState.equipped_tools.get("pickaxe", "stone_pickaxe")
+	var damage = 1
+	if tool_key == "copper_pickaxe":
+		damage = 2
+	elif tool_key == "iron_pickaxe":
+		damage = 4
+		
+	current_health -= damage
 	
-	# 受击弹性挤压动画
+	# 受击弹性挤压与晃动特效
 	if sprite:
 		var tw = create_tween()
-		sprite.scale *= Vector2(1.25, 0.8)
-		tw.tween_property(sprite, "scale", Vector2(0.5, 0.5) if item_key != "wood" else Vector2(0.28, 0.28), 0.15)
+		sprite.scale *= Vector2(1.3, 0.7)
+		sprite.rotation = randf_range(-0.15, 0.15)
+		tw.tween_property(sprite, "scale", Vector2(0.5, 0.5) if item_key != "wood" else Vector2(0.28, 0.28), 0.12)
+		tw.parallel().tween_property(sprite, "rotation", 0.0, 0.12)
 
 	if current_health <= 0:
 		GameState.inventory.add_item(item_key, yield_amount)
-		GameState.post_notice("⛏️ 成功开采获得: %s x%d" % [item_name, yield_amount], Color(0.2, 0.9, 0.5))
+		GameState.post_notice("⛏️ 成功开采获得: %s x%d！" % [item_name, yield_amount], Color(0.2, 0.9, 0.5))
 		
 		current_health = max_health
 		visible = false
 		await get_tree().create_timer(8.0).timeout
 		visible = true
 	else:
-		GameState.post_notice("正在开采 %s... 耐久剩余: %d/%d" % [item_name, current_health, max_health], Color.LIGHT_GRAY)
+		GameState.post_notice("正在开采 %s... 耐久剩余: %d/%d (威力: -%d)" % [item_name, current_health, max_health, damage], Color.LIGHT_GRAY)
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.is_in_group("player"):

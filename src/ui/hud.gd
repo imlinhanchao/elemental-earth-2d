@@ -1,15 +1,21 @@
 # hud.gd
-# 游戏主界面 HUD 控制器 (纯键盘/手柄全功能支持)
+# 游戏主界面 HUD 控制器 (支持全套微观实验、工具锻造、工业反应塔与时代跃迁)
 extends CanvasLayer
 
 signal build_furnace_requested
+signal build_reactor_requested
 
 @onready var inventory_label = $Margin/HBox/LeftBox/InvPanel/Margin/VBox/InvLabel
 @onready var notice_label = $Margin/TopBox/NoticeLabel
+@onready var era_label = $Margin/TopBox/EraLabel
 @onready var furnace_panel = $Margin/HBox/RightBox/FurnacePanel
 @onready var furnace_info = $Margin/HBox/RightBox/FurnacePanel/Margin/VBox/FurnaceInfo
 @onready var elements_label = $Margin/HBox/LeftBox/ElementsPanel/Margin/VBox/ElementsLabel
+
 @onready var periodic_modal = $PeriodicTableModal
+@onready var lab_modal = $LabWorkbenchModal
+@onready var tool_modal = $ToolCraftModal
+@onready var era_modal = $EraTransitionModal
 
 var current_nearby_furnace: Node2D = null
 
@@ -17,26 +23,30 @@ func _ready() -> void:
 	GameState.notification_posted.connect(_on_notification_posted)
 	GameState.element_discovered.connect(_on_element_discovered)
 	GameState.inventory.item_changed.connect(_on_item_changed)
+	GameState.era_advanced.connect(_on_era_advanced)
 	
 	furnace_panel.visible = false
 	_update_inventory_ui()
 	_update_elements_ui()
+	_update_era_label()
 
 func _unhandled_input(event: InputEvent) -> void:
-	# 周期表快捷键 (P 键 / 手柄 Select)
-	if event.is_action_pressed("open_periodic"):
-		periodic_modal.toggle()
-	# 建造快捷键 (C 键 / B 键 / 手柄 Y)
-	elif event.is_action_pressed("open_build"):
-		_on_btn_build_furnace_pressed()
-	# ESC 关闭打开的弹窗
-	elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
-		if periodic_modal.visible:
-			periodic_modal.visible = false
-		elif furnace_panel.visible:
-			furnace_panel.visible = false
-	# 熔炉快捷投料键 (1 / 2 / 3 数字键)
-	elif current_nearby_furnace != null:
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_P:
+			periodic_modal.toggle()
+		elif event.keycode == KEY_L:
+			lab_modal.toggle()
+		elif event.keycode == KEY_T:
+			tool_modal.toggle()
+		elif event.keycode == KEY_C or event.keycode == KEY_B:
+			_on_btn_build_furnace_pressed()
+		elif event.keycode == KEY_R:
+			_on_btn_build_reactor_pressed()
+		elif event.keycode == KEY_ESCAPE:
+			_close_all_modals()
+	
+	# 熔炉快捷键 1/2/3
+	if current_nearby_furnace != null:
 		if event.is_action_pressed("quick_action_1"):
 			current_nearby_furnace.add_fuel()
 		elif event.is_action_pressed("quick_action_2"):
@@ -45,6 +55,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			current_nearby_furnace.add_ore("iron_ore", 1)
 		elif event.is_action_pressed("interact"):
 			furnace_panel.visible = not furnace_panel.visible
+
+func _close_all_modals() -> void:
+	if periodic_modal.visible: periodic_modal.visible = false
+	if lab_modal.visible: lab_modal.visible = false
+	if tool_modal.visible: tool_modal.visible = false
+	if furnace_panel.visible: furnace_panel.visible = false
 
 func _process(_delta: float) -> void:
 	if current_nearby_furnace != null and furnace_panel.visible:
@@ -73,6 +89,12 @@ func _update_elements_ui() -> void:
 		var elem = DataDB.get_element(num)
 		text += "[#%d %s %s] " % [num, elem.get("symbol", ""), elem.get("name", "")]
 	elements_label.text = text
+
+func _update_era_label() -> void:
+	era_label.text = "🏛️ 文明纪元: %s" % GameState.ERA_NAMES[GameState.current_era]
+
+func _on_era_advanced(_old: int, _new: int, _name: String) -> void:
+	_update_era_label()
 
 func _on_item_changed(_key: String, _count: int) -> void:
 	_update_inventory_ui()
@@ -110,5 +132,14 @@ func _on_btn_add_iron_ore_pressed() -> void:
 func _on_btn_build_furnace_pressed() -> void:
 	build_furnace_requested.emit()
 
+func _on_btn_build_reactor_pressed() -> void:
+	build_reactor_requested.emit()
+
 func _on_btn_periodic_table_pressed() -> void:
 	periodic_modal.toggle()
+
+func _on_btn_lab_pressed() -> void:
+	lab_modal.toggle()
+
+func _on_btn_tools_pressed() -> void:
+	tool_modal.toggle()

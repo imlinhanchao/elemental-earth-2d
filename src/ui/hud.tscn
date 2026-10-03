@@ -1,7 +1,10 @@
-[gd_scene load_steps=3 format=3 uid="uid://ci8v43187140w"]
+[gd_scene load_steps=6 format=3 uid="uid://ci8v43187140w"]
 
 [ext_resource type="Script" path="res://src/ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" uid="uid://ci8v42187654x" path="res://src/ui/periodic_table_modal.tscn" id="2_modal"]
+[ext_resource type="PackedScene" uid="uid://ci8v43187890a" path="res://src/ui/lab_workbench_modal.tscn" id="3_lab"]
+[ext_resource type="PackedScene" uid="uid://ci8v43187890b" path="res://src/ui/tool_craft_modal.tscn" id="4_tool"]
+[ext_resource type="PackedScene" uid="uid://ci8v43187890c" path="res://src/ui/era_transition_modal.tscn" id="5_era"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -23,10 +26,17 @@ layout_mode = 2
 size_flags_vertical = 0
 alignment = 1
 
+[node name="EraLabel" type="Label" parent="Margin/TopBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 14
+text = "🏛️ 文明纪元: 石器时代 (Stone Age)"
+horizontal_alignment = 1
+
 [node name="NoticeLabel" type="Label" parent="Margin/TopBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "【WASD】移动 | 左键开采矿石 | 靠近熔炉冶炼 | 【P】查看周期表 | 【C】现场建造"
+theme_override_font_sizes/font_size = 17
+text = "【WASD】移动 | 【空格/J】采矿 | 【E】交互 | 【L】微观实验 | 【T】工具锻造 | 【P】周期表 | 【C】建造"
 horizontal_alignment = 1
 
 [node name="HBox" type="HBoxContainer" parent="Margin"]
@@ -37,7 +47,7 @@ mouse_filter = 2
 [node name="LeftBox" type="VBoxContainer" parent="Margin/HBox"]
 custom_minimum_size = Vector2(260, 0)
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="InvPanel" type="PanelContainer" parent="Margin/HBox/LeftBox"]
 layout_mode = 2
@@ -79,6 +89,14 @@ text = "🌟 已点亮化学元素 (0/118) [按 P]:"
 layout_mode = 2
 theme_override_constants/separation = 6
 
+[node name="BtnLab" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
+layout_mode = 2
+text = "⚗️ 微观实验工作台 (L)"
+
+[node name="BtnTools" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
+layout_mode = 2
+text = "⚒️ 冶金工具锻造砧 (T)"
+
 [node name="BtnPeriodic" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
 layout_mode = 2
 text = "🏛️ 118 周期表墙 (P)"
@@ -86,6 +104,10 @@ text = "🏛️ 118 周期表墙 (P)"
 [node name="BtnBuild" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
 layout_mode = 2
 text = "🔨 建造陶土熔炉 (C) [-4木材]"
+
+[node name="BtnBuildReactor" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
+layout_mode = 2
+text = "🏭 建造工业反应塔 (R) [-6木材]"
 
 [node name="CenterSpacer" type="Control" parent="Margin/HBox"]
 layout_mode = 2
@@ -122,21 +144,33 @@ text = "炉膛状态..."
 
 [node name="BtnAddFuel" type="Button" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
 layout_mode = 2
-text = "+ 加木炭生火升温"
+text = "+ 加木炭生火升温 (1)"
 
 [node name="BtnAddMalachite" type="Button" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
 layout_mode = 2
-text = "+ 投入孔雀石 (炼铜 Cu)"
+text = "+ 投入孔雀石 (炼铜 Cu) (2)"
 
 [node name="BtnAddIronOre" type="Button" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
 layout_mode = 2
-text = "+ 投入赤铁矿 (炼铁 Fe)"
+text = "+ 投入赤铁矿 (炼铁 Fe) (3)"
 
 [node name="PeriodicTableModal" parent="." instance=ExtResource("2_modal")]
 visible = false
 
+[node name="LabWorkbenchModal" parent="." instance=ExtResource("3_lab")]
+visible = false
+
+[node name="ToolCraftModal" parent="." instance=ExtResource("4_tool")]
+visible = false
+
+[node name="EraTransitionModal" parent="." instance=ExtResource("5_era")]
+visible = false
+
+[connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnLab" to="." method="_on_btn_lab_pressed"]
+[connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnTools" to="." method="_on_btn_tools_pressed"]
 [connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnPeriodic" to="." method="_on_btn_periodic_table_pressed"]
 [connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnBuild" to="." method="_on_btn_build_furnace_pressed"]
+[connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnBuildReactor" to="." method="_on_btn_build_reactor_pressed"]
 [connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddFuel" to="." method="_on_btn_add_fuel_pressed"]
 [connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddMalachite" to="." method="_on_btn_add_malachite_pressed"]
 [connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddIronOre" to="." method="_on_btn_add_iron_ore_pressed"]

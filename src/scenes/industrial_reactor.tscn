@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3 uid="uid://bd33w24j6l899"]
+
+[ext_resource type="Script" path="res://src/scenes/industrial_reactor.gd" id="1_reactor"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_m7k9a"]
+radius = 48.0
+
+[node name="IndustrialReactor" type="Area2D"]
+collision_layer = 4
+collision_mask = 1
+script = ExtResource("1_reactor")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_m7k9a")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+
+[node name="StatusLabel" type="Label" parent="."]
+offset_left = -80.0
+offset_top = 42.0
+offset_right = 80.0
+offset_bottom = 92.0
+theme_override_font_sizes/font_size = 11
+text = "工业反应塔"
+horizontal_alignment = 1

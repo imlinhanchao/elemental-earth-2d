@@ -1,0 +1,114 @@
+[gd_scene load_steps=2 format=3 uid="uid://ci8v43187890a"]
+
+[ext_resource type="Script" path="res://src/ui/lab_workbench_modal.gd" id="1_lab"]
+
+[node name="LabWorkbenchModal" type="PanelContainer"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -450.0
+offset_top = -270.0
+offset_right = 450.0
+offset_bottom = 270.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lab")
+
+[node name="Margin" type="MarginContainer" parent="."]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="HBox" type="HBoxContainer" parent="Margin"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="LeftView" type="VBoxContainer" parent="Margin/HBox"]
+custom_minimum_size = Vector2(380, 0)
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Margin/HBox/LeftView"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "⚗️ 微观实验工作台 (Cleanroom Workbench)"
+
+[node name="VesselDrawArea" type="Control" parent="Margin/HBox/LeftView"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Controls" type="HBoxContainer" parent="Margin/HBox/LeftView"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BtnBurner" type="Button" parent="Margin/HBox/LeftView/Controls"]
+layout_mode = 2
+toggle_mode = true
+text = "🔥 酒精灯加热开关"
+
+[node name="TempLabel" type="Label" parent="Margin/HBox/LeftView/Controls"]
+layout_mode = 2
+text = "烧瓶温度: 293 K (20 ℃)"
+
+[node name="ReagentBar" type="HBoxContainer" parent="Margin/HBox/LeftView"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="BtnAddMalachite" type="Button" parent="Margin/HBox/LeftView/ReagentBar"]
+layout_mode = 2
+text = "+孔雀石"
+
+[node name="BtnAddIron" type="Button" parent="Margin/HBox/LeftView/ReagentBar"]
+layout_mode = 2
+text = "+赤铁矿"
+
+[node name="BtnAddCharcoal" type="Button" parent="Margin/HBox/LeftView/ReagentBar"]
+layout_mode = 2
+text = "+木炭"
+
+[node name="BtnClear" type="Button" parent="Margin/HBox/LeftView/ReagentBar"]
+layout_mode = 2
+text = "清空烧瓶"
+
+[node name="RightView" type="VBoxContainer" parent="Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 10
+
+[node name="Header" type="HBoxContainer" parent="Margin/HBox/RightView"]
+layout_mode = 2
+
+[node name="SubTitle" type="Label" parent="Margin/HBox/RightView/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "物态演化与工艺参数包"
+
+[node name="Spacer" type="Control" parent="Margin/HBox/RightView/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BtnClose" type="Button" parent="Margin/HBox/RightView/Header"]
+layout_mode = 2
+text = " 关闭 (L/ESC) "
+
+[node name="ContentsLabel" type="RichTextLabel" parent="Margin/HBox/RightView"]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+text = "【微观烧瓶物料组分】\n（空烧瓶）"
+
+[node name="BtnExportBlueprint" type="Button" parent="Margin/HBox/RightView"]
+layout_mode = 2
+text = "💾 固化小试成果 ➔ 导出【工业工艺蓝图芯片】"
+
+[node name="LogLabel" type="RichTextLabel" parent="Margin/HBox/RightView"]
+layout_mode = 2
+size_flags_vertical = 3
+scroll_following = true
+
+[connection signal="pressed" from="Margin/HBox/LeftView/ReagentBar/BtnAddMalachite" to="." method="add_reagent" binds= ["malachite", 1.0]]
+[connection signal="pressed" from="Margin/HBox/LeftView/ReagentBar/BtnAddIron" to="." method="add_reagent" binds= ["iron_ore", 1.0]]
+[connection signal="pressed" from="Margin/HBox/LeftView/ReagentBar/BtnAddCharcoal" to="." method="add_reagent" binds= ["charcoal", 1.0]]
+[connection signal="pressed" from="Margin/HBox/LeftView/ReagentBar/BtnClear" to="." method="clear_vessel"]
