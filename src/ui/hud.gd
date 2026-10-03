@@ -1,5 +1,5 @@
 # hud.gd
-# 游戏主界面 HUD 控制器
+# 游戏主界面 HUD 控制器 (纯键盘/手柄全功能支持)
 extends CanvasLayer
 
 signal build_furnace_requested
@@ -23,18 +23,33 @@ func _ready() -> void:
 	_update_elements_ui()
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventKey and event.pressed:
-		if event.keycode == KEY_P:
-			periodic_modal.toggle()
-		elif event.keycode == KEY_ESCAPE and periodic_modal.visible:
+	# 周期表快捷键 (P 键 / 手柄 Select)
+	if event.is_action_pressed("open_periodic"):
+		periodic_modal.toggle()
+	# 建造快捷键 (C 键 / B 键 / 手柄 Y)
+	elif event.is_action_pressed("open_build"):
+		_on_btn_build_furnace_pressed()
+	# ESC 关闭打开的弹窗
+	elif event is InputEventKey and event.pressed and event.keycode == KEY_ESCAPE:
+		if periodic_modal.visible:
 			periodic_modal.visible = false
-		elif event.keycode == KEY_C or event.keycode == KEY_B:
-			_on_btn_build_furnace_pressed()
+		elif furnace_panel.visible:
+			furnace_panel.visible = false
+	# 熔炉快捷投料键 (1 / 2 / 3 数字键)
+	elif current_nearby_furnace != null:
+		if event.is_action_pressed("quick_action_1"):
+			current_nearby_furnace.add_fuel()
+		elif event.is_action_pressed("quick_action_2"):
+			current_nearby_furnace.add_ore("malachite", 1)
+		elif event.is_action_pressed("quick_action_3"):
+			current_nearby_furnace.add_ore("iron_ore", 1)
+		elif event.is_action_pressed("interact"):
+			furnace_panel.visible = not furnace_panel.visible
 
 func _process(_delta: float) -> void:
-	if current_nearby_furnace != null:
+	if current_nearby_furnace != null and furnace_panel.visible:
 		var buf = current_nearby_furnace.buffer
-		furnace_info.text = "【炉膛状态】\n温度: %d K (%d ℃)\n状态: %s\n物料: %s" % [
+		furnace_info.text = "【炉膛状态】\n温度: %d K (%d ℃)\n状态: %s\n物料: %s\n快捷键: [1]生火 [2]铜 [3]铁" % [
 			int(buf.temperature),
 			int(buf.temperature - 273.15),
 			("🔥 燃烧中" if current_nearby_furnace.is_active_fire else "❄️ 未生火"),

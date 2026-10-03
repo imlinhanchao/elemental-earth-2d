@@ -18,6 +18,7 @@ var tex_hot: Texture2D
 var tex_cold: Texture2D
 
 func _ready() -> void:
+	add_to_group("furnace")
 	tex_hot = load("res://assets/sprites/furnace_hot.png")
 	tex_cold = load("res://assets/sprites/furnace_cold.png")
 	
@@ -58,14 +59,14 @@ func _update_visuals() -> void:
 	if sprite != null:
 		if buffer.temperature > 500.0:
 			sprite.texture = tex_hot
-			# 炉火脉动轻微呼吸
 			sprite.scale = Vector2(0.32, 0.32) * (1.0 + 0.03 * sin(Time.get_ticks_msec() * 0.01))
 		else:
 			sprite.texture = tex_cold
 			sprite.scale = Vector2(0.32, 0.32)
 
 	if label_status != null:
-		label_status.text = "陶土熔炉\n%d K (%d ℃)" % [int(buffer.temperature), int(buffer.temperature - 273.15)]
+		var fuel_hint = " [E 打开/按1加火]" if is_player_nearby else ""
+		label_status.text = "陶土熔炉\n%d K (%d ℃)%s" % [int(buffer.temperature), int(buffer.temperature - 273.15), fuel_hint]
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -77,7 +78,7 @@ func add_fuel() -> bool:
 		is_active_fire = true
 		burn_timer += 18.0
 		buffer.add_substance("charcoal", 1.0)
-		GameState.post_notice("🔥 向熔炉投入木炭燃料，炉膛升起熊熊烈火！", Color.ORANGE)
+		GameState.post_notice("🔥 [按键1] 向熔炉投入木炭燃料，炉膛升起熊熊烈火！", Color.ORANGE)
 		return true
 	else:
 		GameState.post_notice("背包中没有木炭或木材可用作燃料！", Color.RED)
