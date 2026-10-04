@@ -1,0 +1,182 @@
+[gd_scene load_steps=3 format=3 uid="uid://c8x4v9b1q4x7y"]
+
+[ext_resource type="Script" path="res://src/ui/inventory_modal.gd" id="1_inv"]
+[ext_resource type="Texture2D" uid="uid://c5v6l4m8n2q1" path="res://assets/icons/backpack.svg" id="2_icon"]
+
+[node name="InventoryModal" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_inv")
+
+[node name="DimOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.05, 0.07, 0.65)
+
+[node name="CenterPanel" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(820, 640)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -410.0
+offset_top = -320.0
+offset_right = 410.0
+offset_bottom = 320.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="CenterPanel"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Header" type="HBoxContainer" parent="CenterPanel/VBox"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+
+[node name="Icon" type="TextureRect" parent="CenterPanel/VBox/Header"]
+custom_minimum_size = Vector2(26, 26)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("2_icon")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Title" type="Label" parent="CenterPanel/VBox/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "物品清单"
+
+[node name="CapacityLabel" type="Label" parent="CenterPanel/VBox/Header"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.65, 0.72, 1)
+theme_override_font_sizes/font_size = 13
+text = "已占用: 0 / 80"
+
+[node name="Spacer" type="Control" parent="CenterPanel/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BtnSort" type="Button" parent="CenterPanel/VBox/Header"]
+custom_minimum_size = Vector2(80, 28)
+layout_mode = 2
+text = "规整排序"
+
+[node name="BtnClose" type="Button" parent="CenterPanel/VBox/Header"]
+custom_minimum_size = Vector2(32, 28)
+layout_mode = 2
+text = "✕"
+
+[node name="HSeparator" type="HSeparator" parent="CenterPanel/VBox"]
+layout_mode = 2
+
+[node name="Scroll" type="ScrollContainer" parent="CenterPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="GridMargin" type="MarginContainer" parent="CenterPanel/VBox/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
+
+[node name="SlotGrid" type="GridContainer" parent="CenterPanel/VBox/Scroll/GridMargin"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
+columns = 10
+
+[node name="Footer" type="HBoxContainer" parent="CenterPanel/VBox"]
+custom_minimum_size = Vector2(0, 24)
+layout_mode = 2
+
+[node name="TipLabel" type="Label" parent="CenterPanel/VBox/Footer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.55, 0.58, 0.65, 1)
+theme_override_font_sizes/font_size = 12
+text = "鼠标悬停查看物料详情与化学构成 · 按 [B] 或 [ESC] / 鼠标右键关闭清单"
+
+[node name="FloatingTooltip" type="PanelContainer" parent="."]
+visible = false
+z_index = 20
+custom_minimum_size = Vector2(260, 0)
+layout_mode = 0
+offset_right = 260.0
+offset_bottom = 140.0
+mouse_filter = 2
+
+[node name="TipVBox" type="VBoxContainer" parent="FloatingTooltip"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="TitleRow" type="HBoxContainer" parent="FloatingTooltip/TipVBox"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ItemName" type="Label" parent="FloatingTooltip/TipVBox/TitleRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_font_sizes/font_size = 15
+text = "物品名称"
+
+[node name="CategoryBadge" type="Label" parent="FloatingTooltip/TipVBox/TitleRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "【材料】"
+
+[node name="ChemLabel" type="Label" parent="FloatingTooltip/TipVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.75, 0.25, 1)
+theme_override_font_sizes/font_size = 12
+text = "化学组成: -"
+
+[node name="Sep1" type="HSeparator" parent="FloatingTooltip/TipVBox"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="DescLabel" type="Label" parent="FloatingTooltip/TipVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.72, 0.78, 1)
+theme_override_font_sizes/font_size = 12
+text = "物品描述说明"
+autowrap_mode = 3
+
+[node name="Sep2" type="HSeparator" parent="FloatingTooltip/TipVBox"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="BottomRow" type="HBoxContainer" parent="FloatingTooltip/TipVBox"]
+layout_mode = 2
+mouse_filter = 2
+
+[node name="CountLabel" type="Label" parent="FloatingTooltip/TipVBox/BottomRow"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_colors/font_color = Color(0.4, 0.9, 0.5, 1)
+theme_override_font_sizes/font_size = 12
+text = "库存数量: 0"
+
+[node name="AttrLabel" type="Label" parent="FloatingTooltip/TipVBox/BottomRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.8, 0.3, 1)
+theme_override_font_sizes/font_size = 12
+text = ""

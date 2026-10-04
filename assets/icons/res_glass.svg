@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="glGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E0F2FE" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#38BDF8" stop-opacity="0.4"/>
+    </linearGradient>
+  </defs>
+  <polygon points="32,8 54,20 54,46 32,56 10,46 10,20" fill="url(#glGrad)" stroke="#BAE6FD" stroke-width="2"/>
+  <line x1="22" y1="20" x2="44" y2="44" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+  <line x1="28" y1="18" x2="48" y2="38" stroke="#FFFFFF" stroke-width="1" stroke-linecap="round" opacity="0.7"/>
+</svg>

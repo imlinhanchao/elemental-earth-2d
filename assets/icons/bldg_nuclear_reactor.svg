@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="nucGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06B6D4"/>
+      <stop offset="50%" stop-color="#0E7490"/>
+      <stop offset="100%" stop-color="#083344"/>
+    </linearGradient>
+  </defs>
+  <!-- 堆体安全壳穹顶 -->
+  <path d="M12,54 C12,24 52,24 52,54 Z" fill="url(#nucGrad)" stroke="#67E8F9" stroke-width="2"/>
+  <circle cx="32" cy="42" r="8" fill="#0284C7" stroke="#A5F3FC" stroke-width="1.5"/>
+  <circle cx="32" cy="42" r="4" fill="#22D3EE"/>
+  <rect x="24" y="52" width="16" height="6" fill="#164E63"/>
+</svg>

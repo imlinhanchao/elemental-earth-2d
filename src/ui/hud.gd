@@ -72,47 +72,12 @@ var current_tab: CategoryTab = CategoryTab.NONE
 @onready var save_load_modal = $SaveLoadModal
 @onready var settings_modal = $SettingsModal
 @onready var pause_menu = $PauseMenu
+@onready var inventory_modal = $InventoryModal
 
 var current_nearby_furnace: Node2D = null
 
-# 图标资源预加载映射表 (与参考美术风格保持完全一致)
-const ICON_MAP = {
-	"wood": preload("res://assets/icons/res_wood.svg"),
-	"stick": preload("res://assets/icons/res_stick.svg"),
-	"stone": preload("res://assets/icons/res_stone.svg"),
-	"flint": preload("res://assets/icons/res_flint.svg"),
-	"water": preload("res://assets/icons/res_water.svg"),
-	"charcoal": preload("res://assets/icons/res_charcoal.svg"),
-	"malachite": preload("res://assets/icons/res_malachite.svg"),
-	"iron_ore": preload("res://assets/icons/res_hematite.svg"),
-	"copper": preload("res://assets/icons/res_copper.svg"),
-	"iron": preload("res://assets/icons/res_iron.svg"),
-	"halite": preload("res://assets/icons/res_salt.svg"),
-	"salt": preload("res://assets/icons/res_salt.svg"),
-	"sulfur": preload("res://assets/icons/res_sulfur.svg"),
-	"gas": preload("res://assets/icons/res_gas.svg"),
-	"carbon_monoxide": preload("res://assets/icons/res_gas.svg"),
-	"carbon_dioxide": preload("res://assets/icons/res_gas.svg"),
-	"hydrogen": preload("res://assets/icons/res_gas.svg"),
-	"oxygen": preload("res://assets/icons/res_gas.svg"),
-	"flint_axe": preload("res://assets/icons/tool_flint_axe.svg"),
-	"stone_pickaxe": preload("res://assets/icons/tool_stone_pickaxe.svg"),
-	"copper_pickaxe": preload("res://assets/icons/tool_copper_pickaxe.svg"),
-	"iron_pickaxe": preload("res://assets/icons/tool_iron_hammer.svg"),
-	"furnace": preload("res://assets/icons/furnace.svg"),
-	"industrial_reactor": preload("res://assets/icons/reactor.svg"),
-	"fuel_fire": preload("res://assets/icons/fuel_fire.svg"),
-	"blueprint": preload("res://assets/icons/blueprint.svg"),
-	"lab": preload("res://assets/icons/lab.svg"),
-	"tech": preload("res://assets/icons/tech.svg"),
-	"tab_tech": preload("res://assets/icons/tab_tech.svg"),
-	"periodic_table": preload("res://assets/icons/periodic_table.svg"),
-}
-
 func get_item_icon(key: String) -> Texture2D:
-	if ICON_MAP.has(key):
-		return ICON_MAP[key]
-	return preload("res://assets/icons/res_ore.svg")
+	return ItemIconManager.get_icon(key)
 
 func _ready() -> void:
 	var sc_theme = ThemeStyler.create_scientific_theme()
@@ -125,6 +90,7 @@ func _ready() -> void:
 	save_load_modal.theme = sc_theme
 	settings_modal.theme = sc_theme
 	pause_menu.theme = sc_theme
+	inventory_modal.theme = sc_theme
 	
 	GameState.notification_posted.connect(_on_notification_posted)
 	GameState.element_discovered.connect(_on_element_discovered)
@@ -182,6 +148,11 @@ func _ready() -> void:
 	notice_label.text = "点击地表排队作业 · 下方分类菜单建造与制作 · [ESC]系统菜单"
 
 func _toggle_category(tab: CategoryTab) -> void:
+	if tab == CategoryTab.INVENTORY:
+		_close_drawer()
+		inventory_modal.toggle()
+		return
+
 	if current_tab == tab and action_drawer.visible:
 		_close_drawer()
 	else:
@@ -657,7 +628,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				_close_all_modals()
 
 func _has_any_modal_open() -> bool:
-	return periodic_modal.visible or lab_modal.visible or tool_modal.visible or tech_modal.visible or furnace_panel.visible or save_load_modal.visible or settings_modal.visible or pause_menu.visible
+	return periodic_modal.visible or lab_modal.visible or tool_modal.visible or tech_modal.visible or furnace_panel.visible or save_load_modal.visible or settings_modal.visible or pause_menu.visible or inventory_modal.visible
 
 func _close_all_modals() -> void:
 	var closed_any = false
@@ -665,6 +636,7 @@ func _close_all_modals() -> void:
 	if lab_modal.visible: lab_modal.visible = false; closed_any = true
 	if tool_modal.visible: tool_modal.visible = false; closed_any = true
 	if tech_modal.visible: tech_modal.visible = false; closed_any = true
+	if inventory_modal.visible: inventory_modal.close(); closed_any = true
 	if furnace_panel.visible: furnace_panel.visible = false; closed_any = true
 	if save_load_modal.visible: save_load_modal.close(); closed_any = true
 	if settings_modal.visible: settings_modal.close(); closed_any = true

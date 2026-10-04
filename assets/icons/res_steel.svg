@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="steelGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="30%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#0C4A6E"/>
+    </linearGradient>
+  </defs>
+  <!-- 戴森球计划风格工字精钢锭 -->
+  <polygon points="12,14 52,14 44,22 20,22" fill="#7DD3FC" stroke="#E0F2FE" stroke-width="1"/>
+  <rect x="26" y="22" width="12" height="20" fill="url(#steelGrad)" stroke="#38BDF8" stroke-width="1"/>
+  <polygon points="12,50 52,50 44,42 20,42" fill="#0369A1" stroke="#38BDF8" stroke-width="1"/>
+  <line x1="32" y1="14" x2="32" y2="50" stroke="#F0F9FF" stroke-width="1.5"/>
+</svg>
