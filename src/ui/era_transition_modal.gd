@@ -13,6 +13,8 @@ func _ready() -> void:
 	GameState.era_advanced.connect(_on_era_advanced)
 
 func _on_era_advanced(old_era: int, new_era: int, era_name: String) -> void:
+	if new_era <= old_era or new_era == 0:
+		return
 	title_label.text = "🏛️ 文 明 纪 元 跨 越 ！\n【%s】" % era_name
 	
 	var desc = ""

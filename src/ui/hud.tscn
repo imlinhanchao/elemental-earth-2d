@@ -1,10 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://ci8v43187140w"]
+[gd_scene load_steps=9 format=3 uid="uid://ci8v43187140w"]
 
 [ext_resource type="Script" path="res://src/ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" uid="uid://ci8v42187654x" path="res://src/ui/periodic_table_modal.tscn" id="2_modal"]
 [ext_resource type="PackedScene" uid="uid://ci8v43187890a" path="res://src/ui/lab_workbench_modal.tscn" id="3_lab"]
 [ext_resource type="PackedScene" uid="uid://ci8v43187890b" path="res://src/ui/tool_craft_modal.tscn" id="4_tool"]
 [ext_resource type="PackedScene" uid="uid://ci8v43187890c" path="res://src/ui/era_transition_modal.tscn" id="5_era"]
+[ext_resource type="PackedScene" uid="uid://ci8v43187890d" path="res://src/ui/save_load_modal.tscn" id="6_saveload"]
+[ext_resource type="PackedScene" uid="uid://ci8v43187890e" path="res://src/ui/settings_modal.tscn" id="7_settings"]
+[ext_resource type="PackedScene" uid="uid://ci8v43187890f" path="res://src/ui/pause_menu.tscn" id="8_pause"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -52,6 +55,11 @@ text = " | 🚩 领地: 半径 5格"
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = " | 📍 当前地貌: 生机原野平原"
+
+[node name="BtnMenu" type="Button" parent="Margin/TopBox/EraPanel/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = " ⚙️ 菜单 (ESC) "
 
 [node name="NoticeLabel" type="Label" parent="Margin/TopBox"]
 layout_mode = 2
@@ -136,17 +144,17 @@ theme_override_constants/separation = 4
 [node name="BtnSave" type="Button" parent="Margin/HBox/LeftBox/SaveHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "💾 保存"
+text = "💾 存档"
 
 [node name="BtnLoad" type="Button" parent="Margin/HBox/LeftBox/SaveHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "📂 读取"
+text = "📂 读档"
 
-[node name="BtnReset" type="Button" parent="Margin/HBox/LeftBox/SaveHBox"]
+[node name="BtnSettings" type="Button" parent="Margin/HBox/LeftBox/SaveHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "🔄 重置"
+text = "⚙️ 设置"
 
 [node name="CenterSpacer" type="Control" parent="Margin/HBox"]
 layout_mode = 2
@@ -277,6 +285,15 @@ visible = false
 visible = false
 
 [node name="EraTransitionModal" parent="." instance=ExtResource("5_era")]
+visible = false
+
+[node name="SaveLoadModal" parent="." instance=ExtResource("6_saveload")]
+visible = false
+
+[node name="SettingsModal" parent="." instance=ExtResource("7_settings")]
+visible = false
+
+[node name="PauseMenu" parent="." instance=ExtResource("8_pause")]
 visible = false
 
 [connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnLab" to="." method="_on_btn_lab_pressed"]

@@ -7,6 +7,7 @@ const ResourceNodeScene = preload("res://src/scenes/resource_node.tscn")
 const FurnaceScene = preload("res://src/scenes/furnace.tscn")
 const IndustrialReactorScene = preload("res://src/scenes/industrial_reactor.tscn")
 const SaveManager = preload("res://src/core/save_manager.gd")
+const SettingsManager = preload("res://src/core/settings_manager.gd")
 
 @onready var entities = $Entities
 @onready var camera = $WorldCamera
@@ -20,9 +21,8 @@ var hovered_hex: Vector2i = Vector2i(9999, 9999)
 var built_furnaces: Array[Node2D] = []
 var built_reactors: Array[Node2D] = []
 
-# 自动存档计时器 (45 秒周期)
+# 自动存档计时器
 var auto_save_timer: float = 0.0
-const AUTO_SAVE_INTERVAL: float = 45.0
 
 # 摄像机控制状态
 var is_dragging_camera: bool = false
@@ -41,9 +41,12 @@ func _ready() -> void:
 	hud.build_furnace_requested.connect(_on_build_furnace_requested)
 	hud.build_reactor_requested.connect(_on_build_reactor_requested)
 	
-	hud.save_requested.connect(func(): SaveManager.save_game(self))
-	hud.load_requested.connect(func(): SaveManager.load_game(self))
-	hud.reset_requested.connect(func(): SaveManager.reset_save(self))
+	hud.save_requested.connect(func(): SaveManager.save_to_slot("slot_1", self))
+	hud.load_requested.connect(func(): SaveManager.load_from_slot("slot_1", self))
+	hud.reset_requested.connect(func():
+		GameState.reset_to_new_game()
+		reset_world_state()
+	)
 	
 	GameState.task_progress_updated.connect(func(_t, _p, _r): queue_redraw())
 	GameState.task_queue_changed.connect(func(): queue_redraw())
@@ -51,12 +54,18 @@ func _ready() -> void:
 	GameState.era_advanced.connect(func(_old, _new, era_name):
 		queue_redraw()
 		GameState.post_notice("🚩 【领地疆域扩展】随着迈向【%s】，文明疆域拓展至半径 %d 格！" % [era_name, GameState.get_current_territory_radius()], Color(1.0, 0.85, 0.2))
-		SaveManager.save_game(self)
+		SaveManager.save_to_slot("auto", self)
 	)
 	
-	# 如果已有历史存档，自动恢复进度
-	if SaveManager.has_save():
-		SaveManager.load_game(self)
+	# 如果有待载入的槽位 (例如从主菜单选中的)
+	if SaveManager.pending_load_slot != "":
+		var target = SaveManager.pending_load_slot
+		SaveManager.pending_load_slot = ""
+		SaveManager.load_from_slot(target, self)
+	elif SaveManager.has_any_save() and GameState.inventory.items.is_empty() and GameState.current_era == 0 and GameState.discovered_elements.is_empty():
+		var latest = SaveManager.get_latest_save_slot()
+		if latest != "":
+			SaveManager.load_from_slot(latest, self)
 	else:
 		GameState.post_notice("🌟 [开局引导] 鼠标点击地表【碎石】、【枯树枝】加入工作队列！点击盐湖打水！右键拖拽视野！", Color(1.0, 0.88, 0.4))
 	
@@ -185,10 +194,12 @@ func _process(delta: float) -> void:
 	camera.zoom = camera.zoom.lerp(target_zoom, delta * 12.0)
 	
 	# 自动存档周期计时
-	auto_save_timer += delta
-	if auto_save_timer >= AUTO_SAVE_INTERVAL:
-		auto_save_timer = 0.0
-		SaveManager.save_game(self)
+	var interval = float(SettingsManager.get_setting("auto_save_interval", 45.0))
+	if interval > 0.1:
+		auto_save_timer += delta
+		if auto_save_timer >= interval:
+			auto_save_timer = 0.0
+			SaveManager.save_to_slot("auto", self)
 
 func _draw() -> void:
 	# 1. 绘制每一个六边形地块及专属生态纹理
@@ -316,7 +327,7 @@ func _on_build_furnace_requested() -> void:
 		built_furnaces.append(new_f)
 		_bind_furnace_events(new_f)
 		GameState.post_notice("🔨 现场施工完成！消耗原木 x4 与碎石 x4 堆砌起【陶土熔炉】！", Color.GREEN)
-		SaveManager.save_game(self)
+		SaveManager.save_to_slot("auto", self)
 	else:
 		GameState.post_notice("❌ 建造土窑原料不足！需要: 原木 x4, 碎石 x4 (亦可用燧石充当)", Color.RED)
 
@@ -334,7 +345,7 @@ func _on_build_reactor_requested() -> void:
 		entities.add_child(new_r)
 		built_reactors.append(new_r)
 		GameState.post_notice("🏭 近代工业巨构施工完成！消耗原木 x8 与金属铜 x2 建立【工业连续反应塔】！", Color(0.2, 0.8, 1.0))
-		SaveManager.save_game(self)
+		SaveManager.save_to_slot("auto", self)
 	else:
 		GameState.post_notice("❌ 建造反应塔原料不足！需要: 原木 x8, 金属铜 x2 (请先在土窑炼铜)", Color.RED)
 

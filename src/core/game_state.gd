@@ -37,6 +37,7 @@ var _task_id_counter: int = 0
 const MAX_QUEUE_SIZE: int = 8
 
 var current_era: int = 0
+var playtime_seconds: float = 0.0
 const ERA_NAMES = [
 	"石器时代 (Stone Age)",
 	"炼金术时代 (Alchemy Age)",
@@ -133,6 +134,7 @@ func is_pos_in_territory(pos: Vector2) -> bool:
 	return is_hex_in_territory(h.x, h.y)
 
 func _process(delta: float) -> void:
+	playtime_seconds += delta
 	if not active_task.is_empty():
 		active_task["elapsed_time"] = active_task.get("elapsed_time", 0.0) + delta
 		var total: float = active_task.get("total_time", 1.0)
@@ -142,6 +144,32 @@ func _process(delta: float) -> void:
 		task_progress_updated.emit(active_task, pct, rem)
 		if elapsed >= total:
 			_complete_active_task()
+
+func get_formatted_playtime() -> String:
+	var total_sec = int(playtime_seconds)
+	var hrs = total_sec / 3600
+	var mins = (total_sec % 3600) / 60
+	var secs = total_sec % 60
+	if hrs > 0:
+		return "%02d:%02d:%02d" % [hrs, mins, secs]
+	else:
+		return "%02d:%02d" % [mins, secs]
+
+func reset_to_new_game() -> void:
+	current_era = 0
+	discovered_elements.clear()
+	equipped_tools = {
+		"axe": "bare_hands",
+		"pickaxe": "bare_hands"
+	}
+	unlocked_blueprints.clear()
+	task_queue.clear()
+	active_task.clear()
+	if inventory != null:
+		inventory.items.clear()
+		inventory.item_changed.emit("", 0)
+	playtime_seconds = 0.0
+	era_advanced.emit(0, 0, ERA_NAMES[0])
 
 func add_task(task_data: Dictionary) -> bool:
 	if task_queue.size() >= MAX_QUEUE_SIZE:

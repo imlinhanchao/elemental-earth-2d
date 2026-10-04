@@ -19,9 +19,10 @@ const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 @onready var furnace_info = $Margin/HBox/RightBox/FurnacePanel/Margin/VBox/FurnaceInfo
 @onready var elements_label = $Margin/HBox/LeftBox/ElementsPanel/Margin/VBox/ElementsLabel
 
+@onready var btn_menu = $Margin/TopBox/EraPanel/HBox/BtnMenu
 @onready var btn_save = $Margin/HBox/LeftBox/SaveHBox/BtnSave
 @onready var btn_load = $Margin/HBox/LeftBox/SaveHBox/BtnLoad
-@onready var btn_reset = $Margin/HBox/LeftBox/SaveHBox/BtnReset
+@onready var btn_settings = $Margin/HBox/LeftBox/SaveHBox/BtnSettings
 
 # 任务队列 UI 控件
 @onready var task_panel = $Margin/HBox/CenterSpacer/TaskQueuePanel
@@ -37,6 +38,9 @@ const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 @onready var lab_modal = $LabWorkbenchModal
 @onready var tool_modal = $ToolCraftModal
 @onready var era_modal = $EraTransitionModal
+@onready var save_load_modal = $SaveLoadModal
+@onready var settings_modal = $SettingsModal
+@onready var pause_menu = $PauseMenu
 
 var current_nearby_furnace: Node2D = null
 
@@ -48,6 +52,9 @@ func _ready() -> void:
 	lab_modal.theme = sc_theme
 	tool_modal.theme = sc_theme
 	era_modal.theme = sc_theme
+	save_load_modal.theme = sc_theme
+	settings_modal.theme = sc_theme
+	pause_menu.theme = sc_theme
 	
 	GameState.notification_posted.connect(_on_notification_posted)
 	GameState.element_discovered.connect(_on_element_discovered)
@@ -66,9 +73,23 @@ func _ready() -> void:
 			GameState.cancel_task(GameState.active_task.get("id"))
 	)
 	
-	btn_save.pressed.connect(func(): save_requested.emit())
-	btn_load.pressed.connect(func(): load_requested.emit())
-	btn_reset.pressed.connect(func(): reset_requested.emit())
+	btn_menu.pressed.connect(func(): pause_menu.toggle())
+	btn_save.pressed.connect(func(): save_load_modal.open(0, get_parent()))
+	btn_load.pressed.connect(func(): save_load_modal.open(1, get_parent()))
+	btn_settings.pressed.connect(func(): settings_modal.open())
+	
+	pause_menu.save_requested.connect(func():
+		pause_menu.visible = false
+		save_load_modal.open(0, get_parent())
+	)
+	pause_menu.load_requested.connect(func():
+		pause_menu.visible = false
+		save_load_modal.open(1, get_parent())
+	)
+	pause_menu.settings_requested.connect(func():
+		pause_menu.visible = false
+		settings_modal.open()
+	)
 	
 	furnace_panel.visible = false
 	_update_inventory_ui()
@@ -76,7 +97,7 @@ func _ready() -> void:
 	_update_era_label()
 	_update_task_queue_ui()
 	
-	notice_label.text = "🖱️ 鼠标左键点击瓦片执行开采/砍树/打水 | 右键拖拽视野 | 滚轮缩放 | [L]实验台 [T]锻造 [P]周期表"
+	notice_label.text = "🖱️ 鼠标左键点击瓦片执行开采/砍树/打水 | 右键拖拽视野 | 滚轮缩放 | [L]实验台 [T]锻造 [P]周期表 | [ESC]菜单"
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
@@ -94,10 +115,15 @@ func _unhandled_input(event: InputEvent) -> void:
 			_close_all_modals()
 
 func _close_all_modals() -> void:
-	if periodic_modal.visible: periodic_modal.visible = false
-	if lab_modal.visible: lab_modal.visible = false
-	if tool_modal.visible: tool_modal.visible = false
-	if furnace_panel.visible: furnace_panel.visible = false
+	var closed_any = false
+	if periodic_modal.visible: periodic_modal.visible = false; closed_any = true
+	if lab_modal.visible: lab_modal.visible = false; closed_any = true
+	if tool_modal.visible: tool_modal.visible = false; closed_any = true
+	if furnace_panel.visible: furnace_panel.visible = false; closed_any = true
+	if save_load_modal.visible: save_load_modal.close(); closed_any = true
+	if settings_modal.visible: settings_modal.close(); closed_any = true
+	if not closed_any:
+		pause_menu.toggle()
 
 func _process(_delta: float) -> void:
 	if current_nearby_furnace != null and furnace_panel.visible:
