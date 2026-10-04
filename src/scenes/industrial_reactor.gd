@@ -66,10 +66,20 @@ func install_blueprint(bp: ProcessBlueprint) -> void:
 	GameState.post_notice("📥 已向工业反应塔插装芯片: 【%s】" % bp.display_name, Color.CYAN)
 	_update_ui()
 
+func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		get_viewport().set_input_as_handled()
+		if GameState.unlocked_blueprints.size() > 0:
+			var keys = GameState.unlocked_blueprints.keys()
+			var bp = GameState.unlocked_blueprints[keys[0]]
+			install_blueprint(bp)
+		else:
+			GameState.post_notice("⚠️ 暂无可用蓝图！请在实验台 (L) 完成小试后点击'工艺固化'导出芯片！", Color.YELLOW)
+
 func _update_ui() -> void:
 	if status_label:
 		if installed_blueprint == null:
-			status_label.text = "工业连续反应塔\n[未装载蓝图芯片]\n按E插入蓝图"
+			status_label.text = "工业连续反应塔\n[未装载蓝图芯片]\n点击插入蓝图"
 		else:
 			var state_str = "🔥 连续运转中 (%.1fs)" % (installed_blueprint.duration_seconds - cycle_progress) if is_running else "⏸️ 缺料待机中"
 			status_label.text = "反应塔: %s\n%s\n已量产: %d" % [installed_blueprint.display_name, state_str, total_produced_count]

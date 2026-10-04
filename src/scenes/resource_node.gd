@@ -8,7 +8,7 @@ extends Area2D
 @export var yield_amount: int = 2
 
 var current_health: int
-var is_player_nearby: bool = false
+var is_hovered: bool = false
 var anim_scale: Vector2 = Vector2.ONE
 var anim_rotation: float = 0.0
 
@@ -16,8 +16,8 @@ var anim_rotation: float = 0.0
 
 func _ready() -> void:
 	current_health = max_health
-	body_entered.connect(_on_body_entered)
-	body_exited.connect(_on_body_exited)
+	mouse_entered.connect(_on_mouse_entered)
+	mouse_exited.connect(_on_mouse_exited)
 	
 	if label:
 		label.text = item_name
@@ -26,65 +26,98 @@ func _ready() -> void:
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		if is_player_nearby:
-			mine_node()
+		get_viewport().set_input_as_handled()
+		request_mine_task()
 
-func mine_node() -> void:
-	var axe = GameState.equipped_tools.get("axe", "bare_hands")
-	var pick = GameState.equipped_tools.get("pickaxe", "bare_hands")
+func _on_mouse_entered() -> void:
+	is_hovered = true
+	if label: label.visible = true
+	queue_redraw()
 
-	if item_key == "wood":
-		if axe == "bare_hands":
-			GameState.post_notice("❌ 橡树坚硬，徒手无法折断！请按 [C] 制作【原始燧石手斧】！", Color(1.0, 0.4, 0.4))
-			return
+func _on_mouse_exited() -> void:
+	is_hovered = false
+	if label: label.visible = false
+	queue_redraw()
+
+func request_mine_task() -> void:
+	if not visible:
+		return
 	
-	if item_key in ["malachite", "iron_ore", "sulfur", "halite", "coal"]:
-		if pick == "bare_hands":
-			GameState.post_notice("❌ 矿脉坚如磐石，徒手无法挖掘！请按 [C] 制作【粗制石镐】！", Color(1.0, 0.4, 0.4))
-			return
-
-	var damage = 1
-	if item_key == "wood":
-		damage = 2 if axe == "flint_axe" else 4
-	elif item_key in ["malachite", "iron_ore", "sulfur", "halite", "coal"]:
-		if pick == "copper_pickaxe": damage = 2
-		elif pick == "iron_pickaxe": damage = 4
-		else: damage = 1
-		
-	if item_key in ["stone", "flint", "stick"]:
-		damage = max_health
-
-	current_health -= damage
+	# 检查是否满足工具前置需求
+	var check = GameState.can_mine(item_key)
+	if not check["allowed"]:
+		GameState.post_notice(check["reason"], Color(1.0, 0.4, 0.4))
+		return
 	
-	# 受击弹性挤压动画反馈
-	var tw = create_tween()
-	anim_scale = Vector2(1.3, 0.7)
-	anim_rotation = randf_range(-0.15, 0.15)
-	tw.tween_property(self, "anim_scale", Vector2.ONE, 0.12)
-	tw.parallel().tween_property(self, "anim_rotation", 0.0, 0.12)
+	var dur = GameState.calculate_task_duration(item_key)
+	var iname = DataDB.get_item(item_key).get("name", item_name)
+	
+	var icon = "⛏️"
+	if item_key == "wood": icon = "🪓"
+	elif item_key == "stick": icon = "🌿"
+	elif item_key == "stone": icon = "🪨"
+	elif item_key == "flint": icon = "💎"
+	
+	var task = {
+		"type": "mine",
+		"title": "%s %s" % [icon, iname],
+		"icon": icon,
+		"world_pos": global_position,
+		"total_time": dur,
+		"target_node": self,
+		"target_key": item_key,
+		"yield_amount": yield_amount
+	}
+	GameState.add_task(task)
 
-	if current_health <= 0:
-		GameState.inventory.add_item(item_key, yield_amount)
-		if item_key == "stone" and randf() < 0.25:
-			GameState.inventory.add_item("flint", 1)
-			GameState.post_notice("✨ 获得: %s x%d，并意外拾得【燧石 x1】！" % [item_name, yield_amount], Color(0.2, 0.9, 0.5))
-		else:
-			GameState.post_notice("✨ 获得: %s x%d！" % [item_name, yield_amount], Color(0.2, 0.9, 0.5))
-		
-		current_health = max_health
-		visible = false
-		await get_tree().create_timer(10.0).timeout
-		visible = true
+func harvest_complete() -> void:
+	# 产出物资
+	GameState.inventory.add_item(item_key, yield_amount)
+	if item_key == "stone" and randf() < 0.25:
+		GameState.inventory.add_item("flint", 1)
+		GameState.post_notice("✨ 采集完成: %s x%d，并伴生收获【燧石 x1】！" % [item_name, yield_amount], Color(0.2, 0.9, 0.5))
 	else:
-		GameState.post_notice("正在开采 %s... 耐久剩余: %d/%d" % [item_name, current_health, max_health], Color.LIGHT_GRAY)
-		
+		GameState.post_notice("✨ 采集完成: %s x%d！" % [item_name, yield_amount], Color(0.2, 0.9, 0.5))
+
+	# 受击弹性挤压与暂时隐匿重生产生
+	var tw = create_tween()
+	anim_scale = Vector2(1.3, 0.6)
+	anim_rotation = randf_range(-0.15, 0.15)
+	tw.tween_property(self, "anim_scale", Vector2.ZERO, 0.15)
+	tw.parallel().tween_property(self, "anim_rotation", 0.0, 0.15)
+	await tw.finished
+	
+	visible = false
+	anim_scale = Vector2.ONE
+	await get_tree().create_timer(10.0).timeout
+	visible = true
+	var tw2 = create_tween()
+	scale = Vector2.ZERO
+	tw2.tween_property(self, "scale", Vector2.ONE, 0.25)
 	queue_redraw()
 
 func _process(_delta: float) -> void:
-	if anim_scale != Vector2.ONE or anim_rotation != 0.0:
+	# 若当前节点正是正在开工的目标，则持续重绘显示工作环
+	if GameState.active_task.get("target_node") == self:
+		queue_redraw()
+	elif anim_scale != Vector2.ONE or anim_rotation != 0.0:
 		queue_redraw()
 
 func _draw() -> void:
+	# 若当前节点被选中且正由任务作业，先绘制环形发光进度环
+	if GameState.active_task.get("target_node") == self:
+		var total = float(GameState.active_task.get("total_time", 1.0))
+		var elapsed = float(GameState.active_task.get("elapsed_time", 0.0))
+		var pct = clamp(elapsed / total, 0.0, 1.0)
+		# 阴影发光底环
+		draw_arc(Vector2.ZERO, 24.0, 0, TAU, 32, Color(0.1, 0.6, 0.8, 0.35), 4.0)
+		# 充能进度环
+		draw_arc(Vector2.ZERO, 24.0, -PI/2, -PI/2 + pct * TAU, 32, Color(0.3, 1.0, 0.6, 0.95), 4.5)
+
+	# 鼠标悬停时的微光光圈
+	if is_hovered:
+		draw_arc(Vector2.ZERO, 20.0, 0, TAU, 24, Color(1.0, 0.88, 0.4, 0.4), 2.0)
+
 	# 应用弹性受击变换
 	draw_set_transform(Vector2.ZERO, anim_rotation, anim_scale)
 	
@@ -244,13 +277,3 @@ func _draw_crystal_poly(pos: Vector2, size: Vector2, base_col: Color, light_col:
 func _draw_cube(pos: Vector2, s: float, col: Color) -> void:
 	draw_rect(Rect2(pos.x - s/2, pos.y - s/2, s, s), col)
 	draw_rect(Rect2(pos.x - s/2, pos.y - s/2, s, s), col.lightened(0.3), false, 1.5)
-
-func _on_body_entered(body: Node2D) -> void:
-	if body.is_in_group("player"):
-		is_player_nearby = true
-		if label: label.visible = true
-
-func _on_body_exited(body: Node2D) -> void:
-	if body.is_in_group("player"):
-		is_player_nearby = false
-		if label: label.visible = false

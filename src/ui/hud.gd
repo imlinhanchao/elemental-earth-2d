@@ -1,5 +1,5 @@
 # hud.gd
-# 游戏主界面 HUD 控制器 (注入复古科学工业 Theme)
+# 游戏主界面 HUD 控制器: 任务队列监控、上帝视角地貌、维多利亚科学工业 Theme
 extends CanvasLayer
 
 signal build_furnace_requested
@@ -14,6 +14,16 @@ const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 @onready var furnace_panel = $Margin/HBox/RightBox/FurnacePanel
 @onready var furnace_info = $Margin/HBox/RightBox/FurnacePanel/Margin/VBox/FurnaceInfo
 @onready var elements_label = $Margin/HBox/LeftBox/ElementsPanel/Margin/VBox/ElementsLabel
+
+# 任务队列 UI 控件
+@onready var task_panel = $Margin/HBox/CenterSpacer/TaskQueuePanel
+@onready var task_queue_count = $Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/HeaderHBox/QueueCount
+@onready var task_active_box = $Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox
+@onready var task_active_title = $Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox/ActiveTitle
+@onready var task_progress_bar = $Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox/ProgressBar
+@onready var task_active_time = $Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox/ActiveTime
+@onready var task_btn_cancel_active = $Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox/BtnCancelActive
+@onready var task_queue_list = $Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/QueueList
 
 @onready var periodic_modal = $PeriodicTableModal
 @onready var lab_modal = $LabWorkbenchModal
@@ -36,10 +46,25 @@ func _ready() -> void:
 	GameState.inventory.item_changed.connect(_on_item_changed)
 	GameState.era_advanced.connect(_on_era_advanced)
 	
+	# 任务作业队列信号绑定
+	GameState.task_started.connect(func(_t): _update_task_queue_ui())
+	GameState.task_progress_updated.connect(_on_task_progress_updated)
+	GameState.task_completed.connect(func(_t): _update_task_queue_ui())
+	GameState.task_cancelled.connect(func(_t): _update_task_queue_ui())
+	GameState.task_queue_changed.connect(_update_task_queue_ui)
+	
+	task_btn_cancel_active.pressed.connect(func():
+		if not GameState.active_task.is_empty():
+			GameState.cancel_task(GameState.active_task.get("id"))
+	)
+	
 	furnace_panel.visible = false
 	_update_inventory_ui()
 	_update_elements_ui()
 	_update_era_label()
+	_update_task_queue_ui()
+	
+	notice_label.text = "🖱️ 鼠标左键点击瓦片执行开采/砍树/打水 | 右键拖拽视野 | 滚轮缩放 | [L]实验台 [T]锻造 [P]周期表"
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
@@ -55,17 +80,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			_on_btn_build_reactor_requested()
 		elif event.keycode == KEY_ESCAPE:
 			_close_all_modals()
-	
-	# 熔炉快捷键 1/2/3
-	if current_nearby_furnace != null:
-		if event.is_action_pressed("quick_action_1"):
-			current_nearby_furnace.add_fuel()
-		elif event.is_action_pressed("quick_action_2"):
-			current_nearby_furnace.add_ore("malachite", 1)
-		elif event.is_action_pressed("quick_action_3"):
-			current_nearby_furnace.add_ore("iron_ore", 1)
-		elif event.is_action_pressed("interact"):
-			furnace_panel.visible = not furnace_panel.visible
 
 func _close_all_modals() -> void:
 	if periodic_modal.visible: periodic_modal.visible = false
@@ -76,12 +90,47 @@ func _close_all_modals() -> void:
 func _process(_delta: float) -> void:
 	if current_nearby_furnace != null and furnace_panel.visible:
 		var buf = current_nearby_furnace.buffer
-		furnace_info.text = "【炉膛状态】\n温度: %d K (%d ℃)\n状态: %s\n物料: %s\n快捷键: [1]加柴生火 [2]铜 [3]铁" % [
+		furnace_info.text = "【炉膛状态】\n温度: %d K (%d ℃)\n状态: %s\n物料: %s\n点击下方按钮投入原料" % [
 			int(buf.temperature),
 			int(buf.temperature - 273.15),
 			("🔥 燃烧中" if current_nearby_furnace.is_active_fire else "❄️ 未生火"),
 			(str(buf.components) if buf.components.size() > 0 else "空")
 		]
+
+func _update_task_queue_ui() -> void:
+	task_queue_count.text = "排队: %d/%d" % [GameState.task_queue.size(), GameState.MAX_QUEUE_SIZE]
+	
+	# 更新当前活跃工作
+	if GameState.active_task.is_empty():
+		task_active_title.text = "⚪ 空闲中 (点击地图瓦片分配工作)"
+		task_progress_bar.visible = false
+		task_active_time.visible = false
+		task_btn_cancel_active.visible = false
+	else:
+		var t = GameState.active_task
+		task_active_title.text = "%s %s" % [t.get("icon", "🔨"), t.get("title", "作业中")]
+		task_progress_bar.visible = true
+		task_active_time.visible = true
+		task_btn_cancel_active.visible = true
+	
+	# 刷新排队待办列表
+	for child in task_queue_list.get_children():
+		child.queue_free()
+		
+	for i in range(GameState.task_queue.size()):
+		var q_task = GameState.task_queue[i]
+		var task_id = q_task.get("id")
+		var chip = Button.new()
+		chip.text = "#%d %s %.1fs ✕" % [i + 1, q_task.get("title", "工作"), q_task.get("total_time", 1.0)]
+		chip.add_theme_font_size_override("font_size", 11)
+		chip.tooltip_text = "点击从队列中取消此工作"
+		chip.pressed.connect(func(): GameState.cancel_task(task_id))
+		task_queue_list.add_child(chip)
+
+func _on_task_progress_updated(task: Dictionary, percent: float, remaining_time: float) -> void:
+	if not GameState.active_task.is_empty():
+		task_progress_bar.value = percent
+		task_active_time.text = "%.1fs" % remaining_time
 
 func _update_inventory_ui() -> void:
 	var text = "🎒 行囊清单:\n"

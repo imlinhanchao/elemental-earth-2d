@@ -17,8 +17,6 @@ func _ready() -> void:
 	add_to_group("furnace")
 	buffer = MixtureBuffer.new()
 	buffer.temperature = 293.15
-	body_entered.connect(_on_body_entered)
-	body_exited.connect(_on_body_exited)
 	queue_redraw()
 
 func _process(delta: float) -> void:
@@ -45,8 +43,7 @@ func _process(delta: float) -> void:
 				GameState.post_notice("⚒️ 高炉炼铁完成！成功收获金属铁 x%d，已收入背包！" % int(ceil(fe_amount)), Color(0.7, 0.8, 0.9))
 
 	if label_status:
-		var fuel_hint = " [E 打开/按1加火]" if is_player_nearby else ""
-		label_status.text = "陶土熔炉\n%d K (%d ℃)%s" % [int(buffer.temperature), int(buffer.temperature - 273.15), fuel_hint]
+		label_status.text = "陶土熔炉\n%d K (%d ℃)\n[点击打开]" % [int(buffer.temperature), int(buffer.temperature - 273.15)]
 
 	queue_redraw()
 
@@ -66,15 +63,15 @@ func _draw() -> void:
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		if is_player_nearby:
-			open_workbench_requested.emit(self)
+		get_viewport().set_input_as_handled()
+		open_workbench_requested.emit(self)
 
 func add_fuel() -> bool:
 	if GameState.inventory.remove_item("charcoal", 1) or GameState.inventory.remove_item("wood", 2):
 		is_active_fire = true
 		burn_timer += 18.0
 		buffer.add_substance("charcoal", 1.0)
-		GameState.post_notice("🔥 [按键1] 向熔炉投入木炭燃料，炉膛升起熊熊烈火！", Color.ORANGE)
+		GameState.post_notice("🔥 向熔炉投入木炭燃料，炉膛升起熊熊烈火！", Color.ORANGE)
 		return true
 	else:
 		GameState.post_notice("背包中没有木炭或木材可用作燃料！", Color.RED)
@@ -89,11 +86,3 @@ func add_ore(key: String, amount: int = 1) -> bool:
 	else:
 		GameState.post_notice("背包中没有足够的原料！", Color.RED)
 		return false
-
-func _on_body_entered(body: Node2D) -> void:
-	if body.is_in_group("player"):
-		is_player_nearby = true
-
-func _on_body_exited(body: Node2D) -> void:
-	if body.is_in_group("player"):
-		is_player_nearby = false
