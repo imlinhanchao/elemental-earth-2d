@@ -159,7 +159,6 @@ func _build_tech_tree_graph() -> void:
 	for tier in range(TIER_TITLES.size()):
 		var header_panel = PanelContainer.new()
 		header_panel.custom_minimum_size = Vector2(CARD_WIDTH, 30)
-		header_panel.position = Vector2(TIER_START_X + tier * TIER_X_SPACING, 15)
 		
 		var h_style = StyleBoxFlat.new()
 		h_style.bg_color = Color(0.11, 0.14, 0.18, 0.85)
@@ -177,6 +176,7 @@ func _build_tech_tree_graph() -> void:
 		lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0))
 		header_panel.add_child(lbl)
 		headers_layer.add_child(header_panel)
+		header_panel.position = Vector2(TIER_START_X + tier * TIER_X_SPACING, 15)
 		
 	# 2. 生成 40 项科技卡片节点
 	for tech in DataDB.techs.values():
@@ -184,8 +184,8 @@ func _build_tech_tree_graph() -> void:
 		if not tech_positions.has(k):
 			continue
 		var card = _create_oni_tech_card(tech)
-		card.position = tech_positions[k]
 		nodes_layer.add_child(card)
+		card.position = tech_positions[k]
 		tech_card_nodes[k] = card
 
 func _create_oni_tech_card(tech: Dictionary) -> PanelContainer:

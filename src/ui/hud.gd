@@ -149,6 +149,10 @@ func _ready() -> void:
 	notice_label.text = "点击地表排队作业 · 下方分类菜单建造与制作 · [ESC]系统菜单"
 
 func _toggle_category(tab: CategoryTab) -> void:
+	if tab == CategoryTab.TECH:
+		_close_drawer()
+		tech_modal.toggle()
+		return
 	if tab == CategoryTab.INVENTORY:
 		_close_drawer()
 		inventory_modal.toggle()
