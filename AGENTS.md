@@ -112,17 +112,44 @@
   - **【📖 拓荒指南与关于】**：内置图文操作指南与 118 元素微观炼金哲学说明；
   - **【✕ 退出游戏】**：带确认提示安全退出。
 
-### 2.10 业界标准多槽位存档系统 (Multi-Slot Save/Load System)
-- **多槽位持久化架构 (`SaveManager`)**：
-  - **1 个系统自动存档槽位 (`auto`)**：由后台静默定时器（默认 45 秒）与时代跨越节点自动固化保存至 `user://save_auto.json`；
-  - **4 个手动独立存档槽位 (`slot_1` ~ `slot_4`)**：存储至 `user://save_slot_*.json`，并自动无缝迁移旧版单文件历史存档；
-  - **全量元数据全息提取 (`get_slot_meta`)**：轻量读取槽位概览，涵盖时代纪元、真实时间戳、实际游玩时长（`00:25:10`）、点亮元素数（`8/118`）、领地半径、物资种类与工业建筑座数。
-- **专业级多槽位交互面板 (`SaveLoadModal`)**：
-  - 位于 `src/ui/save_load_modal.tscn`，支持 **保存模式 (SAVE)** 与 **载入模式 (LOAD)**；
-  - 采用卡片式槽位列表，清晰区分空白槽位与已有归档；
-  - 具备防呆二次确认系统：【覆盖旧存档确认】、【载入进度替换确认】、【永久删除存档确认】。
+### 2.10 三层解耦架构与核心模拟层 (3-Layer Decoupled Architecture)
+按照《元素纪元 2D》可实施重构方案，系统已彻底拆分为标准三层解耦体系：
+1. **模拟层 (Simulation Layer - `src/core/simulation.gd`)**：
+   - 纯数据逻辑，严禁持有任何场景节点与视图。
+   - 包含世界六边形轴向坐标 `(q, r)`、资源 ID、背包 (`PlayerInventory`)、实验台溶液 (`lab_vessel`)、蓝图、文明时代、已点亮元素。
+   - 任务队列仅记录目标坐标 `(hex_q, hex_r)`、行动 `action_id`、总耗时与累计用时，脱离场景节点依赖。
+   - 维护地块采空与重生计时器 (`depleted_tiles`)。
+   - 内置 1 秒时间戳定时结算钟 (`_second_accumulator` / `_on_second_tick`)，驱动化学反应步进。
+   - `GameState` 彻底重构为转发壳 (Proxy Shell)，代理 `sim` 并转发事件信号，保证外部场景无缝衔接。
+2. **内容层 (Content Layer - `DataDB` & `ChemistrySolver`)**：
+   - `DataDB` 完整加载并索引外部 `data/formula.json`、`data/actions.json` 与 `data/eras.json`。
+   - `ChemistrySolver` 彻底重构为**查表式化学求解器 (Table-Driven Solver)**：支持按容器类型 (`container_type`)、反应原料组分 (`required_items`)、温度阈值 (`min_temp`)、电压阈值 (`min_voltage`) 与反应耗时 (`time_required`) 步进执行。
+   - 微观实验工作台与陶土熔炉统一调用此查表执行路径，彻底消除脚本硬编码反应。
+3. **画面层 (Presentation Layer)**：
+   - 负责六边形瓦片绘制、上帝镜头、HUD 控制台与弹窗界面。
+   - 交互仅发出「在此坐标排队作业」的命令 (`queue_hex_mine`, `queue_hex_water`, `queue_hex_forage`)，监听模拟层的 `tile_depleted` / `tile_respawned` 信号来播放节点动画或隐蔽/重生表现。
 
-### 2.11 局内暂停菜单与全局设置系统 (Pause Menu & Settings)
+### 2.11 存档系统 v3 规范与向下兼容 (Save v3 & Backward Compatibility)
+- **存档升级至 v3 (`SaveManager`)**：
+  - 严格跟随模拟层快照归档，存储字段包括：
+    - `version: 3`；
+    - **基础状态**：文明时代、点亮元素列表、装配工具、背包物品数量与工业工艺蓝图；
+    - **任务队列**：排队工作列表与当前进行中任务（包含网格坐标、行动 ID、标题图标与开始用时）；
+    - **实验台溶液**：微观烧瓶温度、施加电压、容器类型与物料摩尔量组分；
+    - **地块采空**：已采空的六边形坐标集合及剩余重生秒数；
+    - **工业建筑网格坐标**：陶土熔炉与工业反应塔的六边形坐标 `(hex_q, hex_r)`、内部物料与运行状态。
+  - **读档重建规范**：
+    - 按固定种子重建六边形大世界，随后将 `depleted_tiles` 采空状态精准覆盖到地表资源节点（`apply_depleted_tiles_to_nodes`）；
+    - 建筑依据 `(hex_q, hex_r)` 网格坐标精准还原对齐；
+    - 完整恢复任务队列与实验台烧瓶溶液。
+  - **v2 旧档向下兼容**：
+    - 兼容读取 `version: 2` 历史存档，保留背包与时代数据，缺失的队列/溶液/采空字段安全赋空，平滑自动升级。
+
+### 2.12 自动化测试套件 (Automated Test Suite)
+- **唯象化学求解器测试** (`tests/test_chemistry.gd`)：验证数据表加载、常温不反应、950K孔雀石冶炼炼铜、12V电解水产纯氧氢气及元素发现；
+- **存档系统 v3 自动化测试** (`tests/test_save_v3.gd`, `tests/test_save_v3.tscn`)：全量覆盖 v3 序列化/反序列化、队列/溶液/采空格子还原及 v2 向下兼容性。
+
+### 2.13 局内暂停菜单与全局设置系统 (Pause Menu & Settings)
 - **局内暂停系统 (`PauseMenu`)**：
   - 随时按 **`ESC`** 或点击顶部 **`[⚙️ 菜单 (ESC)]`** 呼出居中维多利亚工业悬浮暂停面板；
   - 提供【继续游戏】、【保存游戏】、【载入游戏】、【游戏设置】、【返回主菜单】与【退出游戏】；
