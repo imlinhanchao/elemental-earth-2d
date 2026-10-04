@@ -1,0 +1,107 @@
+[gd_scene load_steps=2 format=3 uid="uid://ci8vtechtreemodal"]
+
+[ext_resource type="Script" path="res://src/ui/tech_tree_modal.gd" id="1_tech"]
+
+[node name="TechTreeModal" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tech")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="CenterPanel" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(1300, 720)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -650.0
+offset_top = -360.0
+offset_right = 650.0
+offset_bottom = 360.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBox" type="VBoxContainer" parent="CenterPanel"]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Header" type="MarginContainer" parent="CenterPanel/VBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 4
+
+[node name="HBox" type="HBoxContainer" parent="CenterPanel/VBox/Header"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="CenterPanel/VBox/Header/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "文明科技演进树 (Humanity Technological Evolution)"
+
+[node name="CountLabel" type="Label" parent="CenterPanel/VBox/Header/HBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "已研发: 0 / 40"
+
+[node name="Spacer" type="Control" parent="CenterPanel/VBox/Header/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BtnClose" type="Button" parent="CenterPanel/VBox/Header/HBox"]
+custom_minimum_size = Vector2(60, 28)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "✕ [ESC]"
+
+[node name="HSeparator" type="HSeparator" parent="CenterPanel/VBox"]
+layout_mode = 2
+
+[node name="FilterBar" type="MarginContainer" parent="CenterPanel/VBox"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
+
+[node name="EraHBox" type="HBoxContainer" parent="CenterPanel/VBox/FilterBar"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Body" type="MarginContainer" parent="CenterPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="Scroll" type="ScrollContainer" parent="CenterPanel/VBox/Body"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="TechGrid" type="GridContainer" parent="CenterPanel/VBox/Body/Scroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 3

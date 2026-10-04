@@ -1,7 +1,8 @@
 [
   {
-    "key": "furnace",
-    "name": "陶土熔炉",
+    "key": "fire_pit",
+    "name": "原始篝火堆",
+    "era": 0,
     "required_items": [
       {
         "key": "wood",
@@ -15,11 +16,58 @@
         "quantity": 4
       }
     ],
-    "notice": "🔨 现场施工完成！消耗原木 x4 与碎石 x4 堆砌起【陶土熔炉】！"
+    "description": "石块围起的火坑，可用于夜晚照明与物料粗糙烘烤。",
+    "notice": "搭建完成！现场建立【原始篝火堆】！"
+  },
+  {
+    "key": "furnace",
+    "name": "陶土熔炉/窑炉",
+    "era": 1,
+    "milestone": "build_kiln",
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 4
+      },
+      {
+        "key": [
+          "stone",
+          "flint"
+        ],
+        "quantity": 4
+      }
+    ],
+    "description": "耐火黏土与石块堆砌的窑炉，可将温度升至1000K以上进行冶炼与烧陶。",
+    "notice": "现场施工完成！堆砌起【陶土熔炉】！达成时代里程碑！"
+  },
+  {
+    "key": "blast_furnace",
+    "name": "鼓风高炉",
+    "era": 1,
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 8
+      },
+      {
+        "key": [
+          "stone",
+          "flint"
+        ],
+        "quantity": 8
+      },
+      {
+        "key": "copper",
+        "quantity": 2
+      }
+    ],
+    "description": "结合皮风箱与高大炉身的竖炉，能够达到更高炉温进行生铁连续冶炼。",
+    "notice": "高炉构筑完成！【鼓风高炉】耸立于领地！"
   },
   {
     "key": "industrial_reactor",
     "name": "工业连续反应塔",
+    "era": 2,
     "required_items": [
       {
         "key": "wood",
@@ -30,6 +78,91 @@
         "quantity": 2
       }
     ],
-    "notice": "🏭 近代工业巨构施工完成！消耗原木 x8 与金属铜 x2 建立【工业连续反应塔】！"
+    "description": "近代工业连续流装置，插装工艺芯片蓝图后可实现无人值守全自动产出。",
+    "notice": "工业构件组装完成！【工业连续反应塔】运转就绪！"
+  },
+  {
+    "key": "distillation_tower",
+    "name": "近代分馏塔",
+    "era": 2,
+    "required_items": [
+      {
+        "key": "copper",
+        "quantity": 6
+      },
+      {
+        "key": "iron",
+        "quantity": 4
+      },
+      {
+        "key": "wood",
+        "quantity": 6
+      }
+    ],
+    "description": "利用各组分沸点差异进行气液逐板热质交换的多级高效分离构件。",
+    "notice": "施工完成！【近代分馏塔】已部署！"
+  },
+  {
+    "key": "electrolysis_bath",
+    "name": "工业电解槽机组",
+    "era": 3,
+    "required_items": [
+      {
+        "key": "iron",
+        "quantity": 8
+      },
+      {
+        "key": "copper",
+        "quantity": 6
+      },
+      {
+        "key": "charcoal",
+        "quantity": 8
+      }
+    ],
+    "description": "配置石墨阳极与重型母线的高电流密度电解装置，专用于熔盐炼铝与氯碱生产。",
+    "notice": "电气系统接通！【工业电解槽机组】建造完毕！"
+  },
+  {
+    "key": "solvent_extraction_battery",
+    "name": "串级离心萃取槽组",
+    "era": 4,
+    "required_items": [
+      {
+        "key": "iron",
+        "quantity": 12
+      },
+      {
+        "key": "copper",
+        "quantity": 6
+      },
+      {
+        "key": "wood",
+        "quantity": 10
+      }
+    ],
+    "description": "数十级逆流连续相传质萃取设备，用于相似度极高之14种稀土元素精密剥离。",
+    "notice": "精密机组部署完成！【串级离心萃取槽组】落成！"
+  },
+  {
+    "key": "nuclear_reactor",
+    "name": "重水核裂变反应堆",
+    "era": 5,
+    "required_items": [
+      {
+        "key": "iron",
+        "quantity": 20
+      },
+      {
+        "key": "copper",
+        "quantity": 12
+      },
+      {
+        "key": "water",
+        "quantity": 16
+      }
+    ],
+    "description": "受控重核裂变链式反应装置，以重水慢化中子，提供极高通量中子源诱发核嬗变。",
+    "notice": "世纪原子丰碑完成！【重水核反应堆】已建成临界！"
   }
 ]

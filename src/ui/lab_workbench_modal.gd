@@ -152,9 +152,7 @@ func _on_export_blueprint_pressed() -> void:
 	bp.min_temp = 500.0
 	bp.target_apparatus = "furnace"
 	
-	GameState.discovered_blueprints[bp.id] = bp
-	GameState.blueprint_unlocked.emit(bp)
-	GameState.post_notification("工业工艺蓝图 [%s] 固化完成！" % bp.title, ThemeStyler.COLOR_ACCENT)
+	GameState.unlock_blueprint(bp)
 	_add_log("成功将当前实验小试转化为可自动化工业蓝图: %s" % bp.title)
 
 func _add_log(msg: String) -> void:

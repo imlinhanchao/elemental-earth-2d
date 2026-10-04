@@ -1,4 +1,4 @@
-[gd_scene load_steps=30 format=3 uid="uid://ci8v43187140w"]
+[gd_scene load_steps=32 format=3 uid="uid://ci8v43187140w"]
 
 [ext_resource type="Script" path="res://src/ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" uid="uid://ci8v42187654x" path="res://src/ui/periodic_table_modal.tscn" id="2_modal"]
@@ -8,6 +8,8 @@
 [ext_resource type="PackedScene" uid="uid://ci8v43187890d" path="res://src/ui/save_load_modal.tscn" id="6_saveload"]
 [ext_resource type="PackedScene" uid="uid://ci8v43187890e" path="res://src/ui/settings_modal.tscn" id="7_settings"]
 [ext_resource type="PackedScene" uid="uid://ci8v43187890f" path="res://src/ui/pause_menu.tscn" id="8_pause"]
+[ext_resource type="PackedScene" path="res://src/ui/tech_tree_modal.tscn" id="9_tech_modal"]
+[ext_resource type="Texture2D" path="res://assets/icons/tab_tech.svg" id="17_tab_tech"]
 [ext_resource type="Texture2D" uid="uid://mf3fdebgouhk" path="res://assets/icons/era.svg" id="9_era"]
 [ext_resource type="Texture2D" uid="uid://hwldddfjs5nl" path="res://assets/icons/periodic_table.svg" id="10_pt"]
 [ext_resource type="Texture2D" uid="uid://be7b4jsddk0w5" path="res://assets/icons/menu.svg" id="11_menu"]
@@ -547,6 +549,14 @@ icon = ExtResource("12_tab_lab")
 expand_icon = true
 text = "实验 [L]"
 
+[node name="BtnTabTech" type="Button" parent="Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox"]
+custom_minimum_size = Vector2(120, 42)
+layout_mode = 2
+tooltip_text = "科技分类 [K] - 研发各时代前沿科学技术"
+icon = ExtResource("17_tab_tech")
+expand_icon = true
+text = "科技 [K]"
+
 [node name="BtnTabCraft" type="Button" parent="Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox"]
 custom_minimum_size = Vector2(120, 42)
 layout_mode = 2
@@ -589,6 +599,9 @@ visible = false
 visible = false
 
 [node name="ToolCraftModal" parent="." instance=ExtResource("4_tool")]
+visible = false
+
+[node name="TechTreeModal" parent="." instance=ExtResource("9_tech_modal")]
 visible = false
 
 [node name="EraTransitionModal" parent="." instance=ExtResource("5_era")]

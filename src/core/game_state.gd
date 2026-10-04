@@ -14,6 +14,8 @@ signal notification_posted(text: String, color: Color)
 signal era_advanced(old_era: int, new_era: int, era_name: String)
 signal blueprint_unlocked(blueprint: ProcessBlueprint)
 signal tool_equipped(tool_key: String)
+signal tech_researched(tech_key: String)
+signal milestone_completed(milestone_key: String)
 
 signal task_queue_changed
 signal task_started(task: Dictionary)
@@ -47,6 +49,14 @@ var unlocked_blueprints: Dictionary:
 var equipped_tools: Dictionary:
 	get: return sim.equipped_tools
 	set(v): sim.equipped_tools = v
+
+var researched_techs: Array[String]:
+	get: return sim.researched_techs
+	set(v): sim.researched_techs = v
+
+var completed_milestones: Array[String]:
+	get: return sim.completed_milestones
+	set(v): sim.completed_milestones = v
 
 var current_era: int:
 	get: return sim.current_era
@@ -98,6 +108,8 @@ func _connect_sim_signals() -> void:
 	sim.era_advanced.connect(func(o, n, name): era_advanced.emit(o, n, name))
 	sim.blueprint_unlocked.connect(func(bp): blueprint_unlocked.emit(bp))
 	sim.tool_equipped.connect(func(k): tool_equipped.emit(k))
+	sim.tech_researched.connect(func(k): tech_researched.emit(k))
+	sim.milestone_completed.connect(func(k): milestone_completed.emit(k))
 	sim.task_queue_changed.connect(func(): task_queue_changed.emit())
 	sim.task_started.connect(func(t): task_started.emit(t))
 	sim.task_progress_updated.connect(func(t, p, r): task_progress_updated.emit(t, p, r))
@@ -111,6 +123,9 @@ func _process(delta: float) -> void:
 	sim.tick(delta)
 
 func post_notice(text: String, color: Color = Color.WHITE) -> void:
+	sim.post_notice(text, color)
+
+func post_notification(text: String, color: Color = Color.WHITE) -> void:
 	sim.post_notice(text, color)
 
 func unlock_element(elem_num: int, item_key: String) -> void:
@@ -182,6 +197,15 @@ func reactor_install_blueprint(hex: Vector2i, bp_id: String) -> bool:
 
 func get_formatted_playtime() -> String:
 	return sim.get_formatted_playtime()
+
+func can_research_tech(tech_key: String) -> bool:
+	return sim.can_research_tech(tech_key)
+
+func research_tech(tech_key: String) -> bool:
+	return sim.research_tech(tech_key)
+
+func complete_milestone(milestone_key: String) -> void:
+	sim.complete_milestone(milestone_key)
 
 func reset_to_new_game() -> void:
 	sim.reset_to_new_game()

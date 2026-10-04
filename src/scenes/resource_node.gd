@@ -105,7 +105,10 @@ func _draw() -> void:
 	# 应用弹性受击变换
 	draw_set_transform(Vector2.ZERO, anim_rotation, anim_scale)
 	
-	# 绘制严密契合六边形（半径约 24~28px）的高精度像素艺术资产
+	# 绘制相邻同类矿脉连接晶须与矿脉延伸 (Connecting Mineral Veins)
+	_draw_connecting_mineral_veins()
+	
+	# 绘制严密契合六边形（覆盖全瓦片）的高精度晶簇与地貌资源资产
 	match item_key:
 		"malachite":
 			_draw_malachite_crystals()
@@ -123,8 +126,24 @@ func _draw() -> void:
 			_draw_loose_flint()
 		"stick":
 			_draw_fallen_stick()
+		"bauxite":
+			_draw_bauxite_deposit()
+		"pyrite":
+			_draw_pyrite_crystals()
+		"galena":
+			_draw_galena_cubes()
+		"sphalerite":
+			_draw_sphalerite_crystals()
+		"monazite":
+			_draw_monazite_pegmatite()
+		"pitchblende":
+			_draw_pitchblende_nodules()
+		"clay":
+			_draw_clay_bank()
+		"charcoal":
+			_draw_charcoal_bed()
 		_:
-			draw_circle(Vector2.ZERO, 16.0, Color.WHITE)
+			_draw_loose_stone()
 
 # 1. 孔雀石晶簇 (Emerald Green Hex Crystals)
 func _draw_malachite_crystals() -> void:
@@ -261,3 +280,130 @@ func _draw_crystal_poly(pos: Vector2, size: Vector2, base_col: Color, light_col:
 func _draw_cube(pos: Vector2, s: float, col: Color) -> void:
 	draw_rect(Rect2(pos.x - s/2, pos.y - s/2, s, s), col)
 	draw_rect(Rect2(pos.x - s/2, pos.y - s/2, s, s), col.lightened(0.3), false, 1.5)
+
+# 8. 铝土矿床 (Bauxite Deposit - 温暖陶土红与圆润鲕状结核矿层)
+func _draw_bauxite_deposit() -> void:
+	draw_circle(Vector2(0, 4), 22.0, Color(0.20, 0.08, 0.04, 0.55))
+	draw_colored_polygon([
+		Vector2(-16, 6), Vector2(-10, -12), Vector2(6, -15),
+		Vector2(16, -4), Vector2(14, 10), Vector2(-2, 14)
+	], Color(0.72, 0.28, 0.12))
+	# 受光亮面
+	draw_colored_polygon([
+		Vector2(-10, -12), Vector2(6, -15), Vector2(16, -4), Vector2(2, -2)
+	], Color(0.92, 0.44, 0.20))
+	# 鲕状圆形铝矿颗粒
+	draw_circle(Vector2(-4, 0), 4.5, Color(0.85, 0.38, 0.16))
+	draw_circle(Vector2(6, 4), 3.8, Color(0.88, 0.42, 0.18))
+	draw_circle(Vector2(2, -8), 3.2, Color(1.0, 0.55, 0.28))
+
+# 9. 黄铁矿晶簇 (Pyrite - 璀璨黄铜金光、锐利立方晶体 Fool's Gold)
+func _draw_pyrite_crystals() -> void:
+	draw_circle(Vector2(0, 4), 22.0, Color(0.18, 0.14, 0.04, 0.6))
+	# 主黄铜立方晶体
+	_draw_cube(Vector2(-6, 0), 16.0, Color(0.88, 0.72, 0.15))
+	_draw_cube(Vector2(8, 4), 12.0, Color(0.95, 0.82, 0.22))
+	_draw_cube(Vector2(2, -8), 10.0, Color(0.80, 0.65, 0.12))
+	# 耀眼金色金属倒角光泽
+	draw_line(Vector2(-14, -8), Vector2(2, -8), Color(1.0, 0.95, 0.60), 2.0)
+	draw_line(Vector2(2, -8), Vector2(2, 8), Color(1.0, 0.95, 0.60), 1.5)
+
+# 10. 方铅矿方块 (Galena - 蓝灰重金属解理立方矿石，致密反光)
+func _draw_galena_cubes() -> void:
+	draw_circle(Vector2(0, 4), 22.0, Color(0.08, 0.10, 0.14, 0.65))
+	_draw_cube(Vector2(-7, 2), 15.0, Color(0.32, 0.36, 0.42))
+	_draw_cube(Vector2(7, -4), 13.0, Color(0.40, 0.45, 0.52))
+	_draw_cube(Vector2(-1, 9), 9.0, Color(0.28, 0.32, 0.38))
+	# 银亮金属高光棱线
+	draw_line(Vector2(-14, -5), Vector2(0, -5), Color(0.85, 0.90, 0.98), 2.0)
+	draw_line(Vector2(1, -10), Vector2(13, -10), Color(0.92, 0.95, 1.0), 2.0)
+
+# 11. 闪锌矿晶体 (Sphalerite - 金刚光泽黑褐色树脂感结晶)
+func _draw_sphalerite_crystals() -> void:
+	draw_circle(Vector2(0, 4), 22.0, Color(0.15, 0.10, 0.04, 0.6))
+	_draw_crystal_poly(Vector2(-6, -2), Vector2(13, 24), Color(0.42, 0.22, 0.08), Color(0.85, 0.48, 0.14))
+	_draw_crystal_poly(Vector2(6, 3), Vector2(11, 20), Color(0.35, 0.18, 0.06), Color(0.75, 0.40, 0.12))
+	_draw_crystal_poly(Vector2(-1, 9), Vector2(8, 14), Color(0.50, 0.26, 0.10), Color(0.95, 0.60, 0.20))
+
+# 12. 独居石伟晶岩 (Monazite - 稀土璀璨宝石砂与深紫伴生矿)
+func _draw_monazite_pegmatite() -> void:
+	draw_circle(Vector2(0, 4), 22.0, Color(0.18, 0.06, 0.20, 0.65))
+	_draw_crystal_poly(Vector2(-7, -1), Vector2(13, 26), Color(0.55, 0.14, 0.58), Color(0.92, 0.38, 0.95))
+	_draw_crystal_poly(Vector2(7, 3), Vector2(11, 22), Color(0.42, 0.10, 0.48), Color(0.80, 0.30, 0.85))
+	# 荧光稀土微粒星芒
+	draw_circle(Vector2(-2, 10), 2.5, Color(0.98, 0.70, 1.0, 0.95))
+	draw_circle(Vector2(4, -10), 2.0, Color(0.80, 0.95, 1.0, 0.95))
+
+# 13. 沥青铀矿 (Pitchblende - 沥青黑葡萄状铀矿伴随荧光黄绿铀华)
+func _draw_pitchblende_nodules() -> void:
+	draw_circle(Vector2(0, 4), 24.0, Color(0.04, 0.08, 0.04, 0.7))
+	# 沥青黑色葡萄状圆瘤球
+	draw_circle(Vector2(-8, 2), 12.0, Color(0.14, 0.16, 0.15))
+	draw_circle(Vector2(8, -2), 11.0, Color(0.16, 0.18, 0.17))
+	draw_circle(Vector2(0, 8), 9.0, Color(0.12, 0.14, 0.13))
+	# 荧光黄绿放射性铀华水解光晕
+	draw_arc(Vector2(-8, 2), 9.0, -1.2, 0.8, 12, Color(0.45, 0.98, 0.35, 0.9), 2.5)
+	draw_arc(Vector2(8, -2), 8.0, 0.5, 2.6, 12, Color(0.55, 1.0, 0.42, 0.9), 2.2)
+	draw_circle(Vector2(0, 2), 3.0, Color(0.70, 1.0, 0.45, 0.95))
+
+# 14. 黏土沉积层 (Clay Bank - 肥沃暖黄赤土河岸沉积)
+func _draw_clay_bank() -> void:
+	draw_circle(Vector2(0, 4), 22.0, Color(0.20, 0.12, 0.06, 0.5))
+	draw_colored_polygon([
+		Vector2(-18, 4), Vector2(-12, -8), Vector2(10, -10),
+		Vector2(18, 2), Vector2(12, 12), Vector2(-8, 14)
+	], Color(0.78, 0.45, 0.22))
+	# 阶梯状沉积纹路
+	draw_line(Vector2(-14, -2), Vector2(14, -4), Color(0.92, 0.58, 0.30), 2.5)
+	draw_line(Vector2(-10, 5), Vector2(10, 3), Color(0.68, 0.38, 0.18), 2.0)
+
+# 15. 木炭/煤层露头 (Charcoal / Coal Bed - 黝黑焦炭与解理层)
+func _draw_charcoal_bed() -> void:
+	draw_circle(Vector2(0, 4), 20.0, Color(0.04, 0.04, 0.05, 0.7))
+	draw_colored_polygon([
+		Vector2(-14, 5), Vector2(-9, -10), Vector2(7, -12),
+		Vector2(15, -2), Vector2(10, 11), Vector2(-4, 12)
+	], Color(0.18, 0.18, 0.20))
+	draw_colored_polygon([
+		Vector2(-9, -10), Vector2(7, -12), Vector2(15, -2), Vector2(2, -4)
+	], Color(0.32, 0.32, 0.36))
+	# 碳质解理闪光线
+	draw_line(Vector2(-9, -10), Vector2(2, -4), Color(0.65, 0.65, 0.72), 1.5)
+
+# 相互连接成片的矿脉延伸 (Connecting Mineral Veins)
+func _draw_connecting_mineral_veins() -> void:
+	if hex_coord == Vector2i(9999, 9999) or GameState.world_resources.is_empty():
+		return
+		
+	var hex_dirs = [
+		Vector2i(0, 1), Vector2i(-1, 1), Vector2i(-1, 0),
+		Vector2i(0, -1), Vector2i(1, -1), Vector2i(1, 0)
+	]
+	
+	for e in range(6):
+		var n_coord = hex_coord + hex_dirs[e]
+		if GameState.world_resources.has(n_coord):
+			var n_res = GameState.world_resources[n_coord]
+			if n_res == item_key:
+				# 相邻地块也是同种资源：延伸矿脉晶簇与地表裂痕连接线！
+				var angle = deg_to_rad(60.0 * e)
+				var vein_dir = Vector2(cos(angle), sin(angle)) * 34.0
+				var v_col = _get_mineral_vein_color(item_key)
+				draw_line(Vector2.ZERO, vein_dir, v_col.darkened(0.2), 4.5)
+				draw_line(Vector2.ZERO, vein_dir, v_col, 2.2)
+				draw_circle(vein_dir * 0.7, 2.5, v_col.lightened(0.3))
+
+func _get_mineral_vein_color(key: String) -> Color:
+	match key:
+		"malachite": return Color(0.20, 0.85, 0.45)
+		"iron_ore": return Color(0.85, 0.25, 0.18)
+		"sulfur": return Color(0.95, 0.85, 0.20)
+		"halite": return Color(0.65, 0.85, 0.98)
+		"pyrite": return Color(0.95, 0.82, 0.25)
+		"galena": return Color(0.55, 0.60, 0.70)
+		"bauxite": return Color(0.90, 0.45, 0.20)
+		"monazite": return Color(0.85, 0.35, 0.90)
+		"pitchblende": return Color(0.45, 0.95, 0.30)
+		"wood": return Color(0.22, 0.48, 0.20)
+		_: return Color(0.60, 0.60, 0.65)
+

@@ -163,6 +163,8 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 			"current_era": GameState.current_era,
 			"playtime_seconds": GameState.playtime_seconds,
 			"discovered_elements": GameState.discovered_elements,
+			"researched_techs": GameState.researched_techs,
+			"completed_milestones": GameState.completed_milestones,
 			"equipped_tools": GameState.equipped_tools,
 			"inventory": GameState.inventory.items,
 			"unlocked_blueprints": _serialize_blueprints(),
@@ -217,6 +219,16 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
 	GameState.discovered_elements = []
 	for num in gs_data.get("discovered_elements", []):
 		GameState.discovered_elements.append(int(num))
+		
+	var r_techs: Array[String] = []
+	for t in gs_data.get("researched_techs", []):
+		r_techs.append(str(t))
+	GameState.researched_techs = r_techs
+	
+	var c_milestones: Array[String] = []
+	for m in gs_data.get("completed_milestones", []):
+		c_milestones.append(str(m))
+	GameState.completed_milestones = c_milestones
 		
 	GameState.equipped_tools = gs_data.get("equipped_tools", {
 		"axe": "bare_hands",

@@ -20,6 +20,8 @@ func _ready() -> void:
 	GameState.inventory.add_item("wood", 10)
 	GameState.equip_tool("axe", "flint_axe")
 	GameState.unlock_element(29, "copper")
+	GameState.researched_techs = ["stone_tool_crafting"]
+	GameState.completed_milestones = ["craft_stone_pickaxe"]
 	
 	var bp = ProcessBlueprint.new("bp_smelt_copper", "连续炼铜工艺", {"malachite": 1.0}, {"copper": 1.0}, 850.0)
 	GameState.unlock_blueprint(bp)
@@ -101,7 +103,9 @@ func _ready() -> void:
 	assert(gs.get("depleted_tiles", []).size() == 1, "采空格子序列化失败!")
 	assert(gs.get("built_furnaces", []).size() == 1, "熔炉状态序列化失败!")
 	assert(gs.get("built_reactors", []).size() == 1, "反应塔状态序列化失败!")
-	print(" -> v3 JSON 结构字段验证通过: version=3, 队列/溶液/采空瓦片/熔炉/反应塔完整")
+	assert(gs.get("researched_techs", []).has("stone_tool_crafting"), "科技状态序列化失败!")
+	assert(gs.get("completed_milestones", []).has("craft_stone_pickaxe"), "里程碑状态序列化失败!")
+	print(" -> v3 JSON 结构字段验证通过: version=3, 队列/溶液/采空瓦片/熔炉/反应塔/科技/里程碑完整")
 	
 	# 3. 清空游戏状态后读档恢复
 	GameState.reset_to_new_game()
@@ -110,6 +114,8 @@ func _ready() -> void:
 	assert(GameState.depleted_tiles.is_empty(), "重置后采空列表应为空")
 	assert(GameState.built_furnaces.is_empty(), "重置后熔炉应为空")
 	assert(GameState.built_reactors.is_empty(), "重置后反应塔应为空")
+	assert(GameState.researched_techs.is_empty(), "重置后科技应为空")
+	assert(GameState.completed_milestones.is_empty(), "重置后里程碑应为空")
 	
 	var load_ok = SaveManager.load_from_slot(slot_id, null)
 	assert(load_ok, "v3 存档载入失败!")
@@ -117,6 +123,8 @@ func _ready() -> void:
 	assert(GameState.inventory.get_count("copper") == 5, "背包物品恢复错误!")
 	assert(GameState.equipped_tools["axe"] == "flint_axe", "工具恢复错误!")
 	assert(GameState.discovered_elements.has(29), "元素恢复错误!")
+	assert(GameState.researched_techs.has("stone_tool_crafting"), "已研发科技恢复错误!")
+	assert(GameState.completed_milestones.has("craft_stone_pickaxe"), "已达成里程碑恢复错误!")
 	assert(GameState.task_queue.size() == 1, "任务队列恢复错误!")
 	assert(GameState.task_queue[0]["hex_q"] == 2, "队列坐标恢复错误!")
 	assert(GameState.active_task.get("id") == 100, "进行中任务恢复错误!")
@@ -129,7 +137,7 @@ func _ready() -> void:
 	assert(GameState.lab_vessel.has_substance("water", 2.9), "实验台试剂恢复错误!")
 	assert(GameState.depleted_tiles.has(Vector2i(3, -2)), "采空格子恢复错误!")
 	assert(GameState.get_current_territory_radius() == 8, "时代 1 领地半径应为 8!")
-	print(" -> v3 存档全量恢复校验通过: 时代/背包/工具/队列/溶液/熔炉/反应塔/采空格子/领地半径全部精确吻合!")
+	print(" -> v3 存档全量恢复校验通过: 时代/背包/工具/队列/溶液/熔炉/反应塔/采空格子/领地半径/科技/里程碑全部精确吻合!")
 	
 	# 4. 测试时代跃迁与门槛保护 (时代 2 及以后不随意乱跳)
 	print("\n[测试] 时代门槛与跃迁测试:")
@@ -182,6 +190,18 @@ func _ready() -> void:
 	assert(GameState.active_task.is_empty(), "v2 缺省进行中任务应为空!")
 	assert(GameState.depleted_tiles.is_empty(), "v2 缺省采空格子应为空!")
 	print(" -> v2 旧档平滑升级载入成功 (缺失字段安全置空，背包正常保留)")
+	
+	# 8. 测试科技研发系统与里程碑联动
+	print("\n[测试] 科技研发与里程碑联动测试:")
+	GameState.researched_techs = ["stone_tool_crafting"]
+	GameState.inventory.add_item("stone", 60)
+	GameState.inventory.add_item("wood", 30)
+	assert(GameState.can_research_tech("stone_masonry"), "满足前置与材料应可研发石材加工技术!")
+	var tech_ok = GameState.research_tech("stone_masonry")
+	assert(tech_ok, "研发石材加工技术必须成功!")
+	assert(GameState.researched_techs.has("stone_masonry"), "石材加工技术必须记入已研发列表!")
+	assert(GameState.inventory.get_count("stone") == 10, "研发材料消耗扣减必须准确!")
+	print(" -> 科技研发系统与前置/材料消耗校验通过")
 	
 	# 清理测试存档文件
 	SaveManager.delete_slot(slot_id)

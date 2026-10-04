@@ -1,7 +1,8 @@
 [
   {
     "key": "flint_axe",
-    "name": "原始燧石斧",
+    "name": "原始燧石手斧",
+    "era": 0,
     "slot": "axe",
     "type": "tool",
     "required_items": [
@@ -17,36 +18,972 @@
         "quantity": 2
       }
     ],
-    "notice": "🪓 制作成功！装备【原始燧石斧】，现在可以前往树林砍伐橡树！"
+    "result_tool": "flint_axe",
+    "notice": "制作成功！装备【原始燧石斧】，现在可以前往树林砍伐橡树！"
+  },
+  {
+    "key": "crucible",
+    "name": "坩埚",
+    "era": 0,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": [
+          "clay",
+          "pig_iron"
+        ],
+        "quantity": 5
+      },
+      {
+        "key": "fire_brick",
+        "quantity": 3
+      }
+    ],
+    "required_techs": [],
+    "result_item": "crucible",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": "craft_crucible",
+    "description": "使用粘土和耐火砖制作耐高温的坩埚，用于金属熔炼。",
+    "notice": "制作完成！成功获得【坩埚】！"
+  },
+  {
+    "key": "wooden_bucket",
+    "name": "木桶",
+    "era": 0,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 20
+      }
+    ],
+    "required_techs": [
+      "wood_processing"
+    ],
+    "result_item": "wooden_bucket",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用木材制作木桶，可以用来装水和其他物品。",
+    "notice": "制作完成！成功获得【木桶】！"
+  },
+  {
+    "key": "fire_seed",
+    "name": "火种",
+    "era": 0,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "flint",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 5
+      }
+    ],
+    "required_techs": [
+      "fire_starting"
+    ],
+    "result_item": "fire_seed",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": "craft_fire_seed",
+    "description": "使用燧石和木材制作火种，可以用来生火。",
+    "notice": "制作完成！成功获得【火种】！"
+  },
+  {
+    "key": "stone_axe",
+    "name": "石斧",
+    "era": 0,
+    "type": "tool",
+    "slot": "axe",
+    "required_items": [
+      {
+        "key": "stone",
+        "quantity": 5
+      },
+      {
+        "key": "wood",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "stone_tool_crafting"
+    ],
+    "result_item": "stone_axe",
+    "result_tool": "stone_axe",
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用石头和木材制作石斧，可以用来砍树和挖掘。",
+    "notice": "制作完成！成功获得【石斧】！"
   },
   {
     "key": "stone_pickaxe",
-    "name": "粗制石镐",
-    "slot": "pickaxe",
+    "name": "石镐",
+    "era": 0,
     "type": "tool",
+    "slot": "pickaxe",
     "required_items": [
       {
-        "key": "stick",
+        "key": "stone",
+        "quantity": 5
+      },
+      {
+        "key": "wood",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "stone_tool_crafting"
+    ],
+    "result_item": "stone_pickaxe",
+    "result_tool": "stone_pickaxe",
+    "result_quantity": 1,
+    "milestone": "craft_stone_pickaxe",
+    "description": "使用石头和木材制作石镐，可以用来挖掘和采矿。",
+    "notice": "制作完成！成功获得【石镐】！"
+  },
+  {
+    "key": "sticky_rice_mortar",
+    "name": "糯米灰浆",
+    "era": 0,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "sticky_rice",
         "quantity": 3
       },
       {
+        "key": "slaked_lime",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "rammed_earth_technology"
+    ],
+    "result_item": "sticky_rice_mortar",
+    "result_tool": null,
+    "result_quantity": 2,
+    "milestone": null,
+    "description": "将糯米蒸煮成浆，与熟石灰充分搅拌，制成糯米灰浆。",
+    "notice": "制作完成！成功获得【糯米灰浆】！"
+  },
+  {
+    "key": "fiber_cloth",
+    "name": "纤维布",
+    "era": 0,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "bark",
+        "quantity": 5
+      },
+      {
+        "key": "alkaline_solution",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "wood_processing",
+      "bark_processing"
+    ],
+    "result_item": "fiber_cloth",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用树皮制作纤维布，可以用来制作衣物和其他物品。",
+    "notice": "制作完成！成功获得【纤维布】！"
+  },
+  {
+    "key": "iron_tank",
+    "name": "铁罐",
+    "era": 0,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [],
+    "result_item": "iron_tank",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "通过焊接和锻造制作坚固的铁罐，用于储存某些特殊的腐蚀性的化学品。",
+    "notice": "制作完成！成功获得【铁罐】！"
+  },
+  {
+    "key": "platinum_rhodium_catalyst",
+    "name": "铂铑催化剂",
+    "era": 0,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "platinum_ingot",
+        "quantity": 1,
+        "use": 0.01
+      },
+      {
+        "key": "rhodium",
+        "quantity": 0.1,
+        "use": 0.01
+      }
+    ],
+    "required_techs": [],
+    "result_item": "platinum_rhodium_catalyst",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "将铂金锭和铑熔融拉丝制成催化网。",
+    "notice": "制作完成！成功获得【铂铑催化剂】！"
+  },
+  {
+    "key": "bellows",
+    "name": "鼓风机",
+    "era": 0,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 10
+      },
+      {
+        "key": "fiber_cloth",
+        "quantity": 5
+      }
+    ],
+    "required_techs": [
+      "wood_processing",
+      "bark_processing"
+    ],
+    "result_item": "bellows",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用木材和树皮制作鼓风机，可以用来增加火焰的温度。",
+    "notice": "制作完成！成功获得【鼓风机】！"
+  },
+  {
+    "key": "brass_condenser",
+    "name": "冷凝管",
+    "era": 1,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
         "key": [
-          "stone",
-          "flint"
+          "glass",
+          "brass"
         ],
         "quantity": 3
       }
     ],
-    "notice": "⛏️ 制作成功！装备【粗制石镐】，现在可以前往矿脉开采孔雀石/赤铁矿！"
+    "required_techs": [
+      "brass_tool_crafting"
+    ],
+    "result_item": "brass_condenser",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "将黄铜或玻璃锻造成螺旋冷凝管，用于实验室蒸馏。",
+    "notice": "制作完成！成功获得【冷凝管】！"
   },
   {
-    "key": "copper_pickaxe",
-    "name": "纯铜地质镐",
-    "slot": "pickaxe",
-    "type": "tool",
+    "key": "pottery_mold",
+    "name": "陶模",
+    "era": 1,
+    "type": "item",
+    "slot": null,
     "required_items": [
       {
+        "key": "clay",
+        "quantity": 10
+      }
+    ],
+    "required_techs": [
+      "mold_making"
+    ],
+    "result_item": "pottery_mold",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "细心捏制并阴干陶土，制作出复杂的青铜器铸模。",
+    "notice": "制作完成！成功获得【陶模】！"
+  },
+  {
+    "key": "clay_pot",
+    "name": "陶罐",
+    "era": 1,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 5
+      },
+      {
+        "key": "kiln",
+        "quantity": 1,
+        "use": 0.1
+      }
+    ],
+    "required_techs": [
+      "pottery"
+    ],
+    "result_item": "clay_pot",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用粘土制作陶罐，可以用来装水和其他物品。",
+    "notice": "制作完成！成功获得【陶罐】！"
+  },
+  {
+    "key": "gas_bottle",
+    "name": "集气瓶",
+    "era": 1,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": [
+          "clay",
+          "glass"
+        ],
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "pottery",
+      "gas_collection"
+    ],
+    "result_item": "gas_bottle",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": "craft_gas_bottle",
+    "description": "利用粘土和火制作一个集气瓶。",
+    "notice": "制作完成！成功获得【集气瓶】！"
+  },
+  {
+    "key": "bronze_axe",
+    "name": "青铜斧",
+    "era": 1,
+    "type": "tool",
+    "slot": "axe",
+    "required_items": [
+      {
+        "key": "bronze",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "bronze_tool_crafting"
+    ],
+    "result_item": "bronze_axe",
+    "result_tool": "bronze_axe",
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用青铜和木材制作一把青铜斧。",
+    "notice": "制作完成！成功获得【青铜斧】！"
+  },
+  {
+    "key": "bronze_pickaxe",
+    "name": "青铜镐",
+    "era": 1,
+    "type": "tool",
+    "slot": "pickaxe",
+    "required_items": [
+      {
+        "key": "bronze",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "bronze_tool_crafting"
+    ],
+    "result_item": "bronze_pickaxe",
+    "result_tool": "bronze_pickaxe",
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用青铜和木材制作一把青铜镐。",
+    "notice": "制作完成！成功获得【青铜镐】！"
+  },
+  {
+    "key": "brass_axe",
+    "name": "黄铜斧",
+    "era": 1,
+    "type": "tool",
+    "slot": "axe",
+    "required_items": [
+      {
+        "key": "brass",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "brass_tool_crafting"
+    ],
+    "result_item": "brass_axe",
+    "result_tool": "brass_axe",
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用黄铜和木材制作一把黄铜斧。",
+    "notice": "制作完成！成功获得【黄铜斧】！"
+  },
+  {
+    "key": "brass_pickaxe",
+    "name": "黄铜镐",
+    "era": 1,
+    "type": "tool",
+    "slot": "pickaxe",
+    "required_items": [
+      {
+        "key": "brass",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "brass_tool_crafting"
+    ],
+    "result_item": "brass_pickaxe",
+    "result_tool": "brass_pickaxe",
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用黄铜和木材制作一把黄铜镐。",
+    "notice": "制作完成！成功获得【黄铜镐】！"
+  },
+  {
+    "key": "chisel",
+    "name": "凿子",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "pig_iron",
+        "quantity": 1
+      },
+      {
+        "key": "wood",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "iron_tool_crafting"
+    ],
+    "result_item": "chisel",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "将铁块锻造成锋利的凿子，用于木材的精细加工。",
+    "notice": "制作完成！成功获得【凿子】！"
+  },
+  {
+    "key": "javelin",
+    "name": "标枪",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 2
+      },
+      {
+        "key": "steel",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "iron_tool_crafting"
+    ],
+    "result_item": "javelin",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用木材和钢制作一把标枪。",
+    "notice": "制作完成！成功获得【标枪】！"
+  },
+  {
+    "key": "tenon_mortise",
+    "name": "榫卯构件",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 2
+      },
+      {
+        "key": "chisel",
+        "quantity": 1,
+        "use": 0.02
+      }
+    ],
+    "required_techs": [
+      "tenon_mortise_tech"
+    ],
+    "result_item": "tenon_mortise",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用凿子将木材加工成榫头或卯眼形状的构件，用于木构建筑。",
+    "notice": "制作完成！成功获得【榫卯构件】！"
+  },
+  {
+    "key": "panning_dish",
+    "name": "淘洗盘",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 5
+      },
+      {
+        "key": "sieve",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "sifting_technology"
+    ],
+    "result_item": "panning_dish",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用木材或硬质材料制作简易的淘洗盘，用于在水中分离重矿砂。",
+    "notice": "制作完成！成功获得【淘洗盘】！"
+  },
+  {
+    "key": "dynamite",
+    "name": "炸药",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "gunpowder",
+        "quantity": 1
+      },
+      {
+        "key": "pig_iron",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "explosives"
+    ],
+    "result_item": "dynamite",
+    "result_tool": null,
+    "result_quantity": 3,
+    "milestone": null,
+    "description": "将火药装入纸筒，插入导火索，制成可用于爆破的炸药卷。",
+    "notice": "制作完成！成功获得【炸药】！"
+  },
+  {
+    "key": "sieve",
+    "name": "筛子",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 2
+      },
+      {
+        "key": "fiber_cloth",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "sifting_technology"
+    ],
+    "result_item": "sieve",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "用木框和纤维布制作一个简易筛子。",
+    "notice": "制作完成！成功获得【筛子】！"
+  },
+  {
+    "key": "iron_axe",
+    "name": "铁斧",
+    "era": 2,
+    "type": "tool",
+    "slot": "axe",
+    "required_items": [
+      {
+        "key": "pig_iron",
+        "quantity": 2,
+        "use": 1
+      },
+      {
+        "key": "wood",
+        "quantity": 1,
+        "use": 1
+      }
+    ],
+    "required_techs": [
+      "iron_tool_crafting"
+    ],
+    "result_item": "iron_axe",
+    "result_tool": "iron_axe",
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "打造一把铁斧，用于砍伐树木。",
+    "notice": "制作完成！成功获得【铁斧】！"
+  },
+  {
+    "key": "iron_shovel",
+    "name": "铁铲",
+    "era": 2,
+    "type": "tool",
+    "slot": "shovel",
+    "required_items": [
+      {
+        "key": "pig_iron",
+        "quantity": 1,
+        "use": 1
+      },
+      {
+        "key": "wood",
+        "quantity": 1,
+        "use": 1
+      }
+    ],
+    "required_techs": [
+      "iron_tool_crafting"
+    ],
+    "result_item": "iron_shovel",
+    "result_tool": "iron_shovel",
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "打造一把铁铲，用于挖掘泥土和沙子。",
+    "notice": "制作完成！成功获得【铁铲】！"
+  },
+  {
+    "key": "iron_pickaxe",
+    "name": "铁镐",
+    "era": 2,
+    "type": "tool",
+    "slot": "pickaxe",
+    "required_items": [
+      {
+        "key": "pig_iron",
+        "quantity": 2,
+        "use": 1
+      },
+      {
+        "key": "wood",
+        "quantity": 1,
+        "use": 1
+      }
+    ],
+    "required_techs": [
+      "iron_tool_crafting"
+    ],
+    "result_item": "iron_pickaxe",
+    "result_tool": "iron_pickaxe",
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用生铁和木材打造一把铁镐。",
+    "notice": "制作完成！成功获得【铁镐】！"
+  },
+  {
+    "key": "detonator",
+    "name": "雷管",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "mercury_fulminate",
+        "quantity": 1
+      },
+      {
         "key": "copper",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "detonation_tech"
+    ],
+    "result_item": "detonator",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "用铜片包裹雷酸汞，制成雷管。",
+    "notice": "制作完成！成功获得【雷管】！"
+  },
+  {
+    "key": "high_explosive",
+    "name": "高爆炸药",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "nitroglycerin",
+        "quantity": 1
+      },
+      {
+        "key": "diatomaceous_earth",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "high_explosive_tech"
+    ],
+    "result_item": "high_explosive",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "将硝化甘油小心地混入硅藻土中，制成稳定的高爆炸药。",
+    "notice": "制作完成！成功获得【高爆炸药】！"
+  },
+  {
+    "key": "glass_rod",
+    "name": "玻璃棒",
+    "era": 3,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "glassworking"
+    ],
+    "result_item": "glass_rod",
+    "result_tool": null,
+    "result_quantity": 2,
+    "milestone": null,
+    "description": "将熔融玻璃拉制成细棒。",
+    "notice": "制作完成！成功获得【玻璃棒】！"
+  },
+  {
+    "key": "beaker",
+    "name": "玻璃烧杯",
+    "era": 3,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "glassworking"
+    ],
+    "result_item": "beaker",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "利用玻璃熔融状态吹制成烧杯形状。",
+    "notice": "制作完成！成功获得【玻璃烧杯】！"
+  },
+  {
+    "key": "distilling_flask",
+    "name": "玻璃蒸馏瓶",
+    "era": 3,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 3
+      }
+    ],
+    "required_techs": [
+      "glassworking"
+    ],
+    "result_item": "distilling_flask",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "吹制带有侧管的蒸馏瓶。",
+    "notice": "制作完成！成功获得【玻璃蒸馏瓶】！"
+  },
+  {
+    "key": "test_tube",
+    "name": "玻璃试管",
+    "era": 3,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "glassworking"
+    ],
+    "result_item": "test_tube",
+    "result_tool": null,
+    "result_quantity": 3,
+    "milestone": null,
+    "description": "将熔融玻璃拉制成细管并封闭一端。",
+    "notice": "制作完成！成功获得【玻璃试管】！"
+  },
+  {
+    "key": "battery",
+    "name": "电池",
+    "era": 3,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "zinc",
+        "quantity": 1
+      },
+      {
+        "key": "copper",
+        "quantity": 1
+      },
+      {
+        "key": "dilute_sulfuric_acid",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "electrochemistry"
+    ],
+    "result_item": "battery",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": "craft_battery",
+    "description": "将锌片和铜片插入稀硫酸中，用导线连接，制成简易电池。",
+    "notice": "制作完成！成功获得【伏打电池】！"
+  },
+  {
+    "key": "titanium_pickaxe",
+    "name": "钛镐",
+    "era": 3,
+    "type": "tool",
+    "slot": "pickaxe",
+    "required_items": [
+      {
+        "key": "titanium",
+        "quantity": 2
+      },
+      {
+        "key": "wood",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "titanium_alloy_smithing"
+    ],
+    "result_item": "titanium_pickaxe",
+    "result_tool": "titanium_pickaxe",
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "将钛加热锻造，打磨成坚固的镐头，安装在木柄上。",
+    "notice": "制作完成！成功获得【钛镐】！"
+  },
+  {
+    "key": "chromium_pickaxe",
+    "name": "铬镐",
+    "era": 3,
+    "type": "tool",
+    "slot": "pickaxe",
+    "required_items": [
+      {
+        "key": "stainless_steel",
+        "quantity": 2
+      },
+      {
+        "key": "steel",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "chrome_alloy_smithing"
+    ],
+    "result_item": "chromium_pickaxe",
+    "result_tool": "chromium_pickaxe",
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "将铬锭熔炼成型，锻造成坚固的镐头，再安装木柄，制成一把耐用的铬镐。",
+    "notice": "制作完成！成功获得【铬镐】！"
+  },
+  {
+    "key": "lithium_ion_battery",
+    "name": "锂离子电池",
+    "era": 3,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "lithium",
+        "quantity": 1
+      },
+      {
+        "key": "copper",
+        "quantity": 1
+      },
+      {
+        "key": "fiber_cloth",
+        "quantity": 1
+      },
+      {
+        "key": "dilute_sulfuric_acid",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "lithium_battery_tech"
+    ],
+    "result_item": "lithium_ion_battery",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "将锂片、铜箔、铝箔和电解质组装成锂离子电池。",
+    "notice": "制作完成！成功获得【锂离子电池】！"
+  },
+  {
+    "key": "manganese_pickaxe",
+    "name": "锰镐",
+    "era": 3,
+    "type": "tool",
+    "slot": "pickaxe",
+    "required_items": [
+      {
+        "key": "manganese_steel",
         "quantity": 3
       },
       {
@@ -54,23 +991,410 @@
         "quantity": 2
       }
     ],
-    "notice": "⛏️ 制作成功！装备【纯铜地质镐】！"
+    "required_techs": [
+      "manganese_alloy_smithing"
+    ],
+    "result_item": "manganese_pickaxe",
+    "result_tool": "manganese_pickaxe",
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "用锰钢制作一把坚固的镐，适合高强度挖掘。",
+    "notice": "制作完成！成功获得【锰镐】！"
   },
   {
-    "key": "iron_pickaxe",
-    "name": "精钢地质重锤",
-    "slot": "pickaxe",
-    "type": "tool",
+    "key": "nickel_cadmium_battery",
+    "name": "镍镉电池",
+    "era": 3,
+    "type": "item",
+    "slot": null,
     "required_items": [
       {
-        "key": "iron",
+        "key": "nickel_hydroxide",
+        "quantity": 2,
+        "use": 0
+      },
+      {
+        "key": "cadmium",
+        "quantity": 1,
+        "use": 0
+      },
+      {
+        "key": "potassium_hydroxide",
+        "quantity": 1,
+        "use": 0
+      }
+    ],
+    "required_techs": [
+      "nickel_cadmium_battery_tech"
+    ],
+    "result_item": "nickel_cadmium_battery",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "将氢氧化镍、镉粉和氢氧化钾电解液组装成镍镉电池。",
+    "notice": "制作完成！成功获得【镍镉电池】！"
+  },
+  {
+    "key": "fractionating_column",
+    "name": "分馏柱",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 2,
+        "use": 1
+      }
+    ],
+    "required_techs": [
+      "advanced_chemical_equipment"
+    ],
+    "result_item": "fractionating_column",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "吹制更加精细的实验室玻璃器皿。",
+    "notice": "制作完成！成功获得【分馏柱】！"
+  },
+  {
+    "key": "reaction_kettle",
+    "name": "反应釜",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "manganese_steel",
         "quantity": 4
       },
       {
-        "key": "charcoal",
+        "key": "glass",
         "quantity": 2
       }
     ],
-    "notice": "⚒️ 制作成功！装备【精钢地质重锤】！"
+    "required_techs": [
+      "advanced_chemical_equipment"
+    ],
+    "result_item": "reaction_kettle",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用锰钢制造坚固的外壳，并衬以高硼硅玻璃，用于大规模的化学反应。",
+    "notice": "制作完成！成功获得【反应釜】！"
+  },
+  {
+    "key": "sealed_tube",
+    "name": "封管",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "advanced_chemical_equipment"
+    ],
+    "result_item": "sealed_tube",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "制作能够承受一定压力的厚壁石英反应管，用于高温高压密闭反应。",
+    "notice": "制作完成！成功获得【石英反应管】！"
+  },
+  {
+    "key": "geiger_counter",
+    "name": "盖革计数器",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "copper",
+        "quantity": 2
+      },
+      {
+        "key": "steel",
+        "quantity": 1
+      },
+      {
+        "key": "glass",
+        "quantity": 1
+      },
+      {
+        "key": "lithium_ion_battery",
+        "quantity": 1
+      },
+      {
+        "key": "argon",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "precision_machinery"
+    ],
+    "result_item": "geiger_counter",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "将金属外壳、玻璃管、电池和氩气组装成能够探测电离辐射的仪器。",
+    "notice": "制作完成！成功获得【盖革计数器】！"
+  },
+  {
+    "key": "vacuum_pump",
+    "name": "真空泵",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 2,
+        "use": 1
+      },
+      {
+        "key": "rubber",
+        "quantity": 1,
+        "use": 1
+      },
+      {
+        "key": "copper",
+        "quantity": 1,
+        "use": 1
+      }
+    ],
+    "required_techs": [
+      "precision_machinery"
+    ],
+    "result_item": "vacuum_pump",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "依靠精密机械结构组装真空泵。",
+    "notice": "制作完成！成功获得【真空泵】！"
+  },
+  {
+    "key": "graphite_electrolytic_cell",
+    "name": "石墨电解槽",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "graphite",
+        "quantity": 4
+      },
+      {
+        "key": "manganese_steel",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "advanced_chemical_equipment"
+    ],
+    "result_item": "graphite_electrolytic_cell",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "以高纯度石墨作为电极，锰钢作为槽体，构建高性能的电解设备。",
+    "notice": "制作完成！成功获得【石墨电解槽】！"
+  },
+  {
+    "key": "evaporating_dish",
+    "name": "蒸发皿",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "glass",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "advanced_chemical_equipment"
+    ],
+    "result_item": "evaporating_dish",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "使用精制陶瓷或耐热玻璃烧制，用于液体的浓缩结晶。",
+    "notice": "制作完成！成功获得【蒸发皿】！"
+  },
+  {
+    "key": "steel_cylinder",
+    "name": "钢制气瓶",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 2,
+        "use": 1
+      }
+    ],
+    "required_techs": [
+      "precision_machinery"
+    ],
+    "result_item": "steel_cylinder",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "制造用于储存高压气体的钢瓶。",
+    "notice": "制作完成！成功获得【钢制气瓶】！"
+  },
+  {
+    "key": "autoclave",
+    "name": "高压釜",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 3
+      }
+    ],
+    "required_techs": [
+      "high_pressure_tech"
+    ],
+    "result_item": "autoclave",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "利用钢材锻造密封耐压的高压釜。",
+    "notice": "制作完成！成功获得【高压釜】！"
+  },
+  {
+    "key": "cyclotron",
+    "name": "回旋加速器",
+    "era": 5,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 10
+      },
+      {
+        "key": "copper",
+        "quantity": 5
+      },
+      {
+        "key": "superconducting_magnet",
+        "quantity": 1
+      },
+      {
+        "key": "geiger_counter",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "particle_accelerator_tech",
+      "precision_machinery"
+    ],
+    "result_item": "cyclotron",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": "atomic_age",
+    "description": "整合大型电磁铁、真空室和高频电源，搭建粒子加速装置。",
+    "notice": "制作完成！成功获得【回旋加速器】！"
+  },
+  {
+    "key": "control_rod",
+    "name": "控制棒",
+    "era": 5,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": [
+          "boron",
+          "cadmium"
+        ],
+        "quantity": 2
+      },
+      {
+        "key": "steel",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "nuclear_physics"
+    ],
+    "result_item": "control_rod",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "将硼或镉加工成棒状，用于核反应堆中子吸收控制。",
+    "notice": "制作完成！成功获得【控制棒】！"
+  },
+  {
+    "key": "nuclear_fuel_rod",
+    "name": "核燃料棒",
+    "era": 5,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "uranium_oxide",
+        "quantity": 5
+      },
+      {
+        "key": "zirconium",
+        "quantity": 1
+      },
+      {
+        "key": "graphite",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "nuclear_physics"
+    ],
+    "result_item": "nuclear_fuel_rod",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "将二氧化铀粉末压制、烧结成芯块，并封装在锆合金包壳中。",
+    "notice": "制作完成！成功获得【核燃料棒】！"
+  },
+  {
+    "key": "superconducting_magnet",
+    "name": "超导磁体",
+    "era": 5,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "niobium",
+        "quantity": 5
+      },
+      {
+        "key": "titanium",
+        "quantity": 3
+      },
+      {
+        "key": "copper",
+        "quantity": 10
+      },
+      {
+        "key": "helium",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "particle_accelerator_tech"
+    ],
+    "result_item": "superconducting_magnet",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "利用铌、钛、铜等材料，通过精密绕制和低温封装工艺，制造强磁场超导磁体。",
+    "notice": "制作完成！成功获得【超导磁体】！"
   }
 ]

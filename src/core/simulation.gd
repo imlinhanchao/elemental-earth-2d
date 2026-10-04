@@ -15,6 +15,8 @@ signal notification_posted(text: String, color: Color)
 signal era_advanced(old_era: int, new_era: int, era_name: String)
 signal blueprint_unlocked(blueprint: ProcessBlueprint)
 signal tool_equipped(tool_key: String)
+signal tech_researched(tech_key: String)
+signal milestone_completed(milestone_key: String)
 
 signal task_queue_changed
 signal task_started(task: Dictionary)
@@ -38,6 +40,9 @@ var equipped_tools: Dictionary = {
 	"axe": "bare_hands",
 	"pickaxe": "bare_hands"
 }
+
+var researched_techs: Array[String] = []
+var completed_milestones: Array[String] = []
 
 var current_era: int = 0
 var playtime_seconds: float = 0.0
@@ -81,6 +86,7 @@ func _init() -> void:
 	lab_vessel.temperature = 293.15
 	
 	solver.element_discovered.connect(_on_solver_element_discovered)
+	solver.reaction_occurred.connect(_on_solver_reaction_occurred)
 	inventory.item_changed.connect(_on_inventory_item_changed)
 	init_world_map(12345, WORLD_HEX_RADIUS)
 
@@ -106,11 +112,57 @@ func init_world_map(map_seed: int = 12345, radius: int = 18) -> void:
 func _on_solver_element_discovered(elem_num: int, item_key: String) -> void:
 	unlock_element(elem_num, item_key)
 
+func _on_solver_reaction_occurred(rx_name: String, prods: Array) -> void:
+	if rx_name.contains("冶炼") or rx_name.contains("焙烧"):
+		complete_milestone("first_smelt")
+	for p in prods:
+		if p in ["hydrogen", "oxygen", "carbon_dioxide", "carbon_monoxide", "sulfur_dioxide", "chlorine"]:
+			complete_milestone("collect_gas")
+		elif p == "aluminum":
+			complete_milestone("produce_aluminum")
+		elif p == "radium":
+			complete_milestone("isolate_radium")
+		elif p in ["neodymium", "lanthanum", "cerium", "praseodymium"]:
+			complete_milestone("separate_rare_earth")
+	if lab_vessel != null and lab_vessel.applied_voltage > 0.0:
+		complete_milestone("first_electrolysis")
+	if rx_name.contains("电解"):
+		complete_milestone("first_electrolysis")
+	if rx_name.contains("嬗变") or rx_name.contains("核"):
+		complete_milestone("first_transmutation")
+
 func _on_inventory_item_changed(key: String, count: int) -> void:
 	if count > 0 and key != "":
 		var elem_num = DataDB.is_pure_element(key)
 		if elem_num > 0:
 			unlock_element(elem_num, key)
+		var it_data = DataDB.get_item(key)
+		var m_stone = it_data.get("milestone")
+		if m_stone != null and str(m_stone) != "":
+			complete_milestone(str(m_stone))
+		if key == "aluminum":
+			complete_milestone("produce_aluminum")
+		elif key == "radium":
+			complete_milestone("isolate_radium")
+		elif key in ["neodymium", "lanthanum", "cerium", "praseodymium"]:
+			complete_milestone("separate_rare_earth")
+
+func complete_milestone(milestone_key: String) -> void:
+	if completed_milestones.has(milestone_key):
+		return
+	completed_milestones.append(milestone_key)
+	var m_desc = milestone_key
+	for era in DataDB.eras:
+		for m in era.get("milestones", []):
+			if m.get("key") == milestone_key:
+				m_desc = m.get("description", milestone_key)
+				break
+	post_notice("【文明里程碑达成】%s！" % m_desc, Color(1.0, 0.85, 0.2))
+	milestone_completed.emit(milestone_key)
+	_check_era_advancement()
+
+func check_milestone(milestone_key: String) -> void:
+	complete_milestone(milestone_key)
 
 func post_notice(text: String, color: Color = Color.WHITE) -> void:
 	notification_posted.emit(text, color)
@@ -146,6 +198,20 @@ func equip_tool(slot: String, tool_key: String) -> void:
 
 func _check_era_advancement() -> void:
 	var era_def = DataDB.get_era(current_era)
+	if era_def.is_empty():
+		return
+	var milestones = era_def.get("milestones", [])
+	if milestones.size() > 0:
+		var all_done = true
+		for m in milestones:
+			var m_k = str(m.get("key", ""))
+			if not completed_milestones.has(m_k):
+				all_done = false
+				break
+		if all_done:
+			advance_era(current_era + 1)
+			return
+
 	var req = era_def.get("advance_threshold", {})
 	if req.is_empty():
 		return
@@ -166,6 +232,20 @@ func advance_era(target_era: int) -> void:
 		current_era = target_era
 		era_advanced.emit(old, current_era, ERA_NAMES[current_era])
 		post_notice("【伟大跨越】文明迈入新纪元：%s！" % ERA_NAMES[current_era], Color(1.0, 0.88, 0.3))
+		_populate_resources_for_new_era(target_era)
+
+func _populate_resources_for_new_era(_era_order: int) -> void:
+	var new_radius = get_current_territory_radius()
+	for q in range(-new_radius, new_radius + 1):
+		var r1 = max(-new_radius, -q - new_radius)
+		var r2 = min(new_radius, -q + new_radius)
+		for r in range(r1, r2 + 1):
+			var coord = Vector2i(q, r)
+			if not world_resources.has(coord) and world_biomes.has(coord):
+				var biome = world_biomes[coord]
+				var spawn = hex_gen.determine_resource_spawn(q, r, biome)
+				if spawn != "":
+					world_resources[coord] = spawn
 
 func get_current_territory_radius() -> int:
 	var era_def = DataDB.get_era(current_era)
@@ -475,6 +555,20 @@ func craft_tool(recipe_key: String) -> bool:
 		var res_qty = int(recipe.get("result_quantity", 1))
 		inventory.add_item(res_item, res_qty)
 		
+	var m_stone = recipe.get("milestone")
+	if m_stone != null and str(m_stone) != "":
+		complete_milestone(str(m_stone))
+	elif recipe_key == "craft_stone_pickaxe" or recipe_key == "stone_pickaxe":
+		complete_milestone("craft_stone_pickaxe")
+	elif recipe_key == "craft_fire_seed" or recipe_key == "fire_seed":
+		complete_milestone("craft_fire_seed")
+	elif recipe_key == "craft_crucible" or recipe_key == "crucible":
+		complete_milestone("craft_crucible")
+	elif recipe_key == "craft_gas_bottle" or recipe_key == "gas_bottle":
+		complete_milestone("craft_gas_bottle")
+	elif recipe_key == "craft_battery" or recipe_key == "battery":
+		complete_milestone("craft_battery")
+		
 	var notice_text = recipe.get("notice", "制作成功: %s" % recipe.get("name", recipe_key))
 	post_notice(notice_text, Color.GREEN)
 	return true
@@ -512,9 +606,69 @@ func build_structure(structure_key: String, hex: Vector2i) -> bool:
 			"total_produced": 0
 		}
 		
+	var m_stone = recipe.get("milestone")
+	if m_stone != null and str(m_stone) != "":
+		complete_milestone(str(m_stone))
+	elif structure_key == "furnace":
+		complete_milestone("build_kiln")
+		
 	var notice_text = recipe.get("notice", "建造成功: %s" % recipe.get("name", structure_key))
 	post_notice(notice_text, Color(0.3, 0.9, 0.5))
 	structure_built.emit(structure_key, hex)
+	return true
+
+# --- 科技研发系统 ---
+
+func can_research_tech(tech_key: String) -> bool:
+	if researched_techs.has(tech_key):
+		return false
+	var tech = DataDB.get_tech(tech_key)
+	if tech.is_empty():
+		return false
+	var req_era = int(tech.get("era", 0))
+	if current_era < req_era:
+		return false
+	var prereqs = tech.get("required_techs", tech.get("prerequisites", []))
+	for p in prereqs:
+		if not researched_techs.has(str(p)):
+			return false
+	var req_items = tech.get("required_items", [])
+	if not _has_all_ingredients(req_items):
+		return false
+	return true
+
+func research_tech(tech_key: String) -> bool:
+	if researched_techs.has(tech_key):
+		post_notice("科技【%s】已完成研发！" % DataDB.get_tech(tech_key).get("name", tech_key), Color.YELLOW)
+		return false
+	var tech = DataDB.get_tech(tech_key)
+	if tech.is_empty():
+		post_notice("❌ 未知科技: %s" % tech_key, Color.RED)
+		return false
+	if not can_research_tech(tech_key):
+		post_notice("❌ 无法研发【%s】：前置科技未完成或材料不足！" % tech.get("name", tech_key), Color.RED)
+		return false
+		
+	var req_items = tech.get("required_items", [])
+	_consume_all_ingredients(req_items)
+	
+	researched_techs.append(tech_key)
+	tech_researched.emit(tech_key)
+	
+	var m_stone = tech.get("milestone")
+	if m_stone != null and str(m_stone) != "":
+		complete_milestone(str(m_stone))
+	elif tech_key == "pottery":
+		complete_milestone("research_pottery")
+	elif tech_key == "gas_collection" or tech_key == "gas_collecting":
+		complete_milestone("research_gas_collection")
+	elif tech_key == "crystallization" or tech_key == "crystallization_tech":
+		complete_milestone("crystallization_tech")
+	elif tech_key == "advanced_chemical_equipment":
+		complete_milestone("unlock_advanced_chem_tools")
+		
+	post_notice("💡 科技突破！成功研发【%s】！" % tech.get("name", tech_key), Color(0.3, 0.9, 0.5))
+	_check_era_advancement()
 	return true
 
 func furnace_add_fuel(hex: Vector2i) -> bool:
@@ -609,6 +763,8 @@ func get_formatted_playtime() -> String:
 func reset_to_new_game() -> void:
 	current_era = 0
 	discovered_elements.clear()
+	researched_techs.clear()
+	completed_milestones.clear()
 	equipped_tools = {
 		"axe": "bare_hands",
 		"pickaxe": "bare_hands"

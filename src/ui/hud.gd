@@ -10,7 +10,7 @@ signal reset_requested
 
 const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 
-enum CategoryTab { NONE, LAB, CRAFT, BUILD, PRODUCTION, INVENTORY }
+enum CategoryTab { NONE, LAB, TECH, CRAFT, BUILD, PRODUCTION, INVENTORY }
 var current_tab: CategoryTab = CategoryTab.NONE
 
 # 顶部导航与状态条
@@ -57,6 +57,7 @@ var current_tab: CategoryTab = CategoryTab.NONE
 @onready var drawer_grid = $Margin/MainVBox/BottomArea/ActionDrawer/Margin/VBox/Scroll/DrawerGrid
 
 @onready var btn_tab_lab = $Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox/BtnTabLab
+@onready var btn_tab_tech = $Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox/BtnTabTech
 @onready var btn_tab_craft = $Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox/BtnTabCraft
 @onready var btn_tab_build = $Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox/BtnTabBuild
 @onready var btn_tab_production = $Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox/BtnTabProduction
@@ -66,6 +67,7 @@ var current_tab: CategoryTab = CategoryTab.NONE
 @onready var periodic_modal = $PeriodicTableModal
 @onready var lab_modal = $LabWorkbenchModal
 @onready var tool_modal = $ToolCraftModal
+@onready var tech_modal = $TechTreeModal
 @onready var era_modal = $EraTransitionModal
 @onready var save_load_modal = $SaveLoadModal
 @onready var settings_modal = $SettingsModal
@@ -102,6 +104,8 @@ const ICON_MAP = {
 	"fuel_fire": preload("res://assets/icons/fuel_fire.svg"),
 	"blueprint": preload("res://assets/icons/blueprint.svg"),
 	"lab": preload("res://assets/icons/lab.svg"),
+	"tech": preload("res://assets/icons/tech.svg"),
+	"tab_tech": preload("res://assets/icons/tab_tech.svg"),
 	"periodic_table": preload("res://assets/icons/periodic_table.svg"),
 }
 
@@ -116,6 +120,7 @@ func _ready() -> void:
 	periodic_modal.theme = sc_theme
 	lab_modal.theme = sc_theme
 	tool_modal.theme = sc_theme
+	tech_modal.theme = sc_theme
 	era_modal.theme = sc_theme
 	save_load_modal.theme = sc_theme
 	settings_modal.theme = sc_theme
@@ -155,6 +160,7 @@ func _ready() -> void:
 	
 	# 底部动作分类按钮绑定
 	btn_tab_lab.pressed.connect(func(): _toggle_category(CategoryTab.LAB))
+	btn_tab_tech.pressed.connect(func(): _toggle_category(CategoryTab.TECH))
 	btn_tab_craft.pressed.connect(func(): _toggle_category(CategoryTab.CRAFT))
 	btn_tab_build.pressed.connect(func(): _toggle_category(CategoryTab.BUILD))
 	btn_tab_production.pressed.connect(func(): _toggle_category(CategoryTab.PRODUCTION))
@@ -195,6 +201,9 @@ func _populate_drawer(tab: CategoryTab) -> void:
 		CategoryTab.LAB:
 			drawer_title.text = "【实验】微观化学反应与元素圣殿"
 			_add_lab_subitems()
+		CategoryTab.TECH:
+			drawer_title.text = "【科技】人类文明科学与技术突破演进"
+			_add_tech_subitems()
 		CategoryTab.CRAFT:
 			drawer_title.text = "【制作】工具与装备锻造工坊"
 			_add_craft_subitems()
@@ -237,15 +246,104 @@ func _add_lab_subitems() -> void:
 	)
 	drawer_grid.add_child(card_pt)
 
-# --- 2. 制作分类细项 ---
+# --- 2. 科技分类细项 ---
+func _add_tech_subitems() -> void:
+	var tech_count = GameState.researched_techs.size()
+	var card_all = _create_action_card(
+		"科技演进树全览 [K]",
+		"查看全部 6 个时代 40 项核心科技演变星图",
+		get_item_icon("tech"),
+		"%d/40" % tech_count,
+		true
+	)
+	card_all.pressed.connect(func():
+		_close_drawer()
+		tech_modal.open()
+	)
+	drawer_grid.add_child(card_all)
+	
+	for tech in DataDB.techs.values():
+		var t_key = str(tech.get("key", ""))
+		var t_name = str(tech.get("name", t_key))
+		var t_era = int(tech.get("era", 0))
+		var req_techs = tech.get("required_techs", tech.get("prerequisites", []))
+		var req_items = tech.get("required_items", [])
+		
+		var is_researched = GameState.researched_techs.has(t_key)
+		
+		var prereqs_met = true
+		for p in req_techs:
+			if not GameState.researched_techs.has(str(p)):
+				prereqs_met = false
+				break
+				
+		if not is_researched and t_era > GameState.current_era and not prereqs_met:
+			continue
+			
+		var items_met = true
+		var cost_desc_list = []
+		for req in req_items:
+			var r_key = req.get("key")
+			var r_qty = int(req.get("quantity", 1))
+			var owned = 0
+			var mat_name = ""
+			if r_key is Array:
+				var found_max = 0
+				for alt in r_key:
+					var cnt = GameState.inventory.get_count(alt)
+					if cnt > found_max: found_max = cnt
+					var it = DataDB.get_item(alt)
+					if mat_name == "": mat_name = it.get("name", alt)
+				owned = found_max
+			else:
+				owned = GameState.inventory.get_count(r_key)
+				var it = DataDB.get_item(r_key)
+				mat_name = it.get("name", r_key)
+			cost_desc_list.append("%s: %d/%d" % [mat_name, owned, r_qty])
+			if owned < r_qty:
+				items_met = false
+				
+		var can_res = (not is_researched) and prereqs_met and items_met and (GameState.current_era >= t_era)
+		var status_text = "已研发" if is_researched else ("可突破" if can_res else ("时代未达" if GameState.current_era < t_era else ("缺少前置" if not prereqs_met else "缺少材料")))
+		var cost_str = "已掌握" if is_researched else (" · ".join(cost_desc_list) if not cost_desc_list.is_empty() else "即时研发")
+		
+		var card = _create_action_card(
+			t_name,
+			cost_str,
+			get_item_icon("tech"),
+			status_text,
+			can_res or is_researched
+		)
+		if can_res:
+			card.pressed.connect(func():
+				if GameState.research_tech(t_key):
+					_populate_drawer(CategoryTab.TECH)
+			)
+		drawer_grid.add_child(card)
+
+# --- 3. 制作分类细项 ---
 func _add_craft_subitems() -> void:
 	var recipes = DataDB.crafting.values()
 	for recipe in recipes:
 		var recipe_key = recipe.get("key", "")
 		var recipe_name = recipe.get("name", recipe_key)
 		var req_items = recipe.get("required_items", [])
+		var req_techs = recipe.get("required_techs", [])
+		var r_era = int(recipe.get("era", 0))
 		
 		var can_craft = true
+		var missing_reason = ""
+		
+		if r_era > GameState.current_era:
+			can_craft = false
+			missing_reason = "时代未达"
+			
+		for req_t in req_techs:
+			if not GameState.researched_techs.has(str(req_t)):
+				can_craft = false
+				if missing_reason == "": missing_reason = "缺少科技"
+				break
+		
 		var cost_desc_list = []
 		for req in req_items:
 			var r_key = req.get("key")
@@ -269,9 +367,10 @@ func _add_craft_subitems() -> void:
 			cost_desc_list.append("%s: %d/%d" % [mat_name, owned, r_qty])
 			if owned < r_qty:
 				can_craft = false
+				if missing_reason == "": missing_reason = "缺少材料"
 				
 		var cost_str = " · ".join(cost_desc_list)
-		var status_text = "可打造" if can_craft else "缺少材料"
+		var status_text = "可打造" if can_craft else missing_reason
 		var card = _create_action_card(
 			recipe_name,
 			cost_str,
@@ -286,15 +385,29 @@ func _add_craft_subitems() -> void:
 			)
 		drawer_grid.add_child(card)
 
-# --- 3. 建造分类细项 ---
+# --- 4. 建造分类细项 ---
 func _add_build_subitems() -> void:
 	var buildings = DataDB.buildings.values()
 	for b in buildings:
 		var b_key = b.get("key", "")
 		var b_name = b.get("name", b_key)
 		var req_items = b.get("required_items", [])
+		var req_techs = b.get("required_techs", [])
+		var b_era = int(b.get("era", 0))
 		
 		var can_build = true
+		var missing_reason = ""
+		
+		if b_era > GameState.current_era:
+			can_build = false
+			missing_reason = "时代未达"
+			
+		for req_t in req_techs:
+			if not GameState.researched_techs.has(str(req_t)):
+				can_build = false
+				if missing_reason == "": missing_reason = "缺少科技"
+				break
+				
 		var cost_desc_list = []
 		for req in req_items:
 			var r_key = req.get("key")
@@ -318,9 +431,10 @@ func _add_build_subitems() -> void:
 			cost_desc_list.append("%s: %d/%d" % [mat_name, owned, r_qty])
 			if owned < r_qty:
 				can_build = false
+				if missing_reason == "": missing_reason = "缺少建材"
 				
 		var cost_str = " · ".join(cost_desc_list)
-		var status_text = "可施工" if can_build else "缺少建材"
+		var status_text = "可施工" if can_build else missing_reason
 		var card = _create_action_card(
 			b_name,
 			cost_str,
@@ -518,6 +632,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_L:
 			_toggle_category(CategoryTab.LAB)
+		elif event.keycode == KEY_K:
+			tech_modal.toggle()
 		elif event.keycode == KEY_T:
 			_toggle_category(CategoryTab.CRAFT)
 		elif event.keycode == KEY_C or event.keycode == KEY_F:
@@ -541,13 +657,14 @@ func _unhandled_input(event: InputEvent) -> void:
 				_close_all_modals()
 
 func _has_any_modal_open() -> bool:
-	return periodic_modal.visible or lab_modal.visible or tool_modal.visible or furnace_panel.visible or save_load_modal.visible or settings_modal.visible or pause_menu.visible
+	return periodic_modal.visible or lab_modal.visible or tool_modal.visible or tech_modal.visible or furnace_panel.visible or save_load_modal.visible or settings_modal.visible or pause_menu.visible
 
 func _close_all_modals() -> void:
 	var closed_any = false
 	if periodic_modal.visible: periodic_modal.visible = false; closed_any = true
 	if lab_modal.visible: lab_modal.visible = false; closed_any = true
 	if tool_modal.visible: tool_modal.visible = false; closed_any = true
+	if tech_modal.visible: tech_modal.visible = false; closed_any = true
 	if furnace_panel.visible: furnace_panel.visible = false; closed_any = true
 	if save_load_modal.visible: save_load_modal.close(); closed_any = true
 	if settings_modal.visible: settings_modal.close(); closed_any = true
