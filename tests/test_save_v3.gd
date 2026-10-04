@@ -128,9 +128,25 @@ func _ready() -> void:
 	assert(GameState.lab_vessel.temperature == 550.0, "实验台温度恢复错误!")
 	assert(GameState.lab_vessel.has_substance("water", 2.9), "实验台试剂恢复错误!")
 	assert(GameState.depleted_tiles.has(Vector2i(3, -2)), "采空格子恢复错误!")
-	print(" -> v3 存档全量恢复校验通过: 时代/背包/工具/队列/溶液/熔炉/反应塔/采空格子全部精确吻合!")
+	assert(GameState.get_current_territory_radius() == 8, "时代 1 领地半径应为 8!")
+	print(" -> v3 存档全量恢复校验通过: 时代/背包/工具/队列/溶液/熔炉/反应塔/采空格子/领地半径全部精确吻合!")
 	
-	# 4. 测试 v2 旧档向下兼容性
+	# 4. 测试时代跃迁与门槛保护 (时代 2 及以后不随意乱跳)
+	print("\n[测试] 时代门槛与跃迁测试:")
+	GameState.current_era = 2 # 处于近代化学时代
+	assert(GameState.get_current_territory_radius() == 11, "时代 2 领地半径应为 11!")
+	GameState.unlock_element(8, "oxygen") # 发现新元素
+	var bp_dummy = ProcessBlueprint.new("bp_dummy", "测试芯片", {}, {}, 300.0)
+	GameState.unlock_blueprint(bp_dummy) # 解锁新蓝图
+	assert(GameState.current_era == 2, "时代 2 尚未配置跃迁门槛，不可越级晋升!")
+	print(" -> 时代 2 门槛保护验证通过: 发现元素与解锁蓝图不会造成时代越级跳跃")
+	
+	# 5. 测试 get_hex_resource 接口
+	var res_key = GameState.get_hex_resource(Vector2i(0, 0))
+	assert(res_key is String, "get_hex_resource 应返回有效 String!")
+	print(" -> get_hex_resource 接口验证通过")
+
+	# 6. 测试 v2 旧档向下兼容性
 	print("\n[测试] v2 旧版本存档向下兼容性测试:")
 	var v2_dict = {
 		"version": 2,

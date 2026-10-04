@@ -355,40 +355,6 @@ func deserialize_world_state(data: Dictionary) -> void:
 		if is_instance_valid(r): r.queue_free()
 	built_reactors.clear()
 	
-	# 如果是旧存档或外部导入，GameState.built_furnaces 为空，从 world_data 补充到 GameState
-	if GameState.built_furnaces.is_empty() and data.has("furnaces"):
-		for f_item in data.get("furnaces", []):
-			var f_hex = Vector2i(9999, 9999)
-			if f_item.has("hex_q") and f_item.has("hex_r"):
-				f_hex = Vector2i(int(f_item["hex_q"]), int(f_item["hex_r"]))
-			else:
-				f_hex = HexWorldGenerator.pixel_to_hex(Vector2(float(f_item.get("x", 0.0)), float(f_item.get("y", 0.0))))
-			var buf = MixtureBuffer.new()
-			buf.container_type = "furnace"
-			buf.temperature = float(f_item.get("temperature", 293.15))
-			var comps = f_item.get("components", {})
-			if comps is Dictionary:
-				for c_k in comps.keys():
-					buf.components[c_k] = float(comps[c_k])
-			GameState.built_furnaces[f_hex] = {
-				"buffer": buf,
-				"burn_timer": float(f_item.get("burn_timer", 0.0)),
-				"is_active_fire": bool(f_item.get("is_active_fire", false))
-			}
-			
-	if GameState.built_reactors.is_empty() and data.has("reactors"):
-		for r_item in data.get("reactors", []):
-			var r_hex = Vector2i(9999, 9999)
-			if r_item.has("hex_q") and r_item.has("hex_r"):
-				r_hex = Vector2i(int(r_item["hex_q"]), int(r_item["hex_r"]))
-			else:
-				r_hex = HexWorldGenerator.pixel_to_hex(Vector2(float(r_item.get("x", 0.0)), float(r_item.get("y", 0.0))))
-			GameState.built_reactors[r_hex] = {
-				"blueprint_id": str(r_item.get("blueprint_id", "")),
-				"cycle_progress": 0.0,
-				"total_produced": int(r_item.get("total_produced", 0))
-			}
-
 	# 按模拟层状态实例化熔炉视图节点
 	for f_hex in GameState.built_furnaces.keys():
 		var new_f = FurnaceScene.instantiate()

@@ -124,11 +124,12 @@
    - 移除所有脚本内硬编码反应，4 条核心反应完整迁入 `data/formula.json`，恢复原始严谨配平（铜 0.9，铁碳/二氧化碳 1.5），配置 `min_temp`、`min_voltage`、`time_required` 与 `required_container`。
    - `ChemistrySolver` 匹配原料、温度、电压、容器与耗时，带温压条件的配方严格优先于无条件配方。微观实验台与陶土熔炉统一调用此查表执行路径。
    - 随身工具打造消耗挪入 `data/crafting.json`，建筑建造消耗挪入 `data/buildings.json`。UI 脚本（`tool_craft_modal.gd`, `world.gd`）仅发命令，不写任何数字或直接操作背包。
-   - 时代名称与晋级门槛从脚本常量迁入 `data/eras.json`，由模拟层动态读表比对。
+   - 时代名称、晋级门槛与领地半径 (`territory_radius`) 从脚本常量与 match 逻辑全量迁入 `data/eras.json`，由模拟层动态读表。未配置有效跃迁条件的后续时代严格保护，杜绝越级跳跃。
 3. **画面层 (Presentation Layer - `world.gd`, `furnace.gd`, `industrial_reactor.gd`)**：
    - 只负责六边形瓦片绘制、上帝镜头、HUD 控制台与弹窗界面。
-   - 熔炉与反应塔节点纯粹为表现层视图（`Node2D`/`Area2D`），不再调用 `solver.solve` 或修改背包。
+   - 熔炉与反应塔节点纯粹为表现层视图（`Node2D`/`Area2D`），不再调用 `solver.solve` 或在 `_ready` 及读档时私自往模拟层写数据/修改背包，仅通过 `GameState` 发出交互命令。
    - 地块采空与重生由信号 `tile_depleted` / `tile_respawned` 驱动，建筑生成由 `structure_built` 驱动。
+   - `get_hex_resource` 由 `Simulation` 底层直接提供，画面只读查询。
 
 ### 2.11 存档系统 v3 规范与向下兼容 (Save v3 & Backward Compatibility)
 - **存档升级至 v3 (`SaveManager`)**：

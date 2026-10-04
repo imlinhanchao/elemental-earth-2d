@@ -6,6 +6,7 @@
     "icon": "tabler:pick",
     "description": "人类第一次将石块打磨成工具，用燧石点燃火焰。",
     "order": 0,
+    "territory_radius": 5,
     "advance_threshold": {
       "elements": [29]
     },
@@ -27,6 +28,7 @@
     "icon": "tabler:flask",
     "description": "火焰被用于改造物质，矿石在窑炉中化为金属。",
     "order": 1,
+    "territory_radius": 8,
     "advance_threshold": {
       "elements": [26],
       "min_blueprints": 2
@@ -53,9 +55,8 @@
     "icon": "tabler:flask-2",
     "description": "气体的收集与定量研究，开启了系统化的化学探索。",
     "order": 2,
-    "advance_threshold": {
-      "elements": []
-    },
+    "territory_radius": 11,
+    "advance_threshold": {},
     "milestones": [
       {
         "key": "craft_gas_bottle",
@@ -86,9 +87,8 @@
     "icon": "typcn:flash",
     "description": "电力的应用使人类能够分离最顽固的化合物。",
     "order": 3,
-    "advance_threshold": {
-      "elements": []
-    },
+    "territory_radius": 14,
+    "advance_threshold": {},
     "milestones": [
       {
         "key": "craft_battery",
@@ -111,9 +111,8 @@
     "icon": "tabler:diamond",
     "description": "镧系元素的精密分离技术，打开了元素周期表深处的大门。",
     "order": 4,
-    "advance_threshold": {
-      "elements": []
-    },
+    "territory_radius": 17,
+    "advance_threshold": {},
     "milestones": [
       {
         "key": "separate_rare_earth",
@@ -132,9 +131,8 @@
     "icon": "tabler:atom",
     "description": "跨越稳定核素的边界，掌握同位素与元素嬗变的终极奥秘。",
     "order": 5,
-    "advance_threshold": {
-      "elements": []
-    },
+    "territory_radius": 20,
+    "advance_threshold": {},
     "milestones": [
       {
         "key": "first_transmutation",
@@ -153,9 +151,8 @@
     "icon": "tabler:rocket",
     "description": "人类文明的未来，充满了无限可能。",
     "order": 6,
-    "advance_threshold": {
-      "elements": []
-    },
+    "territory_radius": 20,
+    "advance_threshold": {},
     "milestones": []
   }
 ]

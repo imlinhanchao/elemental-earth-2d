@@ -35,19 +35,7 @@ var _fallback_buffer: MixtureBuffer = null
 
 func _ready() -> void:
 	add_to_group("furnace")
-	_sync_simulation_state()
 	queue_redraw()
-
-func _sync_simulation_state() -> void:
-	if not GameState.built_furnaces.has(hex_coord):
-		var f_buf = MixtureBuffer.new()
-		f_buf.container_type = "furnace"
-		f_buf.temperature = 293.15
-		GameState.built_furnaces[hex_coord] = {
-			"buffer": f_buf,
-			"burn_timer": 0.0,
-			"is_active_fire": false
-		}
 
 func _process(_delta: float) -> void:
 	if label_status:

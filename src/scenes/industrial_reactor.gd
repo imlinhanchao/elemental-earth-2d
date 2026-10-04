@@ -38,16 +38,7 @@ var _local_produced: int = 0
 
 func _ready() -> void:
 	add_to_group("industrial_machines")
-	_sync_simulation_state()
 	_update_ui()
-
-func _sync_simulation_state() -> void:
-	if not GameState.built_reactors.has(hex_coord):
-		GameState.built_reactors[hex_coord] = {
-			"blueprint_id": _local_bp_id,
-			"cycle_progress": 0.0,
-			"total_produced": _local_produced
-		}
 
 func _process(_delta: float) -> void:
 	if installed_blueprint != null:

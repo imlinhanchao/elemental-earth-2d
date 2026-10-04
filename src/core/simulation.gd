@@ -143,10 +143,12 @@ func _check_era_advancement() -> void:
 	if req.is_empty():
 		return
 	var needed_elems = req.get("elements", [])
+	var min_bps = int(req.get("min_blueprints", 0))
+	if needed_elems.is_empty() and min_bps <= 0:
+		return
 	for elem_num in needed_elems:
 		if not discovered_elements.has(int(elem_num)):
 			return
-	var min_bps = int(req.get("min_blueprints", 0))
 	if min_bps > 0 and unlocked_blueprints.size() < min_bps:
 		return
 	advance_era(current_era + 1)
@@ -159,14 +161,10 @@ func advance_era(target_era: int) -> void:
 		post_notice("🏛️ 【伟大跨越】文明迈入新纪元：%s！" % ERA_NAMES[current_era], Color(1.0, 0.88, 0.3))
 
 func get_current_territory_radius() -> int:
-	match current_era:
-		0: return 5   # 石器时代
-		1: return 8   # 炼金时代
-		2: return 11  # 近代化学
-		3: return 14  # 电化学
-		4: return 17  # 稀土时代
-		5: return 20  # 原子能时代
-		_: return 5 + current_era * 3
+	var era_def = DataDB.get_era(current_era)
+	if era_def.has("territory_radius"):
+		return int(era_def["territory_radius"])
+	return 5 + current_era * 3
 
 func is_hex_in_territory(q: int, r: int) -> bool:
 	var dist = (abs(q) + abs(q + r) + abs(r)) / 2
@@ -174,6 +172,9 @@ func is_hex_in_territory(q: int, r: int) -> bool:
 
 func is_tile_depleted(hex: Vector2i) -> bool:
 	return depleted_tiles.has(hex)
+
+func get_hex_resource(hex: Vector2i) -> String:
+	return world_resources.get(hex, "")
 
 # --- 时间步进 (一秒时间戳钟) ---
 
