@@ -61,6 +61,23 @@ func _init() -> void:
 	print(" -> 纯净元素识别: 氧单质元素序数 = #%d" % elem_o)
 	assert(elem_o == 8, "氧元素序号匹配错误!")
 
+	# 4. 测试案例 C: 木材干馏制备木炭测试
+	print("\n[测试 3] 木材热解干馏制备木炭测试:")
+	var flask = MixtureBuffer.new()
+	flask.container_type = "flask"
+	flask.add_substance("wood", 2.0)
+	flask.temperature = 293.15 # 室温
+	var res_wood_cold = solver.solve(flask, 1.0)
+	assert(not res_wood_cold["occurred"], "木材室温不应自发干馏炭化!")
+
+	# 升温至 550K (约 277℃，木材热解温度)
+	flask.temperature = 550.0
+	var res_wood_hot = solver.solve(flask, 1.0)
+	print(" -> 高温 (550K) 热解反应检测: ", res_wood_hot["reactions"])
+	print(" -> 实验烧瓶内产物: ", flask.components)
+	assert(flask.has_substance("charcoal"), "未能成功热解干馏出木炭!")
+	assert(flask.get_moles("charcoal") >= 1.0, "木炭产出摩尔量错误!")
+
 	print("\n========================================")
 	print("🎉 所有唯象化学核心逻辑与数据加载测试 100% 通过!")
 	print("========================================\n")

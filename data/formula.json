@@ -1,41 +1,37 @@
 [
   {
     "key": "charcoal_production",
-    "name": "制作木炭",
-    "description": "将木材放入干馏装置中进行干馏，得到木炭和可燃气体。",
-    "time_required": 30,
-    "required_container": "clay_pot",
-    "required_actions": {
-      "key": "dry_distillation",
-      "min": 1
-    },
+    "name": "木材干馏制备木炭",
+    "description": "木材在隔绝空气条件下加热热解干馏，分解出固体木炭与一氧化碳气体。",
+    "min_temp": 500.0,
+    "time_required": 1.0,
+    "required_container": [
+      "flask",
+      "clay_pot",
+      "crucible",
+      "furnace",
+      "kiln"
+    ],
     "required_items": [
       {
         "key": "wood",
-        "quantity": 1,
+        "quantity": 1.0,
         "isMain": true
       }
     ],
     "products": [
       {
         "key": "charcoal",
-        "multiple": 1
+        "quantity": 1.0,
+        "multiple": 1.0
       },
       {
         "key": "carbon_monoxide",
-        "multiple": 1,
-        "required_chain_operation": "gas_collecting"
-      },
-      {
-        "key": "wood_ash",
-        "multiple": 1
+        "quantity": 0.5,
+        "multiple": 0.5
       }
     ],
-    "required_techs": [
-      "pottery"
-    ],
-    "fragment_description": "在封闭环境下对#wood#进行$dry_distillation$，利用热解反应将其转化为#charcoal#并释放#carbon_monoxide#与#wood_ash#。",
-    "required_era": "alchemy"
+    "required_era": "stone"
   },
   {
     "name": "制作粘土",

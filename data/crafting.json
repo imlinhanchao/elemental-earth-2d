@@ -40,20 +40,6 @@
     "notice": "⛏️ 制作成功！装备【粗制石镐】，现在可以前往矿脉开采孔雀石/赤铁矿！"
   },
   {
-    "key": "primitive_charcoal",
-    "name": "土法闷炭",
-    "type": "item",
-    "result_item": "charcoal",
-    "result_quantity": 2,
-    "required_items": [
-      {
-        "key": "wood",
-        "quantity": 2
-      }
-    ],
-    "notice": "🔥 原始火塘闷烧完成: 消耗原木 x2 焖制出【木炭 x2】！可用作熔炉燃料！"
-  },
-  {
     "key": "copper_pickaxe",
     "name": "纯铜地质镐",
     "slot": "pickaxe",

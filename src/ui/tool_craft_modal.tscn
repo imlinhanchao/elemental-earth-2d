@@ -71,10 +71,6 @@ text = "🪓 制作【原始燧石手斧】 (断枝 x2, 碎石 x2) ➔ 解锁砍
 layout_mode = 2
 text = "⛏️ 制作【粗制石镐】 (断枝 x3, 碎石 x3) ➔ 解锁开采坚硬矿脉能力"
 
-[node name="BtnMakeCharcoal" type="Button" parent="Margin/VBox/Scroll/CraftList"]
-layout_mode = 2
-text = "🔥 土法闷火焖炭 (原木 x2) ➔ 获得【木炭 x2】(熔炉燃料)"
-
 [node name="Sec2" type="Label" parent="Margin/VBox/Scroll/CraftList"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.8, 0.4, 1)

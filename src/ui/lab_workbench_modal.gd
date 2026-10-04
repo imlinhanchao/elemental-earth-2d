@@ -7,6 +7,7 @@ const ProcessBlueprint = preload("res://src/core/process_blueprint.gd")
 
 @onready var vessel_draw = $Margin/HBox/LeftView/VesselDrawArea
 @onready var btn_burner = $Margin/HBox/LeftView/Controls/BtnBurner
+@onready var btn_collect_prods = $Margin/HBox/RightView/BtnCollectProducts
 @onready var btn_export_bp = $Margin/HBox/RightView/BtnExportBlueprint
 @onready var contents_label = $Margin/HBox/RightView/ContentsLabel
 @onready var log_label = $Margin/HBox/RightView/LogLabel
@@ -25,11 +26,14 @@ func _ready() -> void:
 	
 	btn_close.pressed.connect(func(): visible = false)
 	btn_burner.toggled.connect(_on_burner_toggled)
+	btn_collect_prods.pressed.connect(_on_collect_products_pressed)
 	btn_export_bp.pressed.connect(_on_export_blueprint_pressed)
 	vessel_draw.draw.connect(_on_vessel_draw)
 	GameState.solver.reaction_occurred.connect(_on_reaction_occurred)
 
 	var bar = $Margin/HBox/LeftView/ReagentBar
+	if bar.has_node("BtnAddWood"):
+		bar.get_node("BtnAddWood").pressed.connect(func(): add_reagent("wood", 1.0))
 	bar.get_node("BtnAddMalachite").pressed.connect(func(): add_reagent("malachite", 1.0))
 	bar.get_node("BtnAddIron").pressed.connect(func(): add_reagent("iron_ore", 1.0))
 	bar.get_node("BtnAddCharcoal").pressed.connect(func(): add_reagent("charcoal", 1.0))
@@ -70,6 +74,8 @@ func _update_solution_color() -> void:
 		solution_color = solution_color.lerp(Color(0.65, 0.25, 0.18, 0.8), 0.05)  # 铁红深暗
 	elif lab_vessel.has_substance("charcoal", 0.1):
 		solution_color = solution_color.lerp(Color(0.2, 0.2, 0.22, 0.9), 0.05)    # 悬浮炭黑
+	elif lab_vessel.has_substance("wood", 0.1):
+		solution_color = solution_color.lerp(Color(0.5, 0.35, 0.2, 0.75), 0.05)   # 悬浮木质棕
 	else:
 		solution_color = solution_color.lerp(Color(0.85, 0.92, 1.0, 0.25), 0.05) # 清澈水色
 
@@ -146,14 +152,34 @@ func clear_vessel() -> void:
 
 func _on_export_blueprint_pressed() -> void:
 	# 检查当前烧瓶中是否成功合成出有价值的目标物
-	if lab_vessel.has_substance("copper", 0.5):
+	if lab_vessel.has_substance("charcoal", 0.5):
+		var bp = ProcessBlueprint.new("bp_charcoal", "工业木材干馏制炭", {"wood": 1.0}, {"charcoal": 1.0}, 500.0)
+		GameState.unlock_blueprint(bp)
+	elif lab_vessel.has_substance("copper", 0.5):
 		var bp = ProcessBlueprint.new("bp_smelt_copper", "工业连续熔炼金属铜", {"malachite": 1.0, "charcoal": 0.5}, {"copper": 0.9}, 850.0)
 		GameState.unlock_blueprint(bp)
 	elif lab_vessel.has_substance("iron", 0.5):
 		var bp = ProcessBlueprint.new("bp_smelt_iron", "工业高炉连续炼铁", {"iron_ore": 1.0, "charcoal": 1.5}, {"iron": 1.0}, 900.0)
 		GameState.unlock_blueprint(bp)
 	else:
-		GameState.post_notice("当前烧瓶中尚未析出稳定的高价值目标单质，无法固化工艺！", Color.YELLOW)
+		GameState.post_notice("当前烧瓶中尚未析出稳定的高价值目标产物，无法固化工艺！", Color.YELLOW)
+
+func _on_collect_products_pressed() -> void:
+	var collected_any = false
+	var collectable_keys = ["charcoal", "copper", "iron", "carbon_monoxide", "wood_ash"]
+	for k in collectable_keys:
+		if lab_vessel.has_substance(k, 0.1):
+			var amount = lab_vessel.consume_substance(k, 999.0)
+			var int_amt = int(ceil(amount))
+			if int_amt > 0:
+				GameState.inventory.add_item(k, int_amt)
+				var iname = DataDB.get_item(k).get("name", k)
+				_add_log("📥 收获实验产物: %s x%d 已入库" % [iname, int_amt])
+				GameState.post_notice("📥 实验收获: %s x%d 已收入背包！" % [iname, int_amt], Color(0.3, 0.9, 0.5))
+				collected_any = true
+	if not collected_any:
+		GameState.post_notice("烧瓶内没有可收获的反应产物！", Color.YELLOW)
+	_refresh_ui()
 
 func _add_log(msg: String) -> void:
 	if log_label:

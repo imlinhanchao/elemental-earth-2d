@@ -21,13 +21,11 @@ func toggle() -> void:
 func _bind_buttons() -> void:
 	var b_flint_axe = craft_list.get_node("BtnFlintAxe")
 	var b_stone_pick = craft_list.get_node("BtnStonePick")
-	var b_make_charcoal = craft_list.get_node("BtnMakeCharcoal")
 	var b_copper_pick = craft_list.get_node("BtnCopperPick")
 	var b_iron_pick = craft_list.get_node("BtnIronPick")
 
 	b_flint_axe.pressed.connect(_craft_flint_axe)
 	b_stone_pick.pressed.connect(_craft_stone_pick)
-	b_make_charcoal.pressed.connect(_craft_primitive_charcoal)
 	b_copper_pick.pressed.connect(_craft_copper_pick)
 	b_iron_pick.pressed.connect(_craft_iron_pick)
 
@@ -50,9 +48,6 @@ func _craft_flint_axe() -> void:
 func _craft_stone_pick() -> void:
 	if GameState.craft_tool("stone_pickaxe"):
 		_refresh_ui()
-
-func _craft_primitive_charcoal() -> void:
-	GameState.craft_tool("primitive_charcoal")
 
 func _craft_copper_pick() -> void:
 	if GameState.craft_tool("copper_pickaxe"):
