@@ -9,6 +9,7 @@ signal load_requested
 signal reset_requested
 
 const ThemeStyler = preload("res://src/ui/theme_styler.gd")
+const ItemIconManager = preload("res://src/ui/item_icon_manager.gd")
 
 enum CategoryTab { NONE, LAB, TECH, CRAFT, BUILD, PRODUCTION, INVENTORY }
 var current_tab: CategoryTab = CategoryTab.NONE

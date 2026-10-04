@@ -5,6 +5,7 @@ extends Control
 
 const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 const DataDB = preload("res://src/core/data_db.gd")
+const ItemIconManager = preload("res://src/ui/item_icon_manager.gd")
 
 @onready var dim_overlay = $DimOverlay
 @onready var center_panel = $CenterPanel

@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://c8x4v9b1q4x7y"]
 
 [ext_resource type="Script" path="res://src/ui/inventory_modal.gd" id="1_inv"]
-[ext_resource type="Texture2D" uid="uid://c5v6l4m8n2q1" path="res://assets/icons/backpack.svg" id="2_icon"]
+[ext_resource type="Texture2D" uid="uid://bkx5hftb5m55g" path="res://assets/icons/backpack.svg" id="2_icon"]
 
 [node name="InventoryModal" type="Control"]
 layout_mode = 3
