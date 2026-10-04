@@ -11,6 +11,9 @@ var pressure: float = 101.325   # kPa (默认 1 atm)
 var volume: float = 1.0         # 容积 (升 L)
 var applied_voltage: float = 0.0 # 外加电解电压 (V)
 
+var container_type: String = "flask"
+var reaction_timer: float = 0.0
+
 func add_substance(key: String, moles: float) -> void:
 	if moles <= 0.0:
 		return

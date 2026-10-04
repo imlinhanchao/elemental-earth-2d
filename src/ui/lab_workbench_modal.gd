@@ -20,19 +20,25 @@ var solution_color: Color = Color(0.8, 0.9, 1.0, 0.2) # 初始纯水半透明色
 
 func _ready() -> void:
 	visible = false
-	lab_vessel = MixtureBuffer.new()
-	lab_vessel.temperature = 293.15
+	lab_vessel = GameState.lab_vessel
+	lab_vessel.container_type = "flask"
 	
 	btn_close.pressed.connect(func(): visible = false)
 	btn_burner.toggled.connect(_on_burner_toggled)
 	btn_export_bp.pressed.connect(_on_export_blueprint_pressed)
 	vessel_draw.draw.connect(_on_vessel_draw)
+	GameState.solver.reaction_occurred.connect(_on_reaction_occurred)
 
 	var bar = $Margin/HBox/LeftView/ReagentBar
 	bar.get_node("BtnAddMalachite").pressed.connect(func(): add_reagent("malachite", 1.0))
 	bar.get_node("BtnAddIron").pressed.connect(func(): add_reagent("iron_ore", 1.0))
 	bar.get_node("BtnAddCharcoal").pressed.connect(func(): add_reagent("charcoal", 1.0))
 	bar.get_node("BtnClear").pressed.connect(clear_vessel)
+
+func _on_reaction_occurred(rx_name: String, _prods: Array) -> void:
+	if visible:
+		_add_log("⚡ 实验台发生化学反应: %s" % rx_name)
+		_refresh_ui()
 
 func toggle() -> void:
 	visible = not visible
@@ -50,13 +56,6 @@ func _process(delta: float) -> void:
 	else:
 		lab_vessel.temperature = move_toward(lab_vessel.temperature, 293.15, 30.0 * delta)
 		bubble_phase += delta * 1.5
-
-	# 驱动化学求解
-	if lab_vessel.total_moles() > 0:
-		var res = GameState.solver.solve(lab_vessel, delta)
-		if res["occurred"]:
-			_add_log("⚡ 实验台发生化学反应: %s" % str(res["reactions"]))
-			_refresh_ui()
 
 	_update_solution_color()
 	temp_label.text = "烧瓶温度: %d K (%d ℃)" % [int(lab_vessel.temperature), int(lab_vessel.temperature - 273.15)]

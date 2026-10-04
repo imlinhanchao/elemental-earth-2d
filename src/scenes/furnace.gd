@@ -16,6 +16,7 @@ var burn_timer: float = 0.0
 func _ready() -> void:
 	add_to_group("furnace")
 	buffer = MixtureBuffer.new()
+	buffer.container_type = "furnace"
 	buffer.temperature = 293.15
 	queue_redraw()
 
@@ -32,15 +33,18 @@ func _process(delta: float) -> void:
 	if buffer.total_moles() > 0:
 		var res = GameState.solver.solve(buffer, delta)
 		if res["occurred"]:
-			if buffer.has_substance("copper", 0.1):
-				var cu_amount = buffer.consume_substance("copper", 10.0)
-				GameState.inventory.add_item("copper", int(ceil(cu_amount)))
-				GameState.post_notice("✨ 熔炉炼制完成！成功收获金属铜 x%d，已收入背包！" % int(ceil(cu_amount)), Color(0.9, 0.6, 0.2))
-
-			if buffer.has_substance("iron", 0.1):
-				var fe_amount = buffer.consume_substance("iron", 10.0)
-				GameState.inventory.add_item("iron", int(ceil(fe_amount)))
-				GameState.post_notice("⚒️ 高炉炼铁完成！成功收获金属铁 x%d，已收入背包！" % int(ceil(fe_amount)), Color(0.7, 0.8, 0.9))
+			# 炉膛为敞开燃烧环境，气态副产物自然逸散
+			buffer.consume_substance("carbon_dioxide", 999.0)
+			buffer.consume_substance("carbon_monoxide", 999.0)
+			
+			for prod_key in res.get("products", []):
+				if buffer.has_substance(prod_key, 0.1):
+					var p_amount = buffer.consume_substance(prod_key, 999.0)
+					var p_int = int(ceil(p_amount))
+					if p_int > 0:
+						GameState.inventory.add_item(prod_key, p_int)
+						var iname = DataDB.get_item(prod_key).get("name", prod_key)
+						GameState.post_notice("✨ 熔炉炼制完成！成功收获 %s x%d，已收入背包！" % [iname, p_int], Color(0.9, 0.65, 0.2))
 
 	if label_status:
 		label_status.text = "陶土熔炉\n%d K (%d ℃)\n[点击打开]" % [int(buffer.temperature), int(buffer.temperature - 273.15)]

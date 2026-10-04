@@ -167,7 +167,8 @@ func tick(delta: float) -> void:
 
 func _on_second_tick() -> void:
 	# 每秒化学求解与被动状态维护
-	pass
+	if lab_vessel and lab_vessel.total_moles() > 0:
+		solver.solve(lab_vessel, 1.0)
 
 func queue_hex_mine(hex: Vector2i, item_key: String, world_pos: Vector2 = Vector2.ZERO) -> bool:
 	if not is_hex_in_territory(hex.x, hex.y):
