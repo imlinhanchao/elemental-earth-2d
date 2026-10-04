@@ -1,17 +1,25 @@
-[gd_scene load_steps=4 format=3 uid="uid://bvyfx3k44b2m2"]
+[gd_scene load_steps=6 format=3 uid="uid://bvyfx3k44b2m2"]
 
 [ext_resource type="Script" path="res://src/scenes/world.gd" id="1_world"]
-[ext_resource type="PackedScene" uid="uid://ci8v43187140w" path="res://src/ui/hud.tscn" id="2_hud"]
+[ext_resource type="Script" path="res://src/scenes/terrain_layer.gd" id="2_terrain"]
+[ext_resource type="Script" path="res://src/scenes/overlay_layer.gd" id="3_overlay"]
+[ext_resource type="PackedScene" uid="uid://ci8v43187140w" path="res://src/ui/hud.tscn" id="4_hud"]
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_world")
+
+[node name="TerrainLayer" type="Node2D" parent="."]
+script = ExtResource("2_terrain")
+
+[node name="Entities" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="OverlayLayer" type="Node2D" parent="."]
+script = ExtResource("3_overlay")
 
 [node name="WorldCamera" type="Camera2D" parent="."]
 position = Vector2(0, 0)
 position_smoothing_enabled = true
 position_smoothing_speed = 10.0
 
-[node name="Entities" type="Node2D" parent="."]
-y_sort_enabled = true
-
-[node name="HUD" parent="." instance=ExtResource("2_hud")]
+[node name="HUD" parent="." instance=ExtResource("4_hud")]
