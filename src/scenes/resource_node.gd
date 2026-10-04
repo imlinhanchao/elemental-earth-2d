@@ -43,6 +43,11 @@ func request_mine_task() -> void:
 	if not visible:
 		return
 	
+	# 检查是否在当前文明领地内
+	if not GameState.is_pos_in_territory(global_position):
+		GameState.post_notice("🚩 此资源超出当前文明领地边界！请提升时代纪元以拓疆辟土！", Color(1.0, 0.45, 0.3))
+		return
+		
 	# 检查是否满足工具前置需求
 	var check = GameState.can_mine(item_key)
 	if not check["allowed"]:
@@ -97,6 +102,12 @@ func harvest_complete() -> void:
 	queue_redraw()
 
 func _process(_delta: float) -> void:
+	# 动态根据领地状态调暗超出领地的节点
+	if not GameState.is_pos_in_territory(global_position):
+		modulate = Color(0.65, 0.65, 0.75, 0.55)
+	else:
+		modulate = Color.WHITE
+
 	# 若当前节点正是正在开工的目标，则持续重绘显示工作环
 	if GameState.active_task.get("target_node") == self:
 		queue_redraw()

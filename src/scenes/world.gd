@@ -1,11 +1,12 @@
 # world.gd
-# 2D 开放大世界总场景: 鼠标上帝视角控制、自由拖拽与缩放、六边形作业队列驱动
+# 2D 开放大世界总场景: 鼠标上帝视角控制、时代领地疆域系统、自动存档与工业连续流
 extends Node2D
 
 const HexWorldGenerator = preload("res://src/core/hex_world_generator.gd")
 const ResourceNodeScene = preload("res://src/scenes/resource_node.tscn")
 const FurnaceScene = preload("res://src/scenes/furnace.tscn")
 const IndustrialReactorScene = preload("res://src/scenes/industrial_reactor.tscn")
+const SaveManager = preload("res://src/core/save_manager.gd")
 
 @onready var entities = $Entities
 @onready var camera = $WorldCamera
@@ -14,6 +15,14 @@ const IndustrialReactorScene = preload("res://src/scenes/industrial_reactor.tscn
 var hex_gen: HexWorldGenerator
 var generated_hexes: Dictionary = {} # Vector2i(q, r) -> BiomeType
 var hovered_hex: Vector2i = Vector2i(9999, 9999)
+
+# 建筑实例列表 (用于全量持久化存档)
+var built_furnaces: Array[Node2D] = []
+var built_reactors: Array[Node2D] = []
+
+# 自动存档计时器 (45 秒周期)
+var auto_save_timer: float = 0.0
+const AUTO_SAVE_INTERVAL: float = 45.0
 
 # 摄像机控制状态
 var is_dragging_camera: bool = false
@@ -32,10 +41,24 @@ func _ready() -> void:
 	hud.build_furnace_requested.connect(_on_build_furnace_requested)
 	hud.build_reactor_requested.connect(_on_build_reactor_requested)
 	
+	hud.save_requested.connect(func(): SaveManager.save_game(self))
+	hud.load_requested.connect(func(): SaveManager.load_game(self))
+	hud.reset_requested.connect(func(): SaveManager.reset_save(self))
+	
 	GameState.task_progress_updated.connect(func(_t, _p, _r): queue_redraw())
 	GameState.task_queue_changed.connect(func(): queue_redraw())
 	
-	GameState.post_notice("🌟 [开局引导] 鼠标点击地表【碎石】、【枯树枝】加入工作队列！点击盐湖打水！右键拖拽视野！", Color(1.0, 0.88, 0.4))
+	GameState.era_advanced.connect(func(_old, _new, era_name):
+		queue_redraw()
+		GameState.post_notice("🚩 【领地疆域扩展】随着迈向【%s】，文明疆域拓展至半径 %d 格！" % [era_name, GameState.get_current_territory_radius()], Color(1.0, 0.85, 0.2))
+		SaveManager.save_game(self)
+	)
+	
+	# 如果已有历史存档，自动恢复进度
+	if SaveManager.has_save():
+		SaveManager.load_game(self)
+	else:
+		GameState.post_notice("🌟 [开局引导] 鼠标点击地表【碎石】、【枯树枝】加入工作队列！点击盐湖打水！右键拖拽视野！", Color(1.0, 0.88, 0.4))
 	
 	# 如果携带 --screenshot 参数，则在1.5秒后截取当前画面并退出
 	for arg in OS.get_cmdline_user_args():
@@ -110,6 +133,11 @@ func _handle_tile_click(hex: Vector2i) -> void:
 	if not generated_hexes.has(hex):
 		return
 		
+	# 校验是否在领地范围内
+	if not GameState.is_hex_in_territory(hex.x, hex.y):
+		GameState.post_notice("🚩 无法在此开工：超出当前文明领地边界！请提升时代纪元以拓疆辟土！", Color(1.0, 0.45, 0.3))
+		return
+		
 	var biome = generated_hexes[hex]
 	var world_p = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
 	
@@ -155,6 +183,12 @@ func _process(delta: float) -> void:
 	
 	# 平滑缩放过渡
 	camera.zoom = camera.zoom.lerp(target_zoom, delta * 12.0)
+	
+	# 自动存档周期计时
+	auto_save_timer += delta
+	if auto_save_timer >= AUTO_SAVE_INTERVAL:
+		auto_save_timer = 0.0
+		SaveManager.save_game(self)
 
 func _draw() -> void:
 	# 1. 绘制每一个六边形地块及专属生态纹理
@@ -164,6 +198,7 @@ func _draw() -> void:
 		var biome = generated_hexes[coord]
 		var center = HexWorldGenerator.hex_to_pixel(q, r)
 		var col = HexWorldGenerator.get_biome_color(biome)
+		var in_territory = GameState.is_hex_in_territory(q, r)
 		
 		# 绘制六边形多边形顶点 (6 个点)
 		var points = PackedVector2Array()
@@ -172,7 +207,7 @@ func _draw() -> void:
 			var pt = center + Vector2(cos(angle), sin(angle)) * HexWorldGenerator.HEX_RADIUS
 			points.append(pt)
 			
-		# 填充底色
+		# 填充底色 (若超出领地，叠加迷雾遮罩颜色)
 		draw_colored_polygon(points, col)
 		
 		# 绘制六边形专属群系纹理
@@ -181,8 +216,30 @@ func _draw() -> void:
 		# 勾勒六边形边界线
 		points.append(points[0])
 		draw_polyline(points, col.lightened(0.18), 1.0)
+		
+		# 超出领地范围瓦片叠加神秘未开拓迷雾
+		if not in_territory:
+			draw_colored_polygon(points, Color(0.04, 0.06, 0.10, 0.58))
 	
-	# 2. 绘制鼠标当前悬停的六边形高亮框
+	# 2. 绘制文明领地外沿金色发光边界线 (Territory Borders)
+	var hex_dirs = [
+		Vector2i(1, 0), Vector2i(0, 1), Vector2i(-1, 1),
+		Vector2i(-1, 0), Vector2i(0, -1), Vector2i(1, -1)
+	]
+	for coord in generated_hexes.keys():
+		if GameState.is_hex_in_territory(coord.x, coord.y):
+			var c = HexWorldGenerator.hex_to_pixel(coord.x, coord.y)
+			for i in range(6):
+				var neighbor = coord + hex_dirs[i]
+				if not GameState.is_hex_in_territory(neighbor.x, neighbor.y):
+					var a1 = deg_to_rad(60.0 * i - 30.0)
+					var a2 = deg_to_rad(60.0 * ((i + 1) % 6) - 30.0)
+					var p1 = c + Vector2(cos(a1), sin(a1)) * HexWorldGenerator.HEX_RADIUS
+					var p2 = c + Vector2(cos(a2), sin(a2)) * HexWorldGenerator.HEX_RADIUS
+					# 领地外发光金色线条
+					draw_line(p1, p2, Color(1.0, 0.88, 0.35, 0.95), 3.0)
+
+	# 3. 绘制鼠标当前悬停的六边形高亮框
 	if generated_hexes.has(hovered_hex):
 		var h_center = HexWorldGenerator.hex_to_pixel(hovered_hex.x, hovered_hex.y)
 		var h_points = PackedVector2Array()
@@ -191,19 +248,19 @@ func _draw() -> void:
 			var pt = h_center + Vector2(cos(angle), sin(angle)) * HexWorldGenerator.HEX_RADIUS
 			h_points.append(pt)
 		h_points.append(h_points[0])
-		draw_polyline(h_points, Color(0.3, 0.9, 1.0, 0.8), 2.5) # 亮青色光环
+		var h_col = Color(0.3, 0.9, 1.0, 0.85) if GameState.is_hex_in_territory(hovered_hex.x, hovered_hex.y) else Color(1.0, 0.4, 0.4, 0.7)
+		draw_polyline(h_points, h_col, 2.5)
 	
-	# 3. 绘制当前正在进行的任务的世界地块指示器
+	# 4. 绘制当前正在进行的任务的世界地块指示器
 	if not GameState.active_task.is_empty():
 		var t_pos = GameState.active_task.get("world_pos", Vector2.ZERO)
 		var total = float(GameState.active_task.get("total_time", 1.0))
 		var elapsed = float(GameState.active_task.get("elapsed_time", 0.0))
 		var pct = clamp(elapsed / total, 0.0, 1.0)
-		# 发光作业环
 		draw_arc(t_pos, 28.0, 0, TAU, 32, Color(1.0, 0.85, 0.2, 0.35), 4.0)
 		draw_arc(t_pos, 28.0, -PI/2, -PI/2 + pct * TAU, 32, Color(1.0, 0.88, 0.3, 0.95), 5.0)
 
-	# 4. 绘制排队中任务的地块指示环
+	# 5. 绘制排队中任务的地块指示环
 	for i in range(GameState.task_queue.size()):
 		var q_task = GameState.task_queue[i]
 		var q_pos = q_task.get("world_pos", Vector2.ZERO)
@@ -214,22 +271,18 @@ func _draw() -> void:
 func _draw_hex_biome_texture(center: Vector2, biome: HexWorldGenerator.BiomeType, _q: int, _r: int) -> void:
 	match biome:
 		HexWorldGenerator.BiomeType.PLAINS:
-			# 生机草丝 (两三簇细草)
 			draw_line(center + Vector2(-6, 2), center + Vector2(-8, -4), Color(0.35, 0.58, 0.30), 1.5)
 			draw_line(center + Vector2(-6, 2), center + Vector2(-4, -5), Color(0.38, 0.65, 0.32), 1.5)
 			draw_line(center + Vector2(8, -2), center + Vector2(10, -8), Color(0.32, 0.52, 0.28), 1.5)
 		HexWorldGenerator.BiomeType.VOLCANO:
-			# 暗红玄武岩裂隙与熔岩微光
 			draw_line(center + Vector2(-12, -4), center + Vector2(0, 2), Color(0.85, 0.25, 0.10, 0.7), 1.8)
 			draw_line(center + Vector2(0, 2), center + Vector2(10, -6), Color(1.0, 0.45, 0.15, 0.8), 1.5)
-			draw_circle(center + Vector2(0, 2), 2.5, Color(1.0, 0.65, 0.2, 0.9)) # 熔岩火星
+			draw_circle(center + Vector2(0, 2), 2.5, Color(1.0, 0.65, 0.2, 0.9))
 		HexWorldGenerator.BiomeType.SALT_LAKE:
-			# 水面涟漪与析盐白色微环
 			draw_arc(center + Vector2(-4, -2), 10.0, 0.2, PI - 0.2, 10, Color(0.65, 0.82, 0.92, 0.45), 1.5)
 			draw_arc(center + Vector2(6, 6), 7.0, PI + 0.2, TAU - 0.2, 8, Color(0.70, 0.88, 0.98, 0.40), 1.5)
-			draw_circle(center + Vector2(12, -8), 2.5, Color(0.95, 0.98, 1.0, 0.75)) # 析盐小晶片
+			draw_circle(center + Vector2(12, -8), 2.5, Color(0.95, 0.98, 1.0, 0.75))
 		HexWorldGenerator.BiomeType.DEEP_FOREST:
-			# 苍翠深林苔藓斑与落叶点
 			draw_circle(center + Vector2(-8, -6), 4.5, Color(0.08, 0.18, 0.09, 0.7))
 			draw_circle(center + Vector2(6, 4), 3.5, Color(0.10, 0.20, 0.11, 0.7))
 			draw_line(center + Vector2(-2, 8), center + Vector2(4, 10), Color(0.28, 0.20, 0.12), 2.0)
@@ -241,6 +294,11 @@ func _bind_furnace_events(f_node: Node2D) -> void:
 		)
 
 func _on_build_furnace_requested() -> void:
+	var spawn_pos = HexWorldGenerator.hex_to_pixel(hovered_hex.x, hovered_hex.y) if generated_hexes.has(hovered_hex) else camera.position
+	if not GameState.is_pos_in_territory(spawn_pos):
+		GameState.post_notice("🚩 无法在此建造：超出当前文明领地边界！", Color(1.0, 0.4, 0.4))
+		return
+		
 	var stone_count = GameState.inventory.get_count("stone")
 	var flint_count = GameState.inventory.get_count("flint")
 	if GameState.inventory.has_item("wood", 4) and (stone_count + flint_count >= 4):
@@ -253,22 +311,114 @@ func _on_build_furnace_requested() -> void:
 		if needed > 0:
 			GameState.inventory.remove_item("flint", needed)
 		var new_f = FurnaceScene.instantiate()
-		var spawn_pos = HexWorldGenerator.hex_to_pixel(hovered_hex.x, hovered_hex.y) if generated_hexes.has(hovered_hex) else camera.position
 		new_f.position = spawn_pos
 		entities.add_child(new_f)
+		built_furnaces.append(new_f)
 		_bind_furnace_events(new_f)
 		GameState.post_notice("🔨 现场施工完成！消耗原木 x4 与碎石 x4 堆砌起【陶土熔炉】！", Color.GREEN)
+		SaveManager.save_game(self)
 	else:
 		GameState.post_notice("❌ 建造土窑原料不足！需要: 原木 x4, 碎石 x4 (亦可用燧石充当)", Color.RED)
 
 func _on_build_reactor_requested() -> void:
+	var spawn_pos = HexWorldGenerator.hex_to_pixel(hovered_hex.x, hovered_hex.y) if generated_hexes.has(hovered_hex) else camera.position
+	if not GameState.is_pos_in_territory(spawn_pos):
+		GameState.post_notice("🚩 无法在此建造：超出当前文明领地边界！", Color(1.0, 0.4, 0.4))
+		return
+		
 	if GameState.inventory.has_item("wood", 8) and GameState.inventory.has_item("copper", 2):
 		GameState.inventory.remove_item("wood", 8)
 		GameState.inventory.remove_item("copper", 2)
 		var new_r = IndustrialReactorScene.instantiate()
-		var spawn_pos = HexWorldGenerator.hex_to_pixel(hovered_hex.x, hovered_hex.y) if generated_hexes.has(hovered_hex) else camera.position
 		new_r.position = spawn_pos
 		entities.add_child(new_r)
+		built_reactors.append(new_r)
 		GameState.post_notice("🏭 近代工业巨构施工完成！消耗原木 x8 与金属铜 x2 建立【工业连续反应塔】！", Color(0.2, 0.8, 1.0))
+		SaveManager.save_game(self)
 	else:
 		GameState.post_notice("❌ 建造反应塔原料不足！需要: 原木 x8, 金属铜 x2 (请先在土窑炼铜)", Color.RED)
+
+# --- 存档序列化与反序列化接口 ---
+
+func serialize_world_state() -> Dictionary:
+	var f_data: Array = []
+	for f in built_furnaces:
+		if is_instance_valid(f):
+			f_data.append({
+				"x": f.position.x,
+				"y": f.position.y,
+				"temperature": f.buffer.temperature,
+				"burn_timer": f.burn_timer,
+				"is_active_fire": f.is_active_fire,
+				"components": f.buffer.components
+			})
+	var r_data: Array = []
+	for r in built_reactors:
+		if is_instance_valid(r):
+			r_data.append({
+				"x": r.position.x,
+				"y": r.position.y,
+				"blueprint_id": r.installed_blueprint.id if r.installed_blueprint else "",
+				"total_produced": r.total_produced_count
+			})
+	return {
+		"cam_x": camera.position.x,
+		"cam_y": camera.position.y,
+		"zoom": target_zoom.x,
+		"furnaces": f_data,
+		"reactors": r_data
+	}
+
+func deserialize_world_state(data: Dictionary) -> void:
+	if data.has("cam_x") and data.has("cam_y"):
+		camera.position = Vector2(float(data["cam_x"]), float(data["cam_y"]))
+	if data.has("zoom"):
+		target_zoom = Vector2(float(data["zoom"]), float(data["zoom"]))
+		camera.zoom = target_zoom
+		
+	# 清理旧建筑
+	for f in built_furnaces:
+		if is_instance_valid(f): f.queue_free()
+	built_furnaces.clear()
+	for r in built_reactors:
+		if is_instance_valid(r): r.queue_free()
+	built_reactors.clear()
+	
+	# 还原熔炉
+	for f_item in data.get("furnaces", []):
+		var new_f = FurnaceScene.instantiate()
+		new_f.position = Vector2(float(f_item["x"]), float(f_item["y"]))
+		entities.add_child(new_f)
+		built_furnaces.append(new_f)
+		_bind_furnace_events(new_f)
+		new_f.buffer.temperature = float(f_item.get("temperature", 293.15))
+		new_f.burn_timer = float(f_item.get("burn_timer", 0.0))
+		new_f.is_active_fire = bool(f_item.get("is_active_fire", false))
+		var comps = f_item.get("components", {})
+		for c_k in comps.keys():
+			new_f.buffer.components[c_k] = float(comps[c_k])
+			
+	# 还原反应塔
+	for r_item in data.get("reactors", []):
+		var new_r = IndustrialReactorScene.instantiate()
+		new_r.position = Vector2(float(r_item["x"]), float(r_item["y"]))
+		entities.add_child(new_r)
+		built_reactors.append(new_r)
+		new_r.total_produced_count = int(r_item.get("total_produced", 0))
+		var bpid = r_item.get("blueprint_id", "")
+		if bpid != "" and GameState.unlocked_blueprints.has(bpid):
+			new_r.install_blueprint(GameState.unlocked_blueprints[bpid])
+
+	queue_redraw()
+
+func reset_world_state() -> void:
+	for f in built_furnaces:
+		if is_instance_valid(f): f.queue_free()
+	built_furnaces.clear()
+	for r in built_reactors:
+		if is_instance_valid(r): r.queue_free()
+	built_reactors.clear()
+	camera.position = Vector2.ZERO
+	target_zoom = Vector2.ONE
+	camera.zoom = Vector2.ONE
+	queue_redraw()

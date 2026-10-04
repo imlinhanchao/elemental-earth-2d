@@ -42,6 +42,12 @@ theme_override_font_sizes/font_size = 14
 text = "🏛️ 文明纪元: 石器时代 (Stone Age)"
 horizontal_alignment = 1
 
+[node name="TerritoryLabel" type="Label" parent="Margin/TopBox/EraPanel/HBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.78, 0.35, 1)
+theme_override_font_sizes/font_size = 13
+text = " | 🚩 领地: 半径 5格"
+
 [node name="BiomeLabel" type="Label" parent="Margin/TopBox/EraPanel/HBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
@@ -122,6 +128,25 @@ text = "🔨 建造陶土熔炉 (C) [-4木 -4石]"
 [node name="BtnBuildReactor" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
 layout_mode = 2
 text = "🏭 建造工业反应塔 (R) [-8木 -2铜]"
+
+[node name="SaveHBox" type="HBoxContainer" parent="Margin/HBox/LeftBox"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="BtnSave" type="Button" parent="Margin/HBox/LeftBox/SaveHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "💾 保存"
+
+[node name="BtnLoad" type="Button" parent="Margin/HBox/LeftBox/SaveHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "📂 读取"
+
+[node name="BtnReset" type="Button" parent="Margin/HBox/LeftBox/SaveHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "🔄 重置"
 
 [node name="CenterSpacer" type="Control" parent="Margin/HBox"]
 layout_mode = 2

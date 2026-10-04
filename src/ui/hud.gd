@@ -4,16 +4,24 @@ extends CanvasLayer
 
 signal build_furnace_requested
 signal build_reactor_requested
+signal save_requested
+signal load_requested
+signal reset_requested
 
 const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 
 @onready var inventory_label = $Margin/HBox/LeftBox/InvPanel/Margin/VBox/InvLabel
 @onready var notice_label = $Margin/TopBox/NoticeLabel
 @onready var era_label = $Margin/TopBox/EraPanel/HBox/EraLabel
+@onready var territory_label = $Margin/TopBox/EraPanel/HBox/TerritoryLabel
 @onready var biome_label = $Margin/TopBox/EraPanel/HBox/BiomeLabel
 @onready var furnace_panel = $Margin/HBox/RightBox/FurnacePanel
 @onready var furnace_info = $Margin/HBox/RightBox/FurnacePanel/Margin/VBox/FurnaceInfo
 @onready var elements_label = $Margin/HBox/LeftBox/ElementsPanel/Margin/VBox/ElementsLabel
+
+@onready var btn_save = $Margin/HBox/LeftBox/SaveHBox/BtnSave
+@onready var btn_load = $Margin/HBox/LeftBox/SaveHBox/BtnLoad
+@onready var btn_reset = $Margin/HBox/LeftBox/SaveHBox/BtnReset
 
 # 任务队列 UI 控件
 @onready var task_panel = $Margin/HBox/CenterSpacer/TaskQueuePanel
@@ -57,6 +65,10 @@ func _ready() -> void:
 		if not GameState.active_task.is_empty():
 			GameState.cancel_task(GameState.active_task.get("id"))
 	)
+	
+	btn_save.pressed.connect(func(): save_requested.emit())
+	btn_load.pressed.connect(func(): load_requested.emit())
+	btn_reset.pressed.connect(func(): reset_requested.emit())
 	
 	furnace_panel.visible = false
 	_update_inventory_ui()
@@ -152,6 +164,8 @@ func _update_elements_ui() -> void:
 
 func _update_era_label() -> void:
 	era_label.text = "  🏛️ 文明纪元: %s  " % GameState.ERA_NAMES[GameState.current_era]
+	if territory_label:
+		territory_label.text = " | 🚩 领地: 半径 %d格" % GameState.get_current_territory_radius()
 
 func update_current_biome(biome: int) -> void:
 	var b_name = "生机原野平原"

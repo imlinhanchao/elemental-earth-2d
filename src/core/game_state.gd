@@ -6,6 +6,7 @@ const DataDB = preload("res://src/core/data_db.gd")
 const PlayerInventory = preload("res://src/core/player_inventory.gd")
 const ChemistrySolver = preload("res://src/core/chemistry_solver.gd")
 const ProcessBlueprint = preload("res://src/core/process_blueprint.gd")
+const HexWorldGenerator = preload("res://src/core/hex_world_generator.gd")
 
 signal element_discovered(element_number: int, item_key: String)
 signal notification_posted(text: String, color: Color)
@@ -112,6 +113,24 @@ func _on_element_discovered(elem_num: int, item_key: String) -> void:
 
 func post_notice(text: String, color: Color = Color.WHITE) -> void:
 	notification_posted.emit(text, color)
+
+func get_current_territory_radius() -> int:
+	match current_era:
+		0: return 5   # 石器时代: 基础 5 格半径
+		1: return 8   # 炼金时代: 扩展至 8 格
+		2: return 11  # 近代化学: 扩展至 11 格
+		3: return 14  # 电化学: 扩展至 14 格
+		4: return 17  # 稀土时代: 扩展至 17 格
+		5: return 20  # 原子能时代: 覆盖全图
+		_: return 5 + current_era * 3
+
+func is_hex_in_territory(q: int, r: int) -> bool:
+	var dist = (abs(q) + abs(q + r) + abs(r)) / 2
+	return dist <= get_current_territory_radius()
+
+func is_pos_in_territory(pos: Vector2) -> bool:
+	var h = HexWorldGenerator.pixel_to_hex(pos)
+	return is_hex_in_territory(h.x, h.y)
 
 func _process(delta: float) -> void:
 	if not active_task.is_empty():
