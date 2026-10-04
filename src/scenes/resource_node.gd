@@ -167,10 +167,18 @@ func _draw_loose_flint() -> void:
 	draw_circle(Vector2(5, 0), 5.5, Color(0.55, 0.60, 0.65))
 	draw_circle(Vector2(2, 7), 4.0, Color(0.75, 0.80, 0.85))
 
-# 7. 枯树枝 (Fallen Sticks)
+# 7. 枯树枝 (Fallen Sticks - 明亮原木色多叉枯枝)
 func _draw_fallen_stick() -> void:
-	draw_line(Vector2(-10, -6), Vector2(10, 6), Color(0.48, 0.30, 0.16), 3.5)
-	draw_line(Vector2(-2, 8), Vector2(8, -8), Color(0.38, 0.24, 0.12), 2.5)
+	# 树枝小投影
+	draw_line(Vector2(-12, -4), Vector2(12, 8), Color(0.08, 0.12, 0.08, 0.4), 4.5)
+	# 主枯枝 (暖棕色)
+	draw_line(Vector2(-12, -6), Vector2(12, 6), Color(0.58, 0.38, 0.22), 4.0)
+	# 侧分叉枝 1
+	draw_line(Vector2(-2, -1), Vector2(6, -9), Color(0.68, 0.45, 0.26), 3.0)
+	# 侧分叉枝 2
+	draw_line(Vector2(2, 1), Vector2(-4, 9), Color(0.50, 0.32, 0.18), 3.0)
+	# 树枝高光倒棱线
+	draw_line(Vector2(-10, -7), Vector2(8, 4), Color(0.82, 0.60, 0.38), 1.5)
 
 # 晶簇绘制辅助函数
 func _draw_crystal_poly(pos: Vector2, size: Vector2, base_col: Color, light_col: Color) -> void:
