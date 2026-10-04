@@ -57,12 +57,15 @@ var playtime_seconds: float:
 
 var task_queue: Array[Dictionary]:
 	get: return sim.task_queue
+	set(v): sim.task_queue = v
 
 var active_task: Dictionary:
 	get: return sim.active_task
+	set(v): sim.active_task = v
 
 var depleted_tiles: Dictionary:
 	get: return sim.depleted_tiles
+	set(v): sim.depleted_tiles = v
 
 var ERA_NAMES: Array[String]:
 	get: return Simulation.ERA_NAMES

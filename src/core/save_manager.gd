@@ -1,9 +1,10 @@
 # save_manager.gd
-# 游戏通用持久化存档管理器: 包含业界标准多槽位归档、自动存档、元数据摘要提取及跨场景读写
+# 游戏通用持久化存档管理器: 升级至 v3 架构，支持时代、工具、背包、蓝图、任务队列、实验台溶液、地块采空与建筑网格坐标
 class_name SaveManager
 extends RefCounted
 
 const ProcessBlueprint = preload("res://src/core/process_blueprint.gd")
+const MixtureBuffer = preload("res://src/core/mixture_buffer.gd")
 
 const SLOT_DEFINITIONS: Array[Dictionary] = [
 	{ "id": "auto", "name": "⚡ 自动存档", "is_auto": true },
@@ -51,6 +52,7 @@ static func get_slot_meta(slot_id: String) -> Dictionary:
 		"slot_name": def_name,
 		"is_auto": is_auto,
 		"exists": false,
+		"version": 1,
 		"timestamp": 0,
 		"datetime": "",
 		"playtime_formatted": "00:00",
@@ -60,7 +62,8 @@ static func get_slot_meta(slot_id: String) -> Dictionary:
 		"territory_radius": 5,
 		"inventory_count": 0,
 		"furnaces_count": 0,
-		"reactors_count": 0
+		"reactors_count": 0,
+		"tasks_count": 0
 	}
 	
 	if not FileAccess.file_exists(path):
@@ -77,6 +80,7 @@ static func get_slot_meta(slot_id: String) -> Dictionary:
 		return result
 		
 	result["exists"] = true
+	result["version"] = int(parsed.get("version", 1))
 	result["timestamp"] = int(parsed.get("timestamp", 0))
 	result["datetime"] = str(parsed.get("datetime", ""))
 	result["playtime_formatted"] = str(parsed.get("playtime_formatted", "00:00"))
@@ -89,6 +93,7 @@ static func get_slot_meta(slot_id: String) -> Dictionary:
 	result["inventory_count"] = int(meta.get("inventory_items_count", 0))
 	result["furnaces_count"] = int(meta.get("furnaces_count", 0))
 	result["reactors_count"] = int(meta.get("reactors_count", 0))
+	result["tasks_count"] = int(meta.get("tasks_count", 0))
 	
 	return result
 
@@ -134,9 +139,10 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 			break
 			
 	var dt_str = Time.get_datetime_string_from_system().replace("T", " ")
+	var tasks_count: int = GameState.task_queue.size() + (1 if not GameState.active_task.is_empty() else 0)
 	
 	var save_dict: Dictionary = {
-		"version": 2,
+		"version": 3,
 		"slot_id": slot_id,
 		"slot_name": def_name,
 		"timestamp": Time.get_unix_time_from_system(),
@@ -150,7 +156,8 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 			"territory_radius": GameState.get_current_territory_radius(),
 			"inventory_items_count": GameState.inventory.items.size(),
 			"furnaces_count": furnaces_count,
-			"reactors_count": reactors_count
+			"reactors_count": reactors_count,
+			"tasks_count": tasks_count
 		},
 		"game_state": {
 			"current_era": GameState.current_era,
@@ -158,7 +165,11 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 			"discovered_elements": GameState.discovered_elements,
 			"equipped_tools": GameState.equipped_tools,
 			"inventory": GameState.inventory.items,
-			"unlocked_blueprints": _serialize_blueprints()
+			"unlocked_blueprints": _serialize_blueprints(),
+			"task_queue": _serialize_tasks(GameState.task_queue),
+			"active_task": _serialize_task(GameState.active_task),
+			"lab_vessel": _serialize_lab_vessel(GameState.lab_vessel),
+			"depleted_tiles": _serialize_depleted_tiles(GameState.depleted_tiles)
 		},
 		"world_state": world_data
 	}
@@ -171,7 +182,7 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 		
 	file.store_string(JSON.stringify(save_dict, "\t"))
 	file.close()
-	print("[SaveManager] 进度已成功保存至槽位: %s (%s)" % [slot_id, path])
+	print("[SaveManager] 进度已成功保存至槽位 (v3): %s (%s)" % [slot_id, path])
 	if slot_id != "auto":
 		GameState.post_notice("💾 进度已成功保存至【%s】！" % def_name, Color(0.3, 0.9, 0.5))
 	return true
@@ -195,7 +206,9 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
 		GameState.post_notice("❌ 存档数据损坏或格式错误！", Color.RED)
 		return false
 		
+	var version = int(parsed.get("version", 1))
 	var gs_data = parsed.get("game_state", {})
+	
 	GameState.current_era = int(gs_data.get("current_era", 0))
 	GameState.playtime_seconds = float(gs_data.get("playtime_seconds", 0.0))
 	
@@ -216,13 +229,38 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
 	
 	_deserialize_blueprints(gs_data.get("unlocked_blueprints", {}))
 	
+	# v3 专属模拟层状态 (向下兼容 v2 旧档)
+	if version >= 3:
+		var q_data = gs_data.get("task_queue", [])
+		GameState.task_queue = _deserialize_tasks(q_data)
+		
+		var act_data = gs_data.get("active_task", {})
+		if act_data is Dictionary and not act_data.is_empty():
+			GameState.active_task = _deserialize_task(act_data)
+		else:
+			GameState.active_task = {}
+			
+		GameState.depleted_tiles = _deserialize_depleted_tiles(gs_data.get("depleted_tiles", []))
+		_deserialize_lab_vessel(gs_data.get("lab_vessel", {}))
+	else:
+		# v2 旧档：无任务、无溶液、无采空记录，缺的字段当空
+		GameState.task_queue = []
+		GameState.active_task = {}
+		GameState.depleted_tiles = {}
+		if GameState.lab_vessel:
+			GameState.lab_vessel.clear()
+			GameState.lab_vessel.temperature = 293.15
+			
+	GameState.task_queue_changed.emit()
+	
 	var world_data = parsed.get("world_state", {})
 	if world_node != null and world_node.has_method("deserialize_world_state"):
 		world_node.deserialize_world_state(world_data)
 		
 	GameState.era_advanced.emit(0, GameState.current_era, GameState.ERA_NAMES[GameState.current_era])
-	GameState.post_notice("📂 成功载入【%s】！当前时代: %s" % [
+	GameState.post_notice("📂 成功载入【%s】(v%d)！当前时代: %s" % [
 		parsed.get("slot_name", slot_id),
+		version,
 		GameState.ERA_NAMES[GameState.current_era]
 	], Color(0.2, 0.9, 1.0))
 	return true
@@ -233,6 +271,8 @@ static func delete_slot(slot_id: String) -> bool:
 		var err = DirAccess.remove_absolute(path)
 		return (err == OK)
 	return true
+
+# --- 序列化辅助函数 ---
 
 static func _serialize_blueprints() -> Dictionary:
 	var dict: Dictionary = {}
@@ -261,3 +301,93 @@ static func _deserialize_blueprints(dict: Dictionary) -> void:
 		)
 		bp.duration_seconds = float(d.get("duration_seconds", 3.0))
 		GameState.unlocked_blueprints[k] = bp
+
+static func _serialize_tasks(queue: Array[Dictionary]) -> Array[Dictionary]:
+	var list: Array[Dictionary] = []
+	for t in queue:
+		list.append(_serialize_task(t))
+	return list
+
+static func _serialize_task(t: Dictionary) -> Dictionary:
+	if t.is_empty():
+		return {}
+	return {
+		"id": int(t.get("id", 0)),
+		"action_id": str(t.get("action_id", "mine")),
+		"hex_q": int(t.get("hex_q", 0)),
+		"hex_r": int(t.get("hex_r", 0)),
+		"target_key": str(t.get("target_key", "")),
+		"yield_amount": int(t.get("yield_amount", 1)),
+		"title": str(t.get("title", "")),
+		"icon": str(t.get("icon", "")),
+		"world_pos_x": float(t.get("world_pos_x", 0.0)),
+		"world_pos_y": float(t.get("world_pos_y", 0.0)),
+		"total_time": float(t.get("total_time", 1.0)),
+		"elapsed_time": float(t.get("elapsed_time", 0.0))
+	}
+
+static func _deserialize_tasks(tasks_array: Array) -> Array[Dictionary]:
+	var list: Array[Dictionary] = []
+	for item in tasks_array:
+		if item is Dictionary:
+			list.append(_deserialize_task(item))
+	return list
+
+static func _deserialize_task(item: Dictionary) -> Dictionary:
+	return {
+		"id": int(item.get("id", 0)),
+		"action_id": str(item.get("action_id", "mine")),
+		"hex_q": int(item.get("hex_q", 0)),
+		"hex_r": int(item.get("hex_r", 0)),
+		"target_key": str(item.get("target_key", "")),
+		"yield_amount": int(item.get("yield_amount", 1)),
+		"title": str(item.get("title", "")),
+		"icon": str(item.get("icon", "")),
+		"world_pos_x": float(item.get("world_pos_x", 0.0)),
+		"world_pos_y": float(item.get("world_pos_y", 0.0)),
+		"total_time": float(item.get("total_time", 1.0)),
+		"elapsed_time": float(item.get("elapsed_time", 0.0))
+	}
+
+static func _serialize_lab_vessel(vessel: MixtureBuffer) -> Dictionary:
+	if vessel == null:
+		return {}
+	return {
+		"temperature": vessel.temperature,
+		"applied_voltage": vessel.applied_voltage,
+		"container_type": vessel.container_type,
+		"reaction_timer": vessel.reaction_timer,
+		"components": vessel.components.duplicate()
+	}
+
+static func _deserialize_lab_vessel(data: Dictionary) -> void:
+	if GameState.lab_vessel == null:
+		return
+	GameState.lab_vessel.clear()
+	GameState.lab_vessel.temperature = float(data.get("temperature", 293.15))
+	GameState.lab_vessel.applied_voltage = float(data.get("applied_voltage", 0.0))
+	GameState.lab_vessel.container_type = str(data.get("container_type", "flask"))
+	GameState.lab_vessel.reaction_timer = float(data.get("reaction_timer", 0.0))
+	var comps = data.get("components", {})
+	if comps is Dictionary:
+		for k in comps.keys():
+			GameState.lab_vessel.components[k] = float(comps[k])
+
+static func _serialize_depleted_tiles(tiles: Dictionary) -> Array[Dictionary]:
+	var list: Array[Dictionary] = []
+	for h in tiles.keys():
+		list.append({
+			"q": int(h.x),
+			"r": int(h.y),
+			"remaining_time": float(tiles[h])
+		})
+	return list
+
+static func _deserialize_depleted_tiles(tiles_data: Variant) -> Dictionary:
+	var dict: Dictionary = {}
+	if tiles_data is Array:
+		for item in tiles_data:
+			if item is Dictionary and item.has("q") and item.has("r"):
+				var coord = Vector2i(int(item["q"]), int(item["r"]))
+				dict[coord] = float(item.get("remaining_time", 60.0))
+	return dict

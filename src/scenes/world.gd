@@ -331,7 +331,10 @@ func serialize_world_state() -> Dictionary:
 	var f_data: Array = []
 	for f in built_furnaces:
 		if is_instance_valid(f):
+			var fh = HexWorldGenerator.pixel_to_hex(f.position)
 			f_data.append({
+				"hex_q": fh.x,
+				"hex_r": fh.y,
 				"x": f.position.x,
 				"y": f.position.y,
 				"temperature": f.buffer.temperature,
@@ -342,7 +345,10 @@ func serialize_world_state() -> Dictionary:
 	var r_data: Array = []
 	for r in built_reactors:
 		if is_instance_valid(r):
+			var rh = HexWorldGenerator.pixel_to_hex(r.position)
 			r_data.append({
+				"hex_q": rh.x,
+				"hex_r": rh.y,
 				"x": r.position.x,
 				"y": r.position.y,
 				"blueprint_id": r.installed_blueprint.id if r.installed_blueprint else "",
@@ -371,10 +377,13 @@ func deserialize_world_state(data: Dictionary) -> void:
 		if is_instance_valid(r): r.queue_free()
 	built_reactors.clear()
 	
-	# 还原熔炉
+	# 还原熔炉 (优先按六边形网格坐标重建)
 	for f_item in data.get("furnaces", []):
 		var new_f = FurnaceScene.instantiate()
-		new_f.position = Vector2(float(f_item["x"]), float(f_item["y"]))
+		var pos = Vector2(float(f_item.get("x", 0.0)), float(f_item.get("y", 0.0)))
+		if f_item.has("hex_q") and f_item.has("hex_r"):
+			pos = HexWorldGenerator.hex_to_pixel(int(f_item["hex_q"]), int(f_item["hex_r"]))
+		new_f.position = pos
 		entities.add_child(new_f)
 		built_furnaces.append(new_f)
 		_bind_furnace_events(new_f)
@@ -385,10 +394,13 @@ func deserialize_world_state(data: Dictionary) -> void:
 		for c_k in comps.keys():
 			new_f.buffer.components[c_k] = float(comps[c_k])
 			
-	# 还原反应塔
+	# 还原反应塔 (优先按六边形网格坐标重建)
 	for r_item in data.get("reactors", []):
 		var new_r = IndustrialReactorScene.instantiate()
-		new_r.position = Vector2(float(r_item["x"]), float(r_item["y"]))
+		var r_pos = Vector2(float(r_item.get("x", 0.0)), float(r_item.get("y", 0.0)))
+		if r_item.has("hex_q") and r_item.has("hex_r"):
+			r_pos = HexWorldGenerator.hex_to_pixel(int(r_item["hex_q"]), int(r_item["hex_r"]))
+		new_r.position = r_pos
 		entities.add_child(new_r)
 		built_reactors.append(new_r)
 		new_r.total_produced_count = int(r_item.get("total_produced", 0))
@@ -396,7 +408,17 @@ func deserialize_world_state(data: Dictionary) -> void:
 		if bpid != "" and GameState.unlocked_blueprints.has(bpid):
 			new_r.install_blueprint(GameState.unlocked_blueprints[bpid])
 
+	# 将已采空的格子状态覆盖到地表资源节点上
+	apply_depleted_tiles_to_nodes()
 	queue_redraw()
+
+func apply_depleted_tiles_to_nodes() -> void:
+	for node in entities.get_children():
+		if node is Area2D and "hex_coord" in node:
+			if GameState.depleted_tiles.has(node.hex_coord):
+				node.visible = false
+			else:
+				node.visible = true
 
 func reset_world_state() -> void:
 	for f in built_furnaces:
@@ -408,4 +430,5 @@ func reset_world_state() -> void:
 	camera.position = Vector2.ZERO
 	target_zoom = Vector2.ONE
 	camera.zoom = Vector2.ONE
+	apply_depleted_tiles_to_nodes()
 	queue_redraw()
