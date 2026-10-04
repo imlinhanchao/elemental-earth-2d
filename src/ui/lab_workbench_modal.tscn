@@ -2,116 +2,180 @@
 
 [ext_resource type="Script" path="res://src/ui/lab_workbench_modal.gd" id="1_lab"]
 
-[node name="LabWorkbenchModal" type="PanelContainer"]
+[node name="LabWorkbenchModal" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_lab")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="CenterPanel" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(980, 600)
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -450.0
-offset_top = -270.0
-offset_right = 450.0
-offset_bottom = 270.0
+offset_left = -490.0
+offset_top = -300.0
+offset_right = 490.0
+offset_bottom = 300.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_lab")
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="VBox" type="VBoxContainer" parent="CenterPanel"]
 layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Header" type="MarginContainer" parent="CenterPanel/VBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 4
+
+[node name="HBox" type="HBoxContainer" parent="CenterPanel/VBox/Header"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="CenterPanel/VBox/Header/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "微观化学实验台"
+
+[node name="Spacer" type="Control" parent="CenterPanel/VBox/Header/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BtnClose" type="Button" parent="CenterPanel/VBox/Header/HBox"]
+custom_minimum_size = Vector2(60, 28)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "✕ [ESC]"
+
+[node name="HSeparator" type="HSeparator" parent="CenterPanel/VBox"]
+layout_mode = 2
+
+[node name="Body" type="MarginContainer" parent="CenterPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="HBox" type="HBoxContainer" parent="Margin"]
+[node name="HBox" type="HBoxContainer" parent="CenterPanel/VBox/Body"]
 layout_mode = 2
 theme_override_constants/separation = 20
 
-[node name="LeftView" type="VBoxContainer" parent="Margin/HBox"]
-custom_minimum_size = Vector2(380, 0)
-layout_mode = 2
-
-[node name="Title" type="Label" parent="Margin/HBox/LeftView"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "⚗️ 微观实验工作台 (Cleanroom Workbench)"
-
-[node name="VesselDrawArea" type="Control" parent="Margin/HBox/LeftView"]
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="Controls" type="HBoxContainer" parent="Margin/HBox/LeftView"]
+[node name="LeftView" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox"]
+custom_minimum_size = Vector2(440, 0)
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="BtnBurner" type="Button" parent="Margin/HBox/LeftView/Controls"]
+[node name="VesselDrawArea" type="Control" parent="CenterPanel/VBox/Body/HBox/LeftView"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Controls" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/LeftView"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="BtnBurner" type="Button" parent="CenterPanel/VBox/Body/HBox/LeftView/Controls"]
+custom_minimum_size = Vector2(130, 36)
 layout_mode = 2
 toggle_mode = true
-text = "🔥 酒精灯加热开关"
+text = "酒精灯加热开关"
 
-[node name="TempLabel" type="Label" parent="Margin/HBox/LeftView/Controls"]
+[node name="TempLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/Controls"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_font_sizes/font_size = 13
 text = "烧瓶温度: 293 K (20 ℃)"
 
-[node name="ReagentBar" type="HBoxContainer" parent="Margin/HBox/LeftView"]
+[node name="ReagentBar" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/LeftView"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="BtnAddWood" type="Button" parent="Margin/HBox/LeftView/ReagentBar"]
+[node name="BtnAddWood" type="Button" parent="CenterPanel/VBox/Body/HBox/LeftView/ReagentBar"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "+原木"
 
-[node name="BtnAddMalachite" type="Button" parent="Margin/HBox/LeftView/ReagentBar"]
+[node name="BtnAddMalachite" type="Button" parent="CenterPanel/VBox/Body/HBox/LeftView/ReagentBar"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "+孔雀石"
 
-[node name="BtnAddIron" type="Button" parent="Margin/HBox/LeftView/ReagentBar"]
+[node name="BtnAddIron" type="Button" parent="CenterPanel/VBox/Body/HBox/LeftView/ReagentBar"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "+赤铁矿"
 
-[node name="BtnAddCharcoal" type="Button" parent="Margin/HBox/LeftView/ReagentBar"]
+[node name="BtnAddCharcoal" type="Button" parent="CenterPanel/VBox/Body/HBox/LeftView/ReagentBar"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "+木炭"
 
-[node name="BtnClear" type="Button" parent="Margin/HBox/LeftView/ReagentBar"]
-layout_mode = 2
-text = "清空烧瓶"
-
-[node name="RightView" type="VBoxContainer" parent="Margin/HBox"]
+[node name="BtnClear" type="Button" parent="CenterPanel/VBox/Body/HBox/LeftView/ReagentBar"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 10
+text = "清空"
 
-[node name="Header" type="HBoxContainer" parent="Margin/HBox/RightView"]
+[node name="VSeparator" type="VSeparator" parent="CenterPanel/VBox/Body/HBox"]
 layout_mode = 2
 
-[node name="SubTitle" type="Label" parent="Margin/HBox/RightView/Header"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "物态演化与工艺参数包"
-
-[node name="Spacer" type="Control" parent="Margin/HBox/RightView/Header"]
+[node name="RightView" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_constants/separation = 12
 
-[node name="BtnClose" type="Button" parent="Margin/HBox/RightView/Header"]
+[node name="SubTitle" type="Label" parent="CenterPanel/VBox/Body/HBox/RightView"]
 layout_mode = 2
-text = " 关闭 (L/ESC) "
+theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "物态组分与工艺数据包"
 
-[node name="ContentsLabel" type="RichTextLabel" parent="Margin/HBox/RightView"]
+[node name="ContentsLabel" type="RichTextLabel" parent="CenterPanel/VBox/Body/HBox/RightView"]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
-text = "【微观烧瓶物料组分】\n（空烧瓶）"
+text = "【微观烧瓶物料组分】
+（空烧瓶）"
 
-[node name="BtnCollectProducts" type="Button" parent="Margin/HBox/RightView"]
+[node name="ActionHBox" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightView"]
 layout_mode = 2
-text = "📥 收获烧瓶产物至背包"
+theme_override_constants/separation = 10
 
-[node name="BtnExportBlueprint" type="Button" parent="Margin/HBox/RightView"]
+[node name="BtnCollectProducts" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/ActionHBox"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
-text = "💾 固化小试成果 ➔ 导出【工业工艺蓝图芯片】"
+size_flags_horizontal = 3
+text = "收获反应产物至背包"
 
-[node name="LogLabel" type="RichTextLabel" parent="Margin/HBox/RightView"]
+[node name="BtnExportBlueprint" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/ActionHBox"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "固化实验参数 ➔ 导出工业蓝图"
+
+[node name="LogLabel" type="RichTextLabel" parent="CenterPanel/VBox/Body/HBox/RightView"]
 layout_mode = 2
 size_flags_vertical = 3
 scroll_following = true

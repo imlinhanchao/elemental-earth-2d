@@ -2,85 +2,131 @@
 
 [ext_resource type="Script" path="res://src/ui/tool_craft_modal.gd" id="1_tool"]
 
-[node name="ToolCraftModal" type="PanelContainer"]
+[node name="ToolCraftModal" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_tool")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="CenterPanel" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(760, 500)
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -340.0
-offset_top = -240.0
-offset_right = 340.0
-offset_bottom = 240.0
+offset_left = -380.0
+offset_top = -250.0
+offset_right = 380.0
+offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_tool")
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="VBox" type="VBoxContainer" parent="CenterPanel"]
 layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Header" type="MarginContainer" parent="CenterPanel/VBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 4
+
+[node name="HBox" type="HBoxContainer" parent="CenterPanel/VBox/Header"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="CenterPanel/VBox/Header/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "冶金工坊与工具制造"
+
+[node name="Spacer" type="Control" parent="CenterPanel/VBox/Header/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BtnClose" type="Button" parent="CenterPanel/VBox/Header/HBox"]
+custom_minimum_size = Vector2(60, 28)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "✕ [ESC]"
+
+[node name="HSeparator" type="HSeparator" parent="CenterPanel/VBox"]
+layout_mode = 2
+
+[node name="Body" type="MarginContainer" parent="CenterPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="VBox" type="VBoxContainer" parent="Margin"]
+[node name="VBox" type="VBoxContainer" parent="CenterPanel/VBox/Body"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="Header" type="HBoxContainer" parent="Margin/VBox"]
+[node name="CurrentToolLabel" type="Label" parent="CenterPanel/VBox/Body/VBox"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "当前装配 - 斧具: 徒手 | 镐具: 徒手"
 
-[node name="Title" type="Label" parent="Margin/VBox/Header"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "⚒️ 原始工坊与冶金制造台 (Crafting)"
-
-[node name="Spacer" type="Control" parent="Margin/VBox/Header"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="BtnClose" type="Button" parent="Margin/VBox/Header"]
-layout_mode = 2
-text = " 关闭 (C/T/ESC) "
-
-[node name="CurrentToolLabel" type="Label" parent="Margin/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.3, 0.85, 1, 1)
-text = "【当前装配】 斧具: 徒手 | 镐具: 徒手"
-
-[node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
+[node name="Scroll" type="ScrollContainer" parent="CenterPanel/VBox/Body/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="CraftList" type="VBoxContainer" parent="Margin/VBox/Scroll"]
+[node name="CraftList" type="VBoxContainer" parent="CenterPanel/VBox/Body/VBox/Scroll"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
-[node name="Sec1" type="Label" parent="Margin/VBox/Scroll/CraftList"]
+[node name="Sec1" type="Label" parent="CenterPanel/VBox/Body/VBox/Scroll/CraftList"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.4, 1)
+theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
 theme_override_font_sizes/font_size = 13
-text = "─── 阶段 0：石器原始生存制造 ───"
+text = "石器时代生存制造"
 
-[node name="BtnFlintAxe" type="Button" parent="Margin/VBox/Scroll/CraftList"]
+[node name="BtnFlintAxe" type="Button" parent="CenterPanel/VBox/Body/VBox/Scroll/CraftList"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "🪓 制作【原始燧石手斧】 (断枝 x2, 碎石 x2) ➔ 解锁砍伐橡树能力"
+text = "制作 原始燧石手斧 (断枝 x2, 碎石 x2) ➔ 解锁砍伐橡树能力"
+alignment = 0
 
-[node name="BtnStonePick" type="Button" parent="Margin/VBox/Scroll/CraftList"]
+[node name="BtnStonePick" type="Button" parent="CenterPanel/VBox/Body/VBox/Scroll/CraftList"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "⛏️ 制作【粗制石镐】 (断枝 x3, 碎石 x3) ➔ 解锁开采坚硬矿脉能力"
+text = "制作 粗制石镐 (断枝 x3, 碎石 x3) ➔ 解锁开采坚硬矿脉能力"
+alignment = 0
 
-[node name="Sec2" type="Label" parent="Margin/VBox/Scroll/CraftList"]
+[node name="Sec2" type="Label" parent="CenterPanel/VBox/Body/VBox/Scroll/CraftList"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.8, 0.4, 1)
+theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
 theme_override_font_sizes/font_size = 13
-text = "─── 阶段 1：金属冶金锻造 ───"
+text = "金属冶炼锻造"
 
-[node name="BtnCopperPick" type="Button" parent="Margin/VBox/Scroll/CraftList"]
+[node name="BtnCopperPick" type="Button" parent="CenterPanel/VBox/Body/VBox/Scroll/CraftList"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "🔨 锻造【纯铜地质镐】 (金属铜 x3, 原木 x2) ➔ 开采速度 +100%"
+text = "锻造 纯铜地质镐 (金属铜 x3, 原木 x2) ➔ 开采耗时缩短 50%"
+alignment = 0
 
-[node name="BtnIronPick" type="Button" parent="Margin/VBox/Scroll/CraftList"]
+[node name="BtnIronPick" type="Button" parent="CenterPanel/VBox/Body/VBox/Scroll/CraftList"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "⚔️ 锻造【精钢地质重锤】 (金属铁 x4, 木炭 x2) ➔ 一击粉碎矿脉"
+text = "锻造 精钢地质重锤 (金属铁 x4, 木炭 x2) ➔ 极速粉碎高硬度矿脉"
+alignment = 0

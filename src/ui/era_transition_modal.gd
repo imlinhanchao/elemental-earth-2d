@@ -1,5 +1,5 @@
 # era_transition_modal.gd
-# 全屏时代演进与文明跨越庆典动画视口
+# 时代演进与文明跨越庆典动画 (扁平极简，无 emoji，快捷键跳过)
 extends Control
 
 @onready var anim_panel = $Center/Panel
@@ -9,13 +9,27 @@ extends Control
 
 func _ready() -> void:
 	visible = false
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	btn_continue.pressed.connect(func(): visible = false)
 	GameState.era_advanced.connect(_on_era_advanced)
+
+func _input(event: InputEvent) -> void:
+	if not visible:
+		return
+		
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		visible = false
+		get_viewport().set_input_as_handled()
+		return
+		
+	if event is InputEventKey and event.pressed and (event.keycode == KEY_ESCAPE or event.keycode == KEY_ENTER or event.keycode == KEY_SPACE):
+		visible = false
+		get_viewport().set_input_as_handled()
 
 func _on_era_advanced(old_era: int, new_era: int, era_name: String) -> void:
 	if new_era <= old_era or new_era == 0:
 		return
-	title_label.text = "🏛️ 文 明 纪 元 跨 越 ！\n【%s】" % era_name
+	title_label.text = "文 明 纪 元 跨 越\n【%s】" % era_name
 	
 	var desc = ""
 	if new_era == 1:
@@ -29,10 +43,10 @@ func _on_era_advanced(old_era: int, new_era: int, era_name: String) -> void:
 	desc_label.text = desc
 	
 	visible = true
+	btn_continue.grab_focus()
 	
-	# 全屏震撼入场缓动动画
 	modulate.a = 0.0
-	scale = Vector2(0.9, 0.9)
+	scale = Vector2(0.95, 0.95)
 	var tw = create_tween()
-	tw.tween_property(self, "modulate:a", 1.0, 0.6)
-	tw.parallel().tween_property(self, "scale", Vector2.ONE, 0.6).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tw.tween_property(self, "modulate:a", 1.0, 0.4)
+	tw.parallel().tween_property(self, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)

@@ -122,7 +122,7 @@ func unlock_element(elem_num: int, item_key: String) -> void:
 		var elem = DataDB.get_element(elem_num)
 		var sym = elem.get("symbol", "?")
 		var cname = elem.get("name", item_key)
-		var banner = "🌟 【重大发现】你首次提纯并点亮了第 %d 号化学元素：%s (%s)！" % [elem_num, cname, sym]
+		var banner = "【重大发现】你首次提纯并点亮了第 %d 号化学元素：%s (%s)！" % [elem_num, cname, sym]
 		post_notice(banner, Color(1.0, 0.85, 0.2))
 		element_discovered.emit(elem_num, item_key)
 		_check_era_advancement()
@@ -131,7 +131,7 @@ func unlock_blueprint(bp: ProcessBlueprint) -> void:
 	if not unlocked_blueprints.has(bp.id):
 		unlocked_blueprints[bp.id] = bp
 		blueprint_unlocked.emit(bp)
-		post_notice("📜 成功固化导出【工业工艺蓝图: %s】！可插入反应塔批量生产！" % bp.display_name, Color.CYAN)
+		post_notice("成功固化导出【工业工艺蓝图: %s】！可插入反应塔批量生产！" % bp.display_name, Color.CYAN)
 		_check_era_advancement()
 
 func equip_tool(slot: String, tool_key: String) -> void:
@@ -142,7 +142,7 @@ func equip_tool(slot: String, tool_key: String) -> void:
 		t_name = "原始燧石手斧"
 	elif tool_key == "stone_pickaxe":
 		t_name = "粗制石镐"
-	post_notice("⚒️ 成功装配工具: 【%s】！能力大幅解锁！" % t_name, Color.GREEN)
+	post_notice("成功装配工具: 【%s】！能力大幅解锁！" % t_name, Color.GREEN)
 
 func _check_era_advancement() -> void:
 	var era_def = DataDB.get_era(current_era)
@@ -165,7 +165,7 @@ func advance_era(target_era: int) -> void:
 		var old = current_era
 		current_era = target_era
 		era_advanced.emit(old, current_era, ERA_NAMES[current_era])
-		post_notice("🏛️ 【伟大跨越】文明迈入新纪元：%s！" % ERA_NAMES[current_era], Color(1.0, 0.88, 0.3))
+		post_notice("【伟大跨越】文明迈入新纪元：%s！" % ERA_NAMES[current_era], Color(1.0, 0.88, 0.3))
 
 func get_current_territory_radius() -> int:
 	var era_def = DataDB.get_era(current_era)
@@ -272,7 +272,7 @@ func _on_second_tick() -> void:
 						var out_qty = int(ceil(bp.outputs[out_k]))
 						inventory.add_item(out_k, out_qty)
 						r["total_produced"] = r.get("total_produced", 0) + out_qty
-					post_notice("⚙️ 工业反应塔批量产出: %s 完成！累计自动化产出: %d" % [bp.display_name, r["total_produced"]], Color(0.3, 0.8, 1.0))
+					post_notice("工业反应塔批量产出: %s 完成！累计自动化产出: %d" % [bp.display_name, r["total_produced"]], Color(0.3, 0.8, 1.0))
 
 # --- 任务队列调度 ---
 
@@ -304,7 +304,7 @@ func can_mine(item_key: String) -> Dictionary:
 
 func queue_hex_mine(hex: Vector2i, item_key: String, world_pos: Vector2 = Vector2.ZERO) -> bool:
 	if not is_hex_in_territory(hex.x, hex.y):
-		post_notice("🚩 此资源超出当前文明领地边界！请提升时代纪元以拓疆辟土！", Color(1.0, 0.45, 0.3))
+		post_notice("此资源超出当前文明领地边界！请提升时代纪元以拓疆辟土！", Color(1.0, 0.45, 0.3))
 		return false
 		
 	var check = can_mine(item_key)
@@ -314,11 +314,10 @@ func queue_hex_mine(hex: Vector2i, item_key: String, world_pos: Vector2 = Vector
 		
 	var dur = calculate_task_duration(item_key)
 	var iname = DataDB.get_item(item_key).get("name", item_key)
-	var icon = "⛏️"
-	if item_key == "wood": icon = "🪓"
-	elif item_key == "stick": icon = "🌿"
-	elif item_key == "stone": icon = "🪨"
-	elif item_key == "flint": icon = "💎"
+	var action_tag = "[开采]"
+	if item_key == "wood": action_tag = "[伐木]"
+	elif item_key == "stick": action_tag = "[拾取]"
+	elif item_key == "water": action_tag = "[打水]"
 	
 	var task: Dictionary = {
 		"action_id": "mine",
@@ -326,8 +325,8 @@ func queue_hex_mine(hex: Vector2i, item_key: String, world_pos: Vector2 = Vector
 		"hex_r": hex.y,
 		"target_key": item_key,
 		"yield_amount": 2,
-		"title": "%s %s" % [icon, iname],
-		"icon": icon,
+		"title": "%s %s" % [action_tag, iname],
+		"icon": "",
 		"world_pos_x": world_pos.x,
 		"world_pos_y": world_pos.y,
 		"time_required": dur,
@@ -337,7 +336,7 @@ func queue_hex_mine(hex: Vector2i, item_key: String, world_pos: Vector2 = Vector
 
 func queue_hex_water(hex: Vector2i, world_pos: Vector2 = Vector2.ZERO) -> bool:
 	if not is_hex_in_territory(hex.x, hex.y):
-		post_notice("🚩 此水域超出当前文明领地边界！", Color(1.0, 0.45, 0.3))
+		post_notice("此水域超出当前文明领地边界！", Color(1.0, 0.45, 0.3))
 		return false
 		
 	var task: Dictionary = {
@@ -346,8 +345,8 @@ func queue_hex_water(hex: Vector2i, world_pos: Vector2 = Vector2.ZERO) -> bool:
 		"hex_r": hex.y,
 		"target_key": "water",
 		"yield_amount": 1,
-		"title": "💧 汲取卤水",
-		"icon": "💧",
+		"title": "[汲取] 盐湖卤水",
+		"icon": "",
 		"world_pos_x": world_pos.x,
 		"world_pos_y": world_pos.y,
 		"time_required": 1.8,
@@ -355,9 +354,9 @@ func queue_hex_water(hex: Vector2i, world_pos: Vector2 = Vector2.ZERO) -> bool:
 	}
 	return add_task(task)
 
-func queue_hex_forage(hex: Vector2i, biome_name: String, world_pos: Vector2 = Vector2.ZERO) -> bool:
+func queue_hex_forage(hex: Vector2i, _biome_name: String, world_pos: Vector2 = Vector2.ZERO) -> bool:
 	if not is_hex_in_territory(hex.x, hex.y):
-		post_notice("🚩 此区域超出当前文明领地边界！", Color(1.0, 0.45, 0.3))
+		post_notice("此区域超出当前文明领地边界！", Color(1.0, 0.45, 0.3))
 		return false
 		
 	var task: Dictionary = {
@@ -366,8 +365,8 @@ func queue_hex_forage(hex: Vector2i, biome_name: String, world_pos: Vector2 = Ve
 		"hex_r": hex.y,
 		"target_key": "stick",
 		"yield_amount": 2,
-		"title": "🌿 拾取断枝",
-		"icon": "🌿",
+		"title": "[拾取] 地表枯枝",
+		"icon": "",
 		"world_pos_x": world_pos.x,
 		"world_pos_y": world_pos.y,
 		"time_required": 0.8,
@@ -377,7 +376,7 @@ func queue_hex_forage(hex: Vector2i, biome_name: String, world_pos: Vector2 = Ve
 
 func add_task(task_data: Dictionary) -> bool:
 	if task_queue.size() >= MAX_QUEUE_SIZE:
-		post_notice("⚠️ 工作队列已满（上限 %d 项），请等待当前作业完成！" % MAX_QUEUE_SIZE, Color.YELLOW)
+		post_notice("工作队列已满（上限 %d 项），请等待当前作业完成！" % MAX_QUEUE_SIZE, Color.YELLOW)
 		return false
 		
 	_task_id_counter += 1
@@ -482,17 +481,17 @@ func craft_tool(recipe_key: String) -> bool:
 
 func build_structure(structure_key: String, hex: Vector2i) -> bool:
 	if not is_hex_in_territory(hex.x, hex.y):
-		post_notice("🚩 无法在此建造：超出当前文明领地边界！", Color(1.0, 0.4, 0.4))
+		post_notice("无法在此建造：超出当前文明领地边界！", Color(1.0, 0.4, 0.4))
 		return false
 		
 	var recipe = DataDB.get_building_recipe(structure_key)
 	if recipe.is_empty():
-		post_notice("❌ 未知建筑类型: %s" % structure_key, Color.RED)
+		post_notice("未知建筑类型: %s" % structure_key, Color.RED)
 		return false
 		
 	var req_items = recipe.get("required_items", [])
 	if not _has_all_ingredients(req_items):
-		post_notice("❌ 建造原料不足！需要: %s" % _get_ingredients_desc(req_items), Color.RED)
+		post_notice("建造原料不足！需要: %s" % _get_ingredients_desc(req_items), Color.RED)
 		return false
 		
 	_consume_all_ingredients(req_items)
@@ -526,7 +525,7 @@ func furnace_add_fuel(hex: Vector2i) -> bool:
 		f["is_active_fire"] = true
 		f["burn_timer"] = f.get("burn_timer", 0.0) + 18.0
 		f["buffer"].add_substance("charcoal", 1.0)
-		post_notice("🔥 向熔炉投入木炭燃料，炉膛升起熊熊烈火！", Color.ORANGE)
+		post_notice("向熔炉投入木炭燃料，炉膛升起烈火！", Color.ORANGE)
 		return true
 	else:
 		post_notice("背包中没有木炭或木材可用作燃料！", Color.RED)

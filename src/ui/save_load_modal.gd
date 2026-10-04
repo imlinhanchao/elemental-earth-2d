@@ -1,6 +1,7 @@
 # save_load_modal.gd
-# 业界标准多槽位存档与读档交互面板
-extends PanelContainer
+# 业界标准多槽位存档与读档交互面板 (扁平极简，无 emoji，ESC/右键返回)
+class_name SaveLoadModal
+extends Control
 
 const SaveManager = preload("res://src/core/save_manager.gd")
 
@@ -15,9 +16,9 @@ enum Mode {
 var current_mode: Mode = Mode.LOAD
 var world_ref: Node2D = null
 
-@onready var title_label = $Margin/VBox/Header/TitleLabel
-@onready var btn_close = $Margin/VBox/Header/BtnClose
-@onready var slots_container = $Margin/VBox/Scroll/SlotsContainer
+@onready var title_label = $CenterPanel/VBox/Header/HBox/TitleLabel
+@onready var btn_close = $CenterPanel/VBox/Header/HBox/BtnClose
+@onready var slots_container = $CenterPanel/VBox/Body/Scroll/SlotsContainer
 
 # 确认对话框控件
 @onready var confirm_dialog = $ConfirmDialog
@@ -29,6 +30,7 @@ var pending_action: Callable
 
 func _ready() -> void:
 	visible = false
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	btn_close.pressed.connect(close)
 	confirm_dialog.visible = false
 	btn_confirm_cancel.pressed.connect(func(): confirm_dialog.visible = false)
@@ -41,16 +43,40 @@ func open(mode: Mode, world_node: Node2D = null) -> void:
 	confirm_dialog.visible = false
 	
 	if current_mode == Mode.SAVE:
-		title_label.text = "💾 档案库管理器 -【保存游戏进度】"
+		title_label.text = "档案库管理 - 保存进度"
 	else:
-		title_label.text = "📂 档案库管理器 -【读取历史进度】"
+		title_label.text = "档案库管理 - 载入进度"
 		
 	refresh_slots()
+	btn_close.grab_focus()
 
 func close() -> void:
 	visible = false
 	confirm_dialog.visible = false
 	modal_closed.emit()
+
+func _input(event: InputEvent) -> void:
+	if not visible:
+		return
+		
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		if confirm_dialog.visible:
+			confirm_dialog.visible = false
+		else:
+			close()
+		get_viewport().set_input_as_handled()
+		return
+		
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_ESCAPE:
+			if confirm_dialog.visible:
+				confirm_dialog.visible = false
+			else:
+				close()
+			get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_ENTER and confirm_dialog.visible:
+			_on_confirm_ok()
+			get_viewport().set_input_as_handled()
 
 func refresh_slots() -> void:
 	for child in slots_container.get_children():
@@ -58,7 +84,6 @@ func refresh_slots() -> void:
 		
 	var all_slots = SaveManager.get_all_slots()
 	for slot_meta in all_slots:
-		# 在保存模式下，不建议手动覆盖系统自动存档 (auto)
 		if current_mode == Mode.SAVE and slot_meta["slot_id"] == "auto":
 			continue
 			
@@ -68,17 +93,17 @@ func refresh_slots() -> void:
 func _create_slot_card(meta: Dictionary) -> PanelContainer:
 	var slot_id: String = meta["slot_id"]
 	var card = PanelContainer.new()
-	card.custom_minimum_size = Vector2(0, 75)
+	card.custom_minimum_size = Vector2(0, 72)
 	
 	var margin = MarginContainer.new()
-	margin.add_theme_constant_override("margin_left", 14)
+	margin.add_theme_constant_override("margin_left", 16)
 	margin.add_theme_constant_override("margin_top", 10)
-	margin.add_theme_constant_override("margin_right", 14)
+	margin.add_theme_constant_override("margin_right", 16)
 	margin.add_theme_constant_override("margin_bottom", 10)
 	card.add_child(margin)
 	
 	var hbox = HBoxContainer.new()
-	hbox.add_theme_constant_override("separation", 14)
+	hbox.add_theme_constant_override("separation", 16)
 	margin.add_child(hbox)
 	
 	# 左侧信息区
@@ -92,101 +117,101 @@ func _create_slot_card(meta: Dictionary) -> PanelContainer:
 	
 	var name_lbl = Label.new()
 	name_lbl.text = meta["slot_name"]
-	name_lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.4))
+	name_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 	name_lbl.add_theme_font_size_override("font_size", 14)
 	header_hbox.add_child(name_lbl)
 	
 	if meta["exists"]:
 		var dt_lbl = Label.new()
-		dt_lbl.text = " | 🕒 %s (游玩 %s)" % [meta["datetime"], meta["playtime_formatted"]]
+		dt_lbl.text = "   保存时间: %s" % meta["timestamp"]
+		dt_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 		dt_lbl.add_theme_font_size_override("font_size", 12)
-		dt_lbl.add_theme_color_override("font_color", Color(0.75, 0.75, 0.8))
 		header_hbox.add_child(dt_lbl)
 		
-		var detail_lbl = Label.new()
-		detail_lbl.text = "🏛️ %s  |  🌟 元素: %d/118  |  🚩 领地: 半径 %d格  |  🎒 物资: %d种" % [
-			meta["era_name"],
-			meta["elements_count"],
-			meta["territory_radius"],
-			meta["inventory_count"]
+		var sub_lbl = Label.new()
+		sub_lbl.text = "纪元: %s | 点亮元素: %d 种" % [
+			meta.get("era_name", "未知时代"),
+			meta.get("discovered_elements_count", 0)
 		]
-		detail_lbl.add_theme_font_size_override("font_size", 12)
-		detail_lbl.add_theme_color_override("font_color", Color(0.85, 0.9, 0.95))
-		info_box.add_child(detail_lbl)
+		sub_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
+		sub_lbl.add_theme_font_size_override("font_size", 12)
+		info_box.add_child(sub_lbl)
 	else:
 		var empty_lbl = Label.new()
-		empty_lbl.text = "【空白归档槽位】暂无记录"
+		empty_lbl.text = "空白存档槽位"
+		empty_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 		empty_lbl.add_theme_font_size_override("font_size", 12)
-		empty_lbl.add_theme_color_override("font_color", Color(0.5, 0.55, 0.6))
 		info_box.add_child(empty_lbl)
 		
 	# 右侧操作按钮区
 	var btn_box = HBoxContainer.new()
 	btn_box.alignment = BoxContainer.ALIGNMENT_CENTER
-	btn_box.add_theme_constant_override("separation", 8)
+	btn_box.add_theme_constant_override("separation", 10)
 	hbox.add_child(btn_box)
 	
 	if current_mode == Mode.SAVE:
 		var btn_save = Button.new()
-		btn_save.custom_minimum_size = Vector2(100, 36)
-		if meta["exists"]:
-			btn_save.text = "💾 覆盖保存"
-			btn_save.pressed.connect(func(): _prompt_overwrite(slot_id, meta["slot_name"]))
-		else:
-			btn_save.text = "💾 保存此槽"
-			btn_save.pressed.connect(func(): _execute_save(slot_id))
+		btn_save.text = "覆盖保存" if meta["exists"] else "存入此槽"
+		btn_save.custom_minimum_size = Vector2(90, 36)
+		btn_save.pressed.connect(func(): _prompt_save_action(slot_id, meta["exists"]))
 		btn_box.add_child(btn_save)
-	else: # LOAD 模式
+	else:
 		var btn_load = Button.new()
+		btn_load.text = "载入此档"
 		btn_load.custom_minimum_size = Vector2(90, 36)
-		btn_load.text = "▶️ 载入进度"
 		btn_load.disabled = not meta["exists"]
-		if meta["exists"]:
-			btn_load.pressed.connect(func(): _prompt_load(slot_id, meta["slot_name"]))
+		btn_load.pressed.connect(func(): _prompt_load_action(slot_id))
 		btn_box.add_child(btn_load)
 		
-		# 自动存档不允许手动删除
-		if meta["exists"] and not meta.get("is_auto", false):
-			var btn_del = Button.new()
-			btn_del.custom_minimum_size = Vector2(70, 36)
-			btn_del.text = "🗑️ 删除"
-			btn_del.pressed.connect(func(): _prompt_delete(slot_id, meta["slot_name"]))
-			btn_box.add_child(btn_del)
-			
+	if meta["exists"] and slot_id != "auto":
+		var btn_del = Button.new()
+		btn_del.text = "删除"
+		btn_del.custom_minimum_size = Vector2(60, 36)
+		btn_del.pressed.connect(func(): _prompt_delete_action(slot_id))
+		btn_box.add_child(btn_del)
+		
 	return card
 
-func _prompt_overwrite(slot_id: String, slot_name: String) -> void:
-	confirm_text.text = "⚠️ 确认覆盖【%s】吗？\n原有的存档数据将被永久替换。" % slot_name
-	pending_action = func(): _execute_save(slot_id)
-	confirm_dialog.visible = true
+func _prompt_save_action(slot_id: String, exists: bool) -> void:
+	if exists:
+		confirm_text.text = "槽位 [%s] 已有历史档案，确认将其覆盖吗？" % slot_id
+		pending_action = func(): _execute_save(slot_id)
+		confirm_dialog.visible = true
+		btn_confirm_ok.grab_focus()
+	else:
+		_execute_save(slot_id)
 
-func _prompt_load(slot_id: String, slot_name: String) -> void:
-	confirm_text.text = "📂 确认载入【%s】吗？\n未保存的当前游戏进度将会丢失。" % slot_name
+func _execute_save(slot_id: String) -> void:
+	var success = false
+	if world_ref and world_ref.has_method("save_game_state_to_slot"):
+		success = world_ref.save_game_state_to_slot(slot_id)
+	else:
+		success = SaveManager.save_to_slot(slot_id, world_ref)
+		
+	if success:
+		GameState.post_notification("档案 [%s] 保存成功" % slot_id, ThemeStyler.COLOR_ACCENT)
+		refresh_slots()
+		close()
+
+func _prompt_load_action(slot_id: String) -> void:
+	confirm_text.text = "确认从槽位 [%s] 载入档案吗？当前未保存的临时改动将丢失。" % slot_id
 	pending_action = func(): _execute_load(slot_id)
 	confirm_dialog.visible = true
+	btn_confirm_ok.grab_focus()
 
-func _prompt_delete(slot_id: String, slot_name: String) -> void:
-	confirm_text.text = "🗑️ 确认彻底删除【%s】吗？\n该操作无法撤销！" % slot_name
+func _execute_load(slot_id: String) -> void:
+	slot_selected.emit(slot_id, int(current_mode))
+	close()
+
+func _prompt_delete_action(slot_id: String) -> void:
+	confirm_text.text = "此操作不可逆！确认永久删除槽位 [%s] 的档案记录吗？" % slot_id
 	pending_action = func():
 		SaveManager.delete_slot(slot_id)
-		GameState.post_notice("🗑️ 已清空【%s】存档！" % slot_name, Color.GRAY)
 		refresh_slots()
 	confirm_dialog.visible = true
+	btn_confirm_ok.grab_focus()
 
 func _on_confirm_ok() -> void:
 	confirm_dialog.visible = false
 	if pending_action.is_valid():
 		pending_action.call()
-		pending_action = Callable()
-
-func _execute_save(slot_id: String) -> void:
-	var success = SaveManager.save_to_slot(slot_id, world_ref)
-	if success:
-		refresh_slots()
-		slot_selected.emit(slot_id, current_mode)
-
-func _execute_load(slot_id: String) -> void:
-	slot_selected.emit(slot_id, current_mode)
-	if world_ref != null:
-		SaveManager.load_from_slot(slot_id, world_ref)
-		close()

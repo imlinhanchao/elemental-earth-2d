@@ -2,56 +2,92 @@
 
 [ext_resource type="Script" path="res://src/ui/periodic_table_modal.gd" id="1_pt"]
 
-[node name="PeriodicTableModal" type="PanelContainer"]
+[node name="PeriodicTableModal" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_pt")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="CenterPanel" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(1200, 680)
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -480.0
-offset_top = -280.0
-offset_right = 480.0
-offset_bottom = 280.0
+offset_left = -600.0
+offset_top = -340.0
+offset_right = 600.0
+offset_bottom = 340.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_pt")
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="VBox" type="VBoxContainer" parent="CenterPanel"]
 layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="Header" type="MarginContainer" parent="CenterPanel/VBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 4
+
+[node name="HBox" type="HBoxContainer" parent="CenterPanel/VBox/Header"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="CenterPanel/VBox/Header/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "元素周期图鉴 (118 元素谱系)"
+
+[node name="CountLabel" type="Label" parent="CenterPanel/VBox/Header/HBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "已点亮: 0 / 118"
+
+[node name="Spacer" type="Control" parent="CenterPanel/VBox/Header/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BtnClose" type="Button" parent="CenterPanel/VBox/Header/HBox"]
+custom_minimum_size = Vector2(60, 28)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "✕ [ESC]"
+
+[node name="HSeparator" type="HSeparator" parent="CenterPanel/VBox"]
+layout_mode = 2
+
+[node name="Body" type="MarginContainer" parent="CenterPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
 theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
 theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
-[node name="VBox" type="VBoxContainer" parent="Margin"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Header" type="HBoxContainer" parent="Margin/VBox"]
-layout_mode = 2
-
-[node name="Title" type="Label" parent="Margin/VBox/Header"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 20
-text = "🏛️ 人类化学文明圣殿 - 118 元素周期表"
-
-[node name="Spacer" type="Control" parent="Margin/VBox/Header"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="CountLabel" type="Label" parent="Margin/VBox/Header"]
-layout_mode = 2
-text = "已点亮: 0 / 118"
-
-[node name="BtnClose" type="Button" parent="Margin/VBox/Header"]
-layout_mode = 2
-text = "  关闭 (ESC/P)  "
-
-[node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
+[node name="Scroll" type="ScrollContainer" parent="CenterPanel/VBox/Body"]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Grid" type="GridContainer" parent="Margin/VBox/Scroll"]
+[node name="Grid" type="GridContainer" parent="CenterPanel/VBox/Body/Scroll"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3

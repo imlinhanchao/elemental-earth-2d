@@ -53,7 +53,7 @@ func _ready() -> void:
 	
 	GameState.era_advanced.connect(func(_old, _new, era_name):
 		queue_redraw()
-		GameState.post_notice("🚩 【领地疆域扩展】随着迈向【%s】，文明疆域拓展至半径 %d 格！" % [era_name, GameState.get_current_territory_radius()], Color(1.0, 0.85, 0.2))
+		GameState.post_notice("【领地疆域扩展】随着迈向【%s】，文明疆域拓展至半径 %d 格！" % [era_name, GameState.get_current_territory_radius()], Color(1.0, 0.85, 0.2))
 		SaveManager.save_to_slot("auto", self)
 	)
 	
@@ -67,10 +67,10 @@ func _ready() -> void:
 		if latest != "":
 			SaveManager.load_from_slot(latest, self)
 	else:
-		GameState.post_notice("🌟 [开局引导] 鼠标点击地表【碎石】、【枯树枝】加入工作队列！点击盐湖打水！右键拖拽视野！", Color(1.0, 0.88, 0.4))
+		GameState.post_notice("[开局引导] 鼠标点击地表【碎石】、【枯树枝】加入工作队列！点击盐湖打水！右键拖拽视野！", Color(1.0, 0.88, 0.4))
 	
 	# 如果携带 --screenshot 参数，则在1.5秒后截取当前画面并退出
-	for arg in OS.get_cmdline_user_args():
+	for arg in OS.get_cmdline_args():
 		if arg == "--screenshot":
 			_capture_screenshot_after_delay()
 

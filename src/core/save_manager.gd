@@ -7,11 +7,11 @@ const ProcessBlueprint = preload("res://src/core/process_blueprint.gd")
 const MixtureBuffer = preload("res://src/core/mixture_buffer.gd")
 
 const SLOT_DEFINITIONS: Array[Dictionary] = [
-	{ "id": "auto", "name": "⚡ 自动存档", "is_auto": true },
-	{ "id": "slot_1", "name": "💾 存档槽位 1", "is_auto": false },
-	{ "id": "slot_2", "name": "💾 存档槽位 2", "is_auto": false },
-	{ "id": "slot_3", "name": "💾 存档槽位 3", "is_auto": false },
-	{ "id": "slot_4", "name": "💾 存档槽位 4", "is_auto": false }
+	{ "id": "auto", "name": "自动存档", "is_auto": true },
+	{ "id": "slot_1", "name": "手动档案 1", "is_auto": false },
+	{ "id": "slot_2", "name": "手动档案 2", "is_auto": false },
+	{ "id": "slot_3", "name": "手动档案 3", "is_auto": false },
+	{ "id": "slot_4", "name": "手动档案 4", "is_auto": false }
 ]
 
 const LEGACY_SAVE_PATH: String = "user://elemental_save.json"
@@ -186,26 +186,26 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 	file.close()
 	print("[SaveManager] 进度已成功保存至槽位 (v3): %s (%s)" % [slot_id, path])
 	if slot_id != "auto":
-		GameState.post_notice("💾 进度已成功保存至【%s】！" % def_name, Color(0.3, 0.9, 0.5))
+		GameState.post_notice("进度已成功保存至【%s】！" % def_name, Color(0.3, 0.9, 0.5))
 	return true
 
 static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
 	check_legacy_migration()
 	var path = get_slot_path(slot_id)
 	if not FileAccess.file_exists(path):
-		GameState.post_notice("⚠️ 该存档槽位为空！", Color.YELLOW)
+		GameState.post_notice("该存档槽位为空！", Color.YELLOW)
 		return false
 		
 	var file = FileAccess.open(path, FileAccess.READ)
 	if not file:
-		GameState.post_notice("❌ 无法打开存档文件！", Color.RED)
+		GameState.post_notice("无法打开存档文件！", Color.RED)
 		return false
 		
 	var json_str = file.get_as_text()
 	file.close()
 	var parsed = JSON.parse_string(json_str)
 	if not (parsed is Dictionary):
-		GameState.post_notice("❌ 存档数据损坏或格式错误！", Color.RED)
+		GameState.post_notice("存档数据损坏或格式错误！", Color.RED)
 		return false
 		
 	var version = int(parsed.get("version", 1))
@@ -264,7 +264,7 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
 		world_node.deserialize_world_state(world_data)
 		
 	GameState.era_advanced.emit(0, GameState.current_era, GameState.ERA_NAMES[GameState.current_era])
-	GameState.post_notice("📂 成功载入【%s】(v%d)！当前时代: %s" % [
+	GameState.post_notice("成功载入【%s】(v%d)！当前时代: %s" % [
 		parsed.get("slot_name", slot_id),
 		version,
 		GameState.ERA_NAMES[GameState.current_era]

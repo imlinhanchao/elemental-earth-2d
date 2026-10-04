@@ -19,149 +19,200 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 16
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 16
-theme_override_constants/margin_bottom = 16
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 48
 
-[node name="TopBox" type="VBoxContainer" parent="Margin"]
+[node name="MainVBox" type="VBoxContainer" parent="Margin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="TopBox" type="VBoxContainer" parent="Margin/MainVBox"]
 layout_mode = 2
 size_flags_vertical = 0
 mouse_filter = 2
-theme_override_constants/separation = 6
-alignment = 1
+theme_override_constants/separation = 8
 
-[node name="EraPanel" type="PanelContainer" parent="Margin/TopBox"]
-layout_mode = 2
-size_flags_horizontal = 4
-
-[node name="HBox" type="HBoxContainer" parent="Margin/TopBox/EraPanel"]
+[node name="TopBarPanel" type="PanelContainer" parent="Margin/MainVBox/TopBox"]
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 
-[node name="EraLabel" type="Label" parent="Margin/TopBox/EraPanel/HBox"]
+[node name="Margin" type="MarginContainer" parent="Margin/MainVBox/TopBox/TopBarPanel"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.88, 0.4, 1)
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 4
+
+[node name="HBox" type="HBoxContainer" parent="Margin/MainVBox/TopBox/TopBarPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="EraLabel" type="Label" parent="Margin/MainVBox/TopBox/TopBarPanel/Margin/HBox"]
+layout_mode = 2
 theme_override_font_sizes/font_size = 14
-text = "🏛️ 文明纪元: 石器时代 (Stone Age)"
-horizontal_alignment = 1
+text = "文明纪元: 石器时代"
 
-[node name="TerritoryLabel" type="Label" parent="Margin/TopBox/EraPanel/HBox"]
+[node name="TerritoryLabel" type="Label" parent="Margin/MainVBox/TopBox/TopBarPanel/Margin/HBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.78, 0.35, 1)
+theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
 theme_override_font_sizes/font_size = 13
-text = " | 🚩 领地: 半径 5格"
+text = "| 领地: 半径 5 格"
 
-[node name="BiomeLabel" type="Label" parent="Margin/TopBox/EraPanel/HBox"]
+[node name="BiomeLabel" type="Label" parent="Margin/MainVBox/TopBox/TopBarPanel/Margin/HBox"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
 theme_override_font_sizes/font_size = 13
-text = " | 📍 当前地貌: 生机原野平原"
+text = "| 地貌: 生机原野平原"
 
-[node name="BtnMenu" type="Button" parent="Margin/TopBox/EraPanel/HBox"]
+[node name="Spacer" type="Control" parent="Margin/MainVBox/TopBox/TopBarPanel/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="NoticeLabel" type="Label" parent="Margin/MainVBox/TopBox/TopBarPanel/Margin/HBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "左键点击地块排队作业 · 右键拖拽视野 · 滚轮缩放"
+
+[node name="BtnMenu" type="Button" parent="Margin/MainVBox/TopBox/TopBarPanel/Margin/HBox"]
+custom_minimum_size = Vector2(100, 32)
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = " ⚙️ 菜单 (ESC) "
+text = "系统菜单 [ESC]"
 
-[node name="NoticeLabel" type="Label" parent="Margin/TopBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "【WASD】移动 | 【空格/J】采矿 | 【E】交互 | 【L】实验台 | 【T】锻造 | 【P】周期表 | 【C/R】建造"
-horizontal_alignment = 1
-
-[node name="HBox" type="HBoxContainer" parent="Margin"]
+[node name="BodyHBox" type="HBoxContainer" parent="Margin/MainVBox"]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
+theme_override_constants/separation = 20
 
-[node name="LeftBox" type="VBoxContainer" parent="Margin/HBox"]
-custom_minimum_size = Vector2(230, 0)
+[node name="LeftBox" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox"]
+custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="InvPanel" type="PanelContainer" parent="Margin/HBox/LeftBox"]
+[node name="InvPanel" type="PanelContainer" parent="Margin/MainVBox/BodyHBox/LeftBox"]
 layout_mode = 2
 
-[node name="Margin" type="MarginContainer" parent="Margin/HBox/LeftBox/InvPanel"]
+[node name="Margin" type="MarginContainer" parent="Margin/MainVBox/BodyHBox/LeftBox/InvPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
 
-[node name="VBox" type="VBoxContainer" parent="Margin/HBox/LeftBox/InvPanel/Margin"]
-layout_mode = 2
-
-[node name="InvLabel" type="RichTextLabel" parent="Margin/HBox/LeftBox/InvPanel/Margin/VBox"]
-layout_mode = 2
-fit_content = true
-text = "🎒 行囊清单:"
-
-[node name="ElementsPanel" type="PanelContainer" parent="Margin/HBox/LeftBox"]
-layout_mode = 2
-
-[node name="Margin" type="MarginContainer" parent="Margin/HBox/LeftBox/ElementsPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 8
-
-[node name="VBox" type="VBoxContainer" parent="Margin/HBox/LeftBox/ElementsPanel/Margin"]
-layout_mode = 2
-
-[node name="ElementsLabel" type="RichTextLabel" parent="Margin/HBox/LeftBox/ElementsPanel/Margin/VBox"]
-layout_mode = 2
-fit_content = true
-text = "🌟 点亮元素 (0/118) [P]:"
-
-[node name="ActionButtons" type="VBoxContainer" parent="Margin/HBox/LeftBox"]
+[node name="VBox" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox/LeftBox/InvPanel/Margin"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="BtnLab" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
+[node name="Title" type="Label" parent="Margin/MainVBox/BodyHBox/LeftBox/InvPanel/Margin/VBox"]
 layout_mode = 2
-text = "⚗️ 微观实验工作台 (L)"
+theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "行囊资源储备"
 
-[node name="BtnTools" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
+[node name="Scroll" type="ScrollContainer" parent="Margin/MainVBox/BodyHBox/LeftBox/InvPanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 140)
 layout_mode = 2
-text = "⚒️ 冶金工具锻造砧 (T)"
 
-[node name="BtnPeriodic" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
-layout_mode = 2
-text = "🏛️ 118 周期表墙 (P)"
-
-[node name="BtnBuild" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
-layout_mode = 2
-text = "🔨 建造陶土熔炉 (C) [-4木 -4石]"
-
-[node name="BtnBuildReactor" type="Button" parent="Margin/HBox/LeftBox/ActionButtons"]
-layout_mode = 2
-text = "🏭 建造工业反应塔 (R) [-8木 -2铜]"
-
-[node name="SaveHBox" type="HBoxContainer" parent="Margin/HBox/LeftBox"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="BtnSave" type="Button" parent="Margin/HBox/LeftBox/SaveHBox"]
+[node name="InvLabel" type="RichTextLabel" parent="Margin/MainVBox/BodyHBox/LeftBox/InvPanel/Margin/VBox/Scroll"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "💾 存档"
+size_flags_vertical = 3
+fit_content = true
+text = "（空）"
 
-[node name="BtnLoad" type="Button" parent="Margin/HBox/LeftBox/SaveHBox"]
+[node name="ElementsPanel" type="PanelContainer" parent="Margin/MainVBox/BodyHBox/LeftBox"]
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="Margin/MainVBox/BodyHBox/LeftBox/ElementsPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 10
+
+[node name="VBox" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox/LeftBox/ElementsPanel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ElementsHeader" type="Label" parent="Margin/MainVBox/BodyHBox/LeftBox/ElementsPanel/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "探明元素图谱"
+
+[node name="ElementsLabel" type="RichTextLabel" parent="Margin/MainVBox/BodyHBox/LeftBox/ElementsPanel/Margin/VBox"]
+layout_mode = 2
+fit_content = true
+text = "点亮元素 (0/118) [P]"
+
+[node name="ActionButtons" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox/LeftBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BtnLab" type="Button" parent="Margin/MainVBox/BodyHBox/LeftBox/ActionButtons"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "微观实验工作台                                  [L]"
+alignment = 0
+
+[node name="BtnTools" type="Button" parent="Margin/MainVBox/BodyHBox/LeftBox/ActionButtons"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "冶金工具锻造砧                                  [T]"
+alignment = 0
+
+[node name="BtnPeriodic" type="Button" parent="Margin/MainVBox/BodyHBox/LeftBox/ActionButtons"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "118 元素周期表墙                                [P]"
+alignment = 0
+
+[node name="BtnBuild" type="Button" parent="Margin/MainVBox/BodyHBox/LeftBox/ActionButtons"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "建造陶土熔炉 [-4木 -4石]                        [F]"
+alignment = 0
+
+[node name="BtnBuildReactor" type="Button" parent="Margin/MainVBox/BodyHBox/LeftBox/ActionButtons"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+text = "建造工业反应塔 [-8木 -2铜]                      [R]"
+alignment = 0
+
+[node name="SaveHBox" type="HBoxContainer" parent="Margin/MainVBox/BodyHBox/LeftBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BtnSave" type="Button" parent="Margin/MainVBox/BodyHBox/LeftBox/SaveHBox"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "📂 读档"
+text = "保存 [F5]"
 
-[node name="BtnSettings" type="Button" parent="Margin/HBox/LeftBox/SaveHBox"]
+[node name="BtnLoad" type="Button" parent="Margin/MainVBox/BodyHBox/LeftBox/SaveHBox"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "⚙️ 设置"
+text = "读档 [F9]"
 
-[node name="CenterSpacer" type="Control" parent="Margin/HBox"]
+[node name="BtnSettings" type="Button" parent="Margin/MainVBox/BodyHBox/LeftBox/SaveHBox"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+size_flags_horizontal = 3
+text = "设置 [O]"
+
+[node name="CenterSpacer" type="Control" parent="Margin/MainVBox/BodyHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 
-[node name="TaskQueuePanel" type="PanelContainer" parent="Margin/HBox/CenterSpacer"]
+[node name="TaskQueuePanel" type="PanelContainer" parent="Margin/MainVBox/BodyHBox/CenterSpacer"]
+custom_minimum_size = Vector2(520, 0)
 layout_mode = 1
 anchors_preset = 7
 anchor_left = 0.5
@@ -169,111 +220,123 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -260.0
-offset_top = -105.0
+offset_top = -110.0
 offset_right = 260.0
 offset_bottom = 0.0
 grow_horizontal = 2
 grow_vertical = 0
 
-[node name="Margin" type="MarginContainer" parent="Margin/HBox/CenterSpacer/TaskQueuePanel"]
+[node name="Margin" type="MarginContainer" parent="Margin/MainVBox/BodyHBox/CenterSpacer/TaskQueuePanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 8
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 8
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 10
 
-[node name="VBox" type="VBoxContainer" parent="Margin/HBox/CenterSpacer/TaskQueuePanel/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 6
-
-[node name="HeaderHBox" type="HBoxContainer" parent="Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox"]
-layout_mode = 2
-
-[node name="Title" type="Label" parent="Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/HeaderHBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.88, 0.4, 1)
-theme_override_font_sizes/font_size = 13
-text = "⏳ 工作队列 (Task Queue)"
-
-[node name="QueueCount" type="Label" parent="Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/HeaderHBox"]
-layout_mode = 2
-size_flags_horizontal = 10
-theme_override_font_sizes/font_size = 12
-text = "排队: 0/8"
-
-[node name="ActiveTaskBox" type="HBoxContainer" parent="Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox"]
+[node name="VBox" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox/CenterSpacer/TaskQueuePanel/Margin"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
-[node name="ActiveTitle" type="Label" parent="Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox"]
+[node name="HeaderHBox" type="HBoxContainer" parent="Margin/MainVBox/BodyHBox/CenterSpacer/TaskQueuePanel/Margin/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="Margin/MainVBox/BodyHBox/CenterSpacer/TaskQueuePanel/Margin/VBox/HeaderHBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_font_sizes/font_size = 13
+text = "作业调度队列"
+
+[node name="QueueCount" type="Label" parent="Margin/MainVBox/BodyHBox/CenterSpacer/TaskQueuePanel/Margin/VBox/HeaderHBox"]
+layout_mode = 2
+size_flags_horizontal = 10
+theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
+theme_override_font_sizes/font_size = 12
+text = "排队: 0/8"
+
+[node name="ActiveTaskBox" type="HBoxContainer" parent="Margin/MainVBox/BodyHBox/CenterSpacer/TaskQueuePanel/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="ActiveTitle" type="Label" parent="Margin/MainVBox/BodyHBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
-text = "⚪ 空闲中 (点击地图瓦片分配工作)"
+text = "空闲中 (点击地图瓦片分配工作)"
 
-[node name="ProgressBar" type="ProgressBar" parent="Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox"]
-custom_minimum_size = Vector2(160, 16)
+[node name="ProgressBar" type="ProgressBar" parent="Margin/MainVBox/BodyHBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox"]
+custom_minimum_size = Vector2(160, 14)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 max_value = 1.0
 show_percentage = false
 
-[node name="ActiveTime" type="Label" parent="Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox"]
+[node name="ActiveTime" type="Label" parent="Margin/MainVBox/BodyHBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox"]
+custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
 text = "0.0s"
+horizontal_alignment = 2
 
-[node name="BtnCancelActive" type="Button" parent="Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox"]
+[node name="BtnCancelActive" type="Button" parent="Margin/MainVBox/BodyHBox/CenterSpacer/TaskQueuePanel/Margin/VBox/ActiveTaskBox"]
+custom_minimum_size = Vector2(28, 24)
 layout_mode = 2
+theme_override_font_sizes/font_size = 11
 text = "✕"
 
-[node name="QueueList" type="HBoxContainer" parent="Margin/HBox/CenterSpacer/TaskQueuePanel/Margin/VBox"]
+[node name="QueueList" type="HBoxContainer" parent="Margin/MainVBox/BodyHBox/CenterSpacer/TaskQueuePanel/Margin/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="RightBox" type="VBoxContainer" parent="Margin/HBox"]
+[node name="RightBox" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox"]
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
 alignment = 2
 
-[node name="FurnacePanel" type="PanelContainer" parent="Margin/HBox/RightBox"]
+[node name="FurnacePanel" type="PanelContainer" parent="Margin/MainVBox/BodyHBox/RightBox"]
+visible = false
 layout_mode = 2
 
-[node name="Margin" type="MarginContainer" parent="Margin/HBox/RightBox/FurnacePanel"]
+[node name="Margin" type="MarginContainer" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 12
 
-[node name="VBox" type="VBoxContainer" parent="Margin/HBox/RightBox/FurnacePanel/Margin"]
+[node name="VBox" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 6
+theme_override_constants/separation = 8
 
-[node name="Header" type="Label" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
+[node name="Title" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "🔥 陶土熔炉控制台"
+theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "工业陶土熔炉监测"
 
-[node name="FurnaceInfo" type="Label" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
+[node name="FurnaceInfo" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
 layout_mode = 2
-text = "炉膛状态..."
+theme_override_font_sizes/font_size = 12
+text = "温度: 298 K
+状态: 未生火
+物料: 空"
 
-[node name="BtnAddFuel" type="Button" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
+[node name="BtnAddFuel" type="Button" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
-text = "+ 加木炭生火升温 (1)"
+theme_override_font_sizes/font_size = 12
+text = "+ 投掷木炭 (维持高温)"
 
-[node name="BtnAddMalachite" type="Button" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
+[node name="BtnAddMalachite" type="Button" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
-text = "+ 投入孔雀石 (炼铜 Cu) (2)"
+theme_override_font_sizes/font_size = 12
+text = "+ 投入孔雀石 (冶铜)"
 
-[node name="BtnAddIronOre" type="Button" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
+[node name="BtnAddIronOre" type="Button" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
-text = "+ 投入赤铁矿 (炼铁 Fe) (3)"
-
-[node name="BtnCloseFurnace" type="Button" parent="Margin/HBox/RightBox/FurnacePanel/Margin/VBox"]
-layout_mode = 2
-text = "✕ 关闭面板"
+theme_override_font_sizes/font_size = 12
+text = "+ 投入赤铁矿 (冶铁)"
 
 [node name="PeriodicTableModal" parent="." instance=ExtResource("2_modal")]
 visible = false
@@ -295,13 +358,3 @@ visible = false
 
 [node name="PauseMenu" parent="." instance=ExtResource("8_pause")]
 visible = false
-
-[connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnLab" to="." method="_on_btn_lab_pressed"]
-[connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnTools" to="." method="_on_btn_tools_pressed"]
-[connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnPeriodic" to="." method="_on_btn_periodic_table_pressed"]
-[connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnBuild" to="." method="_on_btn_build_furnace_pressed"]
-[connection signal="pressed" from="Margin/HBox/LeftBox/ActionButtons/BtnBuildReactor" to="." method="_on_btn_build_reactor_requested"]
-[connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddFuel" to="." method="_on_btn_add_fuel_pressed"]
-[connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddMalachite" to="." method="_on_btn_add_malachite_pressed"]
-[connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnAddIronOre" to="." method="_on_btn_add_iron_ore_pressed"]
-[connection signal="pressed" from="Margin/HBox/RightBox/FurnacePanel/Margin/VBox/BtnCloseFurnace" to="." method="hide_furnace_ui"]

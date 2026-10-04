@@ -1,13 +1,14 @@
 # tool_craft_modal.gd
-# 随身原始手作与冶金锻造工坊 (一穷二白到工业装备全谱系)
-extends PanelContainer
+# 随身原始手作与冶金锻造工坊 (扁平极简，无 emoji，ESC/右键返回)
+extends Control
 
-@onready var btn_close = $Margin/VBox/Header/BtnClose
-@onready var current_tool_label = $Margin/VBox/CurrentToolLabel
-@onready var craft_list = $Margin/VBox/Scroll/CraftList
+@onready var btn_close = $CenterPanel/VBox/Header/HBox/BtnClose
+@onready var current_tool_label = $CenterPanel/VBox/Body/VBox/CurrentToolLabel
+@onready var craft_list = $CenterPanel/VBox/Body/VBox/Scroll/CraftList
 
 func _ready() -> void:
 	visible = false
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	btn_close.pressed.connect(func(): visible = false)
 	GameState.tool_equipped.connect(func(_k): _refresh_ui())
 	_bind_buttons()
@@ -17,6 +18,20 @@ func toggle() -> void:
 	visible = not visible
 	if visible:
 		_refresh_ui()
+		btn_close.grab_focus()
+
+func _input(event: InputEvent) -> void:
+	if not visible:
+		return
+		
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		visible = false
+		get_viewport().set_input_as_handled()
+		return
+		
+	if event is InputEventKey and event.pressed and (event.keycode == KEY_ESCAPE or event.keycode == KEY_T or event.keycode == KEY_C):
+		visible = false
+		get_viewport().set_input_as_handled()
 
 func _bind_buttons() -> void:
 	var b_flint_axe = craft_list.get_node("BtnFlintAxe")
@@ -35,11 +50,11 @@ func _refresh_ui() -> void:
 	
 	var axe_desc = "徒手 (无法砍树)" if axe == "bare_hands" else "原始燧石斧 (可伐木)"
 	var pick_desc = "徒手 (无法采矿)"
-	if pick == "stone_pickaxe": pick_desc = "粗制石镐 (伤害 1)"
-	elif pick == "copper_pickaxe": pick_desc = "纯铜地质镐 (伤害 2)"
-	elif pick == "iron_pickaxe": pick_desc = "精钢地质重锤 (伤害 4)"
+	if pick == "stone_pickaxe": pick_desc = "粗制石镐 (解锁坚硬矿脉)"
+	elif pick == "copper_pickaxe": pick_desc = "纯铜地质镐 (效率提升)"
+	elif pick == "iron_pickaxe": pick_desc = "精钢地质重锤 (极速开采)"
 
-	current_tool_label.text = "【当前装配】 斧具: %s | 镐具: %s" % [axe_desc, pick_desc]
+	current_tool_label.text = "当前装配 - 斧具: %s | 镐具: %s" % [axe_desc, pick_desc]
 
 func _craft_flint_axe() -> void:
 	if GameState.craft_tool("flint_axe"):

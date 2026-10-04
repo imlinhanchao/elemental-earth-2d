@@ -64,7 +64,7 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 			var bp = GameState.unlocked_blueprints[keys[0]]
 			install_blueprint(bp)
 		else:
-			GameState.post_notice("⚠️ 暂无可用蓝图！请在实验台 (L) 完成小试后点击'工艺固化'导出芯片！", Color.YELLOW)
+			GameState.post_notice("暂无可用蓝图！请在实验台 (L) 完成小试后点击'工艺固化'导出芯片！", Color.YELLOW)
 
 func _update_ui() -> void:
 	if status_label:
@@ -72,7 +72,7 @@ func _update_ui() -> void:
 			status_label.text = "工业连续反应塔\n[未装载蓝图芯片]\n点击插入蓝图"
 		else:
 			var rem_time = max(0.0, installed_blueprint.duration_seconds - cycle_progress)
-			status_label.text = "反应塔: %s\n🔥 运转周期: %.1fs\n已量产: %d" % [
+			status_label.text = "反应塔: %s\n运转周期: %.1fs\n已量产: %d" % [
 				installed_blueprint.display_name,
 				rem_time,
 				total_produced_count

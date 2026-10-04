@@ -2,77 +2,132 @@
 
 [ext_resource type="Script" path="res://src/ui/settings_modal.gd" id="1_settings"]
 
-[node name="SettingsModal" type="PanelContainer"]
+[node name="SettingsModal" type="Control"]
+process_mode = 3
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_settings")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.65)
+
+[node name="CenterPanel" type="PanelContainer" parent="."]
+custom_minimum_size = Vector2(760, 500)
+layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -280.0
-offset_top = -230.0
-offset_right = 280.0
-offset_bottom = 230.0
+offset_left = -380.0
+offset_top = -250.0
+offset_right = 380.0
+offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
-script = ExtResource("1_settings")
 
-[node name="Margin" type="MarginContainer" parent="."]
+[node name="VBox" type="VBoxContainer" parent="CenterPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_bottom = 16
+theme_override_constants/separation = 0
 
-[node name="VBox" type="VBoxContainer" parent="Margin"]
+[node name="Header" type="MarginContainer" parent="CenterPanel/VBox"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 4
 
-[node name="Header" type="HBoxContainer" parent="Margin/VBox"]
+[node name="HBox" type="HBoxContainer" parent="CenterPanel/VBox/Header"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="Margin/VBox/Header"]
+[node name="Title" type="Label" parent="CenterPanel/VBox/Header/HBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.88, 0.4, 1)
-theme_override_font_sizes/font_size = 18
-text = "⚙️ 系统与游戏设置 (Settings)"
+theme_override_font_sizes/font_size = 16
+text = "系统设置"
 
-[node name="Spacer" type="Control" parent="Margin/VBox/Header"]
+[node name="Spacer" type="Control" parent="CenterPanel/VBox/Header/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="BtnClose" type="Button" parent="Margin/VBox/Header"]
+[node name="BtnClose" type="Button" parent="CenterPanel/VBox/Header/HBox"]
+custom_minimum_size = Vector2(60, 28)
 layout_mode = 2
-text = " ✕ 关闭 "
+theme_override_font_sizes/font_size = 12
+text = "✕ [ESC]"
 
-[node name="Scroll" type="ScrollContainer" parent="Margin/VBox"]
+[node name="HSeparator" type="HSeparator" parent="CenterPanel/VBox"]
+layout_mode = 2
+
+[node name="Body" type="MarginContainer" parent="CenterPanel/VBox"]
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
 
-[node name="VBox" type="VBoxContainer" parent="Margin/VBox/Scroll"]
+[node name="HBox" type="HBoxContainer" parent="CenterPanel/VBox/Body"]
 layout_mode = 2
-size_flags_horizontal = 3
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
-[node name="AudioSec" type="VBoxContainer" parent="Margin/VBox/Scroll/VBox"]
+[node name="CategoryList" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox"]
+custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="SecTitle" type="Label" parent="Margin/VBox/Scroll/VBox/AudioSec"]
+[node name="TabAudio" type="Button" parent="CenterPanel/VBox/Body/HBox/CategoryList"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
+text = "音频设置"
+alignment = 0
+
+[node name="TabDisplay" type="Button" parent="CenterPanel/VBox/Body/HBox/CategoryList"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "画面显示"
+alignment = 0
+
+[node name="TabGame" type="Button" parent="CenterPanel/VBox/Body/HBox/CategoryList"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "游戏参数"
+alignment = 0
+
+[node name="VSeparator" type="VSeparator" parent="CenterPanel/VBox/Body/HBox"]
+layout_mode = 2
+
+[node name="RightContent" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="SecAudio" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightContent"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 16
+
+[node name="MasterBox" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+
+[node name="Lbl" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio/MasterBox"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
 theme_override_font_sizes/font_size = 14
-text = "【声音与音效】"
+text = "主音量"
 
-[node name="MasterBox" type="HBoxContainer" parent="Margin/VBox/Scroll/VBox/AudioSec"]
-layout_mode = 2
-
-[node name="Lbl" type="Label" parent="Margin/VBox/Scroll/VBox/AudioSec/MasterBox"]
-custom_minimum_size = Vector2(90, 0)
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "主音量:"
-
-[node name="HSlider" type="HSlider" parent="Margin/VBox/Scroll/VBox/AudioSec/MasterBox"]
+[node name="HSlider" type="HSlider" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio/MasterBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
@@ -80,23 +135,24 @@ max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="ValLabel" type="Label" parent="Margin/VBox/Scroll/VBox/AudioSec/MasterBox"]
-custom_minimum_size = Vector2(45, 0)
+[node name="ValLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio/MasterBox"]
+custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 text = "100%"
 horizontal_alignment = 2
 
-[node name="BgmBox" type="HBoxContainer" parent="Margin/VBox/Scroll/VBox/AudioSec"]
+[node name="BgmBox" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 
-[node name="Lbl" type="Label" parent="Margin/VBox/Scroll/VBox/AudioSec/BgmBox"]
-custom_minimum_size = Vector2(90, 0)
+[node name="Lbl" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio/BgmBox"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "背景音乐:"
+theme_override_font_sizes/font_size = 14
+text = "背景音乐"
 
-[node name="HSlider" type="HSlider" parent="Margin/VBox/Scroll/VBox/AudioSec/BgmBox"]
+[node name="HSlider" type="HSlider" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio/BgmBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
@@ -104,23 +160,24 @@ max_value = 1.0
 step = 0.05
 value = 0.8
 
-[node name="ValLabel" type="Label" parent="Margin/VBox/Scroll/VBox/AudioSec/BgmBox"]
-custom_minimum_size = Vector2(45, 0)
+[node name="ValLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio/BgmBox"]
+custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 text = "80%"
 horizontal_alignment = 2
 
-[node name="SfxBox" type="HBoxContainer" parent="Margin/VBox/Scroll/VBox/AudioSec"]
+[node name="SfxBox" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 
-[node name="Lbl" type="Label" parent="Margin/VBox/Scroll/VBox/AudioSec/SfxBox"]
-custom_minimum_size = Vector2(90, 0)
+[node name="Lbl" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio/SfxBox"]
+custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "交互音效:"
+theme_override_font_sizes/font_size = 14
+text = "游戏音效"
 
-[node name="HSlider" type="HSlider" parent="Margin/VBox/Scroll/VBox/AudioSec/SfxBox"]
+[node name="HSlider" type="HSlider" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio/SfxBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
@@ -128,87 +185,100 @@ max_value = 1.0
 step = 0.05
 value = 1.0
 
-[node name="ValLabel" type="Label" parent="Margin/VBox/Scroll/VBox/AudioSec/SfxBox"]
-custom_minimum_size = Vector2(45, 0)
+[node name="ValLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio/SfxBox"]
+custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 text = "100%"
 horizontal_alignment = 2
 
-[node name="DisplaySec" type="VBoxContainer" parent="Margin/VBox/Scroll/VBox"]
+[node name="SecDisplay" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightContent"]
+visible = false
 layout_mode = 2
-theme_override_constants/separation = 6
+size_flags_vertical = 3
+theme_override_constants/separation = 16
 
-[node name="SecTitle" type="Label" parent="Margin/VBox/Scroll/VBox/DisplaySec"]
+[node name="CheckFullscreen" type="CheckBox" parent="CenterPanel/VBox/Body/HBox/RightContent/SecDisplay"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 14
-text = "【显示与画面】"
+text = "全屏显示模式 (Alt + Enter)"
 
-[node name="CheckFullscreen" type="CheckBox" parent="Margin/VBox/Scroll/VBox/DisplaySec"]
+[node name="ResolutionInfo" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecDisplay"]
 layout_mode = 2
+theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
 theme_override_font_sizes/font_size = 13
-text = "全屏显示模式 (Fullscreen)"
+text = "基准分辨率: 1920 × 1080 (16:9 点对点画布渲染，4K 自动等比缩放)"
 
-[node name="GameSec" type="VBoxContainer" parent="Margin/VBox/Scroll/VBox"]
+[node name="SecGame" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightContent"]
+visible = false
 layout_mode = 2
-theme_override_constants/separation = 6
+size_flags_vertical = 3
+theme_override_constants/separation = 16
 
-[node name="SecTitle" type="Label" parent="Margin/VBox/Scroll/VBox/GameSec"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
-theme_override_font_sizes/font_size = 14
-text = "【游戏性与操作】"
-
-[node name="AutoSaveBox" type="HBoxContainer" parent="Margin/VBox/Scroll/VBox/GameSec"]
+[node name="AutoSaveBox" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightContent/SecGame"]
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 
-[node name="Lbl" type="Label" parent="Margin/VBox/Scroll/VBox/GameSec/AutoSaveBox"]
+[node name="Lbl" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecGame/AutoSaveBox"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "自动保存周期:"
+theme_override_font_sizes/font_size = 14
+text = "自动保存"
 
-[node name="OptAutoSave" type="OptionButton" parent="Margin/VBox/Scroll/VBox/GameSec/AutoSaveBox"]
-layout_mode = 2
-size_flags_horizontal = 3
-
-[node name="CamSpeedBox" type="HBoxContainer" parent="Margin/VBox/Scroll/VBox/GameSec"]
+[node name="OptAutoSave" type="OptionButton" parent="CenterPanel/VBox/Body/HBox/RightContent/SecGame/AutoSaveBox"]
+custom_minimum_size = Vector2(220, 36)
 layout_mode = 2
 
-[node name="Lbl" type="Label" parent="Margin/VBox/Scroll/VBox/GameSec/CamSpeedBox"]
+[node name="CamSpeedBox" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightContent/SecGame"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+
+[node name="Lbl" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecGame/CamSpeedBox"]
 custom_minimum_size = Vector2(100, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "视野拖拽灵敏度:"
+theme_override_font_sizes/font_size = 14
+text = "镜头移动速度"
 
-[node name="HSlider" type="HSlider" parent="Margin/VBox/Scroll/VBox/GameSec/CamSpeedBox"]
+[node name="HSlider" type="HSlider" parent="CenterPanel/VBox/Body/HBox/RightContent/SecGame/CamSpeedBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
 min_value = 0.5
-max_value = 2.0
+max_value = 2.5
 step = 0.1
 value = 1.0
 
-[node name="ValLabel" type="Label" parent="Margin/VBox/Scroll/VBox/GameSec/CamSpeedBox"]
-custom_minimum_size = Vector2(45, 0)
+[node name="ValLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecGame/CamSpeedBox"]
+custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 13
 text = "1.0x"
 horizontal_alignment = 2
 
-[node name="BottomHBox" type="HBoxContainer" parent="Margin/VBox"]
+[node name="FooterSep" type="HSeparator" parent="CenterPanel/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 12
-alignment = 1
 
-[node name="BtnDefault" type="Button" parent="Margin/VBox/BottomHBox"]
+[node name="Footer" type="MarginContainer" parent="CenterPanel/VBox"]
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 8
+
+[node name="HBox" type="HBoxContainer" parent="CenterPanel/VBox/Footer"]
+layout_mode = 2
+
+[node name="BtnDefault" type="Button" parent="CenterPanel/VBox/Footer/HBox"]
+custom_minimum_size = Vector2(110, 36)
+layout_mode = 2
+text = "恢复默认设置"
+
+[node name="Spacer" type="Control" parent="CenterPanel/VBox/Footer/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "🔄 恢复默认"
 
-[node name="BtnApply" type="Button" parent="Margin/VBox/BottomHBox"]
+[node name="BtnApply" type="Button" parent="CenterPanel/VBox/Footer/HBox"]
+custom_minimum_size = Vector2(140, 36)
 layout_mode = 2
-size_flags_horizontal = 3
-text = "💾 保存并应用"
+text = "保存并应用 [ENTER]"

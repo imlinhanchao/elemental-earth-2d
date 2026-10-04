@@ -1,10 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://ci8v43187890g"]
+[gd_scene load_steps=4 format=3 uid="uid://ci8v43187890g"]
 
 [ext_resource type="Script" path="res://src/scenes/main_menu.gd" id="1_menu"]
 [ext_resource type="PackedScene" uid="uid://ci8v43187890d" path="res://src/ui/save_load_modal.tscn" id="2_saveload"]
 [ext_resource type="PackedScene" uid="uid://ci8v43187890e" path="res://src/ui/settings_modal.tscn" id="3_settings"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_spacer"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -15,172 +13,181 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_menu")
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="SafeMargin" type="MarginContainer" parent="."]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_constants/margin_left = 48
+theme_override_constants/margin_top = 48
+theme_override_constants/margin_right = 48
+theme_override_constants/margin_bottom = 48
 
-[node name="VBox" type="VBoxContainer" parent="CenterContainer"]
-custom_minimum_size = Vector2(340, 0)
+[node name="LayoutHBox" type="HBoxContainer" parent="SafeMargin"]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 40
+
+[node name="MainPanel" type="VBoxContainer" parent="SafeMargin/LayoutHBox"]
+custom_minimum_size = Vector2(480, 0)
+layout_mode = 2
+theme_override_constants/separation = 24
 alignment = 1
 
-[node name="TitleBox" type="VBoxContainer" parent="CenterContainer/VBox"]
+[node name="TitleBox" type="VBoxContainer" parent="SafeMargin/LayoutHBox/MainPanel"]
 layout_mode = 2
-theme_override_constants/separation = 4
-alignment = 1
+theme_override_constants/separation = 8
 
-[node name="Title" type="Label" parent="CenterContainer/VBox/TitleBox"]
+[node name="Title" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.88, 0.4, 1)
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.6)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
-theme_override_font_sizes/font_size = 38
-text = "元素纪元: 2D"
-horizontal_alignment = 1
+theme_override_colors/font_color = Color(0.949, 0.949, 0.941, 1)
+theme_override_font_sizes/font_size = 44
+text = "元素纪元"
 
-[node name="SubTitle" type="Label" parent="CenterContainer/VBox/TitleBox"]
+[node name="SubTitle" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
+theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
 theme_override_font_sizes/font_size = 14
 text = "ELEMENTAL EARTH 2D"
-horizontal_alignment = 1
 
-[node name="Desc" type="Label" parent="CenterContainer/VBox/TitleBox"]
+[node name="Desc" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.75, 0.8, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
+theme_override_font_sizes/font_size = 13
 text = "微观化学实验 · 元素拓荒发现 · 宏观工业连续流"
-horizontal_alignment = 1
 
-[node name="HSeparator" type="HSeparator" parent="CenterContainer/VBox"]
+[node name="HSeparator" type="HSeparator" parent="SafeMargin/LayoutHBox/MainPanel"]
 layout_mode = 2
 
-[node name="MenuBox" type="VBoxContainer" parent="CenterContainer/VBox"]
+[node name="MenuBox" type="VBoxContainer" parent="SafeMargin/LayoutHBox/MainPanel"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="BtnContinue" type="Button" parent="CenterContainer/VBox/MenuBox"]
+[node name="BtnContinue" type="Button" parent="SafeMargin/LayoutHBox/MainPanel/MenuBox"]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
-text = "▶️ 继续游戏"
+text = "继续游戏                                              [ENTER]"
+alignment = 0
 
-[node name="BtnNewGame" type="Button" parent="CenterContainer/VBox/MenuBox"]
+[node name="BtnNewGame" type="Button" parent="SafeMargin/LayoutHBox/MainPanel/MenuBox"]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
-text = "✨ 新的游戏 (New Game)"
+text = "新游戏                                                  [N]"
+alignment = 0
 
-[node name="BtnLoadGame" type="Button" parent="CenterContainer/VBox/MenuBox"]
+[node name="BtnLoadGame" type="Button" parent="SafeMargin/LayoutHBox/MainPanel/MenuBox"]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
-text = "📂 载入档案 (Load)"
+text = "载入档案                                              [L]"
+alignment = 0
 
-[node name="BtnSettings" type="Button" parent="CenterContainer/VBox/MenuBox"]
-custom_minimum_size = Vector2(0, 40)
+[node name="BtnSettings" type="Button" parent="SafeMargin/LayoutHBox/MainPanel/MenuBox"]
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "⚙️ 游戏设置 (Settings)"
+theme_override_font_sizes/font_size = 15
+text = "游戏设置                                              [O]"
+alignment = 0
 
-[node name="BtnGuide" type="Button" parent="CenterContainer/VBox/MenuBox"]
-custom_minimum_size = Vector2(0, 40)
+[node name="BtnGuide" type="Button" parent="SafeMargin/LayoutHBox/MainPanel/MenuBox"]
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "📖 拓荒指南与关于"
+theme_override_font_sizes/font_size = 15
+text = "拓荒指南                                              [H]"
+alignment = 0
 
-[node name="BtnQuit" type="Button" parent="CenterContainer/VBox/MenuBox"]
-custom_minimum_size = Vector2(0, 40)
+[node name="BtnQuit" type="Button" parent="SafeMargin/LayoutHBox/MainPanel/MenuBox"]
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "✕ 退出游戏 (Quit)"
+theme_override_font_sizes/font_size = 15
+text = "退出游戏                                              [ESC]"
+alignment = 0
 
-[node name="FooterLabel" type="Label" parent="."]
-layout_mode = 1
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -250.0
-offset_top = -32.0
-offset_right = 250.0
-offset_bottom = -12.0
-grow_horizontal = 2
-grow_vertical = 0
-theme_override_colors/font_color = Color(0.45, 0.5, 0.55, 1)
-theme_override_font_sizes/font_size = 11
-text = "v0.2.0 Alpha | 遵循真实化学元素体系 | Godot 4.2.1 Forward+ Vulkan"
-horizontal_alignment = 1
+[node name="FooterLabel" type="Label" parent="SafeMargin/LayoutHBox/MainPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.42, 0.45, 1)
+theme_override_font_sizes/font_size = 12
+text = "v0.3.0 | 遵循真实化学元素体系 | 4K/1080P 自适应"
 
 [node name="GuideModal" type="PanelContainer" parent="."]
 visible = false
+custom_minimum_size = Vector2(720, 520)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -320.0
-offset_top = -240.0
-offset_right = 320.0
-offset_bottom = 240.0
+offset_left = -360.0
+offset_top = -260.0
+offset_right = 360.0
+offset_bottom = 260.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Margin" type="MarginContainer" parent="GuideModal"]
+[node name="VBox" type="VBoxContainer" parent="GuideModal"]
 layout_mode = 2
-theme_override_constants/margin_left = 20
-theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 20
-theme_override_constants/margin_bottom = 16
+theme_override_constants/separation = 0
 
-[node name="VBox" type="VBoxContainer" parent="GuideModal/Margin"]
+[node name="Header" type="MarginContainer" parent="GuideModal/VBox"]
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 4
 
-[node name="Header" type="HBoxContainer" parent="GuideModal/Margin/VBox"]
+[node name="HBox" type="HBoxContainer" parent="GuideModal/VBox/Header"]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="GuideModal/Margin/VBox/Header"]
+[node name="Title" type="Label" parent="GuideModal/VBox/Header/HBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.88, 0.4, 1)
-theme_override_font_sizes/font_size = 18
-text = "📖 元素纪元拓荒指南与操作手册"
+theme_override_font_sizes/font_size = 16
+text = "拓荒指南与操作手册"
 
-[node name="Spacer" type="Control" parent="GuideModal/Margin/VBox/Header"]
+[node name="Spacer" type="Control" parent="GuideModal/VBox/Header/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="BtnClose" type="Button" parent="GuideModal/Margin/VBox/Header"]
+[node name="BtnClose" type="Button" parent="GuideModal/VBox/Header/HBox"]
+custom_minimum_size = Vector2(60, 28)
 layout_mode = 2
-text = " ✕ 关闭 "
+theme_override_font_sizes/font_size = 12
+text = "✕ [ESC]"
 
-[node name="RichTextLabel" type="RichTextLabel" parent="GuideModal/Margin/VBox"]
+[node name="HSeparator" type="HSeparator" parent="GuideModal/VBox"]
+layout_mode = 2
+
+[node name="Body" type="MarginContainer" parent="GuideModal/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="RichTextLabel" type="RichTextLabel" parent="GuideModal/VBox/Body"]
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 13
 bbcode_enabled = true
-text = "[color=#f0c050]【核心玩法哲学】[/color]
-玩家从原始石器时代一穷二白起步，通过鼠标调度开采地表碎石、枯枝、矿脉与盐湖汲水。
+text = "[color=#4C8DFF]【核心战略哲学】[/color]
+玩家从原始石器时代起步，通过规划与时间调度开采地表碎石、原木、矿脉与盐湖汲水。
 
-[color=#60e0ff]【基础操作快捷键】[/color]
-• [b]鼠标左键[/b]：点击地表资源或空闲瓦片，将采矿/伐木/打水加入耗时作业队列。
+[color=#4C8DFF]【基础操作与快捷键】[/color]
+• [b]鼠标左键[/b]：点击地表资源瓦片，将采矿/伐木/打水加入作业队列。
 • [b]鼠标右键/中键拖拽[/b]：自由平移大世界视野。
-• [b]滚轮滚上/滚下[/b]：缩放宏观与微观视野 (0.5x ~ 2.5x)。
-• [b][C] 或 [T][/b]：打开手工作坊与冶金锻造砧。
-• [b][L][/b]：打开微观化学实验台（调配试剂与导出反应蓝图）。
-• [b][P][/b]：展开 118 全元素周期表圣殿。
-• [b][ESC][/b]：呼出游戏内暂停与系统菜单。
+• [b]鼠标滚轮[/b]：缩放宏观与微观视野 (0.5x ~ 2.5x)。
+• [b][C] 或 [T][/b]：打开冶金工具锻造工坊。
+• [b][L][/b]：打开微观化学实验台（调配反应物并导出蓝图）。
+• [b][P][/b]：展开 118 元素周期表图鉴。
+• [b][ESC][/b]：呼出系统暂停菜单。
 
-[color=#f0c050]【文明纪元与疆域】[/color]
-石器时代 (半径5格) → 炼金时代 (8格) → 近代化学 (11格) → 电化学 (14格) → 稀土时代 (17格) → 原子时代 (20格)。"
+[color=#4C8DFF]【文明纪元演进】[/color]
+石器时代 (领地半径 5) → 炼金时代 (8) → 近代化学 (11) → 电化学 (14) → 稀土时代 (17) → 原子时代 (20)。"
 
 [node name="SaveLoadModal" parent="." instance=ExtResource("2_saveload")]
 visible = false
@@ -192,49 +199,56 @@ layout_mode = 1
 
 [node name="ConfirmDialog" type="PanelContainer" parent="."]
 visible = false
+custom_minimum_size = Vector2(380, 0)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -160.0
-offset_top = -80.0
-offset_right = 160.0
-offset_bottom = 80.0
+offset_left = -190.0
+offset_top = -90.0
+offset_right = 190.0
+offset_bottom = 90.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Margin" type="MarginContainer" parent="ConfirmDialog"]
 layout_mode = 2
-theme_override_constants/margin_left = 20
+theme_override_constants/margin_left = 16
 theme_override_constants/margin_top = 16
-theme_override_constants/margin_right = 20
+theme_override_constants/margin_right = 16
 theme_override_constants/margin_bottom = 16
 
 [node name="VBox" type="VBoxContainer" parent="ConfirmDialog/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 16
+
+[node name="Header" type="HBoxContainer" parent="ConfirmDialog/Margin/VBox"]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="ConfirmDialog/Margin/VBox/Header"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "操作确认"
 
 [node name="ConfirmText" type="Label" parent="ConfirmDialog/Margin/VBox"]
-custom_minimum_size = Vector2(240, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 13
 text = "确认执行此操作吗？"
-horizontal_alignment = 1
 autowrap_mode = 2
 
 [node name="BtnHBox" type="HBoxContainer" parent="ConfirmDialog/Margin/VBox"]
 layout_mode = 2
-theme_override_constants/separation = 16
-alignment = 1
+theme_override_constants/separation = 12
+alignment = 2
 
 [node name="BtnCancel" type="Button" parent="ConfirmDialog/Margin/VBox/BtnHBox"]
-custom_minimum_size = Vector2(80, 32)
+custom_minimum_size = Vector2(90, 36)
 layout_mode = 2
-text = "取消"
+text = "取消 [ESC]"
 
 [node name="BtnOk" type="Button" parent="ConfirmDialog/Margin/VBox/BtnHBox"]
-custom_minimum_size = Vector2(80, 32)
+custom_minimum_size = Vector2(90, 36)
 layout_mode = 2
-text = "确认"
+text = "确认 [ENTER]"

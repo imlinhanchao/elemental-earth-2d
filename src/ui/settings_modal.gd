@@ -1,56 +1,104 @@
 # settings_modal.gd
-# 游戏全局设置弹窗: 调节声音、显示模式、自动保存与输入参数
-extends PanelContainer
+# 游戏全局设置弹窗: 左分类、右选项，滑条与开关均显示数值，无 emoji
+extends Control
 
 signal modal_closed
 
 const SettingsManager = preload("res://src/core/settings_manager.gd")
 
-@onready var btn_close = $Margin/VBox/Header/BtnClose
-@onready var slider_master = $Margin/VBox/Scroll/VBox/AudioSec/MasterBox/HSlider
-@onready var label_master_val = $Margin/VBox/Scroll/VBox/AudioSec/MasterBox/ValLabel
+@onready var btn_close = $CenterPanel/VBox/Header/HBox/BtnClose
 
-@onready var slider_bgm = $Margin/VBox/Scroll/VBox/AudioSec/BgmBox/HSlider
-@onready var label_bgm_val = $Margin/VBox/Scroll/VBox/AudioSec/BgmBox/ValLabel
+# 侧边分类选项卡
+@onready var tab_audio = $CenterPanel/VBox/Body/HBox/CategoryList/TabAudio
+@onready var tab_display = $CenterPanel/VBox/Body/HBox/CategoryList/TabDisplay
+@onready var tab_game = $CenterPanel/VBox/Body/HBox/CategoryList/TabGame
 
-@onready var slider_sfx = $Margin/VBox/Scroll/VBox/AudioSec/SfxBox/HSlider
-@onready var label_sfx_val = $Margin/VBox/Scroll/VBox/AudioSec/SfxBox/ValLabel
+@onready var sec_audio = $CenterPanel/VBox/Body/HBox/RightContent/SecAudio
+@onready var sec_display = $CenterPanel/VBox/Body/HBox/RightContent/SecDisplay
+@onready var sec_game = $CenterPanel/VBox/Body/HBox/RightContent/SecGame
 
-@onready var check_fullscreen = $Margin/VBox/Scroll/VBox/DisplaySec/CheckFullscreen
-@onready var opt_autosave = $Margin/VBox/Scroll/VBox/GameSec/AutoSaveBox/OptAutoSave
-@onready var slider_cam_speed = $Margin/VBox/Scroll/VBox/GameSec/CamSpeedBox/HSlider
-@onready var label_cam_speed_val = $Margin/VBox/Scroll/VBox/GameSec/CamSpeedBox/ValLabel
+# 音频控件
+@onready var slider_master = $CenterPanel/VBox/Body/HBox/RightContent/SecAudio/MasterBox/HSlider
+@onready var label_master_val = $CenterPanel/VBox/Body/HBox/RightContent/SecAudio/MasterBox/ValLabel
+@onready var slider_bgm = $CenterPanel/VBox/Body/HBox/RightContent/SecAudio/BgmBox/HSlider
+@onready var label_bgm_val = $CenterPanel/VBox/Body/HBox/RightContent/SecAudio/BgmBox/ValLabel
+@onready var slider_sfx = $CenterPanel/VBox/Body/HBox/RightContent/SecAudio/SfxBox/HSlider
+@onready var label_sfx_val = $CenterPanel/VBox/Body/HBox/RightContent/SecAudio/SfxBox/ValLabel
 
-@onready var btn_apply = $Margin/VBox/BottomHBox/BtnApply
-@onready var btn_default = $Margin/VBox/BottomHBox/BtnDefault
+# 显示与游戏控件
+@onready var check_fullscreen = $CenterPanel/VBox/Body/HBox/RightContent/SecDisplay/CheckFullscreen
+@onready var opt_autosave = $CenterPanel/VBox/Body/HBox/RightContent/SecGame/AutoSaveBox/OptAutoSave
+@onready var slider_cam_speed = $CenterPanel/VBox/Body/HBox/RightContent/SecGame/CamSpeedBox/HSlider
+@onready var label_cam_speed_val = $CenterPanel/VBox/Body/HBox/RightContent/SecGame/CamSpeedBox/ValLabel
+
+# 底部按钮
+@onready var btn_apply = $CenterPanel/VBox/Footer/HBox/BtnApply
+@onready var btn_default = $CenterPanel/VBox/Footer/HBox/BtnDefault
 
 func _ready() -> void:
 	visible = false
+	process_mode = Node.PROCESS_MODE_ALWAYS
+	
 	btn_close.pressed.connect(close)
 	btn_apply.pressed.connect(_on_apply_pressed)
 	btn_default.pressed.connect(_on_default_pressed)
 	
+	tab_audio.pressed.connect(func(): _switch_tab(0))
+	tab_display.pressed.connect(func(): _switch_tab(1))
+	tab_game.pressed.connect(func(): _switch_tab(2))
+	
 	_setup_options()
 	_bind_slider_events()
+	_switch_tab(0)
 
 func open() -> void:
 	SettingsManager.load_settings()
 	_refresh_ui_from_settings()
 	visible = true
+	_switch_tab(0)
+	btn_close.grab_focus()
 
 func close() -> void:
 	visible = false
 	modal_closed.emit()
 
+func _input(event: InputEvent) -> void:
+	if not visible:
+		return
+		
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		close()
+		get_viewport().set_input_as_handled()
+		return
+		
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_ESCAPE:
+			close()
+			get_viewport().set_input_as_handled()
+		elif event.keycode == KEY_ENTER:
+			_on_apply_pressed()
+			get_viewport().set_input_as_handled()
+
+func _switch_tab(index: int) -> void:
+	sec_audio.visible = (index == 0)
+	sec_display.visible = (index == 1)
+	sec_game.visible = (index == 2)
+	
+	var accent = ThemeStyler.COLOR_ACCENT
+	var def_col = Color.WHITE
+	tab_audio.modulate = accent if index == 0 else def_col
+	tab_display.modulate = accent if index == 1 else def_col
+	tab_game.modulate = accent if index == 2 else def_col
+
 func _setup_options() -> void:
 	opt_autosave.clear()
-	opt_autosave.add_item("⏱️ 每 30 秒自动保存", 0)
+	opt_autosave.add_item("每 30 秒自动保存", 0)
 	opt_autosave.set_item_metadata(0, 30.0)
-	opt_autosave.add_item("⏱️ 每 45 秒自动保存 (推荐)", 1)
+	opt_autosave.add_item("每 45 秒自动保存 (推荐)", 1)
 	opt_autosave.set_item_metadata(1, 45.0)
-	opt_autosave.add_item("⏱️ 每 60 秒自动保存", 2)
+	opt_autosave.add_item("每 60 秒自动保存", 2)
 	opt_autosave.set_item_metadata(2, 60.0)
-	opt_autosave.add_item("🚫 关闭自动保存", 3)
+	opt_autosave.add_item("关闭自动保存", 3)
 	opt_autosave.set_item_metadata(3, 0.0)
 
 func _bind_slider_events() -> void:
@@ -89,7 +137,6 @@ func _refresh_ui_from_settings() -> void:
 	slider_cam_speed.value = c_spd
 	label_cam_speed_val.text = "%.1fx" % c_spd
 	
-	# 设置自动保存索引
 	var selected_idx = 1
 	for i in range(opt_autosave.item_count):
 		if abs(opt_autosave.get_item_metadata(i) - as_int) < 1.0:
@@ -98,19 +145,16 @@ func _refresh_ui_from_settings() -> void:
 	opt_autosave.selected = selected_idx
 
 func _on_apply_pressed() -> void:
-	var sel_idx = opt_autosave.selected
-	var auto_save_val = opt_autosave.get_item_metadata(sel_idx)
-	
 	SettingsManager.set_setting("master_volume", slider_master.value)
 	SettingsManager.set_setting("bgm_volume", slider_bgm.value)
 	SettingsManager.set_setting("sfx_volume", slider_sfx.value)
 	SettingsManager.set_setting("fullscreen", check_fullscreen.button_pressed)
-	SettingsManager.set_setting("auto_save_interval", auto_save_val)
+	
+	var sel_meta = opt_autosave.get_item_metadata(opt_autosave.selected)
+	SettingsManager.set_setting("auto_save_interval", float(sel_meta))
 	SettingsManager.set_setting("camera_drag_speed", slider_cam_speed.value)
 	
 	SettingsManager.save_settings()
-	SettingsManager.apply_settings()
-	GameState.post_notice("⚙️ 游戏设置已成功保存并立即生效！", Color.GREEN)
 	close()
 
 func _on_default_pressed() -> void:
@@ -118,5 +162,5 @@ func _on_default_pressed() -> void:
 	slider_bgm.value = 0.8
 	slider_sfx.value = 1.0
 	check_fullscreen.button_pressed = false
-	slider_cam_speed.value = 1.0
 	opt_autosave.selected = 1
+	slider_cam_speed.value = 1.0
