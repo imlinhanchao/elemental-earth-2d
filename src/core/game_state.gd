@@ -1,5 +1,5 @@
 # game_state.gd
-# 全局游戏状态管理器 (Autoload): 转发壳 (Proxy Shell)，对接底层核心 Simulation 模拟层
+# 全局游戏状态管理器 (Autoload): 透明转发壳 (Proxy Shell)，对接底层核心 Simulation 模拟层
 extends Node
 
 const Simulation = preload("res://src/core/simulation.gd")
@@ -23,6 +23,7 @@ signal task_cancelled(task: Dictionary)
 
 signal tile_depleted(hex: Vector2i)
 signal tile_respawned(hex: Vector2i)
+signal structure_built(structure_key: String, hex: Vector2i)
 
 var sim: Simulation
 
@@ -67,8 +68,20 @@ var depleted_tiles: Dictionary:
 	get: return sim.depleted_tiles
 	set(v): sim.depleted_tiles = v
 
+var world_resources: Dictionary:
+	get: return sim.world_resources
+
+var world_biomes: Dictionary:
+	get: return sim.world_biomes
+
+var built_furnaces: Dictionary:
+	get: return sim.built_furnaces
+
+var built_reactors: Dictionary:
+	get: return sim.built_reactors
+
 var ERA_NAMES: Array[String]:
-	get: return Simulation.ERA_NAMES
+	get: return sim.ERA_NAMES
 
 const MAX_QUEUE_SIZE: int = Simulation.MAX_QUEUE_SIZE
 
@@ -92,6 +105,7 @@ func _connect_sim_signals() -> void:
 	sim.task_cancelled.connect(func(t): task_cancelled.emit(t))
 	sim.tile_depleted.connect(func(h): tile_depleted.emit(h))
 	sim.tile_respawned.connect(func(h): tile_respawned.emit(h))
+	sim.structure_built.connect(func(k, h): structure_built.emit(k, h))
 
 func _process(delta: float) -> void:
 	sim.tick(delta)
@@ -121,6 +135,12 @@ func is_pos_in_territory(pos: Vector2) -> bool:
 	var h = HexWorldGenerator.pixel_to_hex(pos)
 	return sim.is_hex_in_territory(h.x, h.y)
 
+func is_tile_depleted(hex: Vector2i) -> bool:
+	return sim.is_tile_depleted(hex)
+
+func get_hex_resource(hex: Vector2i) -> String:
+	return sim.get_hex_resource(hex)
+
 func add_task(task_data: Dictionary) -> bool:
 	return sim.add_task(task_data)
 
@@ -144,6 +164,21 @@ func queue_hex_forage(hex: Vector2i, biome_name: String, world_pos: Vector2 = Ve
 
 func get_active_task_hex() -> Vector2i:
 	return sim.get_active_task_hex()
+
+func craft_tool(recipe_key: String) -> bool:
+	return sim.craft_tool(recipe_key)
+
+func build_structure(structure_key: String, hex: Vector2i) -> bool:
+	return sim.build_structure(structure_key, hex)
+
+func furnace_add_fuel(hex: Vector2i) -> bool:
+	return sim.furnace_add_fuel(hex)
+
+func furnace_add_ore(hex: Vector2i, key: String, amount: int = 1) -> bool:
+	return sim.furnace_add_ore(hex, key, amount)
+
+func reactor_install_blueprint(hex: Vector2i, bp_id: String) -> bool:
+	return sim.reactor_install_blueprint(hex, bp_id)
 
 func get_formatted_playtime() -> String:
 	return sim.get_formatted_playtime()

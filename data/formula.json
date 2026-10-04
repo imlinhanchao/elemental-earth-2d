@@ -67,37 +67,123 @@
   },
   {
     "key": "copper_smelting",
-    "name": "炼铜",
-    "description": "将孔雀石放入窑炉中进行焙烧，得到铜和二氧化碳。",
-    "fragment_description": "对#malachite#进行高温$roasting$，使其热分解为金属#copper#并释放#carbon_dioxide#。",
-    "time_required": 40,
-    "required_era": "alchemy",
-    "required_container": "kiln",
-    "required_actions": {
-      "key": "roasting",
-      "min": 2
-    },
+    "name": "木炭冶炼孔雀石制备单质铜",
+    "description": "孔雀石与木炭高温碳热还原分解出金属铜单质与二氧化碳。",
+    "min_temp": 750.0,
+    "time_required": 1.0,
+    "required_container": [
+      "furnace",
+      "kiln",
+      "crucible",
+      "flask"
+    ],
     "required_items": [
       {
         "key": "malachite",
-        "quantity": 1,
+        "quantity": 1.0,
         "isMain": true
+      },
+      {
+        "key": [
+          "charcoal",
+          "carbon"
+        ],
+        "quantity": 0.5
       }
     ],
     "products": [
       {
         "key": "copper",
-        "multiple": 1
+        "quantity": 0.9,
+        "multiple": 0.9
       },
       {
         "key": "carbon_dioxide",
-        "multiple": 1,
-        "required_chain_operation": "gas_collecting_air"
+        "quantity": 0.5,
+        "multiple": 0.5
       }
     ],
-    "required_techs": [
-      "pottery"
-    ]
+    "required_era": "alchemy"
+  },
+  {
+    "key": "iron_smelting",
+    "name": "高炉碳热还原炼铁",
+    "description": "赤铁矿/铁矿石与木炭在高温下反应生成单质铁与二氧化碳。",
+    "min_temp": 800.0,
+    "time_required": 1.0,
+    "required_container": [
+      "furnace",
+      "blast_furnace",
+      "crucible",
+      "flask"
+    ],
+    "required_items": [
+      {
+        "key": [
+          "iron_ore",
+          "hematite"
+        ],
+        "quantity": 1.0,
+        "isMain": true
+      },
+      {
+        "key": [
+          "charcoal",
+          "carbon",
+          "coal"
+        ],
+        "quantity": 1.5
+      }
+    ],
+    "products": [
+      {
+        "key": "iron",
+        "quantity": 1.0,
+        "multiple": 1.0
+      },
+      {
+        "key": "carbon_dioxide",
+        "quantity": 1.5,
+        "multiple": 1.5
+      }
+    ],
+    "required_era": "alchemy"
+  },
+  {
+    "key": "calcite_decomposition",
+    "name": "碳酸钙高温热解生成生石灰",
+    "description": "方解石/石灰石高温热解生成生石灰与二氧化碳。",
+    "min_temp": 1050.0,
+    "time_required": 1.0,
+    "required_container": [
+      "furnace",
+      "kiln",
+      "crucible",
+      "flask"
+    ],
+    "required_items": [
+      {
+        "key": [
+          "calcite",
+          "limestone"
+        ],
+        "quantity": 1.0,
+        "isMain": true
+      }
+    ],
+    "products": [
+      {
+        "key": "quicklime",
+        "quantity": 1.0,
+        "multiple": 1.0
+      },
+      {
+        "key": "carbon_dioxide",
+        "quantity": 1.0,
+        "multiple": 1.0
+      }
+    ],
+    "required_era": "alchemy"
   },
   {
     "name": "制作碱水",
@@ -1525,38 +1611,36 @@
     "required_era": "alchemy"
   },
   {
-    "name": "电解水",
+    "name": "直流电解水制氢与纯氧",
     "key": "water_electrolysis",
     "description": "将直流电通入水中，水分解为氢气和氧气。",
+    "min_voltage": 2.0,
+    "time_required": 1.0,
+    "required_container": [
+      "cell",
+      "flask",
+      "beaker",
+      "electrolyzer"
+    ],
     "required_items": [
       {
         "key": "water",
-        "quantity": 1
+        "quantity": 1.0,
+        "isMain": true
       }
     ],
-    "required_container": "clay_pot",
-    "required_actions": {
-      "key": "electrolysis",
-      "min": 1
-    },
-    "required_techs": [
-      "electrochemistry"
-    ],
-    "time_required": 30,
     "products": [
       {
         "key": "hydrogen",
-        "multiple": 2,
-        "required_chain_operation": "gas_collecting"
+        "quantity": 1.0,
+        "multiple": 1.0
       },
       {
         "key": "oxygen",
-        "multiple": 1,
-        "required_chain_operation": "gas_collecting"
+        "quantity": 0.5,
+        "multiple": 0.5
       }
     ],
-    "power_consumption": 0.1,
-    "fragment_description": "通过$electrolysis$作用使#water#发生电化学分解，在两极产出#hydrogen#与#oxygen#。",
     "required_era": "electrochem"
   },
   {

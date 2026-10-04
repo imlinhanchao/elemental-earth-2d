@@ -1,0 +1,35 @@
+[
+  {
+    "key": "furnace",
+    "name": "陶土熔炉",
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 4
+      },
+      {
+        "key": [
+          "stone",
+          "flint"
+        ],
+        "quantity": 4
+      }
+    ],
+    "notice": "🔨 现场施工完成！消耗原木 x4 与碎石 x4 堆砌起【陶土熔炉】！"
+  },
+  {
+    "key": "industrial_reactor",
+    "name": "工业连续反应塔",
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 8
+      },
+      {
+        "key": "copper",
+        "quantity": 2
+      }
+    ],
+    "notice": "🏭 近代工业巨构施工完成！消耗原木 x8 与金属铜 x2 建立【工业连续反应塔】！"
+  }
+]

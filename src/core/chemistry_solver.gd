@@ -21,7 +21,7 @@ func solve(buffer: MixtureBuffer, delta_time: float) -> Dictionary:
 		buffer.reaction_timer = 0.0
 		return results
 		
-	# 遍历配方表进行查表匹配
+	# 遍历配方表进行查表匹配 (优先匹配带温度/电压限制的特定反应)
 	var matched_formula: Dictionary = _find_matching_formula(buffer)
 	if matched_formula.is_empty():
 		buffer.reaction_timer = 0.0
@@ -41,24 +41,53 @@ func solve(buffer: MixtureBuffer, delta_time: float) -> Dictionary:
 	return results
 
 func _find_matching_formula(buffer: MixtureBuffer) -> Dictionary:
+	var best_formula: Dictionary = {}
+	var best_score: float = -1.0
+	
 	for f_key in DataDB.formulas.keys():
 		var f = DataDB.formulas[f_key]
 		if _matches_conditions(buffer, f):
-			return f
-	return {}
+			var score = _calculate_formula_priority(f)
+			if score > best_score:
+				best_score = score
+				best_formula = f
+				
+	return best_formula
+
+func _calculate_formula_priority(formula: Dictionary) -> float:
+	var score = 0.0
+	var min_temp = float(formula.get("min_temp", formula.get("min_temperature", 0.0)))
+	var min_volt = float(formula.get("min_voltage", 0.0))
+	
+	# 有温度或电压条件的配方优先级远高于常温常压配方，防止被无门槛配方提前抢占
+	if min_temp > 0.0:
+		score += 10000.0 + min_temp
+	if min_volt > 0.0:
+		score += 10000.0 + min_volt * 100.0
+		
+	if formula.has("required_container") and not str(formula["required_container"]).is_empty():
+		score += 500.0
+		
+	var req_items = formula.get("required_items", [])
+	score += req_items.size() * 10.0
+	return score
 
 func _matches_conditions(buffer: MixtureBuffer, formula: Dictionary) -> bool:
-	# 1. 温度阈值检查
+	# 1. 容器匹配检查
+	if not _matches_container(buffer, formula):
+		return false
+
+	# 2. 温度阈值检查
 	var min_temp = float(formula.get("min_temp", formula.get("min_temperature", 0.0)))
 	if min_temp > 0.0 and buffer.temperature < min_temp:
 		return false
 		
-	# 2. 电压阈值检查
+	# 3. 电压阈值检查
 	var min_volt = float(formula.get("min_voltage", 0.0))
 	if min_volt > 0.0 and buffer.applied_voltage < min_volt:
 		return false
 		
-	# 3. 反应原料检查
+	# 4. 反应原料检查
 	var req_items = formula.get("required_items", [])
 	if req_items.is_empty():
 		return false
@@ -82,6 +111,37 @@ func _matches_conditions(buffer: MixtureBuffer, formula: Dictionary) -> bool:
 			
 	return true
 
+func _matches_container(buffer: MixtureBuffer, formula: Dictionary) -> bool:
+	if not formula.has("required_container"):
+		return true
+	var req = formula["required_container"]
+	if req is String:
+		if req == "" or buffer.container_type == "":
+			return true
+		if req == buffer.container_type:
+			return true
+		# 容器别名兼容匹配
+		if buffer.container_type == "furnace" and req in ["furnace", "kiln", "blast_furnace", "crucible"]:
+			return true
+		if buffer.container_type == "flask" and req in ["flask", "clay_pot", "beaker", "cell"]:
+			return true
+		return false
+	elif req is Array:
+		if req.is_empty() or buffer.container_type == "":
+			return true
+		if req.has(buffer.container_type):
+			return true
+		if buffer.container_type == "furnace":
+			for alias in ["furnace", "kiln", "blast_furnace", "crucible"]:
+				if req.has(alias):
+					return true
+		if buffer.container_type == "flask":
+			for alias in ["flask", "clay_pot", "beaker", "cell"]:
+				if req.has(alias):
+					return true
+		return false
+	return true
+
 func _execute_formula(buffer: MixtureBuffer, formula: Dictionary, results: Dictionary) -> void:
 	# 1. 消耗原料
 	var req_items = formula.get("required_items", [])
@@ -96,7 +156,7 @@ func _execute_formula(buffer: MixtureBuffer, formula: Dictionary, results: Dicti
 		elif k is String:
 			buffer.consume_substance(k, q_needed)
 			
-	# 2. 生成产物
+	# 2. 生成产物进 buffer
 	var prod_list = formula.get("products", [])
 	var prod_keys: Array = []
 	for p in prod_list:

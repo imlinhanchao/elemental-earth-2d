@@ -169,7 +169,9 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 			"task_queue": _serialize_tasks(GameState.task_queue),
 			"active_task": _serialize_task(GameState.active_task),
 			"lab_vessel": _serialize_lab_vessel(GameState.lab_vessel),
-			"depleted_tiles": _serialize_depleted_tiles(GameState.depleted_tiles)
+			"depleted_tiles": _serialize_depleted_tiles(GameState.depleted_tiles),
+			"built_furnaces": _serialize_furnaces(GameState.built_furnaces),
+			"built_reactors": _serialize_reactors(GameState.built_reactors)
 		},
 		"world_state": world_data
 	}
@@ -242,11 +244,15 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
 			
 		GameState.depleted_tiles = _deserialize_depleted_tiles(gs_data.get("depleted_tiles", []))
 		_deserialize_lab_vessel(gs_data.get("lab_vessel", {}))
+		_deserialize_furnaces(gs_data.get("built_furnaces", []))
+		_deserialize_reactors(gs_data.get("built_reactors", []))
 	else:
 		# v2 旧档：无任务、无溶液、无采空记录，缺的字段当空
 		GameState.task_queue = []
 		GameState.active_task = {}
 		GameState.depleted_tiles = {}
+		GameState.built_furnaces.clear()
+		GameState.built_reactors.clear()
 		if GameState.lab_vessel:
 			GameState.lab_vessel.clear()
 			GameState.lab_vessel.temperature = 293.15
@@ -322,8 +328,8 @@ static func _serialize_task(t: Dictionary) -> Dictionary:
 		"icon": str(t.get("icon", "")),
 		"world_pos_x": float(t.get("world_pos_x", 0.0)),
 		"world_pos_y": float(t.get("world_pos_y", 0.0)),
-		"total_time": float(t.get("total_time", 1.0)),
-		"elapsed_time": float(t.get("elapsed_time", 0.0))
+		"time_required": float(t.get("time_required", t.get("total_time", 1.0))),
+		"begin_time": int(t.get("begin_time", 0))
 	}
 
 static func _deserialize_tasks(tasks_array: Array) -> Array[Dictionary]:
@@ -334,6 +340,13 @@ static func _deserialize_tasks(tasks_array: Array) -> Array[Dictionary]:
 	return list
 
 static func _deserialize_task(item: Dictionary) -> Dictionary:
+	var now = Time.get_ticks_msec()
+	var time_req = float(item.get("time_required", item.get("total_time", 1.0)))
+	var b_time = int(item.get("begin_time", 0))
+	if b_time == 0 and item.has("elapsed_time"):
+		var el = float(item["elapsed_time"])
+		b_time = max(1, now - int(el * 1000.0))
+
 	return {
 		"id": int(item.get("id", 0)),
 		"action_id": str(item.get("action_id", "mine")),
@@ -345,8 +358,8 @@ static func _deserialize_task(item: Dictionary) -> Dictionary:
 		"icon": str(item.get("icon", "")),
 		"world_pos_x": float(item.get("world_pos_x", 0.0)),
 		"world_pos_y": float(item.get("world_pos_y", 0.0)),
-		"total_time": float(item.get("total_time", 1.0)),
-		"elapsed_time": float(item.get("elapsed_time", 0.0))
+		"time_required": time_req,
+		"begin_time": b_time
 	}
 
 static func _serialize_lab_vessel(vessel: MixtureBuffer) -> Dictionary:
@@ -391,3 +404,67 @@ static func _deserialize_depleted_tiles(tiles_data: Variant) -> Dictionary:
 				var coord = Vector2i(int(item["q"]), int(item["r"]))
 				dict[coord] = float(item.get("remaining_time", 60.0))
 	return dict
+
+static func _serialize_furnaces(furnaces: Dictionary) -> Array[Dictionary]:
+	var list: Array[Dictionary] = []
+	for hex in furnaces.keys():
+		var f = furnaces[hex]
+		var buf = f.get("buffer")
+		var comps: Dictionary = {}
+		var temp: float = 293.15
+		if buf != null and "components" in buf:
+			comps = buf.components.duplicate()
+			temp = buf.temperature
+		list.append({
+			"hex_q": hex.x,
+			"hex_r": hex.y,
+			"temperature": temp,
+			"burn_timer": float(f.get("burn_timer", 0.0)),
+			"is_active_fire": bool(f.get("is_active_fire", false)),
+			"components": comps
+		})
+	return list
+
+static func _deserialize_furnaces(furnaces_data: Variant) -> void:
+	GameState.built_furnaces.clear()
+	if furnaces_data is Array:
+		for item in furnaces_data:
+			if item is Dictionary and item.has("hex_q") and item.has("hex_r"):
+				var hex = Vector2i(int(item["hex_q"]), int(item["hex_r"]))
+				var buf = MixtureBuffer.new()
+				buf.container_type = "furnace"
+				buf.temperature = float(item.get("temperature", 293.15))
+				var comps = item.get("components", {})
+				if comps is Dictionary:
+					for k in comps.keys():
+						buf.components[k] = float(comps[k])
+				GameState.built_furnaces[hex] = {
+					"buffer": buf,
+					"burn_timer": float(item.get("burn_timer", 0.0)),
+					"is_active_fire": bool(item.get("is_active_fire", false))
+				}
+
+static func _serialize_reactors(reactors: Dictionary) -> Array[Dictionary]:
+	var list: Array[Dictionary] = []
+	for hex in reactors.keys():
+		var r = reactors[hex]
+		list.append({
+			"hex_q": hex.x,
+			"hex_r": hex.y,
+			"blueprint_id": str(r.get("blueprint_id", "")),
+			"cycle_progress": float(r.get("cycle_progress", 0.0)),
+			"total_produced": int(r.get("total_produced", 0))
+		})
+	return list
+
+static func _deserialize_reactors(reactors_data: Variant) -> void:
+	GameState.built_reactors.clear()
+	if reactors_data is Array:
+		for item in reactors_data:
+			if item is Dictionary and item.has("hex_q") and item.has("hex_r"):
+				var hex = Vector2i(int(item["hex_q"]), int(item["hex_r"]))
+				GameState.built_reactors[hex] = {
+					"blueprint_id": str(item.get("blueprint_id", "")),
+					"cycle_progress": float(item.get("cycle_progress", 0.0)),
+					"total_produced": int(item.get("total_produced", 0))
+				}

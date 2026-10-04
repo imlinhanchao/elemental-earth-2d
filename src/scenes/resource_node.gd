@@ -89,9 +89,10 @@ func _draw() -> void:
 	# 若当前节点被选中且正由任务作业，先绘制环形发光进度环
 	var active_hex = GameState.get_active_task_hex()
 	if active_hex == hex_coord and active_hex != Vector2i(9999, 9999):
-		var total = float(GameState.active_task.get("total_time", 1.0))
-		var elapsed = float(GameState.active_task.get("elapsed_time", 0.0))
-		var pct = clamp(elapsed / total, 0.0, 1.0)
+		var total = float(GameState.active_task.get("time_required", GameState.active_task.get("total_time", 1.0)))
+		var begin_time = int(GameState.active_task.get("begin_time", 0))
+		var elapsed = (Time.get_ticks_msec() - begin_time) / 1000.0 if begin_time > 0 else float(GameState.active_task.get("elapsed_time", 0.0))
+		var pct = clamp(elapsed / max(total, 0.001), 0.0, 1.0)
 		# 阴影发光底环
 		draw_arc(Vector2.ZERO, 24.0, 0, TAU, 32, Color(0.1, 0.6, 0.8, 0.35), 4.0)
 		# 充能进度环

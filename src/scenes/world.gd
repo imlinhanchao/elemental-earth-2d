@@ -35,7 +35,7 @@ var target_zoom: Vector2 = Vector2.ONE
 const WORLD_HEX_RADIUS: int = 18
 
 func _ready() -> void:
-	hex_gen = HexWorldGenerator.new(12345)
+	GameState.structure_built.connect(_on_structure_built)
 	_generate_hex_world()
 	
 	hud.build_furnace_requested.connect(_on_build_furnace_requested)
@@ -83,21 +83,11 @@ func _capture_screenshot_after_delay() -> void:
 	get_tree().quit(0)
 
 func _generate_hex_world() -> void:
-	for q in range(-WORLD_HEX_RADIUS, WORLD_HEX_RADIUS + 1):
-		var r1 = max(-WORLD_HEX_RADIUS, -q - WORLD_HEX_RADIUS)
-		var r2 = min(WORLD_HEX_RADIUS, -q + WORLD_HEX_RADIUS)
-		for r in range(r1, r2 + 1):
-			var biome = hex_gen.get_biome(q, r)
-			var coord = Vector2i(q, r)
-			generated_hexes[coord] = biome
-			
-			if abs(q) <= 1 and abs(r) <= 1:
-				continue
-				
-			var spawn_item = hex_gen.determine_resource_spawn(q, r, biome)
-			if spawn_item != "":
-				_spawn_resource_at_hex(q, r, spawn_item)
-				
+	hex_gen = GameState.sim.hex_gen
+	generated_hexes = GameState.world_biomes.duplicate()
+	for coord in GameState.world_resources.keys():
+		var item_key = GameState.world_resources[coord]
+		_spawn_resource_at_hex(coord.x, coord.y, item_key)
 	queue_redraw()
 
 func _spawn_resource_at_hex(q: int, r: int, item_key: String) -> void:
@@ -238,9 +228,10 @@ func _draw() -> void:
 			float(GameState.active_task.get("world_pos_x", GameState.active_task.get("world_pos", Vector2.ZERO).x)),
 			float(GameState.active_task.get("world_pos_y", GameState.active_task.get("world_pos", Vector2.ZERO).y))
 		)
-		var total = float(GameState.active_task.get("total_time", 1.0))
-		var elapsed = float(GameState.active_task.get("elapsed_time", 0.0))
-		var pct = clamp(elapsed / total, 0.0, 1.0)
+		var total = float(GameState.active_task.get("time_required", GameState.active_task.get("total_time", 1.0)))
+		var begin_time = int(GameState.active_task.get("begin_time", 0))
+		var elapsed = (Time.get_ticks_msec() - begin_time) / 1000.0 if begin_time > 0 else float(GameState.active_task.get("elapsed_time", 0.0))
+		var pct = clamp(elapsed / max(total, 0.001), 0.0, 1.0)
 		draw_arc(t_pos, 28.0, 0, TAU, 32, Color(1.0, 0.85, 0.2, 0.35), 4.0)
 		draw_arc(t_pos, 28.0, -PI/2, -PI/2 + pct * TAU, 32, Color(1.0, 0.88, 0.3, 0.95), 5.0)
 
@@ -281,79 +272,66 @@ func _bind_furnace_events(f_node: Node2D) -> void:
 		)
 
 func _on_build_furnace_requested() -> void:
-	var spawn_pos = HexWorldGenerator.hex_to_pixel(hovered_hex.x, hovered_hex.y) if generated_hexes.has(hovered_hex) else camera.position
-	if not GameState.is_pos_in_territory(spawn_pos):
-		GameState.post_notice("🚩 无法在此建造：超出当前文明领地边界！", Color(1.0, 0.4, 0.4))
-		return
-		
-	var stone_count = GameState.inventory.get_count("stone")
-	var flint_count = GameState.inventory.get_count("flint")
-	if GameState.inventory.has_item("wood", 4) and (stone_count + flint_count >= 4):
-		GameState.inventory.remove_item("wood", 4)
-		var needed = 4
-		var take_stone = min(stone_count, needed)
-		if take_stone > 0:
-			GameState.inventory.remove_item("stone", take_stone)
-			needed -= take_stone
-		if needed > 0:
-			GameState.inventory.remove_item("flint", needed)
+	var target_hex = hovered_hex if generated_hexes.has(hovered_hex) else HexWorldGenerator.pixel_to_hex(camera.position)
+	GameState.build_structure("furnace", target_hex)
+
+func _on_build_reactor_requested() -> void:
+	var target_hex = hovered_hex if generated_hexes.has(hovered_hex) else HexWorldGenerator.pixel_to_hex(camera.position)
+	GameState.build_structure("industrial_reactor", target_hex)
+
+func _on_structure_built(structure_key: String, hex: Vector2i) -> void:
+	var spawn_pos = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
+	if structure_key == "furnace":
 		var new_f = FurnaceScene.instantiate()
+		new_f.hex_coord = hex
 		new_f.position = spawn_pos
 		entities.add_child(new_f)
 		built_furnaces.append(new_f)
 		_bind_furnace_events(new_f)
-		GameState.post_notice("🔨 现场施工完成！消耗原木 x4 与碎石 x4 堆砌起【陶土熔炉】！", Color.GREEN)
 		SaveManager.save_to_slot("auto", self)
-	else:
-		GameState.post_notice("❌ 建造土窑原料不足！需要: 原木 x4, 碎石 x4 (亦可用燧石充当)", Color.RED)
-
-func _on_build_reactor_requested() -> void:
-	var spawn_pos = HexWorldGenerator.hex_to_pixel(hovered_hex.x, hovered_hex.y) if generated_hexes.has(hovered_hex) else camera.position
-	if not GameState.is_pos_in_territory(spawn_pos):
-		GameState.post_notice("🚩 无法在此建造：超出当前文明领地边界！", Color(1.0, 0.4, 0.4))
-		return
-		
-	if GameState.inventory.has_item("wood", 8) and GameState.inventory.has_item("copper", 2):
-		GameState.inventory.remove_item("wood", 8)
-		GameState.inventory.remove_item("copper", 2)
+	elif structure_key == "industrial_reactor":
 		var new_r = IndustrialReactorScene.instantiate()
+		new_r.hex_coord = hex
 		new_r.position = spawn_pos
 		entities.add_child(new_r)
 		built_reactors.append(new_r)
-		GameState.post_notice("🏭 近代工业巨构施工完成！消耗原木 x8 与金属铜 x2 建立【工业连续反应塔】！", Color(0.2, 0.8, 1.0))
 		SaveManager.save_to_slot("auto", self)
-	else:
-		GameState.post_notice("❌ 建造反应塔原料不足！需要: 原木 x8, 金属铜 x2 (请先在土窑炼铜)", Color.RED)
 
 # --- 存档序列化与反序列化接口 ---
 
 func serialize_world_state() -> Dictionary:
 	var f_data: Array = []
-	for f in built_furnaces:
-		if is_instance_valid(f):
-			var fh = HexWorldGenerator.pixel_to_hex(f.position)
-			f_data.append({
-				"hex_q": fh.x,
-				"hex_r": fh.y,
-				"x": f.position.x,
-				"y": f.position.y,
-				"temperature": f.buffer.temperature,
-				"burn_timer": f.burn_timer,
-				"is_active_fire": f.is_active_fire,
-				"components": f.buffer.components
-			})
+	for hex in GameState.built_furnaces.keys():
+		var f = GameState.built_furnaces[hex]
+		var pos = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
+		var buf = f.get("buffer")
+		var comps: Dictionary = {}
+		var temp: float = 293.15
+		if buf != null and "components" in buf:
+			comps = buf.components.duplicate()
+			temp = buf.temperature
+		f_data.append({
+			"hex_q": hex.x,
+			"hex_r": hex.y,
+			"x": pos.x,
+			"y": pos.y,
+			"temperature": temp,
+			"burn_timer": float(f.get("burn_timer", 0.0)),
+			"is_active_fire": bool(f.get("is_active_fire", false)),
+			"components": comps
+		})
 	var r_data: Array = []
-	for r in built_reactors:
-		if is_instance_valid(r):
-			var rh = HexWorldGenerator.pixel_to_hex(r.position)
-			r_data.append({
-				"hex_q": rh.x,
-				"hex_r": rh.y,
-				"x": r.position.x,
-				"y": r.position.y,
-				"blueprint_id": r.installed_blueprint.id if r.installed_blueprint else "",
-				"total_produced": r.total_produced_count
-			})
+	for hex in GameState.built_reactors.keys():
+		var r = GameState.built_reactors[hex]
+		var r_pos = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
+		r_data.append({
+			"hex_q": hex.x,
+			"hex_r": hex.y,
+			"x": r_pos.x,
+			"y": r_pos.y,
+			"blueprint_id": str(r.get("blueprint_id", "")),
+			"total_produced": int(r.get("total_produced", 0))
+		})
 	return {
 		"cam_x": camera.position.x,
 		"cam_y": camera.position.y,
@@ -369,7 +347,7 @@ func deserialize_world_state(data: Dictionary) -> void:
 		target_zoom = Vector2(float(data["zoom"]), float(data["zoom"]))
 		camera.zoom = target_zoom
 		
-	# 清理旧建筑
+	# 清理旧建筑表现节点
 	for f in built_furnaces:
 		if is_instance_valid(f): f.queue_free()
 	built_furnaces.clear()
@@ -377,36 +355,56 @@ func deserialize_world_state(data: Dictionary) -> void:
 		if is_instance_valid(r): r.queue_free()
 	built_reactors.clear()
 	
-	# 还原熔炉 (优先按六边形网格坐标重建)
-	for f_item in data.get("furnaces", []):
+	# 如果是旧存档或外部导入，GameState.built_furnaces 为空，从 world_data 补充到 GameState
+	if GameState.built_furnaces.is_empty() and data.has("furnaces"):
+		for f_item in data.get("furnaces", []):
+			var f_hex = Vector2i(9999, 9999)
+			if f_item.has("hex_q") and f_item.has("hex_r"):
+				f_hex = Vector2i(int(f_item["hex_q"]), int(f_item["hex_r"]))
+			else:
+				f_hex = HexWorldGenerator.pixel_to_hex(Vector2(float(f_item.get("x", 0.0)), float(f_item.get("y", 0.0))))
+			var buf = MixtureBuffer.new()
+			buf.container_type = "furnace"
+			buf.temperature = float(f_item.get("temperature", 293.15))
+			var comps = f_item.get("components", {})
+			if comps is Dictionary:
+				for c_k in comps.keys():
+					buf.components[c_k] = float(comps[c_k])
+			GameState.built_furnaces[f_hex] = {
+				"buffer": buf,
+				"burn_timer": float(f_item.get("burn_timer", 0.0)),
+				"is_active_fire": bool(f_item.get("is_active_fire", false))
+			}
+			
+	if GameState.built_reactors.is_empty() and data.has("reactors"):
+		for r_item in data.get("reactors", []):
+			var r_hex = Vector2i(9999, 9999)
+			if r_item.has("hex_q") and r_item.has("hex_r"):
+				r_hex = Vector2i(int(r_item["hex_q"]), int(r_item["hex_r"]))
+			else:
+				r_hex = HexWorldGenerator.pixel_to_hex(Vector2(float(r_item.get("x", 0.0)), float(r_item.get("y", 0.0))))
+			GameState.built_reactors[r_hex] = {
+				"blueprint_id": str(r_item.get("blueprint_id", "")),
+				"cycle_progress": 0.0,
+				"total_produced": int(r_item.get("total_produced", 0))
+			}
+
+	# 按模拟层状态实例化熔炉视图节点
+	for f_hex in GameState.built_furnaces.keys():
 		var new_f = FurnaceScene.instantiate()
-		var pos = Vector2(float(f_item.get("x", 0.0)), float(f_item.get("y", 0.0)))
-		if f_item.has("hex_q") and f_item.has("hex_r"):
-			pos = HexWorldGenerator.hex_to_pixel(int(f_item["hex_q"]), int(f_item["hex_r"]))
-		new_f.position = pos
+		new_f.hex_coord = f_hex
+		new_f.position = HexWorldGenerator.hex_to_pixel(f_hex.x, f_hex.y)
 		entities.add_child(new_f)
 		built_furnaces.append(new_f)
 		_bind_furnace_events(new_f)
-		new_f.buffer.temperature = float(f_item.get("temperature", 293.15))
-		new_f.burn_timer = float(f_item.get("burn_timer", 0.0))
-		new_f.is_active_fire = bool(f_item.get("is_active_fire", false))
-		var comps = f_item.get("components", {})
-		for c_k in comps.keys():
-			new_f.buffer.components[c_k] = float(comps[c_k])
-			
-	# 还原反应塔 (优先按六边形网格坐标重建)
-	for r_item in data.get("reactors", []):
+
+	# 按模拟层状态实例化反应塔视图节点
+	for r_hex in GameState.built_reactors.keys():
 		var new_r = IndustrialReactorScene.instantiate()
-		var r_pos = Vector2(float(r_item.get("x", 0.0)), float(r_item.get("y", 0.0)))
-		if r_item.has("hex_q") and r_item.has("hex_r"):
-			r_pos = HexWorldGenerator.hex_to_pixel(int(r_item["hex_q"]), int(r_item["hex_r"]))
-		new_r.position = r_pos
+		new_r.hex_coord = r_hex
+		new_r.position = HexWorldGenerator.hex_to_pixel(r_hex.x, r_hex.y)
 		entities.add_child(new_r)
 		built_reactors.append(new_r)
-		new_r.total_produced_count = int(r_item.get("total_produced", 0))
-		var bpid = r_item.get("blueprint_id", "")
-		if bpid != "" and GameState.unlocked_blueprints.has(bpid):
-			new_r.install_blueprint(GameState.unlocked_blueprints[bpid])
 
 	# 将已采空的格子状态覆盖到地表资源节点上
 	apply_depleted_tiles_to_nodes()

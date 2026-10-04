@@ -113,37 +113,39 @@
   - **【✕ 退出游戏】**：带确认提示安全退出。
 
 ### 2.10 三层解耦架构与核心模拟层 (3-Layer Decoupled Architecture)
-按照《元素纪元 2D》可实施重构方案，系统已彻底拆分为标准三层解耦体系：
+按照《元素纪元 2D》重构方案，系统已彻底拆分为标准三层解耦体系：
 1. **模拟层 (Simulation Layer - `src/core/simulation.gd`)**：
    - 纯数据逻辑，严禁持有任何场景节点与视图。
-   - 包含世界六边形轴向坐标 `(q, r)`、资源 ID、背包 (`PlayerInventory`)、实验台溶液 (`lab_vessel`)、蓝图、文明时代、已点亮元素。
-   - 任务队列仅记录目标坐标 `(hex_q, hex_r)`、行动 `action_id`、总耗时与累计用时，脱离场景节点依赖。
-   - 维护地块采空与重生计时器 (`depleted_tiles`)。
-   - 内置 1 秒时间戳定时结算钟 (`_second_accumulator` / `_on_second_tick`)，驱动化学反应步进。
-   - `GameState` 彻底重构为转发壳 (Proxy Shell)，代理 `sim` 并转发事件信号，保证外部场景无缝衔接。
-2. **内容层 (Content Layer - `DataDB` & `ChemistrySolver`)**：
-   - `DataDB` 完整加载并索引外部 `data/formula.json`、`data/actions.json` 与 `data/eras.json`。
-   - `ChemistrySolver` 彻底重构为**查表式化学求解器 (Table-Driven Solver)**：支持按容器类型 (`container_type`)、反应原料组分 (`required_items`)、温度阈值 (`min_temp`)、电压阈值 (`min_voltage`) 与反应耗时 (`time_required`) 步进执行。
-   - 微观实验工作台与陶土熔炉统一调用此查表执行路径，彻底消除脚本硬编码反应。
-3. **画面层 (Presentation Layer)**：
-   - 负责六边形瓦片绘制、上帝镜头、HUD 控制台与弹窗界面。
-   - 交互仅发出「在此坐标排队作业」的命令 (`queue_hex_mine`, `queue_hex_water`, `queue_hex_forage`)，监听模拟层的 `tile_depleted` / `tile_respawned` 信号来播放节点动画或隐蔽/重生表现。
+   - 持有世界六边形轴向坐标 `(q, r)` 与资源 ID（`world_resources`）、采空字典（`depleted_tiles`）、陶土熔炉数据（`built_furnaces`）与工业反应塔数据（`built_reactors`）。
+   - **统一一秒时间戳钟**：任务仅记录 `begin_time`（毫秒时间戳）、目标坐标 `(hex_q, hex_r)`、行动 `action_id`、总耗时 `time_required`。每秒通过 `now - begin_time >= time_required` 判定完成，严禁在 `_process` 里用 `delta` 按帧把任务做完。
+   - 熔炉不再在每帧 `_process` 求解化学反应，熔炉溶液纳入模拟层，与实验台共用同一个一秒节拍，按耗时结算。
+   - `GameState` 彻底作为转发壳 (Proxy Shell)，代理 `sim` 并转发事件信号，保证外部场景无缝衔接。
+2. **内容层 (Content Layer - `DataDB` & `ChemistrySolver` & 数据表)**：
+   - 移除所有脚本内硬编码反应，4 条核心反应完整迁入 `data/formula.json`，恢复原始严谨配平（铜 0.9，铁碳/二氧化碳 1.5），配置 `min_temp`、`min_voltage`、`time_required` 与 `required_container`。
+   - `ChemistrySolver` 匹配原料、温度、电压、容器与耗时，带温压条件的配方严格优先于无条件配方。微观实验台与陶土熔炉统一调用此查表执行路径。
+   - 随身工具打造消耗挪入 `data/crafting.json`，建筑建造消耗挪入 `data/buildings.json`。UI 脚本（`tool_craft_modal.gd`, `world.gd`）仅发命令，不写任何数字或直接操作背包。
+   - 时代名称与晋级门槛从脚本常量迁入 `data/eras.json`，由模拟层动态读表比对。
+3. **画面层 (Presentation Layer - `world.gd`, `furnace.gd`, `industrial_reactor.gd`)**：
+   - 只负责六边形瓦片绘制、上帝镜头、HUD 控制台与弹窗界面。
+   - 熔炉与反应塔节点纯粹为表现层视图（`Node2D`/`Area2D`），不再调用 `solver.solve` 或修改背包。
+   - 地块采空与重生由信号 `tile_depleted` / `tile_respawned` 驱动，建筑生成由 `structure_built` 驱动。
 
 ### 2.11 存档系统 v3 规范与向下兼容 (Save v3 & Backward Compatibility)
 - **存档升级至 v3 (`SaveManager`)**：
   - 严格跟随模拟层快照归档，存储字段包括：
     - `version: 3`；
     - **基础状态**：文明时代、点亮元素列表、装配工具、背包物品数量与工业工艺蓝图；
-    - **任务队列**：排队工作列表与当前进行中任务（包含网格坐标、行动 ID、标题图标与开始用时）；
+    - **任务队列**：排队工作列表与当前进行中任务（包含网格坐标、行动 ID、标题图标、耗时 `time_required` 与开始时间戳 `begin_time`）；
+    - **模拟层建筑**：陶土熔炉（温度、燃烧计时器、炉火状态、内部组分）与反应塔（芯片 ID、周期进度、累计产出）；
     - **实验台溶液**：微观烧瓶温度、施加电压、容器类型与物料摩尔量组分；
     - **地块采空**：已采空的六边形坐标集合及剩余重生秒数；
-    - **工业建筑网格坐标**：陶土熔炉与工业反应塔的六边形坐标 `(hex_q, hex_r)`、内部物料与运行状态。
+    - **大世界镜头**：摄像机坐标与缩放比例。
   - **读档重建规范**：
-    - 按固定种子重建六边形大世界，随后将 `depleted_tiles` 采空状态精准覆盖到地表资源节点（`apply_depleted_tiles_to_nodes`）；
-    - 建筑依据 `(hex_q, hex_r)` 网格坐标精准还原对齐；
-    - 完整恢复任务队列与实验台烧瓶溶液。
+    - 按固定种子 `12345` 重建六边形大世界，随后将 `depleted_tiles` 采空状态精准覆盖到地表资源节点（`apply_depleted_tiles_to_nodes`）；
+    - 依据模拟层 `built_furnaces` / `built_reactors` 网格坐标精准生成视觉表现节点并绑定事件；
+    - 完整恢复任务队列（支持毫秒时间戳续跑）与实验台烧瓶溶液。
   - **v2 旧档向下兼容**：
-    - 兼容读取 `version: 2` 历史存档，保留背包与时代数据，缺失的队列/溶液/采空字段安全赋空，平滑自动升级。
+    - 兼容读取 `version: 2` 历史存档，保留背包与时代数据，旧的 `elapsed_time` 自动换算为 `begin_time = now - elapsed_time * 1000` 避免任务丢失；缺失字段安全赋空，平滑自动升级。
 
 ### 2.12 自动化测试套件 (Automated Test Suite)
 - **唯象化学求解器测试** (`tests/test_chemistry.gd`)：验证数据表加载、常温不反应、950K孔雀石冶炼炼铜、12V电解水产纯氧氢气及元素发现；

@@ -25,6 +25,7 @@ func _ready() -> void:
 	GameState.unlock_blueprint(bp)
 	
 	# 注入任务队列与进行中任务
+	var t_now = Time.get_ticks_msec()
 	GameState.task_queue.append({
 		"id": 101,
 		"action_id": "mine",
@@ -36,8 +37,8 @@ func _ready() -> void:
 		"icon": "⛏️",
 		"world_pos_x": 100.0,
 		"world_pos_y": 50.0,
-		"total_time": 3.0,
-		"elapsed_time": 0.0
+		"time_required": 3.0,
+		"begin_time": 0
 	})
 	GameState.active_task = {
 		"id": 100,
@@ -50,8 +51,24 @@ func _ready() -> void:
 		"icon": "🌿",
 		"world_pos_x": 0.0,
 		"world_pos_y": 30.0,
-		"total_time": 2.0,
-		"elapsed_time": 1.2
+		"time_required": 2.0,
+		"begin_time": 50000
+	}
+	
+	# 注入熔炉与反应塔
+	var f_buf = MixtureBuffer.new()
+	f_buf.container_type = "furnace"
+	f_buf.temperature = 1050.0
+	f_buf.add_substance("charcoal", 2.0)
+	GameState.built_furnaces[Vector2i(1, 1)] = {
+		"buffer": f_buf,
+		"burn_timer": 15.0,
+		"is_active_fire": true
+	}
+	GameState.built_reactors[Vector2i(2, 2)] = {
+		"blueprint_id": "bp_smelt_copper",
+		"cycle_progress": 1.0,
+		"total_produced": 4
 	}
 	
 	# 注入实验台溶液
@@ -82,13 +99,17 @@ func _ready() -> void:
 	assert(not gs.get("active_task", {}).is_empty(), "进行中任务序列化失败!")
 	assert(gs.get("lab_vessel", {}).get("temperature") == 550.0, "实验台温度序列化失败!")
 	assert(gs.get("depleted_tiles", []).size() == 1, "采空格子序列化失败!")
-	print(" -> v3 JSON 结构字段验证通过: version=3, 队列/溶液/采空瓦片完整")
+	assert(gs.get("built_furnaces", []).size() == 1, "熔炉状态序列化失败!")
+	assert(gs.get("built_reactors", []).size() == 1, "反应塔状态序列化失败!")
+	print(" -> v3 JSON 结构字段验证通过: version=3, 队列/溶液/采空瓦片/熔炉/反应塔完整")
 	
 	# 3. 清空游戏状态后读档恢复
 	GameState.reset_to_new_game()
 	assert(GameState.inventory.items.is_empty(), "重置后背包应为空")
 	assert(GameState.task_queue.is_empty(), "重置后任务队列应为空")
 	assert(GameState.depleted_tiles.is_empty(), "重置后采空列表应为空")
+	assert(GameState.built_furnaces.is_empty(), "重置后熔炉应为空")
+	assert(GameState.built_reactors.is_empty(), "重置后反应塔应为空")
 	
 	var load_ok = SaveManager.load_from_slot(slot_id, null)
 	assert(load_ok, "v3 存档载入失败!")
@@ -99,10 +120,15 @@ func _ready() -> void:
 	assert(GameState.task_queue.size() == 1, "任务队列恢复错误!")
 	assert(GameState.task_queue[0]["hex_q"] == 2, "队列坐标恢复错误!")
 	assert(GameState.active_task.get("id") == 100, "进行中任务恢复错误!")
+	assert(GameState.active_task.get("begin_time") == 50000, "任务 begin_time 恢复错误!")
+	assert(GameState.built_furnaces.has(Vector2i(1, 1)), "熔炉坐标恢复错误!")
+	assert(GameState.built_furnaces[Vector2i(1, 1)]["burn_timer"] == 15.0, "熔炉燃烧时间恢复错误!")
+	assert(GameState.built_reactors.has(Vector2i(2, 2)), "反应塔坐标恢复错误!")
+	assert(GameState.built_reactors[Vector2i(2, 2)]["total_produced"] == 4, "反应塔累计产出恢复错误!")
 	assert(GameState.lab_vessel.temperature == 550.0, "实验台温度恢复错误!")
 	assert(GameState.lab_vessel.has_substance("water", 2.9), "实验台试剂恢复错误!")
 	assert(GameState.depleted_tiles.has(Vector2i(3, -2)), "采空格子恢复错误!")
-	print(" -> v3 存档全量恢复校验通过: 时代/背包/工具/队列/溶液/采空格子全部精确吻合!")
+	print(" -> v3 存档全量恢复校验通过: 时代/背包/工具/队列/溶液/熔炉/反应塔/采空格子全部精确吻合!")
 	
 	# 4. 测试 v2 旧档向下兼容性
 	print("\n[测试] v2 旧版本存档向下兼容性测试:")
