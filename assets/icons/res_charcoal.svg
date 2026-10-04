@@ -1,6 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F2F2F0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M7 6l6-3 6 4-2 9-8 5-5-5 3-10z" stroke="#6A707E" />
-  <path d="M13 3v8l-6 4" stroke="#6A707E" />
-  <path d="M13 11l6-4" stroke="#6A707E" />
-  <circle cx="13" cy="11" r="1.5" fill="#FF7A45" stroke="none" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="charGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#0B0F19"/>
+    </linearGradient>
+  </defs>
+  <polygon points="16,36 26,16 48,18 52,38 42,52 22,50" fill="url(#charGrad)" stroke="#475569" stroke-width="2"/>
+  <!-- 余烬裂隙赤芒 -->
+  <path d="M26 32 Q34 36 40 30 T44 42" fill="none" stroke="#F97316" stroke-width="2.5"/>
+  <circle cx="34" cy="36" r="2" fill="#FEF08A"/>
 </svg>

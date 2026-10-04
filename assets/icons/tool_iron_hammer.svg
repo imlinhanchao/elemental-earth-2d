@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="steelHead" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E2E8F0"/>
+      <stop offset="50%" stop-color="#64748B"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+  </defs>
+  <line x1="14" y1="52" x2="42" y2="22" stroke="#475569" stroke-width="6" stroke-linecap="round"/>
+  <!-- 方头重锤 -->
+  <rect x="34" y="10" width="22" height="14" rx="3" transform="rotate(-45 45 17)" fill="url(#steelHead)" stroke="#38BDF8" stroke-width="2"/>
+  <rect x="38" y="18" width="6" height="8" transform="rotate(-45 41 22)" fill="#38BDF8"/>
+</svg>

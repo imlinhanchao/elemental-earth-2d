@@ -1,10 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F2F2F0" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M3 21h18" />
-  <path d="M4 18h16" />
-  <path d="M4 6h16" />
-  <path d="M12 2l8 4H4l8-4z" stroke="#4C8DFF" />
-  <path d="M6 6v12" />
-  <path d="M10 6v12" />
-  <path d="M14 6v12" />
-  <path d="M18 6v12" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="eraGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+  </defs>
+  <!-- 帕特农神庙/纪元圣殿 -->
+  <polygon points="32,10 12,24 52,24" fill="url(#eraGrad)" stroke="#FDE68A" stroke-width="2"/>
+  <rect x="16" y="24" width="32" height="4" fill="#FDE68A"/>
+  <!-- 四根多立克立柱 -->
+  <line x1="18" y1="28" x2="18" y2="48" stroke="#FDE68A" stroke-width="4"/>
+  <line x1="27" y1="28" x2="27" y2="48" stroke="#FDE68A" stroke-width="4"/>
+  <line x1="37" y1="28" x2="37" y2="48" stroke="#FDE68A" stroke-width="4"/>
+  <line x1="46" y1="28" x2="46" y2="48" stroke="#FDE68A" stroke-width="4"/>
+  <rect x="12" y="48" width="40" height="6" rx="2" fill="url(#eraGrad)" stroke="#FDE68A" stroke-width="1.5"/>
 </svg>

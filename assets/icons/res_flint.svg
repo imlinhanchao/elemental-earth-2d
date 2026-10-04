@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="flintGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#475569"/>
+      <stop offset="100%" stop-color="#090D16"/>
+    </linearGradient>
+  </defs>
+  <polygon points="32,8 14,36 24,56 46,52 52,30" fill="url(#flintGrad)" stroke="#38BDF8" stroke-width="2"/>
+  <line x1="32" y1="8" x2="34" y2="44" stroke="#38BDF8" stroke-width="1.5" opacity="0.8"/>
+  <polyline points="14,36 34,44 52,30" fill="none" stroke="#94A3B8" stroke-width="1.5"/>
+</svg>

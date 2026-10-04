@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="flintBlade" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#64748B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
+    </linearGradient>
+  </defs>
+  <!-- 木柄 -->
+  <line x1="16" y1="52" x2="44" y2="18" stroke="#B45309" stroke-width="6" stroke-linecap="round"/>
+  <!-- 燧石刀刃 (多边棱角锋利) -->
+  <polygon points="36,12 54,6 52,24 38,28 34,18" fill="url(#flintBlade)" stroke="#38BDF8" stroke-width="2"/>
+  <!-- 捆扎皮绳 -->
+  <line x1="36" y1="18" x2="42" y2="24" stroke="#FBBF24" stroke-width="2.5"/>
+  <line x1="40" y1="16" x2="38" y2="26" stroke="#FBBF24" stroke-width="2.5"/>
+</svg>

@@ -1,4 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4C8DFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z" />
-  <path d="M12 9a4 4 0 0 0-4 4" stroke="#6FB0FF" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#E0F2FE"/>
+      <stop offset="40%" stop-color="#38BDF8"/>
+      <stop offset="100%" stop-color="#0284C7"/>
+    </linearGradient>
+  </defs>
+  <path d="M32 8 C32 8 14 30 14 42 A18 18 0 0 0 50 42 C50 30 32 8 32 8 Z" fill="url(#waterGrad)" stroke="#BAE6FD" stroke-width="2"/>
+  <path d="M24 38 A8 8 0 0 1 30 26" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
 </svg>

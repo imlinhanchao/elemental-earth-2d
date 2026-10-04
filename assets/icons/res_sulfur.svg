@@ -1,5 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ECCC68" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M12 2l7 10-7 10-7-10z" />
-  <path d="M5 12h14" />
-  <circle cx="12" cy="12" r="2" fill="#FFA502" stroke="none" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="sulfurGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF08A"/>
+      <stop offset="60%" stop-color="#EAB308"/>
+      <stop offset="100%" stop-color="#854D0E"/>
+    </linearGradient>
+  </defs>
+  <polygon points="32,8 46,20 42,48 22,50 16,24" fill="url(#sulfurGrad)" stroke="#FEF08A" stroke-width="2"/>
+  <polygon points="42,22 56,32 50,46 38,40" fill="url(#sulfurGrad)" stroke="#FEF08A" stroke-width="1.5"/>
+  <line x1="32" y1="8" x2="34" y2="48" stroke="#FEF9C3" stroke-width="1.8"/>
 </svg>

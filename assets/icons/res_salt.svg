@@ -1,8 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7BED9F" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M4 14l5-3 5 3-5 3z" />
-  <path d="M4 14v4l5 3v-4" />
-  <path d="M14 14v4l-5 3" />
-  <path d="M11 6l4-2 4 2-4 2z" />
-  <path d="M11 6v3l4 2v-3" />
-  <path d="M19 6v3l-4 2" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="saltGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF"/>
+      <stop offset="100%" stop-color="#93C5FD"/>
+    </linearGradient>
+  </defs>
+  <polygon points="32,10 50,20 50,42 32,52 14,42 14,20" fill="url(#saltGrad)" stroke="#BFDBFE" stroke-width="2"/>
+  <polyline points="14,20 32,30 50,20" fill="none" stroke="#E2E8F0" stroke-width="2"/>
+  <line x1="32" y1="30" x2="32" y2="52" stroke="#60A5FA" stroke-width="2"/>
+  <!-- 盐晶微芒 -->
+  <polygon points="20,12 22,8 26,10 22,14" fill="#38BDF8"/>
 </svg>

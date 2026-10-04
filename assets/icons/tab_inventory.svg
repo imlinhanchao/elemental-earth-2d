@@ -1,13 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="packLeather2" x1="0%" y1="0%" x2="0%" y2="100%">
+    <linearGradient id="packLeather" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#854D0E"/>
       <stop offset="100%" stop-color="#451A03"/>
     </linearGradient>
   </defs>
+  <!-- 提手 -->
   <path d="M24 16 C24 10 40 10 40 16" fill="none" stroke="#F59E0B" stroke-width="3" stroke-linecap="round"/>
-  <rect x="14" y="16" width="36" height="38" rx="8" fill="url(#packLeather2)" stroke="#F59E0B" stroke-width="2"/>
+  <!-- 包体 -->
+  <rect x="14" y="16" width="36" height="38" rx="8" fill="url(#packLeather)" stroke="#F59E0B" stroke-width="2"/>
+  <!-- 包盖翻折 -->
   <path d="M14 16 h36 v14 C40 34 24 34 14 30 Z" fill="#78350F" stroke="#FBBF24" stroke-width="1.5"/>
+  <!-- 炼金青蓝发光扣带 -->
   <rect x="28" y="24" width="8" height="12" rx="3" fill="#161936" stroke="#38BDF8" stroke-width="2"/>
   <circle cx="32" cy="30" r="2" fill="#38BDF8"/>
+  <!-- 侧袋 -->
+  <rect x="10" y="28" width="4" height="18" rx="2" fill="#581C87"/>
+  <rect x="50" y="28" width="4" height="18" rx="2" fill="#581C87"/>
 </svg>

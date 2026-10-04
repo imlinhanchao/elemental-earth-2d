@@ -1,5 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FF9F43" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-  <path d="M6 10l5-4h7l-3 4z" />
-  <path d="M6 10h9l-3 8H3z" />
-  <path d="M15 10l3-4v8l-3 4z" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="cuBadge" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F97316"/>
+      <stop offset="100%" stop-color="#7C2D12"/>
+    </linearGradient>
+  </defs>
+  <!-- 元素小方卡 (参考图中的 Au 79 / Fe 26 风格卡片) -->
+  <rect x="8" y="8" width="48" height="48" rx="8" fill="url(#cuBadge)" stroke="#FDBA74" stroke-width="2.5"/>
+  <text x="44" y="22" font-family="sans-serif" font-size="10" font-weight="bold" fill="#FED7AA" text-anchor="middle">29</text>
+  <text x="32" y="40" font-family="sans-serif" font-size="20" font-weight="900" fill="#FFFFFF" text-anchor="middle">Cu</text>
+  <text x="32" y="50" font-family="sans-serif" font-size="8" fill="#FDBA74" text-anchor="middle">63.54</text>
 </svg>

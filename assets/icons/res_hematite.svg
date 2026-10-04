@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="hemGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F87171"/>
+      <stop offset="50%" stop-color="#DC2626"/>
+      <stop offset="100%" stop-color="#450A0A"/>
+    </linearGradient>
+  </defs>
+  <polygon points="32,8 52,22 46,52 20,54 12,28" fill="url(#hemGrad)" stroke="#FECACA" stroke-width="2"/>
+  <polyline points="32,8 36,36 46,52" fill="none" stroke="#FCA5A5" stroke-width="1.5"/>
+  <polyline points="12,28 36,36 20,54" fill="none" stroke="#7F1D1D" stroke-width="1.5"/>
+</svg>

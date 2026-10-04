@@ -75,7 +75,12 @@ func _ready() -> void:
 			_capture_screenshot_after_delay()
 
 func _capture_screenshot_after_delay() -> void:
-	await get_tree().create_timer(1.2).timeout
+	await get_tree().create_timer(1.0).timeout
+	if hud.era_modal.visible:
+		hud.era_modal.visible = false
+	# 打开制作分类抽屉以展示细项与半透明禁用效果
+	hud._toggle_category(hud.CategoryTab.CRAFT)
+	await get_tree().create_timer(0.4).timeout
 	var img = get_viewport().get_texture().get_image()
 	if img:
 		img.save_png("/Users/hancel/Documents/project/elemental-earth-2d/screenshot_current.png")
