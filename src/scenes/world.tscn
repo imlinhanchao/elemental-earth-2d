@@ -5,10 +5,12 @@
 [ext_resource type="PackedScene" uid="uid://ci8v43187140w" path="res://src/ui/hud.tscn" id="3_hud"]
 
 [node name="World" type="Node2D"]
-y_sort_enabled = true
 script = ExtResource("1_world")
 
-[node name="Player" parent="." instance=ExtResource("2_player")]
+[node name="Entities" type="Node2D" parent="."]
+y_sort_enabled = true
+
+[node name="Player" parent="Entities" instance=ExtResource("2_player")]
 position = Vector2(0, 0)
 
 [node name="HUD" parent="." instance=ExtResource("3_hud")]

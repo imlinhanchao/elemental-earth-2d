@@ -7,7 +7,8 @@ const ResourceNodeScene = preload("res://src/scenes/resource_node.tscn")
 const FurnaceScene = preload("res://src/scenes/furnace.tscn")
 const IndustrialReactorScene = preload("res://src/scenes/industrial_reactor.tscn")
 
-@onready var player = $Player
+@onready var entities = $Entities
+@onready var player = $Entities/Player
 @onready var hud = $HUD
 
 var hex_gen: HexWorldGenerator
@@ -67,7 +68,7 @@ func _spawn_resource_at_hex(q: int, r: int, item_key: String) -> void:
 	
 	var iname = DataDB.get_item(item_key).get("name", item_key)
 	node.item_name = iname
-	add_child(node)
+	entities.add_child(node)
 
 func _process(_delta: float) -> void:
 	if player and hex_gen and hud:
@@ -142,7 +143,7 @@ func _on_build_furnace_requested() -> void:
 		GameState.inventory.remove_item("flint", 4)
 		var new_f = FurnaceScene.instantiate()
 		new_f.position = player.position + Vector2(40, 20)
-		add_child(new_f)
+		entities.add_child(new_f)
 		_bind_furnace_events(new_f)
 		GameState.post_notice("🔨 现场施工完成！消耗原木 x4 与碎石 x4 堆砌起【陶土熔炉】！", Color.GREEN)
 	else:
@@ -154,7 +155,7 @@ func _on_build_reactor_requested() -> void:
 		GameState.inventory.remove_item("copper", 2)
 		var new_r = IndustrialReactorScene.instantiate()
 		new_r.position = player.position + Vector2(40, 20)
-		add_child(new_r)
+		entities.add_child(new_r)
 		GameState.post_notice("🏭 近代工业巨构施工完成！消耗原木 x8 与金属铜 x2 建立【工业连续反应塔】！", Color(0.2, 0.8, 1.0))
 	else:
 		GameState.post_notice("❌ 建造反应塔原料不足！需要: 原木 x8, 金属铜 x2 (请先在土窑炼铜)", Color.RED)
