@@ -105,9 +105,12 @@ func _spawn_resource_at_hex(q: int, r: int, item_key: String) -> void:
 	var node = ResourceNodeScene.instantiate()
 	node.position = pos
 	node.item_key = item_key
+	node.hex_coord = Vector2i(q, r)
 	
 	var iname = DataDB.get_item(item_key).get("name", item_key)
 	node.item_name = iname
+	if GameState.depleted_tiles.has(Vector2i(q, r)):
+		node.visible = false
 	entities.add_child(node)
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -142,47 +145,14 @@ func _handle_tile_click(hex: Vector2i) -> void:
 	if not generated_hexes.has(hex):
 		return
 		
-	# 校验是否在领地范围内
-	if not GameState.is_hex_in_territory(hex.x, hex.y):
-		GameState.post_notice("🚩 无法在此开工：超出当前文明领地边界！请提升时代纪元以拓疆辟土！", Color(1.0, 0.45, 0.3))
-		return
-		
 	var biome = generated_hexes[hex]
 	var world_p = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
 	
-	# 如果是盐湖水域且没有实体覆盖，分配打水/汲水任务
 	if biome == HexWorldGenerator.BiomeType.SALT_LAKE:
-		var task = {
-			"type": "water",
-			"title": "💧 汲取盐湖卤水",
-			"icon": "💧",
-			"world_pos": world_p,
-			"hex_coord": hex,
-			"total_time": 1.8,
-			"target_key": "water"
-		}
-		GameState.add_task(task)
+		GameState.queue_hex_water(hex, world_p)
 	else:
-		# 其他地貌分配勘查/搜寻杂物任务
 		var b_name = "生机原野" if biome == HexWorldGenerator.BiomeType.PLAINS else ("熔岩地热" if biome == HexWorldGenerator.BiomeType.VOLCANO else "原始森林")
-		var task = {
-			"type": "forage",
-			"title": "🔍 搜寻%s" % b_name,
-			"icon": "🔍",
-			"world_pos": world_p,
-			"hex_coord": hex,
-			"total_time": 1.2,
-			"on_complete": func():
-				if randf() < 0.4:
-					GameState.inventory.add_item("stick", 1)
-					GameState.post_notice("🔍 搜寻有获: 发现【枯树枝 x1】！", Color.GREEN)
-				elif randf() < 0.7:
-					GameState.inventory.add_item("stone", 1)
-					GameState.post_notice("🔍 搜寻有获: 拾得【碎石 x1】！", Color.GREEN)
-				else:
-					GameState.post_notice("🔍 此处地表暂无散落杂物。", Color.GRAY)
-		}
-		GameState.add_task(task)
+		GameState.queue_hex_forage(hex, b_name, world_p)
 
 func _process(delta: float) -> void:
 	# WASD / 方向键平滑移动摄像机
@@ -264,7 +234,10 @@ func _draw() -> void:
 	
 	# 4. 绘制当前正在进行的任务的世界地块指示器
 	if not GameState.active_task.is_empty():
-		var t_pos = GameState.active_task.get("world_pos", Vector2.ZERO)
+		var t_pos = Vector2(
+			float(GameState.active_task.get("world_pos_x", GameState.active_task.get("world_pos", Vector2.ZERO).x)),
+			float(GameState.active_task.get("world_pos_y", GameState.active_task.get("world_pos", Vector2.ZERO).y))
+		)
 		var total = float(GameState.active_task.get("total_time", 1.0))
 		var elapsed = float(GameState.active_task.get("elapsed_time", 0.0))
 		var pct = clamp(elapsed / total, 0.0, 1.0)
@@ -274,7 +247,10 @@ func _draw() -> void:
 	# 5. 绘制排队中任务的地块指示环
 	for i in range(GameState.task_queue.size()):
 		var q_task = GameState.task_queue[i]
-		var q_pos = q_task.get("world_pos", Vector2.ZERO)
+		var q_pos = Vector2(
+			float(q_task.get("world_pos_x", q_task.get("world_pos", Vector2.ZERO).x)),
+			float(q_task.get("world_pos_y", q_task.get("world_pos", Vector2.ZERO).y))
+		)
 		draw_circle(q_pos, 16.0, Color(0.1, 0.2, 0.3, 0.3))
 		draw_arc(q_pos, 20.0, 0, TAU, 24, Color(0.8, 0.8, 0.3, 0.5), 2.0)
 

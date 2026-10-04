@@ -169,6 +169,81 @@ func _on_second_tick() -> void:
 	# 每秒化学求解与被动状态维护
 	pass
 
+func queue_hex_mine(hex: Vector2i, item_key: String, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	if not is_hex_in_territory(hex.x, hex.y):
+		post_notice("🚩 此资源超出当前文明领地边界！请提升时代纪元以拓疆辟土！", Color(1.0, 0.45, 0.3))
+		return false
+		
+	var check = can_mine(item_key)
+	if not check["allowed"]:
+		post_notice(check["reason"], Color(1.0, 0.4, 0.4))
+		return false
+		
+	var dur = calculate_task_duration(item_key)
+	var iname = DataDB.get_item(item_key).get("name", item_key)
+	var icon = "⛏️"
+	if item_key == "wood": icon = "🪓"
+	elif item_key == "stick": icon = "🌿"
+	elif item_key == "stone": icon = "🪨"
+	elif item_key == "flint": icon = "💎"
+	
+	var task: Dictionary = {
+		"action_id": "mine",
+		"hex_q": hex.x,
+		"hex_r": hex.y,
+		"target_key": item_key,
+		"yield_amount": 2,
+		"title": "%s %s" % [icon, iname],
+		"icon": icon,
+		"world_pos_x": world_pos.x,
+		"world_pos_y": world_pos.y,
+		"total_time": dur,
+		"elapsed_time": 0.0
+	}
+	return add_task(task)
+
+func queue_hex_water(hex: Vector2i, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	if not is_hex_in_territory(hex.x, hex.y):
+		post_notice("🚩 无法在此开工：超出当前文明领地边界！", Color(1.0, 0.45, 0.3))
+		return false
+		
+	var task: Dictionary = {
+		"action_id": "water",
+		"hex_q": hex.x,
+		"hex_r": hex.y,
+		"target_key": "water",
+		"title": "💧 汲取卤水",
+		"icon": "💧",
+		"world_pos_x": world_pos.x,
+		"world_pos_y": world_pos.y,
+		"total_time": 1.8,
+		"elapsed_time": 0.0
+	}
+	return add_task(task)
+
+func queue_hex_forage(hex: Vector2i, biome_name: String, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	if not is_hex_in_territory(hex.x, hex.y):
+		post_notice("🚩 无法在此开工：超出当前文明领地边界！", Color(1.0, 0.45, 0.3))
+		return false
+		
+	var task: Dictionary = {
+		"action_id": "forage",
+		"hex_q": hex.x,
+		"hex_r": hex.y,
+		"title": "🔍 搜寻%s" % biome_name,
+		"icon": "🔍",
+		"world_pos_x": world_pos.x,
+		"world_pos_y": world_pos.y,
+		"total_time": 1.2,
+		"elapsed_time": 0.0
+	}
+	return add_task(task)
+
+func get_active_task_hex() -> Vector2i:
+	if active_task.is_empty():
+		return Vector2i(9999, 9999)
+	return Vector2i(int(active_task.get("hex_q", 9999)), int(active_task.get("hex_r", 9999)))
+
 func add_task(task_data: Dictionary) -> bool:
 	if task_queue.size() >= MAX_QUEUE_SIZE:
 		post_notice("⚠️ 任务队列已满 (最多可排队 %d 个工作)！" % MAX_QUEUE_SIZE, Color(1.0, 0.6, 0.2))
@@ -218,10 +293,12 @@ func _start_next_task() -> void:
 
 func _complete_active_task() -> void:
 	var completed = active_task
-	var t_type = completed.get("type", "")
-	var hex_coord = completed.get("hex_coord", Vector2i(9999, 9999))
+	var action_id = completed.get("action_id", completed.get("type", ""))
+	var hex_q = int(completed.get("hex_q", 9999))
+	var hex_r = int(completed.get("hex_r", 9999))
+	var hex_coord = Vector2i(hex_q, hex_r)
 	
-	if t_type == "mine":
+	if action_id == "mine":
 		var target_key = completed.get("target_key", "")
 		var yield_amt = int(completed.get("yield_amount", 2))
 		if target_key != "":
@@ -237,12 +314,7 @@ func _complete_active_task() -> void:
 			depleted_tiles[hex_coord] = 10.0 # 10秒重生时间
 			tile_depleted.emit(hex_coord)
 			
-		# 兼容旧版 node harvest 回调
-		var node = completed.get("target_node")
-		if node != null and is_instance_valid(node) and node.has_method("harvest_complete"):
-			node.harvest_complete()
-			
-	elif t_type == "water":
+	elif action_id == "water":
 		inventory.add_item("water", 1)
 		if randf() < 0.25:
 			inventory.add_item("halite", 1)
@@ -250,7 +322,7 @@ func _complete_active_task() -> void:
 		else:
 			post_notice("💧 汲水完成: 获得【水 x1】！", Color(0.3, 0.85, 1.0))
 			
-	elif t_type == "forage":
+	elif action_id == "forage":
 		if randf() < 0.4:
 			inventory.add_item("stick", 1)
 			post_notice("🔍 搜寻有获: 发现【枯树枝 x1】！", Color.GREEN)

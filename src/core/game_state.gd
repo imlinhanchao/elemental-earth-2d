@@ -130,6 +130,18 @@ func calculate_task_duration(item_key: String) -> float:
 func can_mine(item_key: String) -> Dictionary:
 	return sim.can_mine(item_key)
 
+func queue_hex_mine(hex: Vector2i, item_key: String, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	return sim.queue_hex_mine(hex, item_key, world_pos)
+
+func queue_hex_water(hex: Vector2i, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	return sim.queue_hex_water(hex, world_pos)
+
+func queue_hex_forage(hex: Vector2i, biome_name: String, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	return sim.queue_hex_forage(hex, biome_name, world_pos)
+
+func get_active_task_hex() -> Vector2i:
+	return sim.get_active_task_hex()
+
 func get_formatted_playtime() -> String:
 	return sim.get_formatted_playtime()
 

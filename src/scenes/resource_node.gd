@@ -6,6 +6,7 @@ extends Area2D
 @export var item_name: String = "孔雀石矿床"
 @export var max_health: int = 4
 @export var yield_amount: int = 2
+@export var hex_coord: Vector2i = Vector2i(9999, 9999)
 
 var current_health: int
 var is_hovered: bool = false
@@ -18,6 +19,9 @@ func _ready() -> void:
 	current_health = max_health
 	mouse_entered.connect(_on_mouse_entered)
 	mouse_exited.connect(_on_mouse_exited)
+	
+	GameState.tile_depleted.connect(_on_tile_depleted)
+	GameState.tile_respawned.connect(_on_tile_respawned)
 	
 	if label:
 		label.text = item_name
@@ -42,64 +46,30 @@ func _on_mouse_exited() -> void:
 func request_mine_task() -> void:
 	if not visible:
 		return
-	
-	# 检查是否在当前文明领地内
-	if not GameState.is_pos_in_territory(global_position):
-		GameState.post_notice("🚩 此资源超出当前文明领地边界！请提升时代纪元以拓疆辟土！", Color(1.0, 0.45, 0.3))
-		return
-		
-	# 检查是否满足工具前置需求
-	var check = GameState.can_mine(item_key)
-	if not check["allowed"]:
-		GameState.post_notice(check["reason"], Color(1.0, 0.4, 0.4))
-		return
-	
-	var dur = GameState.calculate_task_duration(item_key)
-	var iname = DataDB.get_item(item_key).get("name", item_name)
-	
-	var icon = "⛏️"
-	if item_key == "wood": icon = "🪓"
-	elif item_key == "stick": icon = "🌿"
-	elif item_key == "stone": icon = "🪨"
-	elif item_key == "flint": icon = "💎"
-	
-	var task = {
-		"type": "mine",
-		"title": "%s %s" % [icon, iname],
-		"icon": icon,
-		"world_pos": global_position,
-		"total_time": dur,
-		"target_node": self,
-		"target_key": item_key,
-		"yield_amount": yield_amount
-	}
-	GameState.add_task(task)
+	GameState.queue_hex_mine(hex_coord, item_key, global_position)
+
+func _on_tile_depleted(hex: Vector2i) -> void:
+	if hex == hex_coord:
+		harvest_complete()
+
+func _on_tile_respawned(hex: Vector2i) -> void:
+	if hex == hex_coord:
+		visible = true
+		var tw = create_tween()
+		scale = Vector2.ZERO
+		tw.tween_property(self, "scale", Vector2.ONE, 0.25)
+		queue_redraw()
 
 func harvest_complete() -> void:
-	# 产出物资
-	GameState.inventory.add_item(item_key, yield_amount)
-	if item_key == "stone" and randf() < 0.25:
-		GameState.inventory.add_item("flint", 1)
-		GameState.post_notice("✨ 采集完成: %s x%d，并伴生收获【燧石 x1】！" % [item_name, yield_amount], Color(0.2, 0.9, 0.5))
-	else:
-		GameState.post_notice("✨ 采集完成: %s x%d！" % [item_name, yield_amount], Color(0.2, 0.9, 0.5))
-
-	# 受击弹性挤压与暂时隐匿重生产生
+	# 受击弹性挤压与暂时隐匿动画
 	var tw = create_tween()
 	anim_scale = Vector2(1.3, 0.6)
 	anim_rotation = randf_range(-0.15, 0.15)
 	tw.tween_property(self, "anim_scale", Vector2.ZERO, 0.15)
 	tw.parallel().tween_property(self, "anim_rotation", 0.0, 0.15)
 	await tw.finished
-	
 	visible = false
 	anim_scale = Vector2.ONE
-	await get_tree().create_timer(10.0).timeout
-	visible = true
-	var tw2 = create_tween()
-	scale = Vector2.ZERO
-	tw2.tween_property(self, "scale", Vector2.ONE, 0.25)
-	queue_redraw()
 
 func _process(_delta: float) -> void:
 	# 动态根据领地状态调暗超出领地的节点
@@ -109,14 +79,16 @@ func _process(_delta: float) -> void:
 		modulate = Color.WHITE
 
 	# 若当前节点正是正在开工的目标，则持续重绘显示工作环
-	if GameState.active_task.get("target_node") == self:
+	var active_hex = GameState.get_active_task_hex()
+	if active_hex == hex_coord and active_hex != Vector2i(9999, 9999):
 		queue_redraw()
 	elif anim_scale != Vector2.ONE or anim_rotation != 0.0:
 		queue_redraw()
 
 func _draw() -> void:
 	# 若当前节点被选中且正由任务作业，先绘制环形发光进度环
-	if GameState.active_task.get("target_node") == self:
+	var active_hex = GameState.get_active_task_hex()
+	if active_hex == hex_coord and active_hex != Vector2i(9999, 9999):
 		var total = float(GameState.active_task.get("total_time", 1.0))
 		var elapsed = float(GameState.active_task.get("elapsed_time", 0.0))
 		var pct = clamp(elapsed / total, 0.0, 1.0)
