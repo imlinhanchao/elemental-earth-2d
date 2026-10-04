@@ -58,12 +58,21 @@ static func _load_eras(path: String) -> void:
 			eras = parsed
 
 static func get_item(key: String) -> Dictionary:
-	if items.has(key):
-		return items[key]
-	if key == "flint":
-		return {"key": "flint", "name": "原石/碎石", "category": "材料"}
+	var item: Dictionary = items.get(key, {}).duplicate()
+	if key == "stone":
+		if item.is_empty():
+			item = {"key": "stone", "category": "材料", "description": "散落的碎石块，可用于筑造与制造石器。"}
+		item["name"] = "碎石"
+		return item
+	elif key == "flint":
+		if item.is_empty():
+			item = {"key": "flint", "category": "矿石", "description": "坚硬锋利的燧石，断面呈贝壳状。"}
+		item["name"] = "燧石"
+		return item
 	elif key == "stick":
 		return {"key": "stick", "name": "枯树枝", "category": "材料"}
+	if not item.is_empty():
+		return item
 	return {}
 
 static func get_element(number: int) -> Dictionary:

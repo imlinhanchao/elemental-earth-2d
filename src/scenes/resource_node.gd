@@ -51,7 +51,7 @@ func mine_node() -> void:
 		elif pick == "iron_pickaxe": damage = 4
 		else: damage = 1
 		
-	if item_key in ["flint", "stick"]:
+	if item_key in ["stone", "flint", "stick"]:
 		damage = max_health
 
 	current_health -= damage
@@ -65,7 +65,11 @@ func mine_node() -> void:
 
 	if current_health <= 0:
 		GameState.inventory.add_item(item_key, yield_amount)
-		GameState.post_notice("✨ 获得: %s x%d！" % [item_name, yield_amount], Color(0.2, 0.9, 0.5))
+		if item_key == "stone" and randf() < 0.25:
+			GameState.inventory.add_item("flint", 1)
+			GameState.post_notice("✨ 获得: %s x%d，并意外拾得【燧石 x1】！" % [item_name, yield_amount], Color(0.2, 0.9, 0.5))
+		else:
+			GameState.post_notice("✨ 获得: %s x%d！" % [item_name, yield_amount], Color(0.2, 0.9, 0.5))
 		
 		current_health = max_health
 		visible = false
@@ -96,6 +100,8 @@ func _draw() -> void:
 			_draw_sulfur_crystals()
 		"halite":
 			_draw_halite_cubes()
+		"stone":
+			_draw_loose_stone()
 		"flint":
 			_draw_loose_flint()
 		"stick":
@@ -160,28 +166,49 @@ func _draw_halite_cubes() -> void:
 	# 立方体 2
 	_draw_cube(Vector2(6, 4), 12.0, Color(0.80, 0.90, 0.98, 0.9))
 
-# 6. 散落多面原石/碎石 (Loose Stones - 棱角分明的石块与投影)
-func _draw_loose_flint() -> void:
+# 6. 散落碎石块 (Loose Stones - 灰白色天然碎石与伴生岩屑)
+func _draw_loose_stone() -> void:
 	# 石块阴影
-	draw_circle(Vector2(0, 4), 10.0, Color(0.08, 0.10, 0.12, 0.45))
-	# 主原石 (带切面的多面岩块)
+	draw_circle(Vector2(0, 4), 10.0, Color(0.08, 0.10, 0.12, 0.40))
+	# 主原石 (带切面的暖灰多面花岗岩/石灰岩块)
 	draw_colored_polygon([
 		Vector2(-8, 3), Vector2(-6, -7), Vector2(2, -9),
 		Vector2(8, -2), Vector2(6, 6), Vector2(-3, 7)
-	], Color(0.48, 0.52, 0.56))
+	], Color(0.56, 0.54, 0.50))
 	# 向阳受光面
 	draw_colored_polygon([
 		Vector2(-6, -7), Vector2(2, -9), Vector2(8, -2), Vector2(0, -1)
-	], Color(0.72, 0.76, 0.82))
+	], Color(0.78, 0.76, 0.72))
 	# 伴生小石块
 	draw_colored_polygon([
 		Vector2(-10, 5), Vector2(-7, 1), Vector2(-4, 6)
-	], Color(0.60, 0.65, 0.70))
+	], Color(0.66, 0.64, 0.60))
 	draw_colored_polygon([
 		Vector2(5, 4), Vector2(9, 2), Vector2(10, 7)
-	], Color(0.62, 0.66, 0.72))
-	# 石头白色锋利高光棱
-	draw_line(Vector2(-6, -7), Vector2(0, -1), Color(0.92, 0.95, 0.98), 1.5)
+	], Color(0.68, 0.65, 0.62))
+	# 白色钝感风化石棱线
+	draw_line(Vector2(-6, -7), Vector2(0, -1), Color(0.92, 0.90, 0.86), 1.5)
+
+# 6.5 坚硬锋利燧石 (Flint - 深黑玄武岩质、断面贝壳状带有锐利锋芒)
+func _draw_loose_flint() -> void:
+	# 锐利阴影
+	draw_circle(Vector2(0, 4), 9.0, Color(0.04, 0.05, 0.08, 0.55))
+	# 主燧石 (深青灰致密块体)
+	draw_colored_polygon([
+		Vector2(-9, 4), Vector2(-4, -9), Vector2(4, -8),
+		Vector2(9, 1), Vector2(5, 7), Vector2(-2, 8)
+	], Color(0.24, 0.26, 0.30))
+	# 锋利贝壳状断口受光面
+	draw_colored_polygon([
+		Vector2(-4, -9), Vector2(4, -8), Vector2(9, 1), Vector2(1, -2)
+	], Color(0.44, 0.48, 0.54))
+	# 晶莹锐角小碎块
+	draw_colored_polygon([
+		Vector2(-8, -2), Vector2(-6, -6), Vector2(-4, -3)
+	], Color(0.35, 0.38, 0.45))
+	# 燧石刃口极亮冰蓝高光线 (如刃割物)
+	draw_line(Vector2(-4, -9), Vector2(1, -2), Color(0.75, 0.90, 1.0), 1.8)
+	draw_line(Vector2(1, -2), Vector2(9, 1), Color(0.85, 0.95, 1.0), 1.8)
 
 # 7. 枯树枝 (Fallen Sticks - 明亮原木色多叉枯枝)
 func _draw_fallen_stick() -> void:

@@ -138,16 +138,24 @@ func _bind_furnace_events(f_node: Node2D) -> void:
 	)
 
 func _on_build_furnace_requested() -> void:
-	if GameState.inventory.has_item("wood", 4) and GameState.inventory.has_item("flint", 4):
+	var stone_count = GameState.inventory.get_count("stone")
+	var flint_count = GameState.inventory.get_count("flint")
+	if GameState.inventory.has_item("wood", 4) and (stone_count + flint_count >= 4):
 		GameState.inventory.remove_item("wood", 4)
-		GameState.inventory.remove_item("flint", 4)
+		var needed = 4
+		var take_stone = min(stone_count, needed)
+		if take_stone > 0:
+			GameState.inventory.remove_item("stone", take_stone)
+			needed -= take_stone
+		if needed > 0:
+			GameState.inventory.remove_item("flint", needed)
 		var new_f = FurnaceScene.instantiate()
 		new_f.position = player.position + Vector2(40, 20)
 		entities.add_child(new_f)
 		_bind_furnace_events(new_f)
 		GameState.post_notice("🔨 现场施工完成！消耗原木 x4 与碎石 x4 堆砌起【陶土熔炉】！", Color.GREEN)
 	else:
-		GameState.post_notice("❌ 建造土窑原料不足！需要: 原木 x4, 碎石 x4", Color.RED)
+		GameState.post_notice("❌ 建造土窑原料不足！需要: 原木 x4, 碎石 x4 (亦可用燧石充当)", Color.RED)
 
 func _on_build_reactor_requested() -> void:
 	if GameState.inventory.has_item("wood", 8) and GameState.inventory.has_item("copper", 2):

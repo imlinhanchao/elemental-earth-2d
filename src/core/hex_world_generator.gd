@@ -91,9 +91,11 @@ static func get_biome_color(biome: BiomeType) -> Color:
 func determine_resource_spawn(q: int, r: int, biome: BiomeType) -> String:
 	var rand_val = abs(sin(float(q * 374761393 + r * 668265263)))
 	
-	# 首先在所有群落中分布一定密度的散落碎石与断枝 (供开局一穷二白拾取)
-	if rand_val > 0.94:
-		return "flint"        # 散落碎石 (徒手可拾取)
+	# 首先在所有群落中分布散落碎石、燧石与断枝 (供开局一穷二白拾取)
+	if rand_val > 0.95:
+		return "stone"        # 散落碎石 (大量分布，开局基础石材)
+	elif rand_val > 0.91 and rand_val <= 0.95:
+		return "flint"        # 伴生燧石 (尖锐矿石)
 	elif rand_val < 0.06:
 		return "stick"        # 地表断枝 (徒手可拾取)
 		
