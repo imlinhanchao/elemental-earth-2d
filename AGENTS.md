@@ -341,6 +341,9 @@
     - **宏观建筑**：金字塔奇观、耐火高温竖炉、核聚变/裂变安全壳穹顶。
 - **智能启发式分类匹配**：
   - `ItemIconManager.get_icon(key)` 优先精确匹配，未收录关键字根据词根（如 `gas`, `axe`, `pickaxe`, `battery`, `furnace`, `circuit`, `stone` 等）自动降级至最契合的专属美术类目，实现全局统一的高级工业视觉质感。
+- **避免未导入资源预加载崩溃 (Safe Preload & ThorVG Runtime Loading)**：
+  - 仅在代码中 `preload()` 经由 Godot 官方编译器已编译且具备 `.import` 的基准图标，保证 GDScript 静态语法解析零失败；
+  - 外部新增加的各类矢量 SVG 统一通过 Godot 4 内核 ThorVG（`Image.new().load_svg_from_string(svg_text, 1.0)`）在运行时瞬时动态解析并存入 `_dynamic_cache`，彻底杜绝 `Preload file has no resource loaders` 导致的编译器级崩溃。
 
 ---
 
