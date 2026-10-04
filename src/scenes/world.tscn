@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://ci8v43187140w" path="res://src/ui/hud.tscn" id="3_hud"]
 
 [node name="World" type="Node2D"]
+y_sort_enabled = true
 script = ExtResource("1_world")
 
 [node name="Player" parent="." instance=ExtResource("2_player")]

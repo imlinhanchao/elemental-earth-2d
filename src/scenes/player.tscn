@@ -9,11 +9,13 @@ radius = 16.0
 radius = 28.0
 
 [node name="Player" type="CharacterBody2D"]
+y_sort_enabled = true
 collision_layer = 1
 collision_mask = 6
 script = ExtResource("1_player")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 8)
 shape = SubResource("CircleShape2D_p3x9d")
 
 [node name="Camera2D" type="Camera2D" parent="."]

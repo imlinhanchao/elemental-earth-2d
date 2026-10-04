@@ -61,7 +61,7 @@ static func get_item(key: String) -> Dictionary:
 	if items.has(key):
 		return items[key]
 	if key == "flint":
-		return {"key": "flint", "name": "碎石/燧石", "category": "材料"}
+		return {"key": "flint", "name": "原石/碎石", "category": "材料"}
 	elif key == "stick":
 		return {"key": "stick", "name": "枯树枝", "category": "材料"}
 	return {}

@@ -69,8 +69,14 @@ func _spawn_resource_at_hex(q: int, r: int, item_key: String) -> void:
 	node.item_name = iname
 	add_child(node)
 
+func _process(_delta: float) -> void:
+	if player and hex_gen and hud:
+		var hex_coord = HexWorldGenerator.pixel_to_hex(player.position)
+		var biome = hex_gen.get_biome(hex_coord.x, hex_coord.y)
+		hud.update_current_biome(biome)
+
 func _draw() -> void:
-	# 绘制每一个六边形地块
+	# 绘制每一个六边形地块及专属生态纹理
 	for coord in generated_hexes.keys():
 		var q = coord.x
 		var r = coord.y
@@ -78,19 +84,46 @@ func _draw() -> void:
 		var center = HexWorldGenerator.hex_to_pixel(q, r)
 		var col = HexWorldGenerator.get_biome_color(biome)
 		
-		# 绘制尖顶六边形多边形顶点 (6 个点)
+		# 绘制六边形多边形顶点 (6 个点)
 		var points = PackedVector2Array()
 		for i in range(6):
-			var angle = deg_to_rad(60.0 * i - 30.0) # 尖顶朝上
+			var angle = deg_to_rad(60.0 * i - 30.0)
 			var pt = center + Vector2(cos(angle), sin(angle)) * HexWorldGenerator.HEX_RADIUS
 			points.append(pt)
 			
-		# 填充六边形内部底色
+		# 填充底色
 		draw_colored_polygon(points, col)
 		
-		# 勾勒六边形边界线 (带微妙透明度，形成棋盘格地貌)
-		points.append(points[0]) # 闭合线条
-		draw_polyline(points, col.lightened(0.15), 1.2)
+		# 绘制六边形专属群系纹理
+		_draw_hex_biome_texture(center, biome, q, r)
+		
+		# 勾勒六边形边界线
+		points.append(points[0])
+		draw_polyline(points, col.lightened(0.18), 1.0)
+
+# 群系纹理绘制辅助函数
+func _draw_hex_biome_texture(center: Vector2, biome: HexWorldGenerator.BiomeType, q: int, r: int) -> void:
+	match biome:
+		HexWorldGenerator.BiomeType.PLAINS:
+			# 生机草丝 (两三簇细草)
+			draw_line(center + Vector2(-6, 2), center + Vector2(-8, -4), Color(0.35, 0.58, 0.30), 1.5)
+			draw_line(center + Vector2(-6, 2), center + Vector2(-4, -5), Color(0.38, 0.65, 0.32), 1.5)
+			draw_line(center + Vector2(8, -2), center + Vector2(10, -8), Color(0.32, 0.52, 0.28), 1.5)
+		HexWorldGenerator.BiomeType.VOLCANO:
+			# 暗红玄武岩裂隙与熔岩微光
+			draw_line(center + Vector2(-12, -4), center + Vector2(0, 2), Color(0.85, 0.25, 0.10, 0.7), 1.8)
+			draw_line(center + Vector2(0, 2), center + Vector2(10, -6), Color(1.0, 0.45, 0.15, 0.8), 1.5)
+			draw_circle(center + Vector2(0, 2), 2.5, Color(1.0, 0.65, 0.2, 0.9)) # 熔岩火星
+		HexWorldGenerator.BiomeType.SALT_LAKE:
+			# 水面涟漪与析盐白色微环
+			draw_arc(center + Vector2(-4, -2), 10.0, 0.2, PI - 0.2, 10, Color(0.65, 0.82, 0.92, 0.45), 1.5)
+			draw_arc(center + Vector2(6, 6), 7.0, PI + 0.2, TAU - 0.2, 8, Color(0.70, 0.88, 0.98, 0.40), 1.5)
+			draw_circle(center + Vector2(12, -8), 2.5, Color(0.95, 0.98, 1.0, 0.75)) # 析盐小晶片
+		HexWorldGenerator.BiomeType.DEEP_FOREST:
+			# 苍翠深林苔藓斑与落叶点
+			draw_circle(center + Vector2(-8, -6), 4.5, Color(0.08, 0.18, 0.09, 0.7))
+			draw_circle(center + Vector2(6, 4), 3.5, Color(0.10, 0.20, 0.11, 0.7))
+			draw_line(center + Vector2(-2, 8), center + Vector2(4, 10), Color(0.28, 0.20, 0.12), 2.0)
 
 func _bind_furnace_events(f_node: Node2D) -> void:
 	f_node.body_entered.connect(func(body):

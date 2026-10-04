@@ -9,7 +9,8 @@ const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 
 @onready var inventory_label = $Margin/HBox/LeftBox/InvPanel/Margin/VBox/InvLabel
 @onready var notice_label = $Margin/TopBox/NoticeLabel
-@onready var era_label = $Margin/TopBox/EraPanel/EraLabel
+@onready var era_label = $Margin/TopBox/EraPanel/HBox/EraLabel
+@onready var biome_label = $Margin/TopBox/EraPanel/HBox/BiomeLabel
 @onready var furnace_panel = $Margin/HBox/RightBox/FurnacePanel
 @onready var furnace_info = $Margin/HBox/RightBox/FurnacePanel/Margin/VBox/FurnaceInfo
 @onready var elements_label = $Margin/HBox/LeftBox/ElementsPanel/Margin/VBox/ElementsLabel
@@ -102,6 +103,23 @@ func _update_elements_ui() -> void:
 
 func _update_era_label() -> void:
 	era_label.text = "  🏛️ 文明纪元: %s  " % GameState.ERA_NAMES[GameState.current_era]
+
+func update_current_biome(biome: int) -> void:
+	var b_name = "生机原野平原"
+	var col = Color(0.4, 0.9, 0.4)
+	if biome == 1:
+		b_name = "熔岩地热带 (赤铁矿/硫磺)"
+		col = Color(1.0, 0.45, 0.3)
+	elif biome == 2:
+		b_name = "高盐卤水湖 (石盐矿藏)"
+		col = Color(0.4, 0.8, 1.0)
+	elif biome == 3:
+		b_name = "原始古橡深林 (高产木材)"
+		col = Color(0.2, 0.9, 0.3)
+		
+	if biome_label:
+		biome_label.text = " | 📍 当前地貌: %s" % b_name
+		biome_label.modulate = col
 
 func _on_era_advanced(_old: int, _new: int, _name: String) -> void:
 	_update_era_label()

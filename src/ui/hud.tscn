@@ -32,12 +32,20 @@ alignment = 1
 layout_mode = 2
 size_flags_horizontal = 4
 
-[node name="EraLabel" type="Label" parent="Margin/TopBox/EraPanel"]
+[node name="HBox" type="HBoxContainer" parent="Margin/TopBox/EraPanel"]
+layout_mode = 2
+
+[node name="EraLabel" type="Label" parent="Margin/TopBox/EraPanel/HBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.88, 0.4, 1)
 theme_override_font_sizes/font_size = 14
 text = "🏛️ 文明纪元: 石器时代 (Stone Age)"
 horizontal_alignment = 1
+
+[node name="BiomeLabel" type="Label" parent="Margin/TopBox/EraPanel/HBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = " | 📍 当前地貌: 生机原野平原"
 
 [node name="NoticeLabel" type="Label" parent="Margin/TopBox"]
 layout_mode = 2

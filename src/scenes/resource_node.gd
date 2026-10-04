@@ -160,12 +160,28 @@ func _draw_halite_cubes() -> void:
 	# 立方体 2
 	_draw_cube(Vector2(6, 4), 12.0, Color(0.80, 0.90, 0.98, 0.9))
 
-# 6. 散落碎石 (Loose Flint)
+# 6. 散落多面原石/碎石 (Loose Stones - 棱角分明的石块与投影)
 func _draw_loose_flint() -> void:
-	draw_circle(Vector2(-6, 4), 7.0, Color(0.65, 0.70, 0.75))
-	draw_circle(Vector2(-7, 3), 5.0, Color(0.85, 0.90, 0.95)) # 高光面
-	draw_circle(Vector2(5, 0), 5.5, Color(0.55, 0.60, 0.65))
-	draw_circle(Vector2(2, 7), 4.0, Color(0.75, 0.80, 0.85))
+	# 石块阴影
+	draw_circle(Vector2(0, 4), 10.0, Color(0.08, 0.10, 0.12, 0.45))
+	# 主原石 (带切面的多面岩块)
+	draw_colored_polygon([
+		Vector2(-8, 3), Vector2(-6, -7), Vector2(2, -9),
+		Vector2(8, -2), Vector2(6, 6), Vector2(-3, 7)
+	], Color(0.48, 0.52, 0.56))
+	# 向阳受光面
+	draw_colored_polygon([
+		Vector2(-6, -7), Vector2(2, -9), Vector2(8, -2), Vector2(0, -1)
+	], Color(0.72, 0.76, 0.82))
+	# 伴生小石块
+	draw_colored_polygon([
+		Vector2(-10, 5), Vector2(-7, 1), Vector2(-4, 6)
+	], Color(0.60, 0.65, 0.70))
+	draw_colored_polygon([
+		Vector2(5, 4), Vector2(9, 2), Vector2(10, 7)
+	], Color(0.62, 0.66, 0.72))
+	# 石头白色锋利高光棱
+	draw_line(Vector2(-6, -7), Vector2(0, -1), Color(0.92, 0.95, 0.98), 1.5)
 
 # 7. 枯树枝 (Fallen Sticks - 明亮原木色多叉枯枝)
 func _draw_fallen_stick() -> void:
