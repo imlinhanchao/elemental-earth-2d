@@ -146,7 +146,15 @@ func _ready() -> void:
 	assert(res_key is String, "get_hex_resource 应返回有效 String!")
 	print(" -> get_hex_resource 接口验证通过")
 
-	# 6. 测试 v2 旧档向下兼容性
+	# 6. 测试采集纯单质自动点亮元素 (例如采集硫磺自动点亮 16 号硫单质)
+	print("\n[测试] 采集天然单质自动点亮元素测试:")
+	GameState.discovered_elements.erase(16)
+	assert(not GameState.discovered_elements.has(16), "初始未点亮硫元素")
+	GameState.inventory.add_item("sulfur", 1)
+	assert(GameState.discovered_elements.has(16), "获取硫磺后必须自动点亮 16 号元素硫!")
+	print(" -> 采集硫磺自动点亮元素 16 (硫 S) 验证通过")
+
+	# 7. 测试 v2 旧档向下兼容性
 	print("\n[测试] v2 旧版本存档向下兼容性测试:")
 	var v2_dict = {
 		"version": 2,

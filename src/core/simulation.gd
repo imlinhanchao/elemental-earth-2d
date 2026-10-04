@@ -81,6 +81,7 @@ func _init() -> void:
 	lab_vessel.temperature = 293.15
 	
 	solver.element_discovered.connect(_on_solver_element_discovered)
+	inventory.item_changed.connect(_on_inventory_item_changed)
 	init_world_map(12345, WORLD_HEX_RADIUS)
 
 func init_world_map(map_seed: int = 12345, radius: int = 18) -> void:
@@ -104,6 +105,12 @@ func init_world_map(map_seed: int = 12345, radius: int = 18) -> void:
 
 func _on_solver_element_discovered(elem_num: int, item_key: String) -> void:
 	unlock_element(elem_num, item_key)
+
+func _on_inventory_item_changed(key: String, count: int) -> void:
+	if count > 0 and key != "":
+		var elem_num = DataDB.is_pure_element(key)
+		if elem_num > 0:
+			unlock_element(elem_num, key)
 
 func post_notice(text: String, color: Color = Color.WHITE) -> void:
 	notification_posted.emit(text, color)
