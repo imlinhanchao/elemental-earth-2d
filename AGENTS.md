@@ -462,6 +462,24 @@
    - 执行中任务实时反馈当前轮次（如 `(第 1 轮 · 无尽)` 或 `(1/30)`）；
    - 满足条件时自动持续轮转，采空时自动收工并弹出通告。
 
+### 2.20 顶栏品牌区域全面对接 Web 原版 Logo 与纯中文标题体系 (2026-10-05)
+
+根据用户关于「左上角采用文字游戏的logo与中文名，不要英文名」的需求，彻底净化并对齐 Web 原版品牌视觉规范：
+
+1. **导入 Web 原版玻尔原子模型高精度 Logo (`assets/icons/game_logo.png`, `assets/icons/game_logo.svg`)**：
+   - 从原文字游戏 `elemental-earth`（`src/assets/images/logo.png` / `public/favicon.svg`）无损提取官方标志性紫色玻尔原子模型图标（Bohr Atomic Model）；
+   - 替换了原 HUD 顶栏所使用的周期表占位网格图标，在 `hud.tscn` 与 `hud.gd` 中实现基于 `ResourceLoader`、`ImageTexture` 与 ThorVG 矢量内核的多层级保真加载，26x26 像素下渲染边缘锐利纯净。
+
+2. **剔除英文名称与统一纯中文品牌 (`src/ui/hud.tscn`, `src/ui/hud.gd`)**：
+   - 彻底删除原顶栏英文标题 `ELEMENTAL ODYSSEY`；
+   - 品牌主标题统一命名为官方中文名称 **【元素纪元】**（15px 纯白加粗）；
+   - 隐藏副标题占位文本（`LogoSub.visible = false`），杜绝任何多余冗杂英文字样。
+
+3. **顶栏状态与遥测信息全面中文本地化 (`src/ui/hud.gd`, `src/ui/hud.tscn`)**：
+   - 将原 `TERRITORY: %d | ELEMENTS DISCOVERED: %d/118 | %s` 彻底重构为典雅工整的中文状态条：
+     `领地范围: %d 瓦片  |  发现元素: %d/118  |  石器时代`；
+   - 过滤时代名称中的英文后缀（自动去除 `(Stone Age)` 等副标题），保持界面高度纯净、一致与专业。
+
 ---
 
 ## 3. 架构设计规范与数据流动

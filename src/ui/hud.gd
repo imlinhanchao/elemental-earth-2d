@@ -17,6 +17,7 @@ var current_tab: CategoryTab = CategoryTab.NONE
 # 顶部导航与状态条
 @onready var telemetry_label = $Margin/MainVBox/TopBarPanel/Margin/HBox/CenterBox/TelemetryLabel
 @onready var badges_row = $Margin/MainVBox/TopBarPanel/Margin/HBox/CenterBox/BadgesRow
+@onready var logo_icon = $Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoIcon
 @onready var logo_title = $Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoTextVBox/LogoTitle
 @onready var logo_sub = $Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoTextVBox/LogoSub
 @onready var save_dot = $Margin/MainVBox/TopBarPanel/Margin/HBox/SaveDot
@@ -540,12 +541,33 @@ func _apply_scheme3_styling() -> void:
 	top_box.content_margin_bottom = 4
 	$Margin/MainVBox/TopBarPanel.add_theme_stylebox_override("panel", top_box)
 	
+	if logo_icon:
+		var logo_tex: Texture2D = null
+		if ResourceLoader.exists("res://assets/icons/game_logo.png"):
+			logo_tex = load("res://assets/icons/game_logo.png")
+		elif FileAccess.file_exists("res://assets/icons/game_logo.png"):
+			var img = Image.load_from_file("res://assets/icons/game_logo.png")
+			if img:
+				logo_tex = ImageTexture.create_from_image(img)
+		if not logo_tex and FileAccess.file_exists("res://assets/icons/game_logo.svg"):
+			var file = FileAccess.open("res://assets/icons/game_logo.svg", FileAccess.READ)
+			if file:
+				var svg_text = file.get_as_text()
+				file.close()
+				var img = Image.new()
+				if img.load_svg_from_string(svg_text, 3.0) == OK:
+					logo_tex = ImageTexture.create_from_image(img)
+		if logo_tex:
+			logo_icon.texture = logo_tex
+			logo_icon.custom_minimum_size = Vector2(26, 26)
+	
 	if logo_title:
+		logo_title.text = "元素纪元"
 		logo_title.add_theme_color_override("font_color", Color.WHITE)
-		logo_title.add_theme_font_size_override("font_size", 13)
+		logo_title.add_theme_font_size_override("font_size", 15)
 	if logo_sub:
-		logo_sub.add_theme_color_override("font_color", Color(0.22, 0.74, 0.97, 1.0))
-		logo_sub.add_theme_font_size_override("font_size", 9)
+		logo_sub.visible = false
+		logo_sub.text = ""
 	if telemetry_label:
 		telemetry_label.add_theme_color_override("font_color", Color(0.70, 0.80, 0.92, 0.9))
 		telemetry_label.add_theme_font_size_override("font_size", 10)
@@ -1006,8 +1028,8 @@ func _update_era_label() -> void:
 		var terr_radius = GameState.get_current_territory_radius()
 		var terr_count = (3 * terr_radius * (terr_radius + 1) + 1)
 		var disc_count = GameState.discovered_elements.size()
-		var era_name = GameState.ERA_NAMES[GameState.current_era]
-		telemetry_label.text = "TERRITORY: %d  |  ELEMENTS DISCOVERED: %d/118  |  %s" % [terr_count, disc_count, era_name]
+		var era_name = GameState.ERA_NAMES[GameState.current_era].split(" (")[0]
+		telemetry_label.text = "领地范围: %d 瓦片  |  发现元素: %d/118  |  %s" % [terr_count, disc_count, era_name]
 
 # 初始化顶栏圆形 IUPAC 元素徽标列 (方案三 Scheme 3 核心科技象征)
 func _setup_element_badges() -> void:
