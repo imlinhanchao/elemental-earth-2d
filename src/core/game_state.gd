@@ -101,6 +101,15 @@ func _init() -> void:
 
 func _ready() -> void:
 	print("[GameState] 模拟层已就绪，当前时代: %s" % ERA_NAMES[current_era])
+	_setup_app_icon()
+
+func _setup_app_icon() -> void:
+	if ResourceLoader.exists("res://icon.png"):
+		var tex = load("res://icon.png") as Texture2D
+		if tex:
+			var img = tex.get_image()
+			if img:
+				DisplayServer.set_icon(img)
 
 func _connect_sim_signals() -> void:
 	sim.element_discovered.connect(func(n, k): element_discovered.emit(n, k))
