@@ -57,6 +57,7 @@ func _ready() -> void:
 	GameState.task_queue_changed.connect(func(): overlay_layer.queue_redraw())
 	
 	GameState.era_advanced.connect(func(_old, _new, era_name):
+		apply_depleted_tiles_to_nodes()
 		terrain_layer.queue_redraw()
 		overlay_layer.queue_redraw()
 		GameState.post_notice("【领地疆域扩展】随着迈向【%s】，文明疆域拓展至半径 %d 格！" % [era_name, GameState.get_current_territory_radius()], Color(1.0, 0.85, 0.2))
@@ -125,8 +126,9 @@ func _spawn_resource_at_hex(q: int, r: int, item_key: String) -> void:
 	
 	var iname = DataDB.get_item(item_key).get("name", item_key)
 	node.item_name = iname
-	if GameState.depleted_tiles.has(Vector2i(q, r)):
-		node.visible = false
+	var in_terr = GameState.is_hex_in_territory(q, r)
+	var depleted = GameState.depleted_tiles.has(Vector2i(q, r))
+	node.visible = in_terr and not depleted
 	entities.add_child(node)
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -306,10 +308,9 @@ func deserialize_world_state(data: Dictionary) -> void:
 func apply_depleted_tiles_to_nodes() -> void:
 	for node in entities.get_children():
 		if node is Area2D and "hex_coord" in node:
-			if GameState.depleted_tiles.has(node.hex_coord):
-				node.visible = false
-			else:
-				node.visible = true
+			var in_terr = GameState.is_hex_in_territory(node.hex_coord.x, node.hex_coord.y)
+			var depleted = GameState.depleted_tiles.has(node.hex_coord)
+			node.visible = in_terr and not depleted
 
 func reset_world_state() -> void:
 	for f in built_furnaces:

@@ -22,19 +22,38 @@ const HEX_DIRS: Array[Vector2i] = [
 var world: Node2D = null
 var current_lod: int = 1 # 0: 远景简略 (zoom < 0.85), 1: 近景精细 (zoom >= 0.85)
 
+var cloud_texture: Texture2D = null
+
+func _ready() -> void:
+	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
+	_get_cloud_texture()
+
+func _get_cloud_texture() -> Texture2D:
+	if cloud_texture:
+		return cloud_texture
+	if ResourceLoader.exists("res://assets/tilesets/cloud_tile.png"):
+		cloud_texture = load("res://assets/tilesets/cloud_tile.png")
+	if not cloud_texture:
+		var img = Image.new()
+		var global_path = ProjectSettings.globalize_path("res://assets/tilesets/cloud_tile.png")
+		if img.load(global_path) == OK:
+			cloud_texture = ImageTexture.create_from_image(img)
+	return cloud_texture
+
 func _draw() -> void:
 	if not world or world.generated_hexes.is_empty():
 		return
 		
 	var generated_hexes = world.generated_hexes
 	
-	# 1. 遍历渲染全部六边形地块：无缝融合连成片 (Seamless Connected Tiles)
+	# 1. 遍历渲染全部六边形地块：
+	# - 已解锁地块 (in_territory): 渲染真实的群系底色、连通地貌 (海浪/草丛/熔岩/森林) 与海岸边缘线
+	# - 未解锁地块 (not in_territory): 使用无缝云朵瓦片 (Seamless Cloud Tiles)
 	for coord in generated_hexes.keys():
 		var q = coord.x
 		var r = coord.y
 		var biome = generated_hexes[coord]
 		var center = HexWorldGenerator.hex_to_pixel(q, r)
-		var base_col = HexWorldGenerator.get_biome_color(biome)
 		var in_territory = GameState.is_hex_in_territory(q, r)
 		
 		# 计算六边形 6 个顶点
@@ -43,38 +62,38 @@ func _draw() -> void:
 			var angle = deg_to_rad(60.0 * i - 30.0)
 			points.append(center + Vector2(cos(angle), sin(angle)) * HexWorldGenerator.HEX_RADIUS)
 			
-		# 步骤 A: 填充地貌基础底色
-		draw_colored_polygon(points, base_col)
-		
-		# 步骤 B: 检查 6 条边的邻居关系，仅在近景 (LOD >= 1) 时渲染相互连接的地貌复杂纹理，远景保持极简纯净
-		if current_lod >= 1:
-			var same_biome_neighbors: Array[int] = []
+		if in_territory:
+			# === 已解锁领地：渲染文明地貌与无缝连通群系 ===
+			var base_col = HexWorldGenerator.get_biome_color(biome)
+			draw_colored_polygon(points, base_col)
+			
+			if current_lod >= 1:
+				var same_biome_neighbors: Array[int] = []
+				for e in range(6):
+					var n_coord = coord + HEX_EDGE_DIRS[e]
+					if generated_hexes.has(n_coord) and GameState.is_hex_in_territory(n_coord.x, n_coord.y) and generated_hexes[n_coord] == biome:
+						same_biome_neighbors.append(e)
+				_draw_connected_biome_terrain(center, points, biome, same_biome_neighbors, q, r)
+			else:
+				# 远景模式 (LOD 0)：采用极度柔和的微弱中心晕色
+				draw_circle(center, 10.0, Color(base_col.r * 1.15, base_col.g * 1.15, base_col.b * 1.15, 0.25))
+			
+			# 仅在领地内不同群系交界处绘制过渡海岸/崖线
 			for e in range(6):
 				var n_coord = coord + HEX_EDGE_DIRS[e]
-				if generated_hexes.has(n_coord) and generated_hexes[n_coord] == biome:
-					same_biome_neighbors.append(e)
-			_draw_connected_biome_terrain(center, points, biome, same_biome_neighbors, q, r)
+				var is_same = generated_hexes.has(n_coord) and GameState.is_hex_in_territory(n_coord.x, n_coord.y) and generated_hexes[n_coord] == biome
+				if not is_same:
+					var p1 = points[e]
+					var p2 = points[(e + 1) % 6]
+					_draw_biome_border_edge(p1, p2, biome, center)
+					
+			# 战术六边形微弱顶点标记 (近景才渲染微光点)
+			if current_lod >= 1:
+				for pt in points:
+					draw_circle(pt, 1.5, Color(1.0, 1.0, 1.0, 0.15))
 		else:
-			# 远景模式 (LOD 0)：采用极度柔和的微弱中心晕色，避免屏幕信息和线条杂乱过多
-			draw_circle(center, 10.0, Color(base_col.r * 1.15, base_col.g * 1.15, base_col.b * 1.15, 0.25))
-		
-		# 步骤 C: 仅在不同群系交界处（或地图边缘）绘制过渡海岸/崖线，同群系内部绝不切开！
-		for e in range(6):
-			var n_coord = coord + HEX_EDGE_DIRS[e]
-			var is_same = generated_hexes.has(n_coord) and generated_hexes[n_coord] == biome
-			if not is_same:
-				var p1 = points[e]
-				var p2 = points[(e + 1) % 6]
-				_draw_biome_border_edge(p1, p2, biome, center)
-				
-		# 步骤 D: 战术六边形微弱顶点标记 (近景才渲染微光点)
-		if current_lod >= 1:
-			for pt in points:
-				draw_circle(pt, 1.5, Color(1.0, 1.0, 1.0, 0.15))
-			
-		# 超出领地范围瓦片叠加探索迷雾
-		if not in_territory:
-			draw_colored_polygon(points, Color(0.04, 0.06, 0.10, 0.60))
+			# === 未解锁地块：使用无缝云朵瓦片 (Seamless Cloud Tiles) ===
+			_draw_seamless_cloud_tile(center, points, coord)
 			
 	# 2. 绘制文明领地最外圈发光金边 (Territory Outermost Borders Only)
 	# 严格判别：仅当该格在领地内，而相邻格处于领地之外时，才描画该分界边，内部无缝无任何金边
@@ -187,3 +206,53 @@ func _draw_biome_border_edge(p1: Vector2, p2: Vector2, biome: HexWorldGenerator.
 		HexWorldGenerator.BiomeType.PLAINS:
 			# 平原外缘自然过渡线
 			draw_line(p1, p2, Color(0.15, 0.26, 0.14, 0.45), 1.5)
+
+# 未解锁地块无缝云海瓦片渲染 (Seamless Cloud Tiles)
+func _draw_seamless_cloud_tile(center: Vector2, points: PackedVector2Array, coord: Vector2i) -> void:
+	var tex = _get_cloud_texture()
+	if tex:
+		var uvs = PackedVector2Array()
+		# 采用世界坐标对齐映射 UV (除以贴图分辨率 256.0)，实现相邻六边形 100% 无缝平铺连成片
+		for pt in points:
+			uvs.append(pt / 256.0)
+		var cols = PackedColorArray()
+		for _i in range(6):
+			cols.append(Color(1.0, 1.0, 1.0, 1.0))
+		draw_polygon(points, cols, uvs, tex)
+	else:
+		draw_colored_polygon(points, Color(0.88, 0.92, 0.97, 1.0))
+
+	# 检查 6 个邻居：仅当邻居处于已解锁领地内时（即文明与未探索云海交界），描画蓬松卷曲云团边缘
+	var generated_hexes = world.generated_hexes
+	for e in range(6):
+		var n_coord = coord + HEX_EDGE_DIRS[e]
+		var neighbor_is_territory = generated_hexes.has(n_coord) and GameState.is_hex_in_territory(n_coord.x, n_coord.y)
+		if neighbor_is_territory:
+			var p1 = points[e]
+			var p2 = points[(e + 1) % 6]
+			if current_lod >= 1:
+				_draw_cloud_boundary_edge(p1, p2, center)
+			else:
+				draw_line(p1, p2, Color(0.92, 0.95, 0.99, 0.6), 3.0)
+
+# 云海与领地交界处的蓬松卷曲云团外沿
+func _draw_cloud_boundary_edge(p1: Vector2, p2: Vector2, center: Vector2) -> void:
+	var edge_vec = p2 - p1
+	var edge_len = edge_vec.length()
+	var edge_dir = edge_vec.normalized()
+	var mid = (p1 + p2) * 0.5
+	var inward = (center - mid).normalized()
+	
+	# 沿该边在云海一侧绘制 3 个自然交错重叠的蓬松积云泡
+	var t_vals = [0.22, 0.52, 0.82]
+	var radii = [11.0, 14.0, 12.0]
+	for i in range(3):
+		var puff_center = p1 + edge_dir * (edge_len * t_vals[i]) + inward * 2.5
+		var r = radii[i]
+		# 底部柔和粉蓝阴影轮廓
+		draw_circle(puff_center - inward * 1.5, r + 2.0, Color(0.65, 0.75, 0.86, 0.35))
+		# 饱满纯白云核
+		draw_circle(puff_center, r, Color(0.95, 0.97, 1.0, 0.88))
+		# 顶部向阳高光晕
+		draw_circle(puff_center + inward * 1.5, r * 0.55, Color(1.0, 1.0, 1.0, 0.55))
+
