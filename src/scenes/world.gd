@@ -6,6 +6,7 @@ const HexWorldGenerator = preload("res://src/core/hex_world_generator.gd")
 const ResourceNodeScene = preload("res://src/scenes/resource_node.tscn")
 const FurnaceScene = preload("res://src/scenes/furnace.tscn")
 const IndustrialReactorScene = preload("res://src/scenes/industrial_reactor.tscn")
+const TileContextMenuScene = preload("res://src/ui/tile_context_menu.tscn")
 const SaveManager = preload("res://src/core/save_manager.gd")
 const SettingsManager = preload("res://src/core/settings_manager.gd")
 
@@ -18,6 +19,10 @@ const SettingsManager = preload("res://src/core/settings_manager.gd")
 var hex_gen: HexWorldGenerator
 var generated_hexes: Dictionary = {} # Vector2i(q, r) -> BiomeType
 var hovered_hex: Vector2i = Vector2i(9999, 9999)
+
+# 区块开采上下文菜单
+var tile_context_menu: PanelContainer
+var right_click_down_pos: Vector2 = Vector2.ZERO
 
 # 建筑实例列表 (用于全量持久化存档)
 var built_furnaces: Array[Node2D] = []
@@ -39,6 +44,10 @@ const WORLD_HEX_RADIUS: int = 18
 func _ready() -> void:
 	terrain_layer.world = self
 	overlay_layer.world = self
+	
+	tile_context_menu = TileContextMenuScene.instantiate()
+	hud.add_child(tile_context_menu)
+	tile_context_menu.harvest_requested.connect(_on_context_menu_harvest)
 
 	GameState.structure_built.connect(_on_structure_built)
 	_generate_hex_world()
@@ -99,9 +108,32 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 		hud.periodic_modal.open()
 	elif arg_name == "--screenshot-hud":
 		pass # 保持主界面纯净 HUD 与大世界大视野
+	elif arg_name == "--screenshot-context-menu":
+		var test_hex = Vector2i(1, 0)
+		var test_screen_pos = Vector2(850, 420)
+		var res_list = [
+			{"key": "wood", "name": "原木", "amount": 120},
+			{"key": "stick", "name": "枯树枝", "amount": 30}
+		]
+		tile_context_menu.open_at(test_screen_pos, test_hex, res_list)
+	elif arg_name == "--screenshot-context-menu-count":
+		var test_hex = Vector2i(1, 0)
+		var test_screen_pos = Vector2(850, 420)
+		var res_info = {"key": "wood", "name": "原木", "amount": 120}
+		tile_context_menu.open_at(test_screen_pos, test_hex, [res_info])
+	elif arg_name == "--screenshot-repeat-task":
+		for h in GameState.world_resources.keys():
+			if GameState.is_hex_in_territory(h.x, h.y) and GameState.world_resources[h] == "wood":
+				GameState.queue_hex_harvest(h, "wood", 20, Vector2.ZERO)
+				GameState.queue_hex_harvest(h, "wood", 10, Vector2.ZERO)
+				break
+		for h in GameState.world_resources.keys():
+			if GameState.is_hex_in_territory(h.x, h.y) and GameState.world_resources[h] in ["stone", "flint"]:
+				GameState.queue_hex_harvest(h, GameState.world_resources[h], -1, Vector2.ZERO)
+				break
 	elif arg_name == "--screenshot-hud-queue":
-		GameState.queue_hex_forage(Vector2i(0, 0), "生机原野", Vector2.ZERO)
-		GameState.queue_hex_forage(Vector2i(1, 0), "生机原野", Vector2.ZERO)
+		GameState.queue_hex_forage(Vector2i(0, 0), "生机原野", 1, Vector2.ZERO)
+		GameState.queue_hex_forage(Vector2i(1, 0), "生机原野", 1, Vector2.ZERO)
 	else:
 		hud.tech_modal.open()
 		
@@ -135,10 +167,25 @@ func _spawn_resource_at_hex(q: int, r: int, item_key: String) -> void:
 	node.visible = in_terr and not depleted
 	entities.add_child(node)
 
+func _on_context_menu_harvest(hex: Vector2i, item_key: String, count: int) -> void:
+	var world_p = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
+	GameState.queue_hex_harvest(hex, item_key, count, world_p)
+
 func _unhandled_input(event: InputEvent) -> void:
-	# 鼠标右键或中键拖拽地图
+	# 鼠标右键或中键拖拽地图；右键单点呼出开采次数菜单
 	if event is InputEventMouseButton:
-		if event.button_index in [MOUSE_BUTTON_RIGHT, MOUSE_BUTTON_MIDDLE]:
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			if event.pressed:
+				is_dragging_camera = true
+				drag_start_mouse = event.position
+				drag_start_cam_pos = camera.position
+				right_click_down_pos = event.position
+			else:
+				is_dragging_camera = false
+				# 若右键按下与抬起位移小于 6px，判定为单点右键，呼出开采菜单
+				if (event.position - right_click_down_pos).length() < 6.0:
+					_handle_tile_right_click(hovered_hex, event.position)
+		elif event.button_index == MOUSE_BUTTON_MIDDLE:
 			is_dragging_camera = event.pressed
 			drag_start_mouse = event.position
 			drag_start_cam_pos = camera.position
@@ -152,6 +199,8 @@ func _unhandled_input(event: InputEvent) -> void:
 	elif event is InputEventMouseMotion:
 		if is_dragging_camera:
 			camera.position = drag_start_cam_pos - (event.position - drag_start_mouse) / camera.zoom
+			if terrain_layer:
+				terrain_layer.queue_redraw()
 		
 		# 转换鼠标世界坐标到六边形网格坐标
 		var mpos = camera.get_global_mouse_position()
@@ -163,27 +212,47 @@ func _unhandled_input(event: InputEvent) -> void:
 				hud.update_current_biome(generated_hexes[hovered_hex])
 
 func _handle_tile_click(hex: Vector2i) -> void:
-	if not generated_hexes.has(hex):
+	if not GameState.is_hex_in_territory(hex.x, hex.y):
+		GameState.post_notice("此区域超出当前文明领地边界！", Color(1.0, 0.45, 0.3))
 		return
 		
-	var biome = generated_hexes[hex]
+	var available = GameState.get_tile_available_resources(hex)
+	if available.is_empty():
+		GameState.post_notice("该区块无可开采的资源储备（已采尽）！", Color.GRAY)
+		return
+		
+	# 点击一下只开采一下主要资源
+	var target_key = available[0].get("key", "")
 	var world_p = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
-	
-	if biome == HexWorldGenerator.BiomeType.SALT_LAKE:
-		GameState.queue_hex_water(hex, world_p)
-	else:
-		var b_name = "生机原野" if biome == HexWorldGenerator.BiomeType.PLAINS else ("熔岩地热" if biome == HexWorldGenerator.BiomeType.VOLCANO else "原始森林")
-		GameState.queue_hex_forage(hex, b_name, world_p)
+	GameState.queue_hex_harvest(hex, target_key, 1, world_p)
+
+func _handle_tile_right_click(hex: Vector2i, screen_pos: Vector2) -> void:
+	if not GameState.is_hex_in_territory(hex.x, hex.y):
+		GameState.post_notice("此区域超出当前文明领地边界！", Color(1.0, 0.45, 0.3))
+		return
+		
+	var available = GameState.get_tile_available_resources(hex)
+	if available.is_empty():
+		GameState.post_notice("该区块无可开采的资源储备（已采尽）！", Color.GRAY)
+		return
+		
+	if tile_context_menu:
+		tile_context_menu.open_at(screen_pos, hex, available)
 
 func _process(delta: float) -> void:
 	# WASD / 方向键平滑移动摄像机
 	var dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	if dir != Vector2.ZERO:
 		camera.position += dir * (camera_speed / camera.zoom.x) * delta
+		if terrain_layer:
+			terrain_layer.queue_redraw()
 	
 	# 平滑缩放过渡
 	var prev_zoom_x = camera.zoom.x
 	camera.zoom = camera.zoom.lerp(target_zoom, delta * 12.0)
+	if prev_zoom_x != camera.zoom.x and terrain_layer:
+		terrain_layer.queue_redraw()
+		
 	var new_lod = 1 if camera.zoom.x >= 0.85 else 0
 	if terrain_layer and terrain_layer.current_lod != new_lod:
 		terrain_layer.current_lod = new_lod

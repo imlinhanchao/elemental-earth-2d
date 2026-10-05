@@ -903,7 +903,15 @@ func _update_task_queue_ui() -> void:
 		task_btn_cancel_active.visible = false
 	else:
 		var t = GameState.active_task
-		task_active_title.text = "%s" % t.get("title", "作业中")
+		var rep = int(t.get("repeat_count", 1))
+		var cur_c = int(t.get("current_cycle", 1))
+		var title_base = t.get("title", "作业中")
+		if rep == -1:
+			task_active_title.text = "%s (第 %d 轮 · 无尽)" % [title_base, cur_c]
+		elif rep > 1:
+			task_active_title.text = "%s (%d/%d)" % [title_base, cur_c, rep]
+		else:
+			task_active_title.text = "%s" % title_base
 		task_progress_box.visible = true
 		task_btn_cancel_active.visible = true
 	
@@ -922,8 +930,14 @@ func _update_task_queue_ui() -> void:
 	for i in range(q_size):
 		var q_task = GameState.task_queue[i]
 		var task_id = q_task.get("id")
+		var rep = int(q_task.get("repeat_count", 1))
 		var chip = Button.new()
-		chip.text = "#%d %s (%.1fs) ✕" % [i + 1, q_task.get("title", "工作"), q_task.get("time_required", 1.0)]
+		if rep == -1:
+			chip.text = "#%d %s (无尽) ✕" % [i + 1, q_task.get("title", "工作")]
+		elif rep > 1:
+			chip.text = "#%d %s x%d ✕" % [i + 1, q_task.get("title", "工作"), rep]
+		else:
+			chip.text = "#%d %s (%.1fs) ✕" % [i + 1, q_task.get("title", "工作"), q_task.get("time_required", 1.0)]
 		chip.custom_minimum_size = Vector2(0, 24)
 		chip.add_theme_font_size_override("font_size", 11)
 		chip.tooltip_text = "点击从队列中撤销此工作"

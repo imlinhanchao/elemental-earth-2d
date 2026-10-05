@@ -52,12 +52,15 @@ var task_queue: Array[Dictionary] = []
 var active_task: Dictionary = {}
 var _task_id_counter: int = 0
 
-# 地块采空与重生状态: Vector2i(q, r) -> float (剩余重生秒数)
+# 地块资源储量 (有限量，取完了就没了): Vector2i(q, r) -> Dictionary[item_key, amount]
+var tile_resources: Dictionary = {}
+
+# 地块采空状态: Vector2i(q, r) -> bool
 var depleted_tiles: Dictionary = {}
 
 # 世界地图纯数据
 var hex_gen: HexWorldGenerator
-var world_resources: Dictionary = {} # Vector2i(q, r) -> item_key
+var world_resources: Dictionary = {} # Vector2i(q, r) -> primary item_key
 var world_biomes: Dictionary = {}    # Vector2i(q, r) -> BiomeType
 var WORLD_HEX_RADIUS: int = 18
 
@@ -95,6 +98,8 @@ func init_world_map(map_seed: int = 12345, radius: int = 18) -> void:
 	hex_gen = HexWorldGenerator.new(map_seed)
 	world_resources.clear()
 	world_biomes.clear()
+	tile_resources.clear()
+	depleted_tiles.clear()
 	
 	for q in range(-radius, radius + 1):
 		var r1 = max(-radius, -q - radius)
@@ -106,8 +111,63 @@ func init_world_map(map_seed: int = 12345, radius: int = 18) -> void:
 			if abs(q) <= 1 and abs(r) <= 1:
 				continue
 			var spawn_item = hex_gen.determine_resource_spawn(q, r, biome)
-			if spawn_item != "":
-				world_resources[coord] = spawn_item
+			_init_hex_resources(coord, biome, spawn_item)
+
+func _init_hex_resources(coord: Vector2i, biome: HexWorldGenerator.BiomeType, spawn_item: String) -> void:
+	var res: Dictionary = {}
+	if spawn_item != "":
+		world_resources[coord] = spawn_item
+		match spawn_item:
+			"wood":
+				res = { "wood": 120, "stick": 30 }
+			"malachite":
+				res = { "malachite": 80, "stone": 40 }
+			"iron_ore":
+				res = { "iron_ore": 100, "stone": 40 }
+			"sulfur":
+				res = { "sulfur": 90, "flint": 25 }
+			"pyrite":
+				res = { "pyrite": 80, "flint": 20 }
+			"halite":
+				res = { "halite": 60, "water": 300 }
+			"coal":
+				res = { "coal": 100, "wood": 60, "stick": 20 }
+			"clay":
+				res = { "clay": 80, "stone": 30 }
+			"bauxite":
+				res = { "bauxite": 100, "stone": 40 }
+			"galena":
+				res = { "galena": 100, "flint": 20 }
+			"sphalerite":
+				res = { "sphalerite": 100, "stone": 30 }
+			"monazite":
+				res = { "monazite": 80, "stone": 40 }
+			"pitchblende":
+				res = { "pitchblende": 80, "stone": 40 }
+			"stone":
+				res = { "stone": 50, "flint": 20 }
+			"flint":
+				res = { "flint": 30, "stone": 30 }
+			"stick":
+				res = { "stick": 30, "stone": 15 }
+			_:
+				res = { spawn_item: 80, "stone": 30 }
+	else:
+		match biome:
+			HexWorldGenerator.BiomeType.SALT_LAKE:
+				res = { "water": 300, "halite": 40 }
+				world_resources[coord] = "water"
+			HexWorldGenerator.BiomeType.VOLCANO:
+				res = { "stone": 40, "flint": 20 }
+				world_resources[coord] = "stone"
+			HexWorldGenerator.BiomeType.DEEP_FOREST:
+				res = { "wood": 80, "stick": 30 }
+				world_resources[coord] = "wood"
+			HexWorldGenerator.BiomeType.PLAINS:
+				res = { "stone": 30, "stick": 20 }
+				world_resources[coord] = "stick"
+				
+	tile_resources[coord] = res
 
 func _on_solver_element_discovered(elem_num: int, item_key: String) -> void:
 	unlock_element(elem_num, item_key)
@@ -287,24 +347,11 @@ func _on_second_tick() -> void:
 		if elapsed >= time_req:
 			_complete_active_task()
 			
-	# 2. 地块重生结算
-	var respawned: Array[Vector2i] = []
-	for hex in depleted_tiles.keys():
-		var rem_time: float = depleted_tiles[hex] - 1.0
-		if rem_time <= 0.0:
-			respawned.append(hex)
-		else:
-			depleted_tiles[hex] = rem_time
-			
-	for h in respawned:
-		depleted_tiles.erase(h)
-		tile_respawned.emit(h)
-		
-	# 3. 实验台溶液结算 (共用一秒节拍)
+	# 2. 实验台溶液结算 (共用一秒节拍)
 	if lab_vessel and lab_vessel.total_moles() > 0:
 		solver.solve(lab_vessel, 1.0)
 		
-	# 4. 熔炉溶液结算 (共用一秒节拍)
+	# 3. 熔炉溶液结算 (共用一秒节拍)
 	for hex in built_furnaces.keys():
 		var f = built_furnaces[hex]
 		var buf = f["buffer"]
@@ -331,7 +378,7 @@ func _on_second_tick() -> void:
 							var iname = DataDB.get_item(p_key).get("name", p_key)
 							post_notice("✨ 熔炉炼制完成！成功收获 %s x%d，已收入背包！" % [iname, p_int], Color(0.9, 0.65, 0.2))
 
-	# 5. 工业反应塔结算 (共用一秒节拍)
+	# 4. 工业反应塔结算 (共用一秒节拍)
 	for hex in built_reactors.keys():
 		var r = built_reactors[hex]
 		var bp_id = r.get("blueprint_id", "")
@@ -354,7 +401,54 @@ func _on_second_tick() -> void:
 						r["total_produced"] = r.get("total_produced", 0) + out_qty
 					post_notice("工业反应塔批量产出: %s 完成！累计自动化产出: %d" % [bp.display_name, r["total_produced"]], Color(0.3, 0.8, 1.0))
 
-# --- 任务队列调度 ---
+# --- 地块资源查询与扣减 (有限量，取完了就没了) ---
+
+func get_tile_resources(hex: Vector2i) -> Dictionary:
+	return tile_resources.get(hex, {})
+
+func get_tile_available_resources(hex: Vector2i) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if not tile_resources.has(hex):
+		return result
+	var res = tile_resources[hex]
+	for k in res.keys():
+		var amt = int(res[k])
+		if amt > 0:
+			var iname = DataDB.get_item(k).get("name", k)
+			result.append({
+				"key": k,
+				"name": iname,
+				"amount": amt
+			})
+	return result
+
+func consume_tile_resource(hex: Vector2i, item_key: String, count: int = 1) -> int:
+	if not tile_resources.has(hex):
+		return 0
+	var res = tile_resources[hex]
+	var cur = int(res.get(item_key, 0))
+	if cur <= 0:
+		return 0
+	var consumed = min(cur, count)
+	var remaining = cur - consumed
+	if remaining <= 0:
+		res.erase(item_key)
+	else:
+		res[item_key] = remaining
+		
+	# 检查该地块全部资源是否已采空
+	var has_any = false
+	for k in res.keys():
+		if int(res[k]) > 0:
+			has_any = true
+			break
+	if not has_any:
+		depleted_tiles[hex] = true
+		tile_depleted.emit(hex)
+		
+	return remaining
+
+# --- 任务队列调度与合并 ---
 
 func calculate_task_duration(item_key: String) -> float:
 	var pick = equipped_tools.get("pickaxe", "bare_hands")
@@ -377,14 +471,21 @@ func can_mine(item_key: String) -> Dictionary:
 	if item_key == "wood":
 		if axe == "bare_hands":
 			return { "allowed": false, "reason": "徒手无法砍伐原木！请先在手工作坊 (C) 制作【原始燧石斧】！" }
-	elif item_key in ["malachite", "iron_ore", "hematite", "sulfur"]:
+	elif item_key in ["malachite", "iron_ore", "hematite", "sulfur", "coal", "clay", "bauxite", "galena", "sphalerite", "monazite", "pitchblende"]:
 		if pick == "bare_hands":
 			return { "allowed": false, "reason": "徒手无法开采坚硬矿脉！请先在手工作坊 (C) 制作【粗制石镐】！" }
 	return { "allowed": true, "reason": "" }
 
-func queue_hex_mine(hex: Vector2i, item_key: String, world_pos: Vector2 = Vector2.ZERO) -> bool:
+# 核心开采任务下发：支持开采次数 (5/10/20/100/1000/无尽) 与任务自动合并
+func queue_hex_harvest(hex: Vector2i, item_key: String, count: int = 1, world_pos: Vector2 = Vector2.ZERO) -> bool:
 	if not is_hex_in_territory(hex.x, hex.y):
 		post_notice("此资源超出当前文明领地边界！请提升时代纪元以拓疆辟土！", Color(1.0, 0.45, 0.3))
+		return false
+		
+	var avail = int(tile_resources.get(hex, {}).get(item_key, 0))
+	var iname = DataDB.get_item(item_key).get("name", item_key)
+	if avail <= 0:
+		post_notice("该区块的【%s】已被开采殆尽！" % iname, Color.ORANGE)
 		return false
 		
 	var check = can_mine(item_key)
@@ -393,19 +494,65 @@ func queue_hex_mine(hex: Vector2i, item_key: String, world_pos: Vector2 = Vector
 		return false
 		
 	var dur = calculate_task_duration(item_key)
-	var iname = DataDB.get_item(item_key).get("name", item_key)
 	var action_tag = "[开采]"
 	if item_key == "wood": action_tag = "[伐木]"
 	elif item_key == "stick": action_tag = "[拾取]"
 	elif item_key == "water": action_tag = "[打水]"
 	
+	var actual_count = count
+	if actual_count != -1:
+		actual_count = min(actual_count, avail)
+		
+	# === 相同的开采任务合并显示 ===
+	# 1. 检查当前活跃任务
+	if not active_task.is_empty():
+		var a_hex = Vector2i(int(active_task.get("hex_q", 9999)), int(active_task.get("hex_r", 9999)))
+		var a_key = str(active_task.get("target_key", ""))
+		if a_hex == hex and a_key == item_key:
+			if actual_count == -1 or int(active_task.get("repeat_count", 1)) == -1:
+				active_task["repeat_count"] = -1
+				active_task["title"] = "%s %s (无尽)" % [action_tag, iname]
+			else:
+				var new_rep = int(active_task.get("repeat_count", 1)) + actual_count
+				active_task["repeat_count"] = min(new_rep, avail)
+				active_task["title"] = "%s %s x%d" % [action_tag, iname, active_task["repeat_count"]]
+			task_queue_changed.emit()
+			post_notice("已合并至进行中的【%s】作业！" % iname, Color.CYAN)
+			return true
+			
+	# 2. 检查待办队列中的任务
+	for i in range(task_queue.size()):
+		var q_task = task_queue[i]
+		var q_hex = Vector2i(int(q_task.get("hex_q", 9999)), int(q_task.get("hex_r", 9999)))
+		var q_key = str(q_task.get("target_key", ""))
+		if q_hex == hex and q_key == item_key:
+			if actual_count == -1 or int(q_task.get("repeat_count", 1)) == -1:
+				q_task["repeat_count"] = -1
+				q_task["title"] = "%s %s (无尽)" % [action_tag, iname]
+			else:
+				var new_rep = int(q_task.get("repeat_count", 1)) + actual_count
+				q_task["repeat_count"] = min(new_rep, avail)
+				q_task["title"] = "%s %s x%d" % [action_tag, iname, q_task["repeat_count"]]
+			task_queue_changed.emit()
+			post_notice("已合并至队列中的【%s】作业！" % iname, Color.CYAN)
+			return true
+			
+	# 3. 新建独立作业项
+	var title_str = "%s %s" % [action_tag, iname]
+	if actual_count == -1:
+		title_str = "%s %s (无尽)" % [action_tag, iname]
+	elif actual_count > 1:
+		title_str = "%s %s x%d" % [action_tag, iname, actual_count]
+		
 	var task: Dictionary = {
-		"action_id": "mine",
+		"action_id": "harvest",
 		"hex_q": hex.x,
 		"hex_r": hex.y,
 		"target_key": item_key,
-		"yield_amount": 2,
-		"title": "%s %s" % [action_tag, iname],
+		"yield_amount": 1,
+		"repeat_count": actual_count, # 5, 10, 20, 100, 1000, 或 -1 (无尽)
+		"current_cycle": 1,
+		"title": title_str,
 		"icon": "",
 		"world_pos_x": world_pos.x,
 		"world_pos_y": world_pos.y,
@@ -414,45 +561,28 @@ func queue_hex_mine(hex: Vector2i, item_key: String, world_pos: Vector2 = Vector
 	}
 	return add_task(task)
 
-func queue_hex_water(hex: Vector2i, world_pos: Vector2 = Vector2.ZERO) -> bool:
-	if not is_hex_in_territory(hex.x, hex.y):
-		post_notice("此水域超出当前文明领地边界！", Color(1.0, 0.45, 0.3))
-		return false
-		
-	var task: Dictionary = {
-		"action_id": "water",
-		"hex_q": hex.x,
-		"hex_r": hex.y,
-		"target_key": "water",
-		"yield_amount": 1,
-		"title": "[汲取] 盐湖卤水",
-		"icon": "",
-		"world_pos_x": world_pos.x,
-		"world_pos_y": world_pos.y,
-		"time_required": 1.8,
-		"begin_time": 0
-	}
-	return add_task(task)
+func queue_hex_mine(hex: Vector2i, item_key: String, count: int = 1, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	return queue_hex_harvest(hex, item_key, count, world_pos)
 
-func queue_hex_forage(hex: Vector2i, _biome_name: String, world_pos: Vector2 = Vector2.ZERO) -> bool:
-	if not is_hex_in_territory(hex.x, hex.y):
-		post_notice("此区域超出当前文明领地边界！", Color(1.0, 0.45, 0.3))
-		return false
-		
-	var task: Dictionary = {
-		"action_id": "forage",
-		"hex_q": hex.x,
-		"hex_r": hex.y,
-		"target_key": "stick",
-		"yield_amount": 2,
-		"title": "[拾取] 地表枯枝",
-		"icon": "",
-		"world_pos_x": world_pos.x,
-		"world_pos_y": world_pos.y,
-		"time_required": 0.8,
-		"begin_time": 0
-	}
-	return add_task(task)
+func queue_hex_water(hex: Vector2i, count: int = 1, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	return queue_hex_harvest(hex, "water", count, world_pos)
+
+func queue_hex_forage(hex: Vector2i, _biome_name: String, count: int = 1, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	var target = "stick"
+	if tile_resources.has(hex):
+		var res = tile_resources[hex]
+		if res.get("stick", 0) > 0:
+			target = "stick"
+		elif res.get("stone", 0) > 0:
+			target = "stone"
+		elif res.get("flint", 0) > 0:
+			target = "flint"
+		else:
+			for k in res.keys():
+				if int(res[k]) > 0:
+					target = k
+					break
+	return queue_hex_harvest(hex, target, count, world_pos)
 
 func add_task(task_data: Dictionary) -> bool:
 	if task_queue.size() >= MAX_QUEUE_SIZE:
@@ -495,26 +625,41 @@ func cancel_task(task_id: int) -> void:
 
 func _complete_active_task() -> void:
 	var finished_task = active_task.duplicate()
-	var act_id = finished_task.get("action_id", "mine")
 	var hex = Vector2i(int(finished_task.get("hex_q", 0)), int(finished_task.get("hex_r", 0)))
-	var t_key = finished_task.get("target_key", "")
+	var t_key = str(finished_task.get("target_key", ""))
 	var amount = int(finished_task.get("yield_amount", 1))
+	var rep = int(finished_task.get("repeat_count", 1))
+	var cur_cycle = int(finished_task.get("current_cycle", 1))
 	
-	if act_id == "mine":
-		inventory.add_item(t_key, amount)
-		if t_key == "stone" and randf() < 0.25:
-			inventory.add_item("flint", 1)
-		depleted_tiles[hex] = 60.0
-		tile_depleted.emit(hex)
-	elif act_id == "forage":
-		inventory.add_item("stick", amount)
-		depleted_tiles[hex] = 45.0
-		tile_depleted.emit(hex)
-	elif act_id == "water":
-		inventory.add_item("water", 1)
-		if randf() < 0.35:
-			inventory.add_item("rock_salt", 1)
-			
+	# 1. 产物收入背包
+	inventory.add_item(t_key, amount)
+	if t_key == "water" and randf() < 0.25:
+		inventory.add_item("halite", 1)
+	elif t_key == "stone" and randf() < 0.15:
+		inventory.add_item("flint", 1)
+		
+	# 2. 扣减地块真实资源储量 (取完了就没了)
+	var rem_res = consume_tile_resource(hex, t_key, 1)
+	
+	# 3. 循环判定 (无尽 -1 或 cur_cycle < rep)
+	var should_continue = false
+	if rep == -1:
+		should_continue = (rem_res > 0)
+	else:
+		should_continue = (cur_cycle < rep) and (rem_res > 0)
+		
+	if should_continue:
+		active_task["current_cycle"] = cur_cycle + 1
+		active_task["begin_time"] = Time.get_ticks_msec()
+		task_started.emit(active_task)
+		task_queue_changed.emit()
+		return # 继续下一轮循环
+		
+	# 4. 全部次数执行完毕或资源已采空
+	if rem_res <= 0:
+		var iname = DataDB.get_item(t_key).get("name", t_key)
+		post_notice("【资源采空】该区块的【%s】已全部开采完毕！" % iname, Color.ORANGE)
+		
 	task_completed.emit(finished_task)
 	active_task.clear()
 	

@@ -168,14 +168,29 @@ func calculate_task_duration(item_key: String) -> float:
 func can_mine(item_key: String) -> Dictionary:
 	return sim.can_mine(item_key)
 
-func queue_hex_mine(hex: Vector2i, item_key: String, world_pos: Vector2 = Vector2.ZERO) -> bool:
-	return sim.queue_hex_mine(hex, item_key, world_pos)
+var tile_resources: Dictionary:
+	get: return sim.tile_resources
 
-func queue_hex_water(hex: Vector2i, world_pos: Vector2 = Vector2.ZERO) -> bool:
-	return sim.queue_hex_water(hex, world_pos)
+func get_tile_resources(hex: Vector2i) -> Dictionary:
+	return sim.get_tile_resources(hex)
 
-func queue_hex_forage(hex: Vector2i, biome_name: String, world_pos: Vector2 = Vector2.ZERO) -> bool:
-	return sim.queue_hex_forage(hex, biome_name, world_pos)
+func get_tile_available_resources(hex: Vector2i) -> Array[Dictionary]:
+	return sim.get_tile_available_resources(hex)
+
+func consume_tile_resource(hex: Vector2i, item_key: String, count: int = 1) -> int:
+	return sim.consume_tile_resource(hex, item_key, count)
+
+func queue_hex_harvest(hex: Vector2i, item_key: String, count: int = 1, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	return sim.queue_hex_harvest(hex, item_key, count, world_pos)
+
+func queue_hex_mine(hex: Vector2i, item_key: String, count: int = 1, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	return sim.queue_hex_mine(hex, item_key, count, world_pos)
+
+func queue_hex_water(hex: Vector2i, count: int = 1, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	return sim.queue_hex_water(hex, count, world_pos)
+
+func queue_hex_forage(hex: Vector2i, biome_name: String, count: int = 1, world_pos: Vector2 = Vector2.ZERO) -> bool:
+	return sim.queue_hex_forage(hex, biome_name, count, world_pos)
 
 func get_active_task_hex() -> Vector2i:
 	return sim.get_active_task_hex()

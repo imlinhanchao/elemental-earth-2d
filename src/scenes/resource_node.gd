@@ -46,7 +46,7 @@ func _on_mouse_exited() -> void:
 func request_mine_task() -> void:
 	if not visible:
 		return
-	GameState.queue_hex_mine(hex_coord, item_key, global_position)
+	GameState.queue_hex_mine(hex_coord, item_key, 1, global_position)
 
 func _on_tile_depleted(hex: Vector2i) -> void:
 	if hex == hex_coord:
