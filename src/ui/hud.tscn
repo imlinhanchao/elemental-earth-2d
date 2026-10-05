@@ -204,12 +204,13 @@ mouse_filter = 2
 visible = false
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
+size_flags_vertical = 0
 mouse_filter = 2
 theme_override_constants/separation = 12
 
 [node name="TaskDock" type="PanelContainer" parent="Margin/MainVBox/BodyHBox/RightBox"]
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_vertical = 0
 
 [node name="Margin" type="MarginContainer" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock"]
 layout_mode = 2
@@ -286,9 +287,8 @@ horizontal_alignment = 2
 layout_mode = 2
 
 [node name="QueueScroll" type="ScrollContainer" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox"]
-custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
-size_flags_vertical = 3
+size_flags_vertical = 0
 
 [node name="QueueList" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/QueueScroll"]
 layout_mode = 2

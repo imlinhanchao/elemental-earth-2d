@@ -43,6 +43,8 @@ var current_tab: CategoryTab = CategoryTab.NONE
 @onready var task_progress_box = $Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/ActiveTaskBox/ProgressHBox
 @onready var task_progress_bar = $Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/ActiveTaskBox/ProgressHBox/ProgressBar
 @onready var task_active_time = $Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/ActiveTaskBox/ProgressHBox/ActiveTime
+@onready var task_hsep = $Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/HSep
+@onready var task_queue_scroll = $Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/QueueScroll
 @onready var task_queue_list = $Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/QueueScroll/QueueList
 
 # 熔炉近场状态监测
@@ -717,6 +719,15 @@ func _update_task_queue_ui() -> void:
 		task_progress_box.visible = true
 		task_btn_cancel_active.visible = true
 	
+	# 队列滚动区与分隔线：无额外待办时隐藏，减少屏幕占用
+	if task_hsep:
+		task_hsep.visible = (q_size > 0)
+	if task_queue_scroll:
+		task_queue_scroll.visible = (q_size > 0)
+		if q_size > 0:
+			# 限制最大高度为 84px (约 3 个待办条目)，内部滚动，绝不撑满全屏
+			task_queue_scroll.custom_minimum_size = Vector2(0, min(q_size * 28, 84))
+			
 	for child in task_queue_list.get_children():
 		child.queue_free()
 		

@@ -96,6 +96,7 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 		pass # 保持主界面纯净 HUD 与大世界大视野
 	elif arg_name == "--screenshot-hud-queue":
 		GameState.queue_hex_forage(Vector2i(0, 0), "生机原野", Vector2.ZERO)
+		GameState.queue_hex_forage(Vector2i(1, 0), "生机原野", Vector2.ZERO)
 	else:
 		hud.tech_modal.open()
 		
