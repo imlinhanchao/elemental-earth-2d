@@ -23,25 +23,17 @@ func _draw() -> void:
 	var generated_hexes = world.generated_hexes
 	
 	# 1. 计算视口在世界坐标系下的包围盒，确保整个屏幕完全铺满六边形
-	var vp = get_viewport()
-	var vp_rect = vp.get_visible_rect() if vp else Rect2(-1920, -1080, 3840, 2160)
-	var inv_xform = get_canvas_transform().affine_inverse()
+	var cam = world.camera if world else null
+	var center_pos = cam.get_screen_center_position() if cam else Vector2.ZERO
+	var vp_size = get_viewport_rect().size if get_viewport() else Vector2(1920, 1080)
+	var cam_zoom = cam.zoom if (cam and cam.zoom.x > 0.01) else Vector2.ONE
+	var half_w = (vp_size.x / cam_zoom.x) * 0.5
+	var half_h = (vp_size.y / cam_zoom.y) * 0.5
 	
-	var corners = [
-		inv_xform * vp_rect.position,
-		inv_xform * Vector2(vp_rect.end.x, vp_rect.position.y),
-		inv_xform * vp_rect.end,
-		inv_xform * Vector2(vp_rect.position.x, vp_rect.end.y)
-	]
-	var min_x = corners[0].x
-	var max_x = corners[0].x
-	var min_y = corners[0].y
-	var max_y = corners[0].y
-	for c in corners:
-		min_x = min(min_x, c.x)
-		max_x = max(max_x, c.x)
-		min_y = min(min_y, c.y)
-		max_y = max(max_y, c.y)
+	var min_x = center_pos.x - half_w
+	var max_x = center_pos.x + half_w
+	var min_y = center_pos.y - half_h
+	var max_y = center_pos.y + half_h
 		
 	# 绘制深海蓝图背景网格 (动态全屏覆盖)
 	_draw_blueprint_grid(min_x - 300.0, max_x + 300.0, min_y - 300.0, max_y + 300.0)
@@ -69,10 +61,9 @@ func _draw() -> void:
 				points.append(center + Vector2(cos(angle), sin(angle)) * HexWorldGenerator.HEX_RADIUS)
 				
 			if in_territory:
-				# === 已解锁领地：渲染自然群系底色与连通地貌 ===
+				# === 已解锁领地：渲染自然群系平滑渐变底色与连通地貌 ===
 				var biome = generated_hexes.get(coord, HexWorldGenerator.BiomeType.PLAINS)
-				var base_col = HexWorldGenerator.get_biome_color(biome)
-				draw_colored_polygon(points, base_col)
+				_draw_gradient_biome_hex(center, coord, biome, points, generated_hexes)
 				
 				if current_lod >= 1:
 					var same_biome_neighbors: Array[int] = []
@@ -82,9 +73,10 @@ func _draw() -> void:
 							same_biome_neighbors.append(e)
 					_draw_connected_biome_terrain(center, points, biome, same_biome_neighbors, q, r)
 				else:
+					var base_col = HexWorldGenerator.get_biome_color(biome)
 					draw_circle(center, 10.0, Color(base_col.r * 1.15, base_col.g * 1.15, base_col.b * 1.15, 0.25))
 				
-				# 领地内不同群系交界处的柔和自然羽化过渡
+				# 领地内不同群系交界处的自然有机散落过渡
 				for e in range(6):
 					var n_coord = coord + HEX_EDGE_DIRS[e]
 					if generated_hexes.has(n_coord) and GameState.is_hex_in_territory(n_coord.x, n_coord.y):
@@ -92,7 +84,7 @@ func _draw() -> void:
 						if n_biome != biome:
 							var p1 = points[e]
 							var p2 = points[(e + 1) % 6]
-							_draw_natural_biome_transition(p1, p2, biome, n_biome, center)
+							_draw_natural_biome_transition(p1, p2, biome, n_biome, center, coord, e)
 						
 				# 战术六边形微弱顶点标记
 				if current_lod >= 1:
@@ -188,33 +180,130 @@ func _draw_connected_biome_terrain(center: Vector2, points: PackedVector2Array, 
 				draw_line(mid_pos + Vector2(-3, 0), mid_pos + Vector2(-1, -6), Color(0.36, 0.58, 0.30), 1.3)
 				draw_circle(mid_pos + Vector2(3, 2), 1.8, Color(0.95, 0.88, 0.38, 0.70))
 
-# 异群系交界处自然柔和羽化过渡 (去除生硬锯齿白线，采用滩涂沙洲、林缘树荫、焦灰过渡带)
-func _draw_natural_biome_transition(p1: Vector2, p2: Vector2, my_biome: HexWorldGenerator.BiomeType, n_biome: HexWorldGenerator.BiomeType, center: Vector2) -> void:
+# 渐变过渡群系绘图系统：中心保持本群系核心纯色，外周多边形通过三角扇面 Gouraud 顶点色彩平滑过渡至邻居群系
+func _draw_gradient_biome_hex(center: Vector2, coord: Vector2i, biome: HexWorldGenerator.BiomeType, outer_pts: PackedVector2Array, generated_hexes: Dictionary) -> void:
+	var base_col = HexWorldGenerator.get_biome_color(biome)
+	
+	# 微观地质随机微扰动，赋予每个瓦片独特的生命力 (避免绝对死板纯色)
+	var tile_hash = sin(float(coord.x * 374761393 + coord.y * 668265263)) * 43758.5453
+	var perturb = (tile_hash - floor(tile_hash)) * 0.04 - 0.02
+	var center_col = Color(
+		clampf(base_col.r + perturb, 0.0, 1.0),
+		clampf(base_col.g + perturb, 0.0, 1.0),
+		clampf(base_col.b + perturb * 0.7, 0.0, 1.0),
+		1.0
+	)
+	
+	# 1. 瓦片中心核心多边形 (半径 38% 的纯本群系核心，外周 62% 均为平滑渐变裙边)
+	var inner_r = HexWorldGenerator.HEX_RADIUS * 0.38
+	var inner_pts = PackedVector2Array()
+	for i in range(6):
+		var angle = deg_to_rad(60.0 * i - 30.0)
+		inner_pts.append(center + Vector2(cos(angle), sin(angle)) * inner_r)
+	draw_colored_polygon(inner_pts, center_col)
+	
+	# 2. 计算 6 个外圈顶点的 3 向交界融合色彩 (数学对称完全消除色差缝隙)
+	var vertex_cols: Array[Color] = []
+	for i in range(6):
+		var dir_prev = HEX_EDGE_DIRS[(i + 5) % 6]
+		var dir_curr = HEX_EDGE_DIRS[i]
+		
+		var n_prev = coord + dir_prev
+		var n_curr = coord + dir_curr
+		
+		var col_prev = base_col
+		if generated_hexes.has(n_prev) and GameState.is_hex_in_territory(n_prev.x, n_prev.y):
+			col_prev = HexWorldGenerator.get_biome_color(generated_hexes[n_prev])
+			
+		var col_curr = base_col
+		if generated_hexes.has(n_curr) and GameState.is_hex_in_territory(n_curr.x, n_curr.y):
+			col_curr = HexWorldGenerator.get_biome_color(generated_hexes[n_curr])
+			
+		# 三向交界处平滑渐变色彩 (三方均权，跨地块完全连续无跳变)
+		var v_col = (base_col + col_prev + col_curr) / 3.0
+		vertex_cols.append(v_col)
+		
+	# 3. 计算 6 条外圈边中点的双向交界融合色彩 (双方各 50%，交界线颜色 100% 严格一致)
+	var edge_mid_cols: Array[Color] = []
+	for e in range(6):
+		var dir_e = HEX_EDGE_DIRS[e]
+		var n_e = coord + dir_e
+		var col_e = base_col
+		if generated_hexes.has(n_e) and GameState.is_hex_in_territory(n_e.x, n_e.y):
+			col_e = HexWorldGenerator.get_biome_color(generated_hexes[n_e])
+		var m_col = (base_col + col_e) * 0.5
+		edge_mid_cols.append(m_col)
+		
+	# 4. 构建外周过渡裙边的三角扇面，施加 Gouraud 硬件顶点色彩渐变插值
+	for e in range(6):
+		var next_e = (e + 1) % 6
+		var ip1 = inner_pts[e]
+		var ip2 = inner_pts[next_e]
+		var op1 = outer_pts[e]
+		var op2 = outer_pts[next_e]
+		var edge_mid = (op1 + op2) * 0.5
+		
+		var v_col1 = vertex_cols[e]
+		var v_col2 = vertex_cols[next_e]
+		var m_col = edge_mid_cols[e]
+		
+		# 三角片 1: [ip1, op1, edge_mid]
+		draw_polygon(
+			PackedVector2Array([ip1, op1, edge_mid]),
+			PackedColorArray([center_col, v_col1, m_col])
+		)
+		# 三角片 2: [ip1, edge_mid, ip2]
+		draw_polygon(
+			PackedVector2Array([ip1, edge_mid, ip2]),
+			PackedColorArray([center_col, m_col, center_col])
+		)
+		# 三角片 3: [ip2, edge_mid, op2]
+		draw_polygon(
+			PackedVector2Array([ip2, edge_mid, op2]),
+			PackedColorArray([center_col, m_col, v_col2])
+		)
+
+# 异群系交界处自然有机过渡散落系统 (水草沙洲、泥泞湿地、落灰熔岩纹、林缘苔藓)
+func _draw_natural_biome_transition(p1: Vector2, p2: Vector2, my_biome: HexWorldGenerator.BiomeType, n_biome: HexWorldGenerator.BiomeType, center: Vector2, coord: Vector2i, edge_idx: int) -> void:
 	var edge_mid = (p1 + p2) * 0.5
 	var inward = (center - edge_mid).normalized()
+	var tangent = (p2 - p1).normalized()
+	var edge_seed = float(coord.x * 53 + coord.y * 97 + edge_idx * 13)
 	
-	# 1. 盐湖与陆地 (原野/森林/火山) 交界：柔和滩涂湖岸与湿地浅水过渡带
+	# 1. 盐湖与陆地 (原野/森林/火山) 交界：滩涂湖岸与浅水沙洲柔和微观结构
 	if my_biome == HexWorldGenerator.BiomeType.SALT_LAKE or n_biome == HexWorldGenerator.BiomeType.SALT_LAKE:
-		# 浅滩泥沙底晕 (柔和沙褐色，消除纯白硬边)
-		draw_line(p1, p2, Color(0.42, 0.54, 0.50, 0.45), 5.5)
-		# 湿润潮汐微波
-		draw_line(p1 + inward * 2.0, p2 + inward * 2.0, Color(0.50, 0.68, 0.76, 0.35), 2.5)
-		# 岸边微量盐结晶与卵石点缀 (随缩放自适应)
-		if current_lod >= 1:
-			draw_circle(edge_mid + inward * 1.5, 2.2, Color(0.78, 0.88, 0.90, 0.50))
+		# 渐变过渡带微波水纹
+		if my_biome == HexWorldGenerator.BiomeType.SALT_LAKE:
+			# 水域一侧微弧水纹
+			var wave_center = edge_mid + inward * 4.0
+			draw_arc(wave_center, 8.0, -0.6, 0.6, 6, Color(0.65, 0.85, 0.98, 0.28), 1.5)
+		else:
+			# 陆地一侧湿润泥沙斑与微小卵石
+			if current_lod >= 1:
+				for k in range(2):
+					var t = 0.35 + 0.3 * float(k) + sin(edge_seed + k) * 0.1
+					var pos = p1.lerp(p2, t) + inward * (2.0 + sin(edge_seed * 2.0 + k) * 1.5)
+					draw_circle(pos, 1.6, Color(0.55, 0.68, 0.60, 0.35))
 		return
 		
-	# 2. 火山与原野/森林交界：焦土落灰过渡带
+	# 2. 火山与原野/森林交界：焦土落灰与岩缝地貌
 	if my_biome == HexWorldGenerator.BiomeType.VOLCANO or n_biome == HexWorldGenerator.BiomeType.VOLCANO:
-		# 焦黑浮灰晕线
-		draw_line(p1, p2, Color(0.22, 0.18, 0.15, 0.55), 4.0)
-		if current_lod >= 1:
-			draw_circle(edge_mid, 2.0, Color(0.38, 0.22, 0.16, 0.40))
+		if my_biome == HexWorldGenerator.BiomeType.VOLCANO:
+			# 火山一侧微弱地表温热发丝裂纹
+			var crack_pt = edge_mid + inward * 5.0 + tangent * sin(edge_seed) * 4.0
+			draw_line(edge_mid, crack_pt, Color(0.85, 0.35, 0.12, 0.30), 1.0)
+		else:
+			# 陆地一侧炭黑灰斑
+			if current_lod >= 1:
+				var ash_pos = edge_mid + inward * 2.5
+				draw_circle(ash_pos, 2.0, Color(0.18, 0.14, 0.12, 0.25))
 		return
 		
-	# 3. 原始森林与原野交界：林缘苔草树荫自然过渡
+	# 3. 原始森林与原野交界：林缘树荫苔草自然过渡
 	if my_biome == HexWorldGenerator.BiomeType.DEEP_FOREST or n_biome == HexWorldGenerator.BiomeType.DEEP_FOREST:
-		draw_line(p1, p2, Color(0.14, 0.25, 0.15, 0.50), 3.8)
+		if my_biome == HexWorldGenerator.BiomeType.DEEP_FOREST:
+			# 树荫投影半弧
+			draw_arc(edge_mid + inward * 2.0, 9.0, 0, PI, 6, Color(0.06, 0.14, 0.08, 0.30), 1.6)
 
 # 绘制深海蓝图背景网格 (根据视口坐标范围动态平铺)
 func _draw_blueprint_grid(start_x: float, end_x: float, start_y: float, end_y: float) -> void:

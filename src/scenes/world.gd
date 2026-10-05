@@ -111,7 +111,11 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 	elif arg_name == "--screenshot-pt":
 		hud.periodic_modal.open()
 	elif arg_name == "--screenshot-hud":
-		pass # 保持主界面纯净 HUD 与大世界大视野
+		camera.position = Vector2.ZERO
+		camera.zoom = Vector2(1.0, 1.0)
+		target_zoom = Vector2(1.0, 1.0)
+		camera.reset_smoothing()
+		terrain_layer.queue_redraw()
 	elif arg_name == "--screenshot-era-modal":
 		hud.era_modal.show_current_era_status()
 	elif arg_name == "--screenshot-context-menu":
