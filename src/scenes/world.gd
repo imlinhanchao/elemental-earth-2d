@@ -65,6 +65,12 @@ func _ready() -> void:
 	GameState.task_progress_updated.connect(func(_t, _p, _r): overlay_layer.queue_redraw())
 	GameState.task_queue_changed.connect(func(): overlay_layer.queue_redraw())
 	
+	# 工具装配与时代演进时，实时刷新大世界地表可开采资源显示状态
+	GameState.tool_equipped.connect(func(_tool_key):
+		apply_depleted_tiles_to_nodes()
+		overlay_layer.queue_redraw()
+	)
+	
 	GameState.era_advanced.connect(func(_old, _new, era_name):
 		apply_depleted_tiles_to_nodes()
 		terrain_layer.queue_redraw()
@@ -177,7 +183,8 @@ func _spawn_resource_at_hex(q: int, r: int, item_key: String) -> void:
 	node.item_name = iname
 	var in_terr = GameState.is_hex_in_territory(q, r)
 	var depleted = GameState.depleted_tiles.has(Vector2i(q, r))
-	node.visible = in_terr and not depleted
+	var minable = GameState.sim.is_resource_minable(item_key)
+	node.visible = in_terr and not depleted and minable
 	entities.add_child(node)
 
 func _on_context_menu_harvest(hex: Vector2i, item_key: String, count: int) -> void:
@@ -203,9 +210,23 @@ func _unhandled_input(event: InputEvent) -> void:
 			drag_start_mouse = event.position
 			drag_start_cam_pos = camera.position
 		elif event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
-			target_zoom = (target_zoom * 1.15).clamp(Vector2(0.5, 0.5), Vector2(2.5, 2.5))
+			# 直接应用缩放，消除弹性与顿挫
+			camera.zoom = (camera.zoom * 1.15).clamp(Vector2(0.5, 0.5), Vector2(2.5, 2.5))
+			target_zoom = camera.zoom
+			var new_lod = 1 if camera.zoom.x >= 0.85 else 0
+			if terrain_layer and terrain_layer.current_lod != new_lod:
+				terrain_layer.current_lod = new_lod
+			if terrain_layer:
+				terrain_layer.queue_redraw()
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
-			target_zoom = (target_zoom * 0.85).clamp(Vector2(0.5, 0.5), Vector2(2.5, 2.5))
+			# 直接应用缩放，消除弹性与顿挫
+			camera.zoom = (camera.zoom * 0.85).clamp(Vector2(0.5, 0.5), Vector2(2.5, 2.5))
+			target_zoom = camera.zoom
+			var new_lod = 1 if camera.zoom.x >= 0.85 else 0
+			if terrain_layer and terrain_layer.current_lod != new_lod:
+				terrain_layer.current_lod = new_lod
+			if terrain_layer:
+				terrain_layer.queue_redraw()
 		elif event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			_handle_tile_click(hovered_hex)
 	
@@ -259,17 +280,6 @@ func _process(delta: float) -> void:
 		camera.position += dir * (camera_speed / camera.zoom.x) * delta
 		if terrain_layer:
 			terrain_layer.queue_redraw()
-	
-	# 平滑缩放过渡
-	var prev_zoom_x = camera.zoom.x
-	camera.zoom = camera.zoom.lerp(target_zoom, delta * 12.0)
-	if prev_zoom_x != camera.zoom.x and terrain_layer:
-		terrain_layer.queue_redraw()
-		
-	var new_lod = 1 if camera.zoom.x >= 0.85 else 0
-	if terrain_layer and terrain_layer.current_lod != new_lod:
-		terrain_layer.current_lod = new_lod
-		terrain_layer.queue_redraw()
 	
 	# 自动存档周期计时
 	var interval = float(SettingsManager.get_setting("auto_save_interval", 45.0))
@@ -396,7 +406,10 @@ func apply_depleted_tiles_to_nodes() -> void:
 		if node is Area2D and "hex_coord" in node:
 			var in_terr = GameState.is_hex_in_territory(node.hex_coord.x, node.hex_coord.y)
 			var depleted = GameState.depleted_tiles.has(node.hex_coord)
-			node.visible = in_terr and not depleted
+			var minable = true
+			if "item_key" in node and not str(node.item_key).is_empty():
+				minable = GameState.sim.is_resource_minable(node.item_key)
+			node.visible = in_terr and not depleted and minable
 
 func reset_world_state() -> void:
 	for f in built_furnaces:

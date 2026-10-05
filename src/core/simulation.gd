@@ -413,7 +413,7 @@ func get_tile_available_resources(hex: Vector2i) -> Array[Dictionary]:
 	var res = tile_resources[hex]
 	for k in res.keys():
 		var amt = int(res[k])
-		if amt > 0:
+		if amt > 0 and is_resource_minable(k):
 			var iname = DataDB.get_item(k).get("name", k)
 			result.append({
 				"key": k,
@@ -465,15 +465,73 @@ func calculate_task_duration(item_key: String) -> float:
 		elif pick == "stone_pickaxe": return 3.0
 		else: return 5.0
 
+# 各类资源在大世界显现与可开采的时代门槛配置
+const RESOURCE_ERA_REQUIREMENTS: Dictionary = {
+	"stone": 0,
+	"flint": 0,
+	"stick": 0,
+	"water": 0,
+	"wood": 0,
+	"clay": 0,
+	"malachite": 0,
+	"halite": 0,
+	"iron_ore": 1,
+	"hematite": 1,
+	"coal": 1,
+	"sulfur": 1,
+	"pyrite": 1,
+	"galena": 2,
+	"sphalerite": 2,
+	"bauxite": 3,
+	"monazite": 4,
+	"pitchblende": 5
+}
+
+# 获取资源所需的工具槽位类型 ("axe", "pickaxe", "bare_hands")
+func get_resource_required_tool(item_key: String) -> String:
+	match item_key:
+		"wood":
+			return "axe"
+		"clay", "malachite", "iron_ore", "hematite", "coal", "sulfur", "pyrite", "galena", "sphalerite", "bauxite", "monazite", "pitchblende":
+			return "pickaxe"
+		_:
+			return "bare_hands"
+
+# 判定资源是否具备开采条件并在大地图显现 (兼顾时代解锁与工具完备，不满足则地图不显示)
+func is_resource_minable(item_key: String) -> bool:
+	if item_key == "":
+		return false
+	# 1. 时代门槛检测：未达到对应时代不予显现与开采
+	var min_era = RESOURCE_ERA_REQUIREMENTS.get(item_key, 0)
+	if current_era < min_era:
+		return false
+		
+	# 2. 工具门槛检测：未装备所需工具不予显现与开采
+	var req_tool = get_resource_required_tool(item_key)
+	if req_tool == "axe":
+		if equipped_tools.get("axe", "bare_hands") == "bare_hands":
+			return false
+	elif req_tool == "pickaxe":
+		if equipped_tools.get("pickaxe", "bare_hands") == "bare_hands":
+			return false
+			
+	return true
+
 func can_mine(item_key: String) -> Dictionary:
+	var min_era = RESOURCE_ERA_REQUIREMENTS.get(item_key, 0)
+	if current_era < min_era:
+		var era_def = DataDB.get_era(min_era)
+		var era_name = era_def.get("name", "更高时代")
+		return { "allowed": false, "reason": "文明尚未迈入【%s】，当前时代无法勘探与开采此高级资源！" % era_name }
+		
 	var pick = equipped_tools.get("pickaxe", "bare_hands")
 	var axe = equipped_tools.get("axe", "bare_hands")
 	if item_key == "wood":
 		if axe == "bare_hands":
-			return { "allowed": false, "reason": "徒手无法砍伐原木！请先在手工作坊 (C) 制作【原始燧石斧】！" }
+			return { "allowed": false, "reason": "徒手无法砍伐原木！请先在制作栏 (T) 制作并装配【原始燧石斧】！" }
 	elif item_key in ["malachite", "iron_ore", "hematite", "sulfur", "coal", "clay", "bauxite", "galena", "sphalerite", "monazite", "pitchblende"]:
 		if pick == "bare_hands":
-			return { "allowed": false, "reason": "徒手无法开采坚硬矿脉！请先在手工作坊 (C) 制作【粗制石镐】！" }
+			return { "allowed": false, "reason": "徒手无法开采坚硬矿脉与沉积层！请先在制作栏 (T) 制作并装配【粗制石镐】！" }
 	return { "allowed": true, "reason": "" }
 
 # 核心开采任务下发：支持开采次数 (5/10/20/100/1000/无尽) 与任务自动合并
