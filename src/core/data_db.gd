@@ -230,3 +230,85 @@ static func is_pure_element(item_key: String) -> int:
 	if item.has("elemental") and item["elemental"] != null:
 		return int(item["elemental"])
 	return 0
+
+# 方案 2: 获取物品化学特性标签 (用于背包悬浮提示与反应启发)
+static func get_item_chemical_tags(item_key: String) -> Array[Dictionary]:
+	var tags: Array[Dictionary] = []
+	var item = get_item(item_key)
+	if item.is_empty():
+		return tags
+		
+	var cat = str(item.get("category", ""))
+	var type_arr = item.get("type", [])
+	var attrs = item.get("attrs", {})
+	var elem_num = int(item.get("elemental", 0))
+	
+	# 1. 还原剂与燃料类
+	if item_key in ["charcoal", "coal", "coke", "carbon_monoxide"]:
+		tags.append({"text": "🔥 高温还原剂", "color": Color(0.98, 0.55, 0.18)})
+		tags.append({"text": "🪵 固体燃料", "color": Color(0.85, 0.70, 0.25)})
+	elif item_key in ["wood", "stick", "bark", "branch"]:
+		tags.append({"text": "🌿 可干馏热解", "color": Color(0.40, 0.85, 0.35)})
+		tags.append({"text": "🪵 燃烧供热", "color": Color(0.85, 0.70, 0.25)})
+		
+	# 2. 矿石与可冶炼物类
+	if item_key == "malachite":
+		tags.append({"text": "⛏️ 易还原铜矿", "color": Color(0.18, 0.85, 0.65)})
+		tags.append({"text": "♨️ 受热热解", "color": Color(0.95, 0.35, 0.25)})
+	elif item_key in ["iron_ore", "hematite", "magnetite"]:
+		tags.append({"text": "⛏️ 氧化铁矿", "color": Color(0.85, 0.40, 0.30)})
+		tags.append({"text": "⚙️ 冶炼原料", "color": Color(0.75, 0.60, 0.90)})
+	elif item_key in ["pyrite", "chalcopyrite", "sphalerite", "galena"]:
+		tags.append({"text": "⛏️ 硫化物矿", "color": Color(0.90, 0.75, 0.20)})
+		tags.append({"text": "🔥 焙烧脱硫", "color": Color(0.95, 0.45, 0.20)})
+	elif item_key in ["bauxite"]:
+		tags.append({"text": "⛏️ 铝土矿", "color": Color(0.85, 0.60, 0.40)})
+		tags.append({"text": "⚡ 需高温电解", "color": Color(0.20, 0.75, 0.95)})
+		
+	# 3. 盐类与溶剂
+	if item_key in ["halite", "rock_salt", "salt"]:
+		tags.append({"text": "🧂 水溶性盐", "color": Color(0.45, 0.80, 0.95)})
+		tags.append({"text": "💧 电解氯碱源", "color": Color(0.25, 0.65, 0.95)})
+	elif item_key in ["water", "salt_water", "seawater"]:
+		tags.append({"text": "💧 通用溶剂", "color": Color(0.30, 0.75, 1.00)})
+		
+	# 4. 陶土与耐火胶结
+	if item_key in ["clay", "kaolin"]:
+		tags.append({"text": "🏺 陶质烧结", "color": Color(0.85, 0.55, 0.35)})
+		tags.append({"text": "🧱 耐火成型", "color": Color(0.70, 0.50, 0.40)})
+	elif item_key in ["limestone", "calcium_carbonate"]:
+		tags.append({"text": "♨️ 高温煅烧分解", "color": Color(0.95, 0.40, 0.30)})
+		tags.append({"text": "🧱 冶炼造渣剂", "color": Color(0.75, 0.75, 0.75)})
+	elif item_key in ["quicklime", "calcium_oxide"]:
+		tags.append({"text": "♨️ 遇水剧烈放热", "color": Color(0.98, 0.35, 0.15)})
+		tags.append({"text": "⚗️ 强碱脱水", "color": Color(0.65, 0.50, 0.90)})
+		
+	# 5. 硅石与生火材料
+	if item_key == "flint":
+		tags.append({"text": "⚡ 击石生火", "color": Color(0.95, 0.80, 0.25)})
+		tags.append({"text": "💎 致密硬脆", "color": Color(0.60, 0.75, 0.85)})
+	elif item_key in ["stone", "cut_stone"]:
+		tags.append({"text": "🧱 坚固基材", "color": Color(0.65, 0.68, 0.72)})
+		
+	# 6. 金属单质
+	if item_key in ["copper", "iron", "lead", "tin", "gold", "silver", "zinc", "bronze", "brass"]:
+		tags.append({"text": "⚙️ 金属单质/合金", "color": Color(0.90, 0.75, 0.30)})
+		tags.append({"text": "⚡ 优良导体", "color": Color(0.25, 0.80, 0.95)})
+		
+	# 7. 硫与酸
+	if item_key in ["sulfur"]:
+		tags.append({"text": "🧪 易挥发单质", "color": Color(0.95, 0.85, 0.15)})
+		tags.append({"text": "⚗️ 制酸与火药原料", "color": Color(0.95, 0.45, 0.25)})
+		
+	# 兜底推导通用标签 (若上述特定物品未命中)
+	if tags.is_empty():
+		if elem_num > 0:
+			tags.append({"text": "🔬 纯化学元素", "color": Color(0.25, 0.85, 0.95)})
+		if attrs.has("burn_time") or ("fuel" in type_arr):
+			tags.append({"text": "🪵 燃烧供热", "color": Color(0.85, 0.70, 0.25)})
+		if cat == "矿石":
+			tags.append({"text": "⛏️ 原生矿石", "color": Color(0.65, 0.75, 0.55)})
+		elif cat == "材料":
+			tags.append({"text": "📦 基础材料", "color": Color(0.60, 0.70, 0.80)})
+			
+	return tags

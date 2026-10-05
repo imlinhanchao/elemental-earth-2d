@@ -107,9 +107,12 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 	elif arg_name == "--screenshot-craft":
 		hud._toggle_category(hud.CategoryTab.CRAFT)
 	elif arg_name == "--screenshot-lab":
+		GameState.inventory.add_item("wood", 5)
 		hud.lab_modal.open()
-	elif arg_name == "--screenshot-pt":
-		hud.periodic_modal.open()
+		hud.lab_modal.add_reagent("wood", 1.0)
+	elif arg_name == "--screenshot-codex":
+		hud.lab_modal.open()
+		hud.lab_modal._switch_tab(1)
 	elif arg_name == "--screenshot-hud":
 		camera.position = Vector2.ZERO
 		camera.zoom = Vector2(1.0, 1.0)

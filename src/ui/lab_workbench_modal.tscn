@@ -83,11 +83,51 @@ theme_override_constants/separation = 20
 [node name="LeftView" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox"]
 custom_minimum_size = Vector2(440, 0)
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
 [node name="VesselDrawArea" type="Control" parent="CenterPanel/VBox/Body/HBox/LeftView"]
 layout_mode = 2
 size_flags_vertical = 3
+
+[node name="SensorCard" type="PanelContainer" parent="CenterPanel/VBox/Body/HBox/LeftView"]
+custom_minimum_size = Vector2(0, 56)
+layout_mode = 2
+
+[node name="SensorMargin" type="MarginContainer" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 8
+
+[node name="SensorVBox" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="SensorHeader" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox"]
+layout_mode = 2
+
+[node name="SensorTitle" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox/SensorHeader"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "⚡ 反应活性探测仪"
+
+[node name="SensorSpacer" type="Control" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox/SensorHeader"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="SensorStateBadge" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox/SensorHeader"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_font_sizes/font_size = 11
+text = "[待命中]"
+
+[node name="SensorDetail" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.8, 1)
+theme_override_font_sizes/font_size = 11
+text = "向烧瓶投入试剂以侦测潜在化学反应活性"
 
 [node name="Controls" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/LeftView"]
 layout_mode = 2
@@ -97,7 +137,7 @@ theme_override_constants/separation = 12
 custom_minimum_size = Vector2(130, 36)
 layout_mode = 2
 toggle_mode = true
-text = "酒精灯加热开关"
+text = "点燃酒精灯"
 
 [node name="TempLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/Controls"]
 layout_mode = 2
@@ -105,38 +145,19 @@ theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
 theme_override_font_sizes/font_size = 13
 text = "烧瓶温度: 293 K (20 ℃)"
 
-[node name="ReagentBar" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/LeftView"]
+[node name="ReagentScroll" type="ScrollContainer" parent="CenterPanel/VBox/Body/HBox/LeftView"]
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
-theme_override_constants/separation = 8
+vertical_scroll_mode = 0
 
-[node name="BtnAddWood" type="Button" parent="CenterPanel/VBox/Body/HBox/LeftView/ReagentBar"]
-custom_minimum_size = Vector2(0, 36)
+[node name="ReagentBar" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/LeftView/ReagentScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "+原木"
+theme_override_constants/separation = 6
 
-[node name="BtnAddMalachite" type="Button" parent="CenterPanel/VBox/Body/HBox/LeftView/ReagentBar"]
-custom_minimum_size = Vector2(0, 36)
+[node name="BtnClear" type="Button" parent="CenterPanel/VBox/Body/HBox/LeftView/ReagentScroll/ReagentBar"]
+custom_minimum_size = Vector2(60, 36)
 layout_mode = 2
-size_flags_horizontal = 3
-text = "+孔雀石"
-
-[node name="BtnAddIron" type="Button" parent="CenterPanel/VBox/Body/HBox/LeftView/ReagentBar"]
-custom_minimum_size = Vector2(0, 36)
-layout_mode = 2
-size_flags_horizontal = 3
-text = "+赤铁矿"
-
-[node name="BtnAddCharcoal" type="Button" parent="CenterPanel/VBox/Body/HBox/LeftView/ReagentBar"]
-custom_minimum_size = Vector2(0, 36)
-layout_mode = 2
-size_flags_horizontal = 3
-text = "+木炭"
-
-[node name="BtnClear" type="Button" parent="CenterPanel/VBox/Body/HBox/LeftView/ReagentBar"]
-custom_minimum_size = Vector2(0, 36)
-layout_mode = 2
-size_flags_horizontal = 3
 text = "清空"
 
 [node name="VSeparator" type="VSeparator" parent="CenterPanel/VBox/Body/HBox"]
@@ -145,37 +166,77 @@ layout_mode = 2
 [node name="RightView" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 12
+theme_override_constants/separation = 10
 
-[node name="SubTitle" type="Label" parent="CenterPanel/VBox/Body/HBox/RightView"]
+[node name="TabSwitchHBox" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightView"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
-theme_override_font_sizes/font_size = 14
-text = "物态组分与工艺数据包"
+theme_override_constants/separation = 8
 
-[node name="ContentsLabel" type="RichTextLabel" parent="CenterPanel/VBox/Body/HBox/RightView"]
+[node name="BtnTabMonitor" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/TabSwitchHBox"]
+custom_minimum_size = Vector2(130, 30)
+layout_mode = 2
+text = "🧪 实验台监控"
+
+[node name="BtnTabCodex" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/TabSwitchHBox"]
+custom_minimum_size = Vector2(140, 30)
+layout_mode = 2
+text = "📖 配方灵感图鉴"
+
+[node name="Spacer" type="Control" parent="CenterPanel/VBox/Body/HBox/RightView/TabSwitchHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ViewMonitor" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightView"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 10
+
+[node name="ContentsLabel" type="RichTextLabel" parent="CenterPanel/VBox/Body/HBox/RightView/ViewMonitor"]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 text = "【微观烧瓶物料组分】
 （空烧瓶）"
 
-[node name="ActionHBox" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightView"]
+[node name="ActionHBox" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightView/ViewMonitor"]
 layout_mode = 2
 theme_override_constants/separation = 10
 
-[node name="BtnCollectProducts" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/ActionHBox"]
+[node name="BtnCollectProducts" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/ViewMonitor/ActionHBox"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "收获反应产物至背包"
 
-[node name="BtnExportBlueprint" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/ActionHBox"]
+[node name="BtnExportBlueprint" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/ViewMonitor/ActionHBox"]
+visible = false
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
 text = "固化实验参数 ➔ 导出工业蓝图"
 
-[node name="LogLabel" type="RichTextLabel" parent="CenterPanel/VBox/Body/HBox/RightView"]
+[node name="LogLabel" type="RichTextLabel" parent="CenterPanel/VBox/Body/HBox/RightView/ViewMonitor"]
 layout_mode = 2
 size_flags_vertical = 3
 scroll_following = true
+
+[node name="ViewCodex" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightView"]
+visible = false
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="CodexInfoLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/RightView/ViewCodex"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "时代前沿科研猜想与已确证配方 · 点击原料可快捷投入烧瓶"
+
+[node name="CodexScroll" type="ScrollContainer" parent="CenterPanel/VBox/Body/HBox/RightView/ViewCodex"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="CodexList" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightView/ViewCodex/CodexScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8

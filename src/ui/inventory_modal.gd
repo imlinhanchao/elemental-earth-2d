@@ -261,6 +261,53 @@ func _show_tooltip_for_item(item_key: String, data: Dictionary, count: int) -> v
 	tip_desc.text = desc
 	tip_count.text = "库存数量: %d" % count
 	
+	# 方案 2: 渲染化学特性标签胶囊 (用于直观启发玩家反应潜能)
+	var tags_box = $FloatingTooltip/TipVBox.get_node_or_null("TagsHBox")
+	if not tags_box:
+		tags_box = HBoxContainer.new()
+		tags_box.name = "TagsHBox"
+		tags_box.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		tags_box.add_theme_constant_override("separation", 6)
+		$FloatingTooltip/TipVBox.add_child(tags_box)
+		$FloatingTooltip/TipVBox.move_child(tags_box, tip_chem.get_index() + 1)
+		
+	for c in tags_box.get_children():
+		c.queue_free()
+		
+	var chem_tags = DataDB.get_item_chemical_tags(item_key)
+	if chem_tags.is_empty():
+		tags_box.visible = false
+	else:
+		tags_box.visible = true
+		for t_info in chem_tags:
+			var tag_panel = PanelContainer.new()
+			tag_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			var tag_style = StyleBoxFlat.new()
+			var col = t_info.get("color", Color(0.3, 0.7, 0.9))
+			tag_style.bg_color = Color(col.r * 0.15, col.g * 0.15, col.b * 0.15, 0.9)
+			tag_style.border_color = Color(col.r, col.g, col.b, 0.65)
+			tag_style.border_width_left = 1
+			tag_style.border_width_top = 1
+			tag_style.border_width_right = 1
+			tag_style.border_width_bottom = 1
+			tag_style.corner_radius_top_left = 4
+			tag_style.corner_radius_top_right = 4
+			tag_style.corner_radius_bottom_left = 4
+			tag_style.corner_radius_bottom_right = 4
+			tag_style.content_margin_left = 6
+			tag_style.content_margin_top = 2
+			tag_style.content_margin_right = 6
+			tag_style.content_margin_bottom = 2
+			tag_panel.add_theme_stylebox_override("panel", tag_style)
+			
+			var tag_lbl = Label.new()
+			tag_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			tag_lbl.text = t_info.get("text", "")
+			tag_lbl.add_theme_font_size_override("font_size", 10)
+			tag_lbl.add_theme_color_override("font_color", col)
+			tag_panel.add_child(tag_lbl)
+			tags_box.add_child(tag_panel)
+	
 	var extra_attrs: Array[String] = []
 	if attrs.has("burn_time"):
 		extra_attrs.append("热值: %ds" % int(attrs["burn_time"]))

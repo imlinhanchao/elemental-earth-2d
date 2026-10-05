@@ -290,16 +290,50 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 	tw.tween_property(self, "modulate:a", 1.0, 0.25).set_trans(Tween.TRANS_QUAD)
 	tw.parallel().tween_property(self, "scale", Vector2.ONE, 0.25).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
+# 方案 4: 时代纪元里程碑科研攻关指南与大世界探索线索
+const MILESTONE_GUIDES: Dictionary = {
+	"craft_stone_pickaxe": {
+		"title": "制作第一把石镐",
+		"guide": "在碎石地表开采【碎石】与干燥【枯树枝】，按 [T] 打开制作台打磨装配出原始石镐。装备后可开采深层坚硬矿物。",
+		"field": "碎石平原、荒野林带",
+		"route": "制作栏 [T] ➔ 原始石镐"
+	},
+	"craft_fire_seed": {
+		"title": "制作第一个火种",
+		"guide": "开采深黑色贝壳状【燧石】与【枯树枝】，按 [T] 打开制作台击石引火制作文明火种。火种是后续一切冶炼与加热的核心！",
+		"field": "火山边缘、碎石滩涂",
+		"route": "制作栏 [T] ➔ 燧石火种"
+	},
+	"build_kiln": {
+		"title": "建造第一个窑炉",
+		"guide": "在湿润滩涂采集高岭土与黏土，配合坚实石块，按 [C] 在建造坞筑造耐受千度高温的高大窑炉，开启大宗冶金时代。",
+		"field": "湿地泥沼、高岭土矿脉",
+		"route": "建造坞 [C] ➔ 土法窑炉"
+	},
+	"first_smelt": {
+		"title": "完成第一次焙烧",
+		"guide": "在微观实验台 [L] 或熔炉中，投入孔雀石与木炭，点燃酒精喷灯持续加温至 600℃ 以上固相还原出第一块金属铜！",
+		"field": "东部火山群系、林地干馏木炭",
+		"route": "实验台 [L] 或 熔炉 ➔ 固相热还原"
+	},
+	"research_pottery": {
+		"title": "研究陶器制作科技",
+		"guide": "按 [K] 打开科技树研习火与土的转化之道，掌握耐火陶罐烧制。陶器容器可耐受酸碱腐蚀并承载液体实验。",
+		"field": "科技树 [K]",
+		"route": "科技树 [K] ➔ 陶器制作"
+	}
+}
+
 # 构建单个里程碑高质感横向卡片
-func _create_milestone_card(_key: String, desc: String, is_done: bool, accent: Color) -> PanelContainer:
+func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Color) -> PanelContainer:
 	var p = PanelContainer.new()
 	var box = StyleBoxFlat.new()
 	if is_done:
-		box.bg_color = Color(0.06, 0.16, 0.14, 0.75) # 达成后柔和微翠绿
+		box.bg_color = Color(0.06, 0.16, 0.14, 0.85) # 达成后柔和微翠绿
 		box.border_color = Color(0.15, 0.65, 0.45, 0.8)
 	else:
-		box.bg_color = Color(0.07, 0.11, 0.18, 0.75) # 进行中深冷灰
-		box.border_color = Color(0.22, 0.38, 0.58, 0.45)
+		box.bg_color = Color(0.07, 0.11, 0.18, 0.85) # 进行中深冷灰
+		box.border_color = Color(0.25, 0.45, 0.68, 0.6)
 	box.border_width_left = 1
 	box.border_width_top = 1
 	box.border_width_right = 1
@@ -312,14 +346,18 @@ func _create_milestone_card(_key: String, desc: String, is_done: bool, accent: C
 	
 	var margin = MarginContainer.new()
 	margin.add_theme_constant_override("margin_left", 14)
-	margin.add_theme_constant_override("margin_top", 8)
+	margin.add_theme_constant_override("margin_top", 10)
 	margin.add_theme_constant_override("margin_right", 14)
-	margin.add_theme_constant_override("margin_bottom", 8)
+	margin.add_theme_constant_override("margin_bottom", 10)
 	p.add_child(margin)
+	
+	var card_vbox = VBoxContainer.new()
+	card_vbox.add_theme_constant_override("separation", 6)
+	margin.add_child(card_vbox)
 	
 	var hbox = HBoxContainer.new()
 	hbox.add_theme_constant_override("separation", 12)
-	margin.add_child(hbox)
+	card_vbox.add_child(hbox)
 	
 	# 状态图标
 	var mark = Label.new()
@@ -334,16 +372,51 @@ func _create_milestone_card(_key: String, desc: String, is_done: bool, accent: C
 	lbl_desc.text = desc
 	lbl_desc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	lbl_desc.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	lbl_desc.add_theme_font_size_override("font_size", 12)
-	lbl_desc.add_theme_color_override("font_color", Color.WHITE if is_done else Color(0.80, 0.88, 0.95))
+	lbl_desc.add_theme_font_size_override("font_size", 13)
+	lbl_desc.add_theme_color_override("font_color", Color.WHITE if is_done else Color(0.85, 0.90, 0.98))
 	hbox.add_child(lbl_desc)
 	
 	# 右侧状态胶囊标签
 	var tag = Label.new()
-	tag.text = "[已确证]" if is_done else "[待突破]"
+	tag.text = "[已确证达成]" if is_done else "[待科研攻关]"
 	tag.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	tag.add_theme_font_size_override("font_size", 10)
 	tag.add_theme_color_override("font_color", Color(0.30, 0.95, 0.65) if is_done else accent)
 	hbox.add_child(tag)
+	
+	# 方案 4: 注入科研攻关详细指引卡片
+	if MILESTONE_GUIDES.has(key):
+		var g_info = MILESTONE_GUIDES[key]
+		var guide_panel = PanelContainer.new()
+		var g_style = StyleBoxFlat.new()
+		g_style.bg_color = Color(0.04, 0.08, 0.14, 0.7)
+		g_style.border_color = Color(accent.r * 0.4, accent.g * 0.4, accent.b * 0.4, 0.5)
+		g_style.border_width_left = 2
+		g_style.corner_radius_top_left = 4
+		g_style.corner_radius_bottom_left = 4
+		g_style.content_margin_left = 10
+		g_style.content_margin_top = 6
+		g_style.content_margin_right = 10
+		g_style.content_margin_bottom = 6
+		guide_panel.add_theme_stylebox_override("panel", g_style)
+		
+		var g_vbox = VBoxContainer.new()
+		g_vbox.add_theme_constant_override("separation", 3)
+		guide_panel.add_child(g_vbox)
+		
+		var lbl_guide = Label.new()
+		lbl_guide.text = "💡 攻关指引：" + str(g_info.get("guide", ""))
+		lbl_guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		lbl_guide.add_theme_font_size_override("font_size", 11)
+		lbl_guide.add_theme_color_override("font_color", Color(0.40, 0.90, 0.65) if is_done else Color(0.95, 0.80, 0.45))
+		g_vbox.add_child(lbl_guide)
+		
+		var lbl_meta = Label.new()
+		lbl_meta.text = "🗺️ 建议探索：%s   ·   ⚙️ 关键途径：%s" % [g_info.get("field", ""), g_info.get("route", "")]
+		lbl_meta.add_theme_font_size_override("font_size", 10)
+		lbl_meta.add_theme_color_override("font_color", Color(0.40, 0.75, 0.95))
+		g_vbox.add_child(lbl_meta)
+		
+		card_vbox.add_child(guide_panel)
 	
 	return p
