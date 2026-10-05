@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="crystal_grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#E879F9"/>
+      <stop offset="50%" stop-color="#A855F7"/>
+      <stop offset="100%" stop-color="#6B21A8"/>
+    </linearGradient>
+    <radialGradient id="crystal_glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#F0ABFC" stop-opacity="0.7"/>
+      <stop offset="100%" stop-color="#9333EA" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Background crystal glow -->
+  <circle cx="32" cy="32" r="28" fill="url(#crystal_glow)" opacity="0.3"/>
+  <!-- Octahedron crystal prism -->
+  <polygon points="32,8 52,28 32,56 12,28" fill="url(#crystal_grad)" stroke="#D8B4FE" stroke-width="2"/>
+  <polygon points="32,8 32,56 52,28" fill="#C084FC" opacity="0.4"/>
+  <polygon points="32,8 32,56 12,28" fill="#581C87" opacity="0.4"/>
+  <!-- Facet line -->
+  <line x1="12" y1="28" x2="52" y2="28" stroke="#F5D0FE" stroke-width="1.5"/>
+  <!-- Spectrum refraction beam -->
+  <path d="M4 36 L24 28 M44 26 L60 18 M46 32 L60 38" stroke="#F472B6" stroke-width="2" stroke-linecap="round"/>
+</svg>

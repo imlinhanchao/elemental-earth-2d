@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="fire_grad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#DC2626"/>
+      <stop offset="50%" stop-color="#EA580C"/>
+      <stop offset="100%" stop-color="#FBBF24"/>
+    </linearGradient>
+    <radialGradient id="alch_glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#F97316" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#DC2626" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Hearth / Crucible glow -->
+  <circle cx="32" cy="34" r="28" fill="url(#alch_glow)" opacity="0.3"/>
+  <!-- Alchemical Crucible Pot -->
+  <path d="M18 22 C18 38 22 46 32 46 C42 46 46 38 46 22 Z" fill="#451A03" stroke="#F97316" stroke-width="2.5" stroke-linejoin="round"/>
+  <ellipse cx="32" cy="22" rx="14" ry="4" fill="#78350F" stroke="#FBBF24" stroke-width="2"/>
+  <!-- Molten Gold / Copper Surface -->
+  <ellipse cx="32" cy="22" rx="11" ry="3" fill="#F59E0B"/>
+  <!-- Roaring Flames rising from bottom -->
+  <path d="M24 54 C24 44 28 42 28 36 C30 42 34 38 34 34 C36 40 40 42 40 54 Z" fill="url(#fire_grad)"/>
+  <!-- Alchemical Symbol / Star above -->
+  <polygon points="32,6 34,11 39,12 35,16 36,21 32,18 28,21 29,16 25,12 30,11" fill="#FDE68A"/>
+</svg>

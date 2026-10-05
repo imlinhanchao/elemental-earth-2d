@@ -1077,6 +1077,23 @@ func _update_era_label() -> void:
 	else:
 		era_badge_btn.text = era_name
 		
+	var era_icon_path = "res://assets/icons/era_%s.svg" % era_def.get("key", "stone")
+	var era_tex: Texture2D = null
+	if FileAccess.file_exists(era_icon_path):
+		var file = FileAccess.open(era_icon_path, FileAccess.READ)
+		if file:
+			var svg_text = file.get_as_text()
+			file.close()
+			var img = Image.new()
+			if img.load_svg_from_string(svg_text, 2.0) == OK:
+				era_tex = ImageTexture.create_from_image(img)
+	if not era_tex and ResourceLoader.exists("res://assets/icons/era.svg"):
+		era_tex = load("res://assets/icons/era.svg")
+	if era_tex:
+		era_badge_btn.icon = era_tex
+		era_badge_btn.expand_icon = true
+		era_badge_btn.custom_minimum_size = Vector2(0, 24)
+		
 	var tooltip_lines: Array[String] = [
 		"【当前文明纪元】%s" % era_name,
 		"领地范围: %d 瓦片  |  已发现元素: %d/118" % [terr_count, disc_count],

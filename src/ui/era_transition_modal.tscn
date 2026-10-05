@@ -19,7 +19,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.7)
+color = Color(0.02, 0.035, 0.07, 0.85)
 
 [node name="Center" type="CenterContainer" parent="."]
 layout_mode = 1
@@ -30,37 +30,202 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="Panel" type="PanelContainer" parent="Center"]
-custom_minimum_size = Vector2(560, 300)
+custom_minimum_size = Vector2(800, 520)
 layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="Center/Panel"]
 layout_mode = 2
-theme_override_constants/margin_left = 24
-theme_override_constants/margin_top = 24
-theme_override_constants/margin_right = 24
-theme_override_constants/margin_bottom = 24
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 22
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 22
 
-[node name="VBox" type="VBoxContainer" parent="Center/Panel/Margin"]
+[node name="MainVBox" type="VBoxContainer" parent="Center/Panel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 18
-alignment = 1
+theme_override_constants/separation = 14
 
-[node name="EraTitle" type="Label" parent="Center/Panel/Margin/VBox"]
+[node name="HeaderHBox" type="HBoxContainer" parent="Center/Panel/Margin/MainVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
-theme_override_font_sizes/font_size = 22
-text = "文 明 纪 元 跨 越"
-horizontal_alignment = 1
+theme_override_constants/separation = 10
 
-[node name="EraDesc" type="Label" parent="Center/Panel/Margin/VBox"]
+[node name="HeaderIcon" type="TextureRect" parent="Center/Panel/Margin/MainVBox/HeaderHBox"]
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "你已经成功突破时代门槛！"
-horizontal_alignment = 1
-autowrap_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
 
-[node name="BtnContinue" type="Button" parent="Center/Panel/Margin/VBox"]
-custom_minimum_size = Vector2(160, 36)
+[node name="HeaderTitle" type="Label" parent="Center/Panel/Margin/MainVBox/HeaderHBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "✦ 文 明 纪 元 史 册 · EPOCH ARCHIVE ✦"
+
+[node name="HeaderSpacer" type="Control" parent="Center/Panel/Margin/MainVBox/HeaderHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BtnClose" type="Button" parent="Center/Panel/Margin/MainVBox/HeaderHBox"]
+custom_minimum_size = Vector2(68, 26)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 11
+text = "✕ ESC"
+
+[node name="HSeparator" type="HSeparator" parent="Center/Panel/Margin/MainVBox"]
+layout_mode = 2
+
+[node name="HeroPanel" type="PanelContainer" parent="Center/Panel/Margin/MainVBox"]
+layout_mode = 2
+
+[node name="HeroMargin" type="MarginContainer" parent="Center/Panel/Margin/MainVBox/HeroPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 14
+
+[node name="HeroHBox" type="HBoxContainer" parent="Center/Panel/Margin/MainVBox/HeroPanel/HeroMargin"]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="EmblemContainer" type="PanelContainer" parent="Center/Panel/Margin/MainVBox/HeroPanel/HeroMargin/HeroHBox"]
+custom_minimum_size = Vector2(80, 80)
+layout_mode = 2
+size_flags_vertical = 4
+
+[node name="EmblemIcon" type="TextureRect" parent="Center/Panel/Margin/MainVBox/HeroPanel/HeroMargin/HeroHBox/EmblemContainer"]
+custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
 size_flags_horizontal = 4
-text = "迈向新纪元 [ENTER]"
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="HeroVBox" type="VBoxContainer" parent="Center/Panel/Margin/MainVBox/HeroPanel/HeroMargin/HeroHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+theme_override_constants/separation = 4
+
+[node name="EraOrderTag" type="Label" parent="Center/Panel/Margin/MainVBox/HeroPanel/HeroMargin/HeroHBox/HeroVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "第 I 纪元 · 原始物质改造"
+
+[node name="EraNameLabel" type="Label" parent="Center/Panel/Margin/MainVBox/HeroPanel/HeroMargin/HeroHBox/HeroVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 22
+text = "【石器时代】 Stone Age"
+
+[node name="EraDescLabel" type="Label" parent="Center/Panel/Margin/MainVBox/HeroPanel/HeroMargin/HeroHBox/HeroVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "人类第一次将天然石块打磨成工具，用燧石点燃火焰，开启了征服自然的壮丽史诗。"
+autowrap_mode = 2
+
+[node name="TelemetryHBox" type="HBoxContainer" parent="Center/Panel/Margin/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TerritoryBadge" type="PanelContainer" parent="Center/Panel/Margin/MainVBox/TelemetryHBox"]
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/TerritoryBadge"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 4
+
+[node name="TerritoryLabel" type="Label" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/TerritoryBadge/Margin"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "🗺️ 领地半径: 5 瓦片 (91 格)"
+
+[node name="ElementsBadge" type="PanelContainer" parent="Center/Panel/Margin/MainVBox/TelemetryHBox"]
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ElementsBadge"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 4
+
+[node name="ElementsLabel" type="Label" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ElementsBadge/Margin"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "🔬 点亮元素: 0 / 118 种"
+
+[node name="ProgressVBox" type="VBoxContainer" parent="Center/Panel/Margin/MainVBox/TelemetryHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+theme_override_constants/separation = 3
+
+[node name="ProgressHeaderHBox" type="HBoxContainer" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ProgressVBox"]
+layout_mode = 2
+
+[node name="ProgressTitle" type="Label" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ProgressVBox/ProgressHeaderHBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "时代跃迁达成度"
+
+[node name="Spacer" type="Control" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ProgressVBox/ProgressHeaderHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ProgressPercent" type="Label" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ProgressVBox/ProgressHeaderHBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 11
+text = "0% (0/2)"
+
+[node name="ProgressBar" type="ProgressBar" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ProgressVBox"]
+custom_minimum_size = Vector2(0, 7)
+layout_mode = 2
+show_percentage = false
+
+[node name="MilestonesSection" type="VBoxContainer" parent="Center/Panel/Margin/MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="SectionTitle" type="Label" parent="Center/Panel/Margin/MainVBox/MilestonesSection"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "【时代跃迁关键里程碑】 (达成全部目标后即可迈向新纪元)"
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Center/Panel/Margin/MainVBox/MilestonesSection"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="MilestonesList" type="VBoxContainer" parent="Center/Panel/Margin/MainVBox/MilestonesSection/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="FooterHBox" type="HBoxContainer" parent="Center/Panel/Margin/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="TipLabel" type="Label" parent="Center/Panel/Margin/MainVBox/FooterHBox"]
+layout_mode = 2
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 11
+text = "按 [ESC]、[空格] 或 [回车] 键随时返回大世界"
+
+[node name="FooterSpacer" type="Control" parent="Center/Panel/Margin/MainVBox/FooterHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="BtnContinue" type="Button" parent="Center/Panel/Margin/MainVBox/FooterHBox"]
+custom_minimum_size = Vector2(160, 36)
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 13
+text = "返回大世界 [ESC]"

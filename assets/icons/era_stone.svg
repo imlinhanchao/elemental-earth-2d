@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="stone_grad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#FDE68A"/>
+      <stop offset="50%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    <radialGradient id="spark_glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0%" stop-color="#FEF3C7" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#F59E0B" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Background subtle aura -->
+  <circle cx="32" cy="32" r="28" fill="url(#spark_glow)" opacity="0.25"/>
+  <!-- Primitive stone pickaxe / flint tool -->
+  <path d="M14 48 L46 16 M18 52 L50 20" stroke="#78350F" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- Flint blade head -->
+  <path d="M42 10 L54 14 L50 26 L38 22 Z" fill="url(#stone_grad)" stroke="#92400E" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Chiseled stone shard -->
+  <polygon points="20,18 28,14 34,22 26,28" fill="url(#stone_grad)" stroke="#B45309" stroke-width="1.5"/>
+  <!-- Fire sparks -->
+  <circle cx="48" cy="36" r="3" fill="#F59E0B"/>
+  <circle cx="42" cy="44" r="2" fill="#FDE68A"/>
+  <circle cx="34" cy="40" r="1.5" fill="#EF4444"/>
+</svg>
