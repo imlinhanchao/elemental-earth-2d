@@ -22,6 +22,7 @@ GameState="*res://src/core/game_state.gd"
 window/size/viewport_width=1920
 window/size/viewport_height=1080
 window/size/resizable=true
+window/dpi/allow_hidpi=true
 window/stretch/mode="canvas_items"
 window/stretch/aspect="keep"
 
@@ -105,5 +106,5 @@ quick_action_3={
 
 [rendering]
 
-textures/canvas_textures/default_texture_filter=0
+textures/canvas_textures/default_texture_filter=2
 renderer/rendering_method="forward_plus"

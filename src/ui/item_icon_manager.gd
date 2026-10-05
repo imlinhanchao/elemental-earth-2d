@@ -59,8 +59,9 @@ static func get_icon(key: String) -> Texture2D:
 				var svg_text = file.get_as_text()
 				file.close()
 				var img = Image.new()
-				var err = img.load_svg_from_string(svg_text, 1.0)
+				var err = img.load_svg_from_string(svg_text, 3.0)
 				if err == OK:
+					img.generate_mipmaps()
 					var tex = ImageTexture.create_from_image(img)
 					_dynamic_cache[key] = tex
 					return tex
