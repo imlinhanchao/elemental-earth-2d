@@ -6,12 +6,12 @@ extends Node2D
 const HexWorldGenerator = preload("res://src/core/hex_world_generator.gd")
 
 const HEX_EDGE_DIRS: Array[Vector2i] = [
-	Vector2i(0, 1),   # edge 0: vertex 0 -> 1 (Southeast)
-	Vector2i(-1, 1),  # edge 1: vertex 1 -> 2 (Southwest)
-	Vector2i(-1, 0),  # edge 2: vertex 2 -> 3 (West)
-	Vector2i(0, -1),  # edge 3: vertex 3 -> 4 (Northwest)
-	Vector2i(1, -1),  # edge 4: vertex 4 -> 5 (Northeast)
-	Vector2i(1, 0)    # edge 5: vertex 5 -> 0 (East)
+	Vector2i(1, 0),   # edge 0: vertex 0 -> 1 (East)
+	Vector2i(0, 1),   # edge 1: vertex 1 -> 2 (Southeast)
+	Vector2i(-1, 1),  # edge 2: vertex 2 -> 3 (Southwest)
+	Vector2i(-1, 0),  # edge 3: vertex 3 -> 4 (West)
+	Vector2i(0, -1),  # edge 4: vertex 4 -> 5 (Northwest)
+	Vector2i(1, -1)   # edge 5: vertex 5 -> 0 (Northeast)
 ]
 
 const HEX_DIRS: Array[Vector2i] = [
@@ -20,6 +20,7 @@ const HEX_DIRS: Array[Vector2i] = [
 ]
 
 var world: Node2D = null
+var current_lod: int = 1 # 0: 远景简略 (zoom < 0.85), 1: 近景精细 (zoom >= 0.85)
 
 func _draw() -> void:
 	if not world or world.generated_hexes.is_empty():
@@ -45,14 +46,17 @@ func _draw() -> void:
 		# 步骤 A: 填充地貌基础底色
 		draw_colored_polygon(points, base_col)
 		
-		# 步骤 B: 检查 6 条边的邻居关系，渲染相互连接的地貌特征
-		var same_biome_neighbors: Array[int] = []
-		for e in range(6):
-			var n_coord = coord + HEX_EDGE_DIRS[e]
-			if generated_hexes.has(n_coord) and generated_hexes[n_coord] == biome:
-				same_biome_neighbors.append(e)
-				
-		_draw_connected_biome_terrain(center, points, biome, same_biome_neighbors, q, r)
+		# 步骤 B: 检查 6 条边的邻居关系，仅在近景 (LOD >= 1) 时渲染相互连接的地貌复杂纹理，远景保持极简纯净
+		if current_lod >= 1:
+			var same_biome_neighbors: Array[int] = []
+			for e in range(6):
+				var n_coord = coord + HEX_EDGE_DIRS[e]
+				if generated_hexes.has(n_coord) and generated_hexes[n_coord] == biome:
+					same_biome_neighbors.append(e)
+			_draw_connected_biome_terrain(center, points, biome, same_biome_neighbors, q, r)
+		else:
+			# 远景模式 (LOD 0)：采用极度柔和的微弱中心晕色，避免屏幕信息和线条杂乱过多
+			draw_circle(center, 10.0, Color(base_col.r * 1.15, base_col.g * 1.15, base_col.b * 1.15, 0.25))
 		
 		# 步骤 C: 仅在不同群系交界处（或地图边缘）绘制过渡海岸/崖线，同群系内部绝不切开！
 		for e in range(6):
@@ -63,28 +67,30 @@ func _draw() -> void:
 				var p2 = points[(e + 1) % 6]
 				_draw_biome_border_edge(p1, p2, biome, center)
 				
-		# 步骤 D: 绘制微弱高雅的战术六边形角点标记 (仅顶点微光点，绝不遮挡连片大地)
-		for pt in points:
-			draw_circle(pt, 1.5, Color(1.0, 1.0, 1.0, 0.15))
+		# 步骤 D: 战术六边形微弱顶点标记 (近景才渲染微光点)
+		if current_lod >= 1:
+			for pt in points:
+				draw_circle(pt, 1.5, Color(1.0, 1.0, 1.0, 0.15))
 			
 		# 超出领地范围瓦片叠加探索迷雾
 		if not in_territory:
 			draw_colored_polygon(points, Color(0.04, 0.06, 0.10, 0.60))
 			
-	# 2. 绘制文明领地外沿金色发光边界线 (Territory Borders)
+	# 2. 绘制文明领地最外圈发光金边 (Territory Outermost Borders Only)
+	# 严格判别：仅当该格在领地内，而相邻格处于领地之外时，才描画该分界边，内部无缝无任何金边
 	for coord in generated_hexes.keys():
 		if GameState.is_hex_in_territory(coord.x, coord.y):
 			var c = HexWorldGenerator.hex_to_pixel(coord.x, coord.y)
 			for i in range(6):
-				var neighbor = coord + HEX_DIRS[i]
+				var neighbor = coord + HEX_EDGE_DIRS[i]
 				if not GameState.is_hex_in_territory(neighbor.x, neighbor.y):
 					var a1 = deg_to_rad(60.0 * i - 30.0)
 					var a2 = deg_to_rad(60.0 * ((i + 1) % 6) - 30.0)
 					var p1 = c + Vector2(cos(a1), sin(a1)) * HexWorldGenerator.HEX_RADIUS
 					var p2 = c + Vector2(cos(a2), sin(a2)) * HexWorldGenerator.HEX_RADIUS
-					# 领地外发光金色线条 (光晕底线 + 锐利金线)
-					draw_line(p1, p2, Color(1.0, 0.85, 0.2, 0.35), 6.0)
-					draw_line(p1, p2, Color(1.0, 0.92, 0.40, 0.98), 2.8)
+					# 领地最外圈发光金色线条 (光晕底线 + 锐利金线)
+					draw_line(p1, p2, Color(1.0, 0.85, 0.2, 0.35), 5.0)
+					draw_line(p1, p2, Color(1.0, 0.92, 0.40, 0.98), 2.2)
 
 # 群系连通融合绘制系统
 func _draw_connected_biome_terrain(center: Vector2, points: PackedVector2Array, biome: HexWorldGenerator.BiomeType, same_neighbors: Array[int], _q: int, _r: int) -> void:

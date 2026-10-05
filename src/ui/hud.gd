@@ -16,26 +16,27 @@ var current_tab: CategoryTab = CategoryTab.NONE
 
 # 顶部导航与状态条
 @onready var era_label = $Margin/MainVBox/TopBarPanel/Margin/HBox/EraLabel
-@onready var territory_label = $Margin/MainVBox/TopBarPanel/Margin/HBox/TerritoryLabel
-@onready var biome_label = $Margin/MainVBox/TopBarPanel/Margin/HBox/BiomeLabel
-@onready var notice_label = $Margin/MainVBox/TopBarPanel/Margin/HBox/NoticeLabel
-@onready var elements_summary_label = $Margin/MainVBox/TopBarPanel/Margin/HBox/ElementsChip/ElementsSummaryLabel
+@onready var save_dot = $Margin/MainVBox/TopBarPanel/Margin/HBox/SaveDot
 @onready var btn_menu = $Margin/MainVBox/TopBarPanel/Margin/HBox/BtnMenu
 
-# 顶部资源胶囊数值标签
-@onready var val_wood = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWood/Val
-@onready var val_stick = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipStick/Val
+# 顶部资源数值标签 (仅保留 5 项核心资源: 石头、木头、燧石、矿、燃料)
+@onready var chip_stone = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipStone
 @onready var val_stone = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipStone/Val
+
+@onready var chip_wood = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWood
+@onready var val_wood = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWood/Val
+
+@onready var chip_flint = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFlint
 @onready var val_flint = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFlint/Val
-@onready var val_water = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWater/Val
-@onready var val_charcoal = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipCharcoal/Val
-@onready var val_malachite = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipMalachite/Val
-@onready var val_copper = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipCopper/Val
-@onready var val_iron = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipIron/Val
-@onready var val_salt = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipSalt/Val
-@onready var val_sulfur = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipSulfur/Val
+
+@onready var chip_ore = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipOre
+@onready var val_ore = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipOre/Val
+
+@onready var chip_fuel = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFuel
+@onready var val_fuel = $Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFuel/Val
 
 # 右侧作业队列面板 (Task Queue Dock)
+@onready var right_box = $Margin/MainVBox/BodyHBox/RightBox
 @onready var task_queue_count = $Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/Header/QueueCount
 @onready var task_active_title = $Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/ActiveTaskBox/HBox/ActiveTitle
 @onready var task_btn_cancel_active = $Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/ActiveTaskBox/HBox/BtnCancelActive
@@ -57,12 +58,13 @@ var current_tab: CategoryTab = CategoryTab.NONE
 @onready var btn_close_drawer = $Margin/MainVBox/BottomArea/ActionDrawer/Margin/VBox/Header/BtnCloseDrawer
 @onready var drawer_grid = $Margin/MainVBox/BottomArea/ActionDrawer/Margin/VBox/Scroll/DrawerGrid
 
-@onready var btn_tab_lab = $Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox/BtnTabLab
-@onready var btn_tab_tech = $Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox/BtnTabTech
-@onready var btn_tab_craft = $Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox/BtnTabCraft
-@onready var btn_tab_build = $Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox/BtnTabBuild
-@onready var btn_tab_production = $Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox/BtnTabProduction
-@onready var btn_tab_inventory = $Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox/BtnTabInventory
+@onready var btn_tab_lab = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/BtnTabLab
+@onready var btn_tab_tech = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/BtnTabTech
+@onready var btn_tab_craft = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/BtnTabCraft
+@onready var btn_tab_build = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/BtnTabBuild
+@onready var btn_tab_production = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/BtnTabProduction
+@onready var btn_tab_inventory = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/BtnTabInventory
+@onready var queue_badge = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/QueueBadge
 
 # 模态弹窗系统
 @onready var periodic_modal = $PeriodicTableModal
@@ -134,6 +136,12 @@ func _ready() -> void:
 	btn_tab_inventory.pressed.connect(func(): _toggle_category(CategoryTab.INVENTORY))
 	btn_close_drawer.pressed.connect(_close_drawer)
 	
+	# 悬停在行囊按钮上时动态显示全量资源详情提示
+	btn_tab_inventory.mouse_entered.connect(_update_inventory_tooltip)
+	
+	# 存档状态点 (8px 圆点，默认灰色成功，失败红色)
+	_setup_save_dot()
+	
 	# 熔炉快速操作
 	btn_add_fuel.pressed.connect(_on_btn_add_fuel_pressed)
 	btn_add_malachite.pressed.connect(_on_btn_add_malachite_pressed)
@@ -142,11 +150,8 @@ func _ready() -> void:
 	furnace_panel.visible = false
 	action_drawer.visible = false
 	_update_inventory_ui()
-	_update_elements_ui()
 	_update_era_label()
 	_update_task_queue_ui()
-	
-	notice_label.text = "点击地表排队作业 · 下方分类菜单建造与制作 · [ESC]系统菜单"
 
 func _toggle_category(tab: CategoryTab) -> void:
 	if tab == CategoryTab.TECH:
@@ -658,12 +663,52 @@ func _process(_delta: float) -> void:
 			(str(buf.components) if buf.components.size() > 0 else "空")
 		]
 
+func _setup_save_dot() -> void:
+	if save_dot:
+		save_dot.custom_minimum_size = Vector2(8, 8)
+		save_dot.mouse_filter = Control.MOUSE_FILTER_STOP
+		save_dot.tooltip_text = "自动存档就绪 (正常运行)"
+		_set_save_dot_status(true, "自动存档就绪 (正常运行)")
+		
+		# 监听保存信号与自定义绘制
+		if not save_dot.is_connected("draw", _on_save_dot_draw):
+			save_dot.draw.connect(_on_save_dot_draw)
+
+var _save_dot_color: Color = Color(0.55, 0.58, 0.62, 1.0) # 默认灰
+
+func _on_save_dot_draw() -> void:
+	if save_dot:
+		save_dot.draw_circle(Vector2(4, 4), 4.0, _save_dot_color)
+
+func _set_save_dot_status(is_success: bool, status_tip: String) -> void:
+	if is_success:
+		_save_dot_color = Color(0.55, 0.58, 0.62, 1.0) # 成功用灰
+	else:
+		_save_dot_color = Color(0.92, 0.28, 0.28, 1.0) # 失败用红
+	if save_dot:
+		save_dot.tooltip_text = status_tip
+		save_dot.queue_redraw()
+
 func _update_task_queue_ui() -> void:
 	var q_size = GameState.task_queue.size()
+	var has_tasks = not GameState.active_task.is_empty() or q_size > 0
+	
+	# 更新底栏「行囊」旁的数字徽标
+	if queue_badge:
+		queue_badge.text = str(q_size + (1 if not GameState.active_task.is_empty() else 0))
+		queue_badge.visible = has_tasks
+		
+	# 队列为空时不画右边面板；有任务时才从右侧展开 (宽 280)
+	if right_box:
+		right_box.visible = has_tasks
+		
+	if not has_tasks:
+		return
+		
 	task_queue_count.text = "%d 待办" % q_size
 	
 	if GameState.active_task.is_empty():
-		task_active_title.text = "作业队列 空闲中"
+		task_active_title.text = "空闲中"
 		task_progress_box.visible = false
 		task_btn_cancel_active.visible = false
 	else:
@@ -680,7 +725,7 @@ func _update_task_queue_ui() -> void:
 		var task_id = q_task.get("id")
 		var chip = Button.new()
 		chip.text = "#%d %s (%.1fs) ✕" % [i + 1, q_task.get("title", "工作"), q_task.get("time_required", 1.0)]
-		chip.custom_minimum_size = Vector2(0, 26)
+		chip.custom_minimum_size = Vector2(0, 24)
 		chip.add_theme_font_size_override("font_size", 11)
 		chip.tooltip_text = "点击从队列中撤销此工作"
 		chip.pressed.connect(func(): GameState.cancel_task(task_id))
@@ -692,47 +737,62 @@ func _on_task_progress_updated(_task: Dictionary, percent: float, remaining_time
 		task_active_time.text = "%.1fs" % remaining_time
 
 func _update_inventory_ui() -> void:
-	# 刷新顶部资源胶囊数值
-	val_wood.text = str(GameState.inventory.get_count("wood"))
-	val_stick.text = str(GameState.inventory.get_count("stick"))
+	# 顶栏只保留五个核心资源: 石头、木头、燧石、矿、燃料
 	val_stone.text = str(GameState.inventory.get_count("stone"))
+	val_wood.text = str(GameState.inventory.get_count("wood") + GameState.inventory.get_count("stick"))
 	val_flint.text = str(GameState.inventory.get_count("flint"))
-	val_water.text = str(GameState.inventory.get_count("water"))
-	val_charcoal.text = str(GameState.inventory.get_count("charcoal"))
-	val_malachite.text = str(GameState.inventory.get_count("malachite"))
-	val_copper.text = str(GameState.inventory.get_count("copper"))
-	val_iron.text = str(GameState.inventory.get_count("iron"))
-	val_salt.text = str(GameState.inventory.get_count("halite"))
-	val_sulfur.text = str(GameState.inventory.get_count("sulfur"))
+	
+	# 矿石统计 (孔雀石 + 赤铁矿 + 黄铁矿 + 闪锌矿 + 铝土矿 + 沥青铀矿)
+	var total_ores = (
+		GameState.inventory.get_count("malachite") +
+		GameState.inventory.get_count("iron_ore") +
+		GameState.inventory.get_count("pyrite") +
+		GameState.inventory.get_count("sphalerite") +
+		GameState.inventory.get_count("bauxite") +
+		GameState.inventory.get_count("pitchblende")
+	)
+	val_ore.text = str(total_ores)
+	
+	# 燃料统计 (木炭 + 煤炭 + 焦炭)
+	var total_fuels = (
+		GameState.inventory.get_count("charcoal") +
+		GameState.inventory.get_count("coal") +
+		GameState.inventory.get_count("coke")
+	)
+	val_fuel.text = str(total_fuels)
+	
+	# 悬停在行囊上显示全量资源
+	_update_inventory_tooltip()
 	
 	# 如果当前抽屉打开，实时刷新抽屉内容
 	if action_drawer.visible:
 		_populate_drawer(current_tab)
 
-func _update_elements_ui() -> void:
-	elements_summary_label.text = "%d/118" % GameState.discovered_elements.size()
+func _update_inventory_tooltip() -> void:
+	if not btn_tab_inventory:
+		return
+	var items = GameState.inventory.items
+	var lines: Array[String] = ["【行囊物资储备清单】[B]"]
+	if items.is_empty():
+		lines.append("当前行囊空空如也")
+	else:
+		var count_shown = 0
+		for k in items.keys():
+			var cnt = items[k]
+			if cnt > 0:
+				var iname = DataDB.get_item(k).get("name", k)
+				lines.append("• %s: %d" % [iname, cnt])
+				count_shown += 1
+				if count_shown >= 25:
+					lines.append("... (更多按 [B] 打开网格背包查看)")
+					break
+	btn_tab_inventory.tooltip_text = "\n".join(lines)
 
 func _update_era_label() -> void:
 	era_label.text = "%s" % GameState.ERA_NAMES[GameState.current_era]
-	if territory_label:
-		territory_label.text = "领地: %d 格" % GameState.get_current_territory_radius()
 
-func update_current_biome(biome: int) -> void:
-	var b_name = "生机原野平原"
-	var col = Color(0.4, 0.9, 0.4)
-	if biome == 1:
-		b_name = "熔岩地热带"
-		col = Color(1.0, 0.45, 0.3)
-	elif biome == 2:
-		b_name = "高盐卤水湖"
-		col = Color(0.4, 0.8, 1.0)
-	elif biome == 3:
-		b_name = "原始古橡林"
-		col = Color(0.2, 0.9, 0.3)
-		
-	if biome_label:
-		biome_label.text = b_name
-		biome_label.modulate = col
+func update_current_biome(_biome: int) -> void:
+	pass
 
 func _on_era_advanced(_old: int, _new: int, _name: String) -> void:
 	_update_era_label()
@@ -741,14 +801,16 @@ func _on_item_changed(_key: String, _count: int) -> void:
 	_update_inventory_ui()
 
 func _on_element_discovered(_num: int, _key: String) -> void:
-	_update_elements_ui()
+	pass
 
 func _on_notification_posted(msg: String, col: Color) -> void:
-	notice_label.text = msg
-	notice_label.modulate = col
-	var tw = create_tween()
-	notice_label.scale = Vector2(1.08, 1.08)
-	tw.tween_property(notice_label, "scale", Vector2.ONE, 0.2)
+	# 检查是否为存档成功或失败通知
+	if msg.contains("存档") or msg.contains("保存"):
+		var is_fail = msg.contains("失败") or col == Color.RED
+		_set_save_dot_status(not is_fail, msg)
+	else:
+		if save_dot:
+			save_dot.tooltip_text = msg
 
 func show_furnace_ui(furnace: Node2D) -> void:
 	current_nearby_furnace = furnace

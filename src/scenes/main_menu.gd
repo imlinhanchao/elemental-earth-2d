@@ -52,9 +52,12 @@ func _ready() -> void:
 	else:
 		btn_new_game.grab_focus()
 		
-	for arg in OS.get_cmdline_args():
-		if arg == "--screenshot":
-			_capture_screenshot_after_delay()
+	# 如果携带 --screenshot 参数，直接跳转至大世界执行实机抓取
+	var all_args = OS.get_cmdline_user_args() + OS.get_cmdline_args()
+	for arg in all_args:
+		if arg.contains("screenshot"):
+			get_tree().change_scene_to_file("res://src/scenes/world.tscn")
+			return
 
 func _capture_screenshot_after_delay() -> void:
 	await get_tree().create_timer(0.8).timeout

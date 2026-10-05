@@ -77,8 +77,9 @@ func _ready() -> void:
 	
 	# 如果携带 --screenshot 参数，则在指定延时后截取对应画面并退出
 	var all_args = OS.get_cmdline_user_args() + OS.get_cmdline_args()
+	print("[Screenshot Debug] all_args = ", all_args)
 	for arg in all_args:
-		if arg.begins_with("--screenshot"):
+		if arg.contains("screenshot"):
 			_capture_screenshot_after_delay(arg)
 			break
 
@@ -91,6 +92,10 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 		hud.inventory_modal.open()
 	elif arg_name == "--screenshot-craft":
 		hud._toggle_category(hud.CategoryTab.CRAFT)
+	elif arg_name == "--screenshot-hud":
+		pass # 保持主界面纯净 HUD 与大世界大视野
+	elif arg_name == "--screenshot-hud-queue":
+		GameState.queue_hex_forage(Vector2i(0, 0), "生机原野", Vector2.ZERO)
 	else:
 		hud.tech_modal.open()
 		
@@ -170,7 +175,12 @@ func _process(delta: float) -> void:
 		camera.position += dir * (camera_speed / camera.zoom.x) * delta
 	
 	# 平滑缩放过渡
+	var prev_zoom_x = camera.zoom.x
 	camera.zoom = camera.zoom.lerp(target_zoom, delta * 12.0)
+	var new_lod = 1 if camera.zoom.x >= 0.85 else 0
+	if terrain_layer and terrain_layer.current_lod != new_lod:
+		terrain_layer.current_lod = new_lod
+		terrain_layer.queue_redraw()
 	
 	# 自动存档周期计时
 	var interval = float(SettingsManager.get_setting("auto_save_interval", 45.0))

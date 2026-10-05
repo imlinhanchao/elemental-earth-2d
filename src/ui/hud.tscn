@@ -64,10 +64,10 @@ theme_override_constants/margin_bottom = 4
 
 [node name="HBox" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 16
 
 [node name="EraIcon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
-custom_minimum_size = Vector2(22, 22)
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("9_era")
@@ -82,68 +82,16 @@ text = "石器时代"
 [node name="VSep1" type="VSeparator" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
 layout_mode = 2
 
-[node name="TerritoryLabel" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
-theme_override_font_sizes/font_size = 13
-text = "领地: 5 格"
-
-[node name="VSep2" type="VSeparator" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
-layout_mode = 2
-
-[node name="BiomeLabel" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
-theme_override_font_sizes/font_size = 13
-text = "生机原野平原"
-
-[node name="VSep3" type="VSeparator" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
-layout_mode = 2
-
 [node name="ResourceRibbon" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
 layout_mode = 2
-theme_override_constants/separation = 10
-
-[node name="ChipWood" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWood"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-size_flags_vertical = 4
-texture = ExtResource("20_wood")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWood"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "0"
-
-[node name="ChipStick" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipStick"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-size_flags_vertical = 4
-texture = ExtResource("21_stick")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipStick"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "0"
+theme_override_constants/separation = 16
 
 [node name="ChipStone" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipStone"]
-custom_minimum_size = Vector2(18, 18)
+custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("22_stone")
@@ -155,12 +103,29 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "0"
 
+[node name="ChipWood" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
+layout_mode = 2
+theme_override_constants/separation = 4
+
+[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWood"]
+custom_minimum_size = Vector2(16, 16)
+layout_mode = 2
+size_flags_vertical = 4
+texture = ExtResource("20_wood")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWood"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "0"
+
 [node name="ChipFlint" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFlint"]
-custom_minimum_size = Vector2(18, 18)
+custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("23_flint")
@@ -172,153 +137,52 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "0"
 
-[node name="ChipWater" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
+[node name="ChipOre" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWater"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-size_flags_vertical = 4
-texture = ExtResource("24_water")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWater"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "0"
-
-[node name="ChipCharcoal" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipCharcoal"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-size_flags_vertical = 4
-texture = ExtResource("25_charcoal")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipCharcoal"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "0"
-
-[node name="ChipMalachite" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipMalachite"]
-custom_minimum_size = Vector2(18, 18)
+[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipOre"]
+custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("26_malachite")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipMalachite"]
+[node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipOre"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "0"
 
-[node name="ChipCopper" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
+[node name="ChipFuel" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
-[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipCopper"]
-custom_minimum_size = Vector2(18, 18)
+[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFuel"]
+custom_minimum_size = Vector2(16, 16)
 layout_mode = 2
 size_flags_vertical = 4
-texture = ExtResource("27_copper")
+texture = ExtResource("25_charcoal")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipCopper"]
+[node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFuel"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "0"
 
-[node name="ChipIron" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipIron"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-size_flags_vertical = 4
-texture = ExtResource("28_iron")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipIron"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "0"
-
-[node name="ChipSalt" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipSalt"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-size_flags_vertical = 4
-texture = ExtResource("29_salt")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipSalt"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "0"
-
-[node name="ChipSulfur" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipSulfur"]
-custom_minimum_size = Vector2(18, 18)
-layout_mode = 2
-size_flags_vertical = 4
-texture = ExtResource("30_sulfur")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipSulfur"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "0"
-
-[node name="NoticeLabel" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
+[node name="Spacer" type="Control" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
-theme_override_font_sizes/font_size = 13
-horizontal_alignment = 2
-text = "探索中"
 
-[node name="ElementsChip" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ElementsChip"]
-custom_minimum_size = Vector2(18, 18)
+[node name="SaveDot" type="Control" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
+custom_minimum_size = Vector2(8, 8)
 layout_mode = 2
 size_flags_vertical = 4
-texture = ExtResource("10_pt")
-expand_mode = 1
-stretch_mode = 5
-
-[node name="ElementsSummaryLabel" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ElementsChip"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
-theme_override_font_sizes/font_size = 13
-text = "0/118"
+tooltip_text = "自动保存就绪"
 
 [node name="BtnMenu" type="Button" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
-custom_minimum_size = Vector2(32, 32)
+custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
 tooltip_text = "系统菜单 [ESC]"
 icon = ExtResource("11_menu")
@@ -337,6 +201,7 @@ size_flags_horizontal = 3
 mouse_filter = 2
 
 [node name="RightBox" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox"]
+visible = false
 custom_minimum_size = Vector2(280, 0)
 layout_mode = 2
 mouse_filter = 2
@@ -348,14 +213,14 @@ size_flags_vertical = 3
 
 [node name="Margin" type="MarginContainer" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
 
 [node name="VBox" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 6
 
 [node name="Header" type="HBoxContainer" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox"]
 layout_mode = 2
@@ -363,8 +228,8 @@ layout_mode = 2
 [node name="Title" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/Header"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
-theme_override_font_sizes/font_size = 14
-text = "作业调度队列"
+theme_override_font_sizes/font_size = 13
+text = "进行中的作业"
 
 [node name="Spacer" type="Control" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/Header"]
 layout_mode = 2
@@ -373,7 +238,7 @@ size_flags_horizontal = 3
 [node name="QueueCount" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/Header"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
-theme_override_font_sizes/font_size = 12
+theme_override_font_sizes/font_size = 11
 text = "0 待办"
 
 [node name="ActiveTaskBox" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox"]
@@ -386,15 +251,15 @@ layout_mode = 2
 [node name="ActiveTitle" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/ActiveTaskBox/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 13
-text = "作业队列 空闲中"
+theme_override_font_sizes/font_size = 12
+text = "作业中"
 
 [node name="BtnCancelActive" type="Button" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/ActiveTaskBox/HBox"]
 visible = false
-custom_minimum_size = Vector2(22, 22)
+custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 tooltip_text = "取消当前进行中的作业"
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "✕"
 
 [node name="ProgressHBox" type="HBoxContainer" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/ActiveTaskBox"]
@@ -403,7 +268,7 @@ layout_mode = 2
 theme_override_constants/separation = 6
 
 [node name="ProgressBar" type="ProgressBar" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/ActiveTaskBox/ProgressHBox"]
-custom_minimum_size = Vector2(0, 10)
+custom_minimum_size = Vector2(0, 8)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 4
@@ -411,9 +276,9 @@ max_value = 1.0
 show_percentage = false
 
 [node name="ActiveTime" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/ActiveTaskBox/ProgressHBox"]
-custom_minimum_size = Vector2(40, 0)
+custom_minimum_size = Vector2(36, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "0.0s"
 horizontal_alignment = 2
 
@@ -421,14 +286,14 @@ horizontal_alignment = 2
 layout_mode = 2
 
 [node name="QueueScroll" type="ScrollContainer" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox"]
-custom_minimum_size = Vector2(0, 160)
+custom_minimum_size = Vector2(0, 120)
 layout_mode = 2
 size_flags_vertical = 3
 
 [node name="QueueList" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/QueueScroll"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_constants/separation = 6
+theme_override_constants/separation = 4
 
 [node name="FurnacePanel" type="PanelContainer" parent="Margin/MainVBox/BodyHBox/RightBox"]
 visible = false
@@ -526,72 +391,88 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 theme_override_constants/separation = 14
 
-[node name="BottomDockPanel" type="PanelContainer" parent="Margin/MainVBox/BottomArea"]
-custom_minimum_size = Vector2(0, 52)
-layout_mode = 2
-
-[node name="Margin" type="MarginContainer" parent="Margin/MainVBox/BottomArea/BottomDockPanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 4
-
-[node name="DockHBox" type="HBoxContainer" parent="Margin/MainVBox/BottomArea/BottomDockPanel/Margin"]
+[node name="BottomCenterRow" type="HBoxContainer" parent="Margin/MainVBox/BottomArea"]
 layout_mode = 2
 alignment = 1
-theme_override_constants/separation = 14
 
-[node name="BtnTabLab" type="Button" parent="Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox"]
-custom_minimum_size = Vector2(120, 42)
+[node name="BottomDockPanel" type="PanelContainer" parent="Margin/MainVBox/BottomArea/BottomCenterRow"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+
+[node name="Margin" type="MarginContainer" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 2
+
+[node name="DockHBox" type="HBoxContainer" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 10
+
+[node name="BtnTabLab" type="Button" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
+custom_minimum_size = Vector2(105, 34)
 layout_mode = 2
 tooltip_text = "实验分类 [L] - 烧瓶微观反应与元素图谱"
+theme_override_font_sizes/font_size = 12
 icon = ExtResource("12_tab_lab")
 expand_icon = true
 text = "实验 [L]"
 
-[node name="BtnTabTech" type="Button" parent="Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox"]
-custom_minimum_size = Vector2(120, 42)
+[node name="BtnTabTech" type="Button" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
+custom_minimum_size = Vector2(105, 34)
 layout_mode = 2
 tooltip_text = "科技分类 [K] - 研发各时代前沿科学技术"
+theme_override_font_sizes/font_size = 12
 icon = ExtResource("17_tab_tech")
 expand_icon = true
 text = "科技 [K]"
 
-[node name="BtnTabCraft" type="Button" parent="Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox"]
-custom_minimum_size = Vector2(120, 42)
+[node name="BtnTabCraft" type="Button" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
+custom_minimum_size = Vector2(105, 34)
 layout_mode = 2
 tooltip_text = "制作分类 [T] - 装备、斧具与地质镐锻造"
+theme_override_font_sizes/font_size = 12
 icon = ExtResource("13_tab_craft")
 expand_icon = true
 text = "制作 [T]"
 
-[node name="BtnTabBuild" type="Button" parent="Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox"]
-custom_minimum_size = Vector2(120, 42)
+[node name="BtnTabBuild" type="Button" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
+custom_minimum_size = Vector2(105, 34)
 layout_mode = 2
 tooltip_text = "建造分类 [C] - 陶土熔炉与反应塔巨构工程"
+theme_override_font_sizes/font_size = 12
 icon = ExtResource("14_tab_build")
 expand_icon = true
 text = "建造 [C]"
 
-[node name="BtnTabProduction" type="Button" parent="Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox"]
-custom_minimum_size = Vector2(120, 42)
+[node name="BtnTabProduction" type="Button" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
+custom_minimum_size = Vector2(105, 34)
 layout_mode = 2
 tooltip_text = "生产分类 [R] - 高炉投料熔炼与工业自动化蓝图"
+theme_override_font_sizes/font_size = 12
 icon = ExtResource("15_tab_prod")
 expand_icon = true
 text = "生产 [R]"
 
-[node name="VSep" type="VSeparator" parent="Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox"]
+[node name="VSep" type="VSeparator" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
 layout_mode = 2
 
-[node name="BtnTabInventory" type="Button" parent="Margin/MainVBox/BottomArea/BottomDockPanel/Margin/DockHBox"]
-custom_minimum_size = Vector2(120, 42)
+[node name="BtnTabInventory" type="Button" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
+custom_minimum_size = Vector2(105, 34)
 layout_mode = 2
 tooltip_text = "行囊物资 [B] - 查看全部已收集材料储备"
+theme_override_font_sizes/font_size = 12
 icon = ExtResource("16_tab_inv")
 expand_icon = true
 text = "行囊 [B]"
+
+[node name="QueueBadge" type="Label" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_font_sizes/font_size = 12
+text = "0"
 
 [node name="PeriodicTableModal" parent="." instance=ExtResource("2_modal")]
 visible = false
