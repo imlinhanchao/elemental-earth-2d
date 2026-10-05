@@ -15,7 +15,10 @@ enum CategoryTab { NONE, LAB, TECH, CRAFT, BUILD, PRODUCTION, INVENTORY }
 var current_tab: CategoryTab = CategoryTab.NONE
 
 # 顶部导航与状态条
-@onready var era_label = $Margin/MainVBox/TopBarPanel/Margin/HBox/EraLabel
+@onready var telemetry_label = $Margin/MainVBox/TopBarPanel/Margin/HBox/CenterBox/TelemetryLabel
+@onready var badges_row = $Margin/MainVBox/TopBarPanel/Margin/HBox/CenterBox/BadgesRow
+@onready var logo_title = $Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoTextVBox/LogoTitle
+@onready var logo_sub = $Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoTextVBox/LogoSub
 @onready var save_dot = $Margin/MainVBox/TopBarPanel/Margin/HBox/SaveDot
 @onready var btn_menu = $Margin/MainVBox/TopBarPanel/Margin/HBox/BtnMenu
 
@@ -530,51 +533,97 @@ func _add_inventory_subitems() -> void:
 # 方案三界面样式初始化 (现代科学信息图 · 极简冷灰几何风)
 func _apply_scheme3_styling() -> void:
 	# 1. 顶栏悬浮胶囊 Ribbon (Floating Capsule Ribbon)
-	var top_box = ThemeStyler.create_pill_box(18, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER)
+	var top_box = ThemeStyler.create_pill_box(18, Color(0.045, 0.07, 0.12, 0.92), ThemeStyler.COLOR_BORDER)
 	top_box.content_margin_left = 16
 	top_box.content_margin_top = 4
 	top_box.content_margin_right = 16
 	top_box.content_margin_bottom = 4
 	$Margin/MainVBox/TopBarPanel.add_theme_stylebox_override("panel", top_box)
 	
-	if era_label:
-		era_label.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
-		era_label.add_theme_font_size_override("font_size", 13)
+	if logo_title:
+		logo_title.add_theme_color_override("font_color", Color.WHITE)
+		logo_title.add_theme_font_size_override("font_size", 13)
+	if logo_sub:
+		logo_sub.add_theme_color_override("font_color", Color(0.22, 0.74, 0.97, 1.0))
+		logo_sub.add_theme_font_size_override("font_size", 9)
+	if telemetry_label:
+		telemetry_label.add_theme_color_override("font_color", Color(0.70, 0.80, 0.92, 0.9))
+		telemetry_label.add_theme_font_size_override("font_size", 10)
 	
-	# 2. 底栏悬浮交互坞 (Floating Action Dock)
-	var dock_box = ThemeStyler.create_pill_box(22, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER)
-	dock_box.content_margin_left = 14
+	_setup_element_badges()
+	
+	# 2. 底栏悬浮交互坞 (Floating Action Dock - 纯白亮瓷发光胶囊岛)
+	var dock_box = StyleBoxFlat.new()
+	dock_box.bg_color = Color(0.97, 0.98, 1.0, 0.98) # 纯净瓷白悬浮卡片
+	dock_box.border_color = Color(0.85, 0.90, 0.96, 0.95)
+	dock_box.border_width_left = 1
+	dock_box.border_width_top = 1
+	dock_box.border_width_right = 1
+	dock_box.border_width_bottom = 1
+	dock_box.corner_radius_top_left = 24
+	dock_box.corner_radius_top_right = 24
+	dock_box.corner_radius_bottom_left = 24
+	dock_box.corner_radius_bottom_right = 24
+	dock_box.shadow_color = Color(0, 0, 0, 0.35)
+	dock_box.shadow_size = 14
+	dock_box.shadow_offset = Vector2(0, 4)
+	dock_box.content_margin_left = 16
+	dock_box.content_margin_right = 16
 	dock_box.content_margin_top = 4
-	dock_box.content_margin_right = 14
 	dock_box.content_margin_bottom = 4
 	$Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel.add_theme_stylebox_override("panel", dock_box)
 	
-	# 底栏按钮悬停与激活态 (Pill Buttons)
+	# 底栏按钮悬停与激活态 (高对比冷灰极简深色文字与图标)
 	var tab_buttons = [btn_tab_lab, btn_tab_tech, btn_tab_craft, btn_tab_build, btn_tab_production, btn_tab_inventory]
 	for btn in tab_buttons:
 		if btn:
-			var btn_norm = ThemeStyler.create_pill_box(14, Color(0.09, 0.12, 0.18, 0.8), ThemeStyler.COLOR_BORDER)
+			var btn_norm = StyleBoxFlat.new()
+			btn_norm.bg_color = Color(0, 0, 0, 0.0)
+			btn_norm.corner_radius_top_left = 12
+			btn_norm.corner_radius_top_right = 12
+			btn_norm.corner_radius_bottom_left = 12
+			btn_norm.corner_radius_bottom_right = 12
 			btn_norm.content_margin_left = 10
 			btn_norm.content_margin_right = 10
 			btn_norm.content_margin_top = 4
 			btn_norm.content_margin_bottom = 4
-			var btn_hov = ThemeStyler.create_pill_box(14, Color(0.13, 0.18, 0.26, 0.95), ThemeStyler.COLOR_BORDER_FOCUS)
+
+			var btn_hov = StyleBoxFlat.new()
+			btn_hov.bg_color = Color(0.22, 0.74, 0.97, 0.16)
+			btn_hov.border_color = Color(0.22, 0.74, 0.97, 0.8)
+			btn_hov.border_width_left = 1
+			btn_hov.border_width_top = 1
+			btn_hov.border_width_right = 1
+			btn_hov.border_width_bottom = 1
+			btn_hov.corner_radius_top_left = 12
+			btn_hov.corner_radius_top_right = 12
+			btn_hov.corner_radius_bottom_left = 12
+			btn_hov.corner_radius_bottom_right = 12
 			btn_hov.content_margin_left = 10
 			btn_hov.content_margin_right = 10
 			btn_hov.content_margin_top = 4
 			btn_hov.content_margin_bottom = 4
-			var btn_press = ThemeStyler.create_pill_box(14, Color(0.06, 0.09, 0.14, 1.0), ThemeStyler.COLOR_ACCENT)
+
+			var btn_press = StyleBoxFlat.new()
+			btn_press.bg_color = Color(0.22, 0.74, 0.97, 0.32)
+			btn_press.corner_radius_top_left = 12
+			btn_press.corner_radius_top_right = 12
+			btn_press.corner_radius_bottom_left = 12
+			btn_press.corner_radius_bottom_right = 12
 			btn_press.content_margin_left = 10
 			btn_press.content_margin_right = 10
 			btn_press.content_margin_top = 4
 			btn_press.content_margin_bottom = 4
+
 			btn.add_theme_stylebox_override("normal", btn_norm)
 			btn.add_theme_stylebox_override("hover", btn_hov)
 			btn.add_theme_stylebox_override("pressed", btn_press)
 			btn.add_theme_stylebox_override("focus", btn_hov)
 			btn.add_theme_font_size_override("font_size", 12)
-			btn.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
-			btn.add_theme_color_override("font_hover_color", Color.WHITE)
+			btn.add_theme_color_override("font_color", Color(0.08, 0.12, 0.20, 1.0))
+			btn.add_theme_color_override("font_hover_color", Color(0.02, 0.38, 0.65, 1.0))
+			btn.add_theme_color_override("icon_normal_color", Color(0.12, 0.18, 0.28, 1.0))
+			btn.add_theme_color_override("icon_hover_color", Color(0.02, 0.45, 0.85, 1.0))
 	
 	# 队列数字胶囊徽标 (Queue Badge)
 	if queue_badge:
@@ -939,7 +988,58 @@ func _update_inventory_tooltip() -> void:
 	btn_tab_inventory.tooltip_text = "\n".join(lines)
 
 func _update_era_label() -> void:
-	era_label.text = "%s" % GameState.ERA_NAMES[GameState.current_era]
+	if telemetry_label:
+		var terr_radius = GameState.get_current_territory_radius()
+		var terr_count = (3 * terr_radius * (terr_radius + 1) + 1)
+		var disc_count = GameState.discovered_elements.size()
+		var era_name = GameState.ERA_NAMES[GameState.current_era]
+		telemetry_label.text = "TERRITORY: %d  |  ELEMENTS DISCOVERED: %d/118  |  %s" % [terr_count, disc_count, era_name]
+
+# 初始化顶栏圆形 IUPAC 元素徽标列 (方案三 Scheme 3 核心科技象征)
+func _setup_element_badges() -> void:
+	if not badges_row:
+		return
+	for child in badges_row.get_children():
+		child.queue_free()
+	var badge_defs = [
+		{"sym": "H", "num": "1", "bg": Color(0.18, 0.78, 0.88)}, # Cyan
+		{"sym": "C", "num": "6", "bg": Color(0.24, 0.28, 0.35)}, # Slate
+		{"sym": "O", "num": "8", "bg": Color(0.92, 0.32, 0.32)}, # Coral
+		{"sym": "Cu", "num": "29", "bg": Color(0.85, 0.48, 0.18)}, # Copper
+		{"sym": "Fe", "num": "26", "bg": Color(0.78, 0.52, 0.14)}, # Amber
+		{"sym": "Au", "num": "79", "bg": Color(0.68, 0.55, 0.12)}, # Gold
+		{"sym": "Ag", "num": "47", "bg": Color(0.48, 0.55, 0.65)}, # Silver
+		{"sym": "He", "num": "2", "bg": Color(0.68, 0.28, 0.35)}  # Rose
+	]
+	for b in badge_defs:
+		var p = PanelContainer.new()
+		p.custom_minimum_size = Vector2(24, 24)
+		var style = StyleBoxFlat.new()
+		style.bg_color = b.bg
+		style.corner_radius_top_left = 12
+		style.corner_radius_top_right = 12
+		style.corner_radius_bottom_left = 12
+		style.corner_radius_bottom_right = 12
+		style.shadow_color = Color(0, 0, 0, 0.35)
+		style.shadow_size = 4
+		p.add_theme_stylebox_override("panel", style)
+		
+		var lbl = Label.new()
+		lbl.text = "%s%s" % [b.sym, _get_superscript(b.num)]
+		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		lbl.add_theme_font_size_override("font_size", 10)
+		lbl.add_theme_color_override("font_color", Color.WHITE)
+		p.add_child(lbl)
+		p.tooltip_text = "核心化学元素: %s (原子序号 %s)" % [b.sym, b.num]
+		badges_row.add_child(p)
+
+func _get_superscript(num: String) -> String:
+	var supers = {"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}
+	var res = ""
+	for c in num:
+		res += supers.get(c, c)
+	return res
 
 func update_current_biome(_biome: int) -> void:
 	pass

@@ -66,21 +66,49 @@ theme_override_constants/margin_bottom = 4
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="EraIcon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
-custom_minimum_size = Vector2(20, 20)
+[node name="LogoBox" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="LogoIcon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox"]
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_vertical = 4
-texture = ExtResource("9_era")
+texture = ExtResource("10_pt")
 expand_mode = 1
 stretch_mode = 5
 
-[node name="EraLabel" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
+[node name="LogoTextVBox" type="VBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
-text = "石器时代"
+alignment = 1
+theme_override_constants/separation = -2
 
-[node name="VSep1" type="VSeparator" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
+[node name="LogoTitle" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoTextVBox"]
 layout_mode = 2
+theme_override_font_sizes/font_size = 13
+text = "ELEMENTAL ODYSSEY"
+
+[node name="LogoSub" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoTextVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 9
+text = "// 元素纪元"
+
+[node name="CenterBox" type="VBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+theme_override_constants/separation = 2
+
+[node name="BadgesRow" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/CenterBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="TelemetryLabel" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/CenterBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 10
+horizontal_alignment = 1
+text = "TERRITORY: 48  |  ELEMENTS DISCOVERED: 0/118  |  石器时代"
 
 [node name="ResourceRibbon" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
 layout_mode = 2
@@ -170,10 +198,6 @@ stretch_mode = 5
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "0"
-
-[node name="Spacer" type="Control" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
-layout_mode = 2
-size_flags_horizontal = 3
 
 [node name="SaveDot" type="Control" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
 custom_minimum_size = Vector2(8, 8)

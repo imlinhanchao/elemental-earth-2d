@@ -105,9 +105,6 @@ func _draw() -> void:
 	# 应用弹性受击变换
 	draw_set_transform(Vector2.ZERO, anim_rotation, anim_scale)
 	
-	# 绘制相邻同类矿脉连接晶须与矿脉延伸 (Connecting Mineral Veins)
-	_draw_connecting_mineral_veins()
-	
 	# 绘制严密契合六边形（覆盖全瓦片）的高精度晶簇与地貌资源资产
 	match item_key:
 		"malachite":
@@ -145,48 +142,21 @@ func _draw() -> void:
 		_:
 			_draw_loose_stone()
 
-# 1. 孔雀石晶簇 (Emerald Green Hex Crystals)
+# 1. 孔雀石/铜矿晶簇 (Amber/Copper Faceted Crystals)
 func _draw_malachite_crystals() -> void:
-	# 地面暗绿色矿脉阴影
-	draw_circle(Vector2(0, 4), 22.0, Color(0.06, 0.18, 0.10, 0.6))
-	# 主晶簇 1: 向上凸起的晶尖棱柱
-	_draw_crystal_poly(Vector2(-8, -2), Vector2(14, 28), Color(0.12, 0.65, 0.35), Color(0.25, 0.92, 0.52))
-	# 主晶簇 2: 斜向晶簇
-	_draw_crystal_poly(Vector2(8, 2), Vector2(12, 22), Color(0.08, 0.52, 0.28), Color(0.20, 0.82, 0.45))
-	# 前置小晶簇
-	_draw_crystal_poly(Vector2(-2, 10), Vector2(10, 16), Color(0.16, 0.75, 0.42), Color(0.35, 0.98, 0.60))
+	_draw_crystal_poly(Vector2(-6, -2), Vector2(12, 24), Color(0.85, 0.48, 0.14), Color(0.98, 0.72, 0.25))
+	_draw_crystal_poly(Vector2(6, 2), Vector2(10, 18), Color(0.75, 0.38, 0.10), Color(0.95, 0.65, 0.20))
+	_draw_crystal_poly(Vector2(-1, 8), Vector2(8, 12), Color(0.90, 0.55, 0.18), Color(1.0, 0.82, 0.35))
 
-# 2. 赤铁矿多面岩 (Metallic Dark Red Hematite Rocks)
+# 2. 赤铁矿钢锭 (Metallic Stacked Ingots)
 func _draw_hematite_rocks() -> void:
-	draw_circle(Vector2(0, 4), 22.0, Color(0.15, 0.05, 0.05, 0.6)) # 阴影
-	# 主矿块
-	draw_colored_polygon([
-		Vector2(-16, 8), Vector2(-12, -14), Vector2(4, -18),
-		Vector2(16, -6), Vector2(18, 12), Vector2(2, 16)
-	], Color(0.55, 0.16, 0.14))
-	# 受光亮面
-	draw_colored_polygon([
-		Vector2(-12, -14), Vector2(4, -18), Vector2(16, -6), Vector2(2, -4)
-	], Color(0.78, 0.28, 0.22))
-	# 金属高光棱线
-	draw_line(Vector2(-12, -14), Vector2(2, -4), Color(0.95, 0.55, 0.45), 2.0)
-	draw_line(Vector2(4, -18), Vector2(2, -4), Color(0.95, 0.55, 0.45), 2.0)
+	_draw_metallic_ingot(Vector2(-6, 5), Vector2(15, 7), Color(0.28, 0.32, 0.40))
+	_draw_metallic_ingot(Vector2(6, 5), Vector2(15, 7), Color(0.32, 0.36, 0.45))
+	_draw_metallic_ingot(Vector2(0, -3), Vector2(17, 8), Color(0.38, 0.44, 0.52))
 
-# 3. 六边形饱满橡树 (Hexagon-Fitted Oak Tree)
+# 3. 碳质分子结构环 (Fullerene Carbon Molecular Ring)
 func _draw_hex_oak_tree() -> void:
-	# 树荫投影 (平铺半透明阴影)
-	draw_circle(Vector2(0, 14), 18.0, Color(0.05, 0.12, 0.06, 0.4))
-	# 树干
-	draw_rect(Rect2(-5, 0, 10, 16), Color(0.38, 0.22, 0.12))
-	draw_line(Vector2(-6, 20), Vector2(-12, 24), Color(0.32, 0.18, 0.10), 3.0) # 树根
-	draw_line(Vector2(6, 20), Vector2(12, 24), Color(0.32, 0.18, 0.10), 3.0)
-	# 蓬松树冠 (深层阴影绿)
-	draw_circle(Vector2(0, -6), 25.0, Color(0.14, 0.32, 0.16))
-	# 主树冠 (茂盛原野绿)
-	draw_circle(Vector2(0, -10), 22.0, Color(0.24, 0.52, 0.22))
-	# 顶部高光层 (向阳淡绿)
-	draw_circle(Vector2(-4, -14), 16.0, Color(0.38, 0.70, 0.30))
-	draw_circle(Vector2(5, -16), 11.0, Color(0.48, 0.78, 0.38))
+	_draw_carbon_molecule()
 
 # 4. 硫磺结晶 (Bright Yellow Sulfur)
 func _draw_sulfur_crystals() -> void:
@@ -280,6 +250,45 @@ func _draw_crystal_poly(pos: Vector2, size: Vector2, base_col: Color, light_col:
 func _draw_cube(pos: Vector2, s: float, col: Color) -> void:
 	draw_rect(Rect2(pos.x - s/2, pos.y - s/2, s, s), col)
 	draw_rect(Rect2(pos.x - s/2, pos.y - s/2, s, s), col.lightened(0.3), false, 1.5)
+
+# 梯形钢锭辅助绘制函数 (方案三 Fe 元素瓷卡标准图元)
+func _draw_metallic_ingot(pos: Vector2, size: Vector2, base_col: Color) -> void:
+	var w = size.x
+	var h = size.y
+	var pts = [
+		pos + Vector2(-w * 0.5, h * 0.5),
+		pos + Vector2(w * 0.5, h * 0.5),
+		pos + Vector2(w * 0.4, -h * 0.5),
+		pos + Vector2(-w * 0.4, -h * 0.5)
+	]
+	draw_colored_polygon(pts, base_col)
+	var top_pts = [
+		pos + Vector2(-w * 0.4, -h * 0.5),
+		pos + Vector2(w * 0.4, -h * 0.5),
+		pos + Vector2(w * 0.35, -h * 0.5 - 2.5),
+		pos + Vector2(-w * 0.35, -h * 0.5 - 2.5)
+	]
+	draw_colored_polygon(top_pts, base_col.lightened(0.35))
+	draw_line(pos + Vector2(-w * 0.4, -h * 0.5), pos + Vector2(w * 0.4, -h * 0.5), Color(0.9, 0.95, 1.0, 0.9), 1.5)
+
+# 富勒烯碳环分子结构辅助绘制函数 (方案三 C 元素瓷卡标准图元)
+func _draw_carbon_molecule() -> void:
+	var center = Vector2.ZERO
+	var r = 11.0
+	var ring_pts = PackedVector2Array()
+	for i in range(6):
+		var angle = deg_to_rad(60.0 * i)
+		ring_pts.append(center + Vector2(cos(angle), sin(angle)) * r)
+	for i in range(6):
+		var p1 = ring_pts[i]
+		var p2 = ring_pts[(i + 1) % 6]
+		draw_line(p1, p2, Color(0.25, 0.32, 0.42), 2.0)
+		draw_line(center, p1, Color(0.35, 0.45, 0.58), 1.5)
+	draw_circle(center, 5.0, Color(0.15, 0.20, 0.28))
+	draw_arc(center, 5.0, 0.0, TAU, 24, Color(0.50, 0.60, 0.75), 1.2)
+	for pt in ring_pts:
+		draw_circle(pt, 3.5, Color(0.20, 0.28, 0.38))
+		draw_circle(pt, 1.5, Color(0.80, 0.90, 1.0))
 
 # 8. 铝土矿床 (Bauxite Deposit - 温暖陶土红与圆润鲕状结核矿层)
 func _draw_bauxite_deposit() -> void:
