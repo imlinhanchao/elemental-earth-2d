@@ -115,6 +115,7 @@
     ],
     "required_techs": [
       "pottery",
+      "sifting_technology",
       "bronze_tool_crafting"
     ]
   },
@@ -145,7 +146,8 @@
       }
     ],
     "required_techs": [
-      "pottery"
+      "pottery",
+      "fire_starting"
     ],
     "time_required": 120
   },
@@ -240,7 +242,8 @@
     ],
     "required_techs": [
       "bronze_tool_crafting",
-      "high_temp_furnace"
+      "high_temp_furnace",
+      "mold_making"
     ],
     "time_required": 120
   },
@@ -370,7 +373,8 @@
       }
     ],
     "required_techs": [
-      "explosives"
+      "explosives",
+      "detonation_tech"
     ]
   },
   {
@@ -425,7 +429,9 @@
       }
     ],
     "required_techs": [
-      "glassworking"
+      "glassworking",
+      "steel_construction",
+      "mold_making"
     ]
   },
   {
@@ -551,7 +557,8 @@
       }
     ],
     "required_techs": [
-      "nuclear_physics"
+      "nuclear_physics",
+      "chrome_alloy_smithing"
     ]
   },
   {
@@ -570,7 +577,9 @@
       }
     ],
     "required_techs": [
-      "advanced_chemical_equipment"
+      "advanced_chemical_equipment",
+      "tenon_mortise_tech",
+      "brass_tool_crafting"
     ]
   },
   {
@@ -641,7 +650,7 @@
       }
     ],
     "required_techs": [
-      "stone_masonry"
+      "rammed_earth_technology"
     ]
   },
   {
@@ -660,8 +669,8 @@
       }
     ],
     "required_techs": [
-      "high_temp_furnace",
-      "iron_tool_crafting"
+      "roman_architecture",
+      "high_temp_furnace"
     ]
   },
   {
@@ -719,7 +728,8 @@
       }
     ],
     "required_techs": [
-      "precision_machinery"
+      "precision_machinery",
+      "high_pressure_tech"
     ]
   },
   {
@@ -739,7 +749,8 @@
     ],
     "required_techs": [
       "precision_machinery",
-      "gas_liquefaction"
+      "gas_liquefaction",
+      "detonation_tech"
     ]
   },
   {
@@ -758,7 +769,9 @@
       }
     ],
     "required_techs": [
-      "precision_machinery"
+      "precision_machinery",
+      "crystallization_tech",
+      "electrochemistry"
     ]
   }
 ]

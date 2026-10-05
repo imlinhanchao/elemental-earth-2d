@@ -347,7 +347,7 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 		style.border_width_bottom = 1
 		card.modulate = Color(1, 1, 1, 0.55)
 		if cost_lbl:
-			cost_lbl.text = "🔒 需: " + missing_prereqs[0] if not missing_prereqs.is_empty() else "未解锁"
+			cost_lbl.text = "🔒 需: " + " / ".join(missing_prereqs) if not missing_prereqs.is_empty() else "未解锁"
 			cost_lbl.add_theme_color_override("font_color", Color(0.7, 0.45, 0.45))
 		if btn_action:
 			btn_action.visible = false
