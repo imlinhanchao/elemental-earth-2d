@@ -11,10 +11,17 @@ static var settings: Dictionary = {
 	"sfx_volume": 1.0,
 	"fullscreen": false,
 	"auto_save_interval": 45.0,
-	"camera_drag_speed": 1.0
+	"camera_drag_speed": 1.0,
+	"tutorial_completed": false
 }
 
 static var _initialized: bool = false
+
+static func is_tutorial_completed() -> bool:
+	return bool(get_setting("tutorial_completed", false))
+
+static func set_tutorial_completed(completed: bool) -> void:
+	set_setting("tutorial_completed", completed)
 
 static func load_settings() -> void:
 	if not FileAccess.file_exists(SETTINGS_FILE):

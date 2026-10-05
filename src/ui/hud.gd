@@ -81,6 +81,7 @@ var current_tab: CategoryTab = CategoryTab.NONE
 @onready var settings_modal = $SettingsModal
 @onready var pause_menu = $PauseMenu
 @onready var inventory_modal = $InventoryModal
+@onready var tutorial_dock = $TutorialDock
 
 var current_nearby_furnace: Node2D = null
 
@@ -99,6 +100,8 @@ func _ready() -> void:
 	settings_modal.theme = sc_theme
 	pause_menu.theme = sc_theme
 	inventory_modal.theme = sc_theme
+	tutorial_dock.theme = sc_theme
+	tutorial_dock.visible = GameState.is_tutorial_active
 	
 	GameState.notification_posted.connect(_on_notification_posted)
 	GameState.element_discovered.connect(_on_element_discovered)

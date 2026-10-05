@@ -84,7 +84,7 @@ func _ready() -> void:
 		var target = SaveManager.pending_load_slot
 		SaveManager.pending_load_slot = ""
 		SaveManager.load_from_slot(target, self)
-	elif SaveManager.has_any_save() and GameState.inventory.items.is_empty() and GameState.current_era == 0 and GameState.discovered_elements.is_empty():
+	elif not GameState.is_tutorial_active and SaveManager.has_any_save() and GameState.inventory.items.is_empty() and GameState.current_era == 0 and GameState.discovered_elements.is_empty():
 		var latest = SaveManager.get_latest_save_slot()
 		if latest != "":
 			SaveManager.load_from_slot(latest, self)
@@ -119,6 +119,14 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 	elif arg_name == "--screenshot-codex":
 		hud.lab_modal.open()
 		hud.lab_modal._switch_tab(1)
+	elif arg_name == "--screenshot-tutorial":
+		GameState.start_tutorial()
+		hud.tutorial_dock.visible = true
+		camera.position = Vector2.ZERO
+		camera.zoom = Vector2(1.0, 1.0)
+		target_zoom = Vector2(1.0, 1.0)
+		camera.reset_smoothing()
+		terrain_layer.queue_redraw()
 	elif arg_name == "--screenshot-hud":
 		camera.position = Vector2.ZERO
 		camera.zoom = Vector2(1.0, 1.0)

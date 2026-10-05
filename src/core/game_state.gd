@@ -27,6 +27,13 @@ signal tile_depleted(hex: Vector2i)
 signal tile_respawned(hex: Vector2i)
 signal structure_built(structure_key: String, hex: Vector2i)
 
+signal tutorial_step_changed(step: int)
+signal tutorial_state_changed(active: bool)
+signal tutorial_completed
+
+var is_tutorial_active: bool = false
+var tutorial_step: int = 0
+
 var sim: Simulation
 
 var inventory: PlayerInventory:
@@ -233,3 +240,33 @@ func complete_milestone(milestone_key: String) -> void:
 
 func reset_to_new_game() -> void:
 	sim.reset_to_new_game()
+	is_tutorial_active = false
+	tutorial_step = 0
+
+func start_tutorial() -> void:
+	is_tutorial_active = true
+	tutorial_step = 0
+	tutorial_state_changed.emit(true)
+	tutorial_step_changed.emit(0)
+
+func next_tutorial_step() -> void:
+	tutorial_step += 1
+	tutorial_step_changed.emit(tutorial_step)
+
+func set_tutorial_step(step: int) -> void:
+	tutorial_step = step
+	tutorial_step_changed.emit(tutorial_step)
+
+func complete_tutorial() -> void:
+	is_tutorial_active = false
+	SettingsManager.set_tutorial_completed(true)
+	tutorial_state_changed.emit(false)
+	tutorial_completed.emit()
+	post_notice("🎉 恭喜完成【文明拓荒教程】！现在尽情谱写你的文明进化史册吧！", Color(0.2, 0.9, 0.5))
+
+func skip_tutorial() -> void:
+	is_tutorial_active = false
+	SettingsManager.set_tutorial_completed(true)
+	tutorial_state_changed.emit(false)
+	tutorial_completed.emit()
+	post_notice("已跳过新手教程，进入自由沙盒探索模式！", Color(0.38, 0.82, 1.0))

@@ -30,6 +30,7 @@
 [ext_resource type="Texture2D" uid="uid://np0ohxfoele7" path="res://assets/icons/res_iron.svg" id="28_iron"]
 [ext_resource type="Texture2D" uid="uid://dyrxpwev141wl" path="res://assets/icons/res_salt.svg" id="29_salt"]
 [ext_resource type="Texture2D" uid="uid://dxfqc18wxj5s5" path="res://assets/icons/res_sulfur.svg" id="30_sulfur"]
+[ext_resource type="PackedScene" path="res://src/ui/tutorial_dock.tscn" id="19_tut_dock"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -521,4 +522,7 @@ visible = false
 visible = false
 
 [node name="InventoryModal" parent="." instance=ExtResource("18_inv_modal")]
+visible = false
+
+[node name="TutorialDock" parent="." instance=ExtResource("19_tut_dock")]
 visible = false

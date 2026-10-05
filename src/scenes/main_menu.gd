@@ -15,6 +15,7 @@ const SaveLoadModal = preload("res://src/ui/save_load_modal.gd")
 
 @onready var btn_continue = $SafeMargin/LayoutHBox/MainPanel/MenuBox/BtnContinue
 @onready var btn_new_game = $SafeMargin/LayoutHBox/MainPanel/MenuBox/BtnNewGame
+@onready var btn_tutorial = $SafeMargin/LayoutHBox/MainPanel/MenuBox/BtnTutorial
 @onready var btn_load_game = $SafeMargin/LayoutHBox/MainPanel/MenuBox/BtnLoadGame
 @onready var btn_settings = $SafeMargin/LayoutHBox/MainPanel/MenuBox/BtnSettings
 @onready var btn_guide = $SafeMargin/LayoutHBox/MainPanel/MenuBox/BtnGuide
@@ -217,6 +218,7 @@ func _setup_era_timeline() -> void:
 func _setup_buttons() -> void:
 	_configure_menu_btn(btn_continue, "继续游戏", "RESUME EXPLORATION", "res://assets/icons/save.svg", "ENTER")
 	_configure_menu_btn(btn_new_game, "开启新程", "NEW CHRONICLE", "res://assets/icons/tab_craft.svg", "N")
+	_configure_menu_btn(btn_tutorial, "新手教程", "GUIDED TUTORIAL", "res://assets/icons/tab_experiment.svg", "U")
 	_configure_menu_btn(btn_load_game, "载入档案", "ARCHIVES & SLOTS", "res://assets/icons/load.svg", "L")
 	_configure_menu_btn(btn_settings, "游戏设置", "SYSTEM SETTINGS", "res://assets/icons/settings.svg", "O")
 	_configure_menu_btn(btn_guide, "拓荒图录", "SURVIVAL GUIDE", "res://assets/icons/periodic_table.svg", "H")
@@ -574,6 +576,7 @@ func _draw_hex_filled(center: Vector2, radius: float, color: Color) -> void:
 func _bind_buttons() -> void:
 	btn_continue.pressed.connect(_on_continue_pressed)
 	btn_new_game.pressed.connect(_on_new_game_pressed)
+	btn_tutorial.pressed.connect(_on_tutorial_pressed)
 	btn_load_game.pressed.connect(_on_load_game_pressed)
 	btn_settings.pressed.connect(func(): settings_modal.open())
 	btn_guide.pressed.connect(func(): guide_modal.visible = true)
@@ -618,6 +621,9 @@ func _input(event: InputEvent) -> void:
 			elif event.keycode == KEY_N:
 				_on_new_game_pressed()
 				get_viewport().set_input_as_handled()
+			elif event.keycode == KEY_U:
+				_on_tutorial_pressed()
+				get_viewport().set_input_as_handled()
 			elif event.keycode == KEY_L:
 				_on_load_game_pressed()
 				get_viewport().set_input_as_handled()
@@ -650,12 +656,33 @@ func _on_new_game_pressed() -> void:
 		pending_action = func():
 			GameState.reset_to_new_game()
 			SaveManager.pending_load_slot = ""
+			if not SettingsManager.is_tutorial_completed():
+				GameState.start_tutorial()
 			get_tree().change_scene_to_file("res://src/scenes/world.tscn")
 		confirm_dialog.visible = true
 		btn_confirm_ok.grab_focus()
 	else:
 		GameState.reset_to_new_game()
 		SaveManager.pending_load_slot = ""
+		if not SettingsManager.is_tutorial_completed():
+			GameState.start_tutorial()
+		get_tree().change_scene_to_file("res://src/scenes/world.tscn")
+
+func _on_tutorial_pressed() -> void:
+	var latest_slot = SaveManager.get_latest_save_slot()
+	if latest_slot != "":
+		confirm_text.text = "进入新手教程将重置当前世界状态以开启教学演练。\n确认开启新手教程吗？"
+		pending_action = func():
+			GameState.reset_to_new_game()
+			SaveManager.pending_load_slot = ""
+			GameState.start_tutorial()
+			get_tree().change_scene_to_file("res://src/scenes/world.tscn")
+		confirm_dialog.visible = true
+		btn_confirm_ok.grab_focus()
+	else:
+		GameState.reset_to_new_game()
+		SaveManager.pending_load_slot = ""
+		GameState.start_tutorial()
 		get_tree().change_scene_to_file("res://src/scenes/world.tscn")
 
 func _on_load_game_pressed() -> void:
