@@ -608,6 +608,29 @@ func _apply_scheme3_styling() -> void:
 		if val_lbl:
 			val_lbl.add_theme_font_size_override("font_size", 15)
 			val_lbl.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0))
+			
+	# 右端菜单按钮：纯粹无框扁平图标 (Ghost Icon Button)，鼠标悬停微光轻抚
+	if btn_menu:
+		var empty_box = StyleBoxEmpty.new()
+		btn_menu.add_theme_stylebox_override("normal", empty_box)
+		btn_menu.add_theme_stylebox_override("focus", empty_box)
+		btn_menu.add_theme_stylebox_override("disabled", empty_box)
+		
+		var menu_hover = StyleBoxFlat.new()
+		menu_hover.bg_color = Color(1.0, 1.0, 1.0, 0.10)
+		menu_hover.corner_radius_top_left = 6
+		menu_hover.corner_radius_top_right = 6
+		menu_hover.corner_radius_bottom_left = 6
+		menu_hover.corner_radius_bottom_right = 6
+		btn_menu.add_theme_stylebox_override("hover", menu_hover)
+		
+		var menu_pressed = StyleBoxFlat.new()
+		menu_pressed.bg_color = Color(1.0, 1.0, 1.0, 0.20)
+		menu_pressed.corner_radius_top_left = 6
+		menu_pressed.corner_radius_top_right = 6
+		menu_pressed.corner_radius_bottom_left = 6
+		menu_pressed.corner_radius_bottom_right = 6
+		btn_menu.add_theme_stylebox_override("pressed", menu_pressed)
 	
 	# 2. 底栏悬浮交互坞 (Floating Action Dock - 纯白亮瓷发光胶囊岛)
 	var dock_box = StyleBoxFlat.new()
