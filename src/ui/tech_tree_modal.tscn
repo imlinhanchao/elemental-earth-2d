@@ -103,7 +103,7 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="CanvasContainer" type="Control" parent="CenterPanel/VBox/Body/Scroll"]
-custom_minimum_size = Vector2(3560, 1380)
+custom_minimum_size = Vector2(2360, 800)
 layout_mode = 2
 
 [node name="LinesLayer" type="Control" parent="CenterPanel/VBox/Body/Scroll/CanvasContainer"]

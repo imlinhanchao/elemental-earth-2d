@@ -1,6 +1,6 @@
 # tech_tree_modal.gd
-# 缺氧 (Oxygen Not Included) 风格交互式科技树节点星图
-# 9 大技术梯队、自由画布拖拽平移、平滑三次贝塞尔光晕连线、阶段性跃迁与直观研发交互
+# 缺氧 (Oxygen Not Included) 风格紧凑型科技树节点星图
+# 紧凑高雅节点卡片 (190x74)、自由画布拖拽平移、平滑三次贝塞尔光晕连线、快捷梯队跳跃
 extends Control
 
 const ThemeStyler = preload("res://src/ui/theme_styler.gd")
@@ -18,26 +18,26 @@ const ItemIconManager = preload("res://src/ui/item_icon_manager.gd")
 @onready var headers_layer = $CenterPanel/VBox/Body/Scroll/CanvasContainer/HeadersLayer
 @onready var nodes_layer = $CenterPanel/VBox/Body/Scroll/CanvasContainer/NodesLayer
 
-# 9 大梯队名称
+# 9 大梯队紧凑名称
 const TIER_TITLES: Array[String] = [
-	"【T1 初始石器】基础加工与火种",
-	"【T2 筑石耐火】耐火材料与冶炼前置",
-	"【T3 古典建筑】高温坚炉与青铜铸造",
-	"【T4 合金机械】钢铁工业与火药爆炸",
-	"【T5 物理革新】玻璃工艺与高压化学",
-	"【T6 工业化流】电化学与连续合成",
-	"【T7 现代能源】先进电池与微观核物理",
-	"【T8 前沿宇航】裂变反应堆与离子加速",
-	"【T9 星际推进】等离子体与喷气推进"
+	"T1 初始石器",
+	"T2 筑石耐火",
+	"T3 古典建筑",
+	"T4 合金机械",
+	"T5 物理革新",
+	"T6 工业连续流",
+	"T7 现代能源",
+	"T8 前沿宇航",
+	"T9 星际推进"
 ]
 
-# 布局几何规格
-const CARD_WIDTH: float = 270.0
-const CARD_HEIGHT: float = 145.0
-const TIER_START_X: float = 60.0
-const TIER_X_SPACING: float = 380.0
-const ROW_START_Y: float = 65.0
-const ROW_Y_SPACING: float = 180.0
+# 紧凑型几何规格 (相比原先大幅压缩 50% 体积，使全局视野一览无余)
+const CARD_WIDTH: float = 190.0
+const CARD_HEIGHT: float = 74.0
+const TIER_START_X: float = 40.0
+const TIER_X_SPACING: float = 250.0
+const ROW_START_Y: float = 55.0
+const ROW_Y_SPACING: float = 95.0
 
 # 科技专属领域行轨道映射表 (精心调优，实现零空间碰撞且流向顺畅)
 const TRACK_MAP: Dictionary = {
@@ -139,7 +139,8 @@ func _setup_era_jump_buttons() -> void:
 	for item in jump_data:
 		var btn = Button.new()
 		btn.text = item["name"]
-		btn.custom_minimum_size = Vector2(92, 28)
+		btn.custom_minimum_size = Vector2(88, 26)
+		btn.add_theme_font_size_override("font_size", 11)
 		var t_idx = int(item["tier"])
 		btn.pressed.connect(func():
 			var target_x = max(0, int(TIER_START_X + t_idx * TIER_X_SPACING - 30))
@@ -158,27 +159,27 @@ func _build_tech_tree_graph() -> void:
 	
 	for tier in range(TIER_TITLES.size()):
 		var header_panel = PanelContainer.new()
-		header_panel.custom_minimum_size = Vector2(CARD_WIDTH, 30)
+		header_panel.custom_minimum_size = Vector2(CARD_WIDTH, 24)
 		
 		var h_style = StyleBoxFlat.new()
-		h_style.bg_color = Color(0.11, 0.14, 0.18, 0.85)
+		h_style.bg_color = Color(0.10, 0.13, 0.17, 0.85)
 		h_style.border_color = Color(0.25, 0.45, 0.70, 0.8)
 		h_style.border_width_bottom = 2
-		h_style.corner_radius_top_left = 4
-		h_style.corner_radius_top_right = 4
+		h_style.corner_radius_top_left = 3
+		h_style.corner_radius_top_right = 3
 		header_panel.add_theme_stylebox_override("panel", h_style)
 		
 		var lbl = Label.new()
 		lbl.text = TIER_TITLES[tier]
 		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		lbl.add_theme_font_size_override("font_size", 12)
+		lbl.add_theme_font_size_override("font_size", 11)
 		lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0))
 		header_panel.add_child(lbl)
 		headers_layer.add_child(header_panel)
 		header_panel.position = Vector2(TIER_START_X + tier * TIER_X_SPACING, 15)
 		
-	# 2. 生成 40 项科技卡片节点
+	# 2. 生成 40 项紧凑科技卡片节点
 	for tech in DataDB.techs.values():
 		var k = str(tech.get("key", ""))
 		if not tech_positions.has(k):
@@ -191,8 +192,6 @@ func _build_tech_tree_graph() -> void:
 func _create_oni_tech_card(tech: Dictionary) -> PanelContainer:
 	var tech_key = str(tech.get("key", ""))
 	var tech_name = str(tech.get("name", tech_key))
-	var desc = str(tech.get("description", ""))
-	var req_items = tech.get("required_items", [])
 	var t_tier = int(tech_tiers.get(tech_key, 0))
 	
 	var card = PanelContainer.new()
@@ -200,15 +199,16 @@ func _create_oni_tech_card(tech: Dictionary) -> PanelContainer:
 	card.mouse_filter = Control.MOUSE_FILTER_PASS
 	
 	var vbox = VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 6)
+	vbox.add_theme_constant_override("separation", 3)
 	card.add_child(vbox)
 	
-	# 标题栏
+	# 顶部行: 图标 + 科技名 + 阶梯徽标
 	var top_hbox = HBoxContainer.new()
+	top_hbox.add_theme_constant_override("separation", 6)
 	vbox.add_child(top_hbox)
 	
 	var icon_rect = TextureRect.new()
-	icon_rect.custom_minimum_size = Vector2(24, 24)
+	icon_rect.custom_minimum_size = Vector2(20, 20)
 	icon_rect.texture = ItemIconManager.get_icon(tech_key)
 	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
@@ -218,36 +218,28 @@ func _create_oni_tech_card(tech: Dictionary) -> PanelContainer:
 	title_lbl.text = tech_name
 	title_lbl.name = "TitleLabel"
 	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	title_lbl.add_theme_font_size_override("font_size", 13)
+	title_lbl.add_theme_font_size_override("font_size", 12)
 	title_lbl.add_theme_color_override("font_color", Color(0.95, 0.95, 0.95))
 	top_hbox.add_child(title_lbl)
 	
 	var tier_badge = Label.new()
 	tier_badge.text = "T%d" % (t_tier + 1)
-	tier_badge.add_theme_font_size_override("font_size", 11)
+	tier_badge.add_theme_font_size_override("font_size", 10)
 	tier_badge.add_theme_color_override("font_color", Color(0.4, 0.75, 1.0))
 	top_hbox.add_child(tier_badge)
 	
-	# 消耗材料与描述摘要
+	# 中间行: 消耗材料/前置/状态提示
 	var cost_label = Label.new()
 	cost_label.name = "CostLabel"
 	cost_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	cost_label.add_theme_font_size_override("font_size", 11)
+	cost_label.add_theme_font_size_override("font_size", 10)
 	vbox.add_child(cost_label)
 	
-	var desc_label = Label.new()
-	desc_label.text = desc
-	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	desc_label.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	desc_label.add_theme_font_size_override("font_size", 10)
-	desc_label.add_theme_color_override("font_color", Color(0.65, 0.68, 0.74))
-	vbox.add_child(desc_label)
-	
-	# 底部交互按钮栏
+	# 底部行: 研发操作按钮
 	var btn_action = Button.new()
 	btn_action.name = "BtnAction"
-	btn_action.custom_minimum_size = Vector2(0, 26)
-	btn_action.add_theme_font_size_override("font_size", 11)
+	btn_action.custom_minimum_size = Vector2(0, 22)
+	btn_action.add_theme_font_size_override("font_size", 10)
 	vbox.add_child(btn_action)
 	
 	btn_action.pressed.connect(func():
@@ -296,46 +288,47 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 		else:
 			cost_texts.append("%s: %d" % [item_n, item_qty])
 			
-	var cost_lbl = card.find_child("CostLabel", true, false)
-	if cost_lbl:
-		cost_lbl.text = "需求: " + (", ".join(cost_texts) if not cost_texts.is_empty() else "无消耗")
-		cost_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.5) if items_met else Color(0.95, 0.55, 0.45))
-		
+	var cost_lbl: Label = card.find_child("CostLabel", true, false)
 	var btn_action: Button = card.find_child("BtnAction", true, false)
 	
 	var style = StyleBoxFlat.new()
-	style.corner_radius_top_left = 6
-	style.corner_radius_top_right = 6
-	style.corner_radius_bottom_left = 6
-	style.corner_radius_bottom_right = 6
-	style.content_margin_left = 12
-	style.content_margin_top = 8
-	style.content_margin_right = 12
-	style.content_margin_bottom = 8
+	style.corner_radius_top_left = 4
+	style.corner_radius_top_right = 4
+	style.corner_radius_bottom_left = 4
+	style.corner_radius_bottom_right = 4
+	style.content_margin_left = 8
+	style.content_margin_top = 5
+	style.content_margin_right = 8
+	style.content_margin_bottom = 5
 	
 	if is_researched:
-		# 已研发 (缺氧沉稳墨绿)
+		# 已研发 (紧凑墨绿高雅质感)
 		style.bg_color = Color(0.06, 0.14, 0.09, 0.92)
 		style.border_color = Color(0.15, 0.75, 0.40, 0.9)
-		style.border_width_left = 2
-		style.border_width_top = 2
-		style.border_width_right = 2
-		style.border_width_bottom = 2
+		style.border_width_left = 1
+		style.border_width_top = 1
+		style.border_width_right = 1
+		style.border_width_bottom = 1
 		card.modulate = Color.WHITE
+		if cost_lbl:
+			cost_lbl.text = "✓ 已研发完毕"
+			cost_lbl.add_theme_color_override("font_color", Color(0.35, 0.95, 0.5))
 		if btn_action:
-			btn_action.text = "✓ 已研发完毕"
-			btn_action.disabled = true
-			btn_action.modulate = Color(0.5, 1.0, 0.6)
+			btn_action.visible = false
 	elif prereqs_met:
 		# 可研发 (科技蔚蓝呼吸光)
 		style.bg_color = Color(0.08, 0.12, 0.18, 0.95)
 		style.border_color = Color(0.28, 0.65, 1.0, 1.0)
-		style.border_width_left = 2
-		style.border_width_top = 2
-		style.border_width_right = 2
-		style.border_width_bottom = 2
+		style.border_width_left = 1
+		style.border_width_top = 1
+		style.border_width_right = 1
+		style.border_width_bottom = 1
 		card.modulate = Color.WHITE
+		if cost_lbl:
+			cost_lbl.text = ("需求: " + ", ".join(cost_texts)) if not cost_texts.is_empty() else "无消耗"
+			cost_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.5) if items_met else Color(0.95, 0.55, 0.45))
 		if btn_action:
+			btn_action.visible = true
 			if items_met:
 				btn_action.text = "🔬 启动研发"
 				btn_action.disabled = false
@@ -347,16 +340,17 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 	else:
 		# 未解锁 (缺氧灰暗受控)
 		style.bg_color = Color(0.05, 0.06, 0.08, 0.70)
-		style.border_color = Color(0.20, 0.22, 0.26, 0.7)
+		style.border_color = Color(0.18, 0.20, 0.24, 0.7)
 		style.border_width_left = 1
 		style.border_width_top = 1
 		style.border_width_right = 1
 		style.border_width_bottom = 1
-		card.modulate = Color(1, 1, 1, 0.6)
+		card.modulate = Color(1, 1, 1, 0.55)
+		if cost_lbl:
+			cost_lbl.text = "🔒 需: " + missing_prereqs[0] if not missing_prereqs.is_empty() else "未解锁"
+			cost_lbl.add_theme_color_override("font_color", Color(0.7, 0.45, 0.45))
 		if btn_action:
-			btn_action.text = "缺少前置: " + missing_prereqs[0] if not missing_prereqs.is_empty() else "锁定"
-			btn_action.disabled = true
-			btn_action.modulate = Color(0.7, 0.4, 0.4)
+			btn_action.visible = false
 			
 	card.add_theme_stylebox_override("panel", style)
 
@@ -380,7 +374,7 @@ func _on_tech_card_action(tech_key: String, tech: Dictionary) -> void:
 	
 	_refresh_all()
 
-# 缺氧连线绘制系统: 从前置节点右侧针脚平滑蜿蜒连接至后继节点左侧针脚
+# 缺氧连线绘制系统: 从前置节点右侧针脚平滑弯曲连接至后继节点左侧针脚
 func _draw_connecting_lines(canvas_ctrl: Control) -> void:
 	for child_key in DataDB.techs.keys():
 		if not tech_positions.has(child_key):
@@ -401,7 +395,7 @@ func _draw_connecting_lines(canvas_ctrl: Control) -> void:
 			
 			# 生成三次贝塞尔平滑 S 曲线采样点
 			var points = PackedVector2Array()
-			var steps = 24
+			var steps = 20
 			var dx = pin_in.x - pin_out.x
 			var p0 = pin_out
 			var p1 = pin_out + Vector2(dx * 0.5, 0)
@@ -416,19 +410,19 @@ func _draw_connecting_lines(canvas_ctrl: Control) -> void:
 				
 			if is_child_done and is_parent_done:
 				# 双方均已完成: 璀璨电青色能量光晕
-				canvas_ctrl.draw_polyline(points, Color(0.18, 0.75, 1.0, 0.28), 6.0)
-				canvas_ctrl.draw_polyline(points, Color(0.35, 0.95, 1.0, 0.95), 2.2)
-				canvas_ctrl.draw_circle(pin_out, 3.5, Color(0.35, 0.95, 1.0))
-				canvas_ctrl.draw_circle(pin_in, 3.5, Color(0.35, 0.95, 1.0))
+				canvas_ctrl.draw_polyline(points, Color(0.18, 0.75, 1.0, 0.28), 4.5)
+				canvas_ctrl.draw_polyline(points, Color(0.35, 0.95, 1.0, 0.95), 1.8)
+				canvas_ctrl.draw_circle(pin_out, 2.5, Color(0.35, 0.95, 1.0))
+				canvas_ctrl.draw_circle(pin_in, 2.5, Color(0.35, 0.95, 1.0))
 			elif is_parent_done:
 				# 前置已满足可研发: 金色脉动能量流
-				canvas_ctrl.draw_polyline(points, Color(1.0, 0.75, 0.20, 0.25), 5.0)
-				canvas_ctrl.draw_polyline(points, Color(1.0, 0.85, 0.35, 0.90), 2.0)
-				canvas_ctrl.draw_circle(pin_out, 3.0, Color(1.0, 0.85, 0.35))
-				canvas_ctrl.draw_circle(pin_in, 3.0, Color(1.0, 0.85, 0.35))
+				canvas_ctrl.draw_polyline(points, Color(1.0, 0.75, 0.20, 0.25), 3.5)
+				canvas_ctrl.draw_polyline(points, Color(1.0, 0.85, 0.35, 0.90), 1.5)
+				canvas_ctrl.draw_circle(pin_out, 2.0, Color(1.0, 0.85, 0.35))
+				canvas_ctrl.draw_circle(pin_in, 2.0, Color(1.0, 0.85, 0.35))
 			else:
 				# 未解锁路径: 幽暗隐秘灰色虚线
-				canvas_ctrl.draw_polyline(points, Color(0.24, 0.27, 0.33, 0.45), 1.5)
+				canvas_ctrl.draw_polyline(points, Color(0.24, 0.27, 0.33, 0.40), 1.2)
 
 # 画布自由平移交互
 func _on_scroll_gui_input(event: InputEvent) -> void:

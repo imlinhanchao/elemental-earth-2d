@@ -75,18 +75,26 @@ func _ready() -> void:
 	else:
 		GameState.post_notice("[开局引导] 鼠标点击地表【碎石】、【枯树枝】加入工作队列！点击盐湖打水！右键拖拽视野！", Color(1.0, 0.88, 0.4))
 	
-	# 如果携带 --screenshot 参数，则在1.5秒后截取当前画面并退出
-	for arg in OS.get_cmdline_args():
-		if arg == "--screenshot":
-			_capture_screenshot_after_delay()
+	# 如果携带 --screenshot 参数，则在指定延时后截取对应画面并退出
+	var all_args = OS.get_cmdline_user_args() + OS.get_cmdline_args()
+	for arg in all_args:
+		if arg.begins_with("--screenshot"):
+			_capture_screenshot_after_delay(arg)
+			break
 
-func _capture_screenshot_after_delay() -> void:
-	await get_tree().create_timer(1.0).timeout
+func _capture_screenshot_after_delay(arg_name: String) -> void:
+	await get_tree().create_timer(1.2).timeout
 	if hud.era_modal.visible:
 		hud.era_modal.visible = false
-	# 打开制作分类抽屉以展示细项与半透明禁用效果
-	hud._toggle_category(hud.CategoryTab.CRAFT)
-	await get_tree().create_timer(0.4).timeout
+		
+	if arg_name == "--screenshot-inv":
+		hud.inventory_modal.open()
+	elif arg_name == "--screenshot-craft":
+		hud._toggle_category(hud.CategoryTab.CRAFT)
+	else:
+		hud.tech_modal.open()
+		
+	await get_tree().create_timer(0.6).timeout
 	var img = get_viewport().get_texture().get_image()
 	if img:
 		img.save_png("/Users/hancel/Documents/project/elemental-earth-2d/screenshot_current.png")
