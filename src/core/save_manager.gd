@@ -430,6 +430,7 @@ static func _serialize_furnaces(furnaces: Dictionary) -> Array[Dictionary]:
 		list.append({
 			"hex_q": hex.x,
 			"hex_r": hex.y,
+			"type": str(f.get("type", "furnace")),
 			"temperature": temp,
 			"burn_timer": float(f.get("burn_timer", 0.0)),
 			"is_active_fire": bool(f.get("is_active_fire", false)),
@@ -443,14 +444,16 @@ static func _deserialize_furnaces(furnaces_data: Variant) -> void:
 		for item in furnaces_data:
 			if item is Dictionary and item.has("hex_q") and item.has("hex_r"):
 				var hex = Vector2i(int(item["hex_q"]), int(item["hex_r"]))
+				var b_type = str(item.get("type", "furnace"))
 				var buf = MixtureBuffer.new()
-				buf.container_type = "furnace"
+				buf.container_type = b_type
 				buf.temperature = float(item.get("temperature", 293.15))
 				var comps = item.get("components", {})
 				if comps is Dictionary:
 					for k in comps.keys():
 						buf.components[k] = float(comps[k])
 				GameState.built_furnaces[hex] = {
+					"type": b_type,
 					"buffer": buf,
 					"burn_timer": float(item.get("burn_timer", 0.0)),
 					"is_active_fire": bool(item.get("is_active_fire", false))

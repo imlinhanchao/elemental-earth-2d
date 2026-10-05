@@ -4,6 +4,7 @@ extends CanvasLayer
 
 signal build_furnace_requested
 signal build_reactor_requested
+signal build_structure_requested(structure_key: String)
 signal save_requested
 signal load_requested
 signal reset_requested
@@ -441,10 +442,7 @@ func _add_build_subitems() -> void:
 		)
 		if can_build:
 			card.pressed.connect(func():
-				if b_key == "furnace":
-					_on_btn_build_furnace_pressed()
-				elif b_key == "industrial_reactor":
-					_on_btn_build_reactor_requested()
+				_on_build_structure_pressed(b_key)
 				_close_drawer()
 			)
 		drawer_grid.add_child(card)
@@ -1172,6 +1170,9 @@ func _on_notification_posted(msg: String, col: Color) -> void:
 func show_furnace_ui(furnace: Node2D) -> void:
 	current_nearby_furnace = furnace
 	furnace_panel.visible = true
+	var b_name = "原始篝火堆" if ("building_type" in furnace and furnace.building_type == "fire_pit") else "陶土熔炉"
+	if furnace_info:
+		furnace_info.text = "【%s】现场控制台\n温度: %d ℃" % [b_name, int(furnace.buffer.temperature - 273.15)]
 
 func hide_furnace_ui() -> void:
 	current_nearby_furnace = null
@@ -1189,8 +1190,15 @@ func _on_btn_add_iron_ore_pressed() -> void:
 	if current_nearby_furnace:
 		current_nearby_furnace.add_ore("iron_ore", 1)
 
+func _on_build_structure_pressed(structure_key: String) -> void:
+	build_structure_requested.emit(structure_key)
+	if structure_key == "furnace":
+		build_furnace_requested.emit()
+	elif structure_key == "industrial_reactor":
+		build_reactor_requested.emit()
+
 func _on_btn_build_furnace_pressed() -> void:
-	build_furnace_requested.emit()
+	_on_build_structure_pressed("furnace")
 
 func _on_btn_build_reactor_requested() -> void:
-	build_reactor_requested.emit()
+	_on_build_structure_pressed("industrial_reactor")

@@ -793,14 +793,15 @@ func build_structure(structure_key: String, hex: Vector2i) -> bool:
 		
 	_consume_all_ingredients(req_items)
 	
-	if structure_key == "furnace":
+	if structure_key == "furnace" or structure_key == "fire_pit":
 		var f_buf = MixtureBuffer.new()
-		f_buf.container_type = "furnace"
-		f_buf.temperature = 293.15
+		f_buf.container_type = structure_key
+		f_buf.temperature = 373.15 if structure_key == "fire_pit" else 293.15
 		built_furnaces[hex] = {
+			"type": structure_key,
 			"buffer": f_buf,
-			"burn_timer": 0.0,
-			"is_active_fire": false
+			"burn_timer": 30.0 if structure_key == "fire_pit" else 0.0,
+			"is_active_fire": (structure_key == "fire_pit")
 		}
 	elif structure_key == "industrial_reactor":
 		built_reactors[hex] = {
@@ -878,14 +879,14 @@ func furnace_add_fuel(hex: Vector2i) -> bool:
 	if not built_furnaces.has(hex):
 		return false
 	var f = built_furnaces[hex]
-	if inventory.remove_item("charcoal", 1) or inventory.remove_item("wood", 2):
+	if inventory.remove_item("charcoal", 1) or inventory.remove_item("wood", 2) or inventory.remove_item("stick", 3):
 		f["is_active_fire"] = true
 		f["burn_timer"] = f.get("burn_timer", 0.0) + 18.0
 		f["buffer"].add_substance("charcoal", 1.0)
-		post_notice("向熔炉投入木炭燃料，炉膛升起烈火！", Color.ORANGE)
+		post_notice("投入燃料，火焰熊熊燃烧！", Color.ORANGE)
 		return true
 	else:
-		post_notice("背包中没有木炭或木材可用作燃料！", Color.RED)
+		post_notice("背包中没有木炭、原木或树枝可用作燃料！", Color.RED)
 		return false
 
 func furnace_add_ore(hex: Vector2i, key: String, amount: int = 1) -> bool:

@@ -52,8 +52,9 @@ func _ready() -> void:
 	GameState.structure_built.connect(_on_structure_built)
 	_generate_hex_world()
 	
-	hud.build_furnace_requested.connect(_on_build_furnace_requested)
-	hud.build_reactor_requested.connect(_on_build_reactor_requested)
+	hud.build_structure_requested.connect(_on_build_structure_requested)
+	hud.build_furnace_requested.connect(func(): _on_build_structure_requested("furnace"))
+	hud.build_reactor_requested.connect(func(): _on_build_structure_requested("industrial_reactor"))
 	
 	hud.save_requested.connect(func(): SaveManager.save_to_slot("slot_1", self))
 	hud.load_requested.connect(func(): SaveManager.load_from_slot("slot_1", self))
@@ -125,6 +126,15 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 		camera.position = Vector2.ZERO
 		camera.zoom = Vector2(1.0, 1.0)
 		target_zoom = Vector2(1.0, 1.0)
+		camera.reset_smoothing()
+		terrain_layer.queue_redraw()
+	elif arg_name == "--screenshot-campfire":
+		GameState.inventory.add_item("wood", 10)
+		GameState.inventory.add_item("stone", 10)
+		GameState.build_structure("fire_pit", Vector2i(0, 0))
+		camera.position = Vector2.ZERO
+		camera.zoom = Vector2(1.5, 1.5)
+		target_zoom = Vector2(1.5, 1.5)
 		camera.reset_smoothing()
 		terrain_layer.queue_redraw()
 	elif arg_name == "--screenshot-hud":
@@ -303,19 +313,39 @@ func _bind_furnace_events(f_node: Node2D) -> void:
 			hud.show_furnace_ui(furnace_inst)
 		)
 
+func _find_valid_build_hex(preferred_hex: Vector2i) -> Vector2i:
+	if GameState.is_hex_in_territory(preferred_hex.x, preferred_hex.y):
+		if not GameState.built_furnaces.has(preferred_hex) and not GameState.built_reactors.has(preferred_hex):
+			return preferred_hex
+			
+	# 从中心向外螺旋搜索最近的未被建筑占用的领地内地块
+	var radius = GameState.get_current_territory_radius()
+	for r in range(0, radius + 1):
+		for q in range(-r, r + 1):
+			for s in range(-r, r + 1):
+				var h = Vector2i(q, s)
+				if GameState.is_hex_in_territory(h.x, h.y):
+					if not GameState.built_furnaces.has(h) and not GameState.built_reactors.has(h):
+						return h
+	return Vector2i.ZERO
+
+func _on_build_structure_requested(structure_key: String) -> void:
+	var preferred = hovered_hex if generated_hexes.has(hovered_hex) else HexWorldGenerator.pixel_to_hex(camera.position)
+	var target_hex = _find_valid_build_hex(preferred)
+	GameState.build_structure(structure_key, target_hex)
+
 func _on_build_furnace_requested() -> void:
-	var target_hex = hovered_hex if generated_hexes.has(hovered_hex) else HexWorldGenerator.pixel_to_hex(camera.position)
-	GameState.build_structure("furnace", target_hex)
+	_on_build_structure_requested("furnace")
 
 func _on_build_reactor_requested() -> void:
-	var target_hex = hovered_hex if generated_hexes.has(hovered_hex) else HexWorldGenerator.pixel_to_hex(camera.position)
-	GameState.build_structure("industrial_reactor", target_hex)
+	_on_build_structure_requested("industrial_reactor")
 
 func _on_structure_built(structure_key: String, hex: Vector2i) -> void:
 	var spawn_pos = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
-	if structure_key == "furnace":
+	if structure_key == "furnace" or structure_key == "fire_pit":
 		var new_f = FurnaceScene.instantiate()
 		new_f.hex_coord = hex
+		new_f.building_type = structure_key
 		new_f.position = spawn_pos
 		entities.add_child(new_f)
 		built_furnaces.append(new_f)
@@ -391,6 +421,7 @@ func deserialize_world_state(data: Dictionary) -> void:
 	for f_hex in GameState.built_furnaces.keys():
 		var new_f = FurnaceScene.instantiate()
 		new_f.hex_coord = f_hex
+		new_f.building_type = GameState.built_furnaces[f_hex].get("type", "furnace")
 		new_f.position = HexWorldGenerator.hex_to_pixel(f_hex.x, f_hex.y)
 		entities.add_child(new_f)
 		built_furnaces.append(new_f)

@@ -1,5 +1,5 @@
 # furnace.gd
-# 严丝合缝对齐六边形网格的陶土熔炉实体: 纯表现层节点，模拟运算交由 Simulation 一秒时钟
+# 严丝合缝对齐六边形网格的陶土熔炉/原始篝火堆实体: 纯表现层节点，模拟运算交由 Simulation 一秒时钟
 extends Area2D
 
 const MixtureBuffer = preload("res://src/core/mixture_buffer.gd")
@@ -7,13 +7,15 @@ const MixtureBuffer = preload("res://src/core/mixture_buffer.gd")
 signal open_workbench_requested(furnace_entity: Node2D)
 
 var hex_coord: Vector2i = Vector2i(9999, 9999)
+var building_type: String = "furnace" # "furnace" 或 "fire_pit"
+
 var buffer: MixtureBuffer:
 	get:
 		if GameState.built_furnaces.has(hex_coord):
 			return GameState.built_furnaces[hex_coord]["buffer"]
 		if _fallback_buffer == null:
 			_fallback_buffer = MixtureBuffer.new()
-			_fallback_buffer.container_type = "furnace"
+			_fallback_buffer.container_type = building_type
 			_fallback_buffer.temperature = 293.15
 		return _fallback_buffer
 
@@ -35,22 +37,55 @@ var _fallback_buffer: MixtureBuffer = null
 
 func _ready() -> void:
 	add_to_group("furnace")
+	if GameState.built_furnaces.has(hex_coord):
+		building_type = GameState.built_furnaces[hex_coord].get("type", building_type)
 	queue_redraw()
 
 func _process(_delta: float) -> void:
 	if label_status:
-		label_status.text = "陶土熔炉\n%d K (%d ℃)\n[点击打开]" % [int(buffer.temperature), int(buffer.temperature - 273.15)]
+		var b_name = "原始篝火堆" if building_type == "fire_pit" else "陶土熔炉"
+		label_status.text = "%s\n%d K (%d ℃)\n[点击打开]" % [b_name, int(buffer.temperature), int(buffer.temperature - 273.15)]
 	queue_redraw()
 
 func _draw() -> void:
-	# 绘制贴合六边形尺寸的陶土圆窑 (底座半径 24.0)
+	if building_type == "fire_pit":
+		_draw_fire_pit()
+	else:
+		_draw_furnace()
+
+# 1. 原始篝火堆绘制 (石圈围拢、炭床、交叉焦柴、熊熊野火与升腾火星)
+func _draw_fire_pit() -> void:
+	# 地面灰烬焦痕阴影
+	draw_circle(Vector2(0, 4), 22.0, Color(0.06, 0.05, 0.04, 0.45))
+	# 灰黑炭床
+	draw_circle(Vector2.ZERO, 15.0, Color(0.18, 0.15, 0.14))
+	# 围绕一圈天然野外鹅卵石块 (8 颗天然石块)
+	for i in range(8):
+		var angle = i * TAU / 8.0
+		var stone_pos = Vector2(cos(angle), sin(angle)) * 17.0
+		draw_circle(stone_pos, 5.0, Color(0.48, 0.46, 0.42))
+		draw_circle(stone_pos + Vector2(-1.2, -1.2), 3.0, Color(0.68, 0.66, 0.62)) # 暖白受光高光面
+	# 交叉焦柴
+	draw_line(Vector2(-10, -7), Vector2(10, 7), Color(0.32, 0.20, 0.12), 4.0)
+	draw_line(Vector2(-10, 7), Vector2(10, -7), Color(0.26, 0.16, 0.10), 4.0)
+	# 熊熊燃烧的营火烈焰与升腾火星
+	if buffer.temperature > 320.0 or is_active_fire:
+		var t = Time.get_ticks_msec() * 0.015
+		var fire_r = 11.0 * (0.85 + 0.18 * sin(t))
+		draw_circle(Vector2(0, -2), fire_r, Color(1.0, 0.38, 0.05, 0.92))
+		draw_circle(Vector2(0, -3), fire_r * 0.62, Color(1.0, 0.88, 0.22, 1.0)) # 亮金内焰
+		for i in range(3):
+			var spark_pos = Vector2(sin(t + i * 2.2) * 8.0, -8.0 - fmod(t * 8.0 + i * 5.0, 16.0))
+			draw_circle(spark_pos, 1.8, Color(1.0, 0.92, 0.35, 0.85))
+
+# 2. 陶土熔炉绘制 (圆窑底座、粗陶外壁、耐火砖层与炉膛暗腔)
+func _draw_furnace() -> void:
 	draw_circle(Vector2(0, 4), 26.0, Color(0.1, 0.08, 0.06, 0.5)) # 地面阴影
 	draw_circle(Vector2.ZERO, 25.0, Color(0.42, 0.26, 0.15))       # 粗陶土外壁
 	draw_circle(Vector2.ZERO, 21.0, Color(0.55, 0.35, 0.20))       # 耐火砖层
 	draw_circle(Vector2.ZERO, 15.0, Color(0.15, 0.10, 0.08))       # 炉膛深处暗腔
 	
-	# 炉膛火焰动态效果
-	if buffer.temperature > 500.0:
+	if buffer.temperature > 500.0 or is_active_fire:
 		var intensity = clamp((buffer.temperature - 500.0) / 600.0, 0.3, 1.0)
 		var fire_r = 13.0 * (0.9 + 0.12 * sin(Time.get_ticks_msec() * 0.02))
 		draw_circle(Vector2(0, 1), fire_r, Color(1.0, 0.4 * intensity, 0.05, 0.95))
