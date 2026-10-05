@@ -540,11 +540,11 @@ func _add_inventory_subitems() -> void:
 # 方案三界面样式初始化 (现代科学信息图 · 极简冷灰几何风)
 func _apply_scheme3_styling() -> void:
 	# 1. 顶栏悬浮胶囊 Ribbon (Floating Capsule Ribbon)
-	var top_box = ThemeStyler.create_pill_box(18, Color(0.045, 0.07, 0.12, 0.92), ThemeStyler.COLOR_BORDER)
-	top_box.content_margin_left = 16
-	top_box.content_margin_top = 4
-	top_box.content_margin_right = 16
-	top_box.content_margin_bottom = 4
+	var top_box = ThemeStyler.create_pill_box(22, Color(0.045, 0.07, 0.12, 0.94), ThemeStyler.COLOR_BORDER)
+	top_box.content_margin_left = 20
+	top_box.content_margin_top = 6
+	top_box.content_margin_right = 20
+	top_box.content_margin_bottom = 6
 	$Margin/MainVBox/TopBarPanel.add_theme_stylebox_override("panel", top_box)
 	
 	if logo_icon:
@@ -565,12 +565,12 @@ func _apply_scheme3_styling() -> void:
 					logo_tex = ImageTexture.create_from_image(img)
 		if logo_tex:
 			logo_icon.texture = logo_tex
-			logo_icon.custom_minimum_size = Vector2(26, 26)
+			logo_icon.custom_minimum_size = Vector2(34, 34)
 	
 	if logo_title:
 		logo_title.text = "元素纪元"
 		logo_title.add_theme_color_override("font_color", Color.WHITE)
-		logo_title.add_theme_font_size_override("font_size", 15)
+		logo_title.add_theme_font_size_override("font_size", 18)
 	if logo_sub:
 		logo_sub.visible = false
 		logo_sub.text = ""
@@ -582,14 +582,14 @@ func _apply_scheme3_styling() -> void:
 		pill_normal.border_width_top = 1
 		pill_normal.border_width_right = 1
 		pill_normal.border_width_bottom = 1
-		pill_normal.corner_radius_top_left = 12
-		pill_normal.corner_radius_top_right = 12
-		pill_normal.corner_radius_bottom_left = 12
-		pill_normal.corner_radius_bottom_right = 12
-		pill_normal.content_margin_left = 10
-		pill_normal.content_margin_right = 10
-		pill_normal.content_margin_top = 2
-		pill_normal.content_margin_bottom = 2
+		pill_normal.corner_radius_top_left = 15
+		pill_normal.corner_radius_top_right = 15
+		pill_normal.corner_radius_bottom_left = 15
+		pill_normal.corner_radius_bottom_right = 15
+		pill_normal.content_margin_left = 14
+		pill_normal.content_margin_right = 14
+		pill_normal.content_margin_top = 4
+		pill_normal.content_margin_bottom = 4
 		
 		var pill_hover = pill_normal.duplicate()
 		pill_hover.bg_color = Color(0.18, 0.32, 0.50, 0.9)
@@ -600,12 +600,14 @@ func _apply_scheme3_styling() -> void:
 		era_badge_btn.add_theme_stylebox_override("pressed", pill_hover)
 		era_badge_btn.add_theme_color_override("font_color", Color(0.38, 0.82, 1.0, 1.0))
 		era_badge_btn.add_theme_color_override("font_hover_color", Color.WHITE)
-		era_badge_btn.add_theme_font_size_override("font_size", 11)
-		
-		if ResourceLoader.exists("res://assets/icons/era.svg"):
-			era_badge_btn.icon = load("res://assets/icons/era.svg")
-			era_badge_btn.expand_icon = true
-			era_badge_btn.custom_minimum_size = Vector2(0, 24)
+		era_badge_btn.add_theme_font_size_override("font_size", 13)
+		era_badge_btn.custom_minimum_size = Vector2(0, 30)
+	
+	# 右侧资源数值字体放大
+	for val_lbl in [val_stone, val_wood, val_flint, val_ore, val_fuel]:
+		if val_lbl:
+			val_lbl.add_theme_font_size_override("font_size", 15)
+			val_lbl.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0))
 	
 	# 2. 底栏悬浮交互坞 (Floating Action Dock - 纯白亮瓷发光胶囊岛)
 	var dock_box = StyleBoxFlat.new()
@@ -1101,7 +1103,7 @@ func _update_era_label() -> void:
 	if era_tex:
 		era_badge_btn.icon = era_tex
 		era_badge_btn.expand_icon = true
-		era_badge_btn.custom_minimum_size = Vector2(0, 24)
+		era_badge_btn.custom_minimum_size = Vector2(0, 30)
 		
 	var tooltip_lines: Array[String] = [
 		"【当前文明纪元】%s" % era_name,

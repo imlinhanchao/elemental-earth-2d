@@ -57,21 +57,21 @@ layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="Margin/MainVBox/TopBarPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 14
-theme_override_constants/margin_top = 4
-theme_override_constants/margin_right = 14
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_bottom = 6
 
 [node name="HBox" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 18
 
 [node name="LogoBox" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 12
 
 [node name="LogoIcon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox"]
-custom_minimum_size = Vector2(26, 26)
+custom_minimum_size = Vector2(34, 34)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("10_pt")
@@ -84,7 +84,7 @@ alignment = 1
 
 [node name="LogoTitle" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoTextVBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "元素纪元"
 
 [node name="LogoSub" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoTextVBox"]
@@ -98,7 +98,7 @@ layout_mode = 2
 size_flags_vertical = 4
 focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 13
 text = "石器时代"
 
 [node name="Spacer" type="Control" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
@@ -107,14 +107,14 @@ size_flags_horizontal = 3
 
 [node name="ResourceRibbon" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
 layout_mode = 2
-theme_override_constants/separation = 16
+theme_override_constants/separation = 20
 
 [node name="ChipStone" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 
 [node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipStone"]
-custom_minimum_size = Vector2(16, 16)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("22_stone")
@@ -123,15 +123,15 @@ stretch_mode = 5
 
 [node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipStone"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "0"
 
 [node name="ChipWood" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 
 [node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWood"]
-custom_minimum_size = Vector2(16, 16)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("20_wood")
@@ -140,15 +140,15 @@ stretch_mode = 5
 
 [node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWood"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "0"
 
 [node name="ChipFlint" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 
 [node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFlint"]
-custom_minimum_size = Vector2(16, 16)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("23_flint")
@@ -157,15 +157,15 @@ stretch_mode = 5
 
 [node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFlint"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "0"
 
 [node name="ChipOre" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 
 [node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipOre"]
-custom_minimum_size = Vector2(16, 16)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("26_malachite")
@@ -174,15 +174,15 @@ stretch_mode = 5
 
 [node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipOre"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "0"
 
 [node name="ChipFuel" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
 layout_mode = 2
-theme_override_constants/separation = 4
+theme_override_constants/separation = 6
 
 [node name="Icon" type="TextureRect" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFuel"]
-custom_minimum_size = Vector2(16, 16)
+custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 size_flags_vertical = 4
 texture = ExtResource("25_charcoal")
@@ -191,17 +191,17 @@ stretch_mode = 5
 
 [node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFuel"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "0"
 
 [node name="SaveDot" type="Control" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
-custom_minimum_size = Vector2(8, 8)
+custom_minimum_size = Vector2(10, 10)
 layout_mode = 2
 size_flags_vertical = 4
 tooltip_text = "自动保存就绪"
 
 [node name="BtnMenu" type="Button" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
-custom_minimum_size = Vector2(28, 28)
+custom_minimum_size = Vector2(34, 34)
 layout_mode = 2
 tooltip_text = "系统菜单 [ESC]"
 icon = ExtResource("11_menu")
