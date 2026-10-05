@@ -27,90 +27,155 @@ theme_override_constants/margin_bottom = 48
 
 [node name="LayoutHBox" type="HBoxContainer" parent="SafeMargin"]
 layout_mode = 2
-theme_override_constants/separation = 40
+theme_override_constants/separation = 48
 
 [node name="MainPanel" type="VBoxContainer" parent="SafeMargin/LayoutHBox"]
-custom_minimum_size = Vector2(480, 0)
+custom_minimum_size = Vector2(490, 0)
 layout_mode = 2
-theme_override_constants/separation = 24
+theme_override_constants/separation = 16
 alignment = 1
 
 [node name="TitleBox" type="VBoxContainer" parent="SafeMargin/LayoutHBox/MainPanel"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox"]
+[node name="BrandRow" type="HBoxContainer" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.949, 0.949, 0.941, 1)
-theme_override_font_sizes/font_size = 44
+theme_override_constants/separation = 16
+
+[node name="LogoIcon" type="TextureRect" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox/BrandRow"]
+custom_minimum_size = Vector2(50, 50)
+layout_mode = 2
+size_flags_vertical = 4
+expand_mode = 1
+stretch_mode = 5
+
+[node name="BrandTextVBox" type="VBoxContainer" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox/BrandRow"]
+layout_mode = 2
+theme_override_constants/separation = 2
+
+[node name="Title" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox/BrandRow/BrandTextVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.96, 0.97, 0.99, 1)
+theme_override_font_sizes/font_size = 46
 text = "元素纪元"
 
-[node name="SubTitle" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox"]
+[node name="SubTitleRow" type="HBoxContainer" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox/BrandRow/BrandTextVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
-theme_override_font_sizes/font_size = 14
-text = "ELEMENTAL EARTH 2D"
+theme_override_constants/separation = 8
+
+[node name="SubTitle" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox/BrandRow/BrandTextVBox/SubTitleRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.22, 0.74, 0.97, 1)
+theme_override_font_sizes/font_size = 13
+text = "ELEMENTAL EARTH"
+
+[node name="Badge" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox/BrandRow/BrandTextVBox/SubTitleRow"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.55, 0.68, 1)
+theme_override_font_sizes/font_size = 11
+text = "· 2D CHRONICLES"
 
 [node name="Desc" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
+theme_override_colors/font_color = Color(0.58, 0.65, 0.75, 1)
 theme_override_font_sizes/font_size = 13
 text = "微观化学实验 · 元素拓荒发现 · 宏观工业连续流"
+
+[node name="EraTimeline" type="HBoxContainer" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
 
 [node name="HSeparator" type="HSeparator" parent="SafeMargin/LayoutHBox/MainPanel"]
 layout_mode = 2
 
 [node name="MenuBox" type="VBoxContainer" parent="SafeMargin/LayoutHBox/MainPanel"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="BtnContinue" type="Button" parent="SafeMargin/LayoutHBox/MainPanel/MenuBox"]
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "继续游戏                                              [ENTER]"
-alignment = 0
 
 [node name="BtnNewGame" type="Button" parent="SafeMargin/LayoutHBox/MainPanel/MenuBox"]
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "新游戏                                                  [N]"
-alignment = 0
 
 [node name="BtnLoadGame" type="Button" parent="SafeMargin/LayoutHBox/MainPanel/MenuBox"]
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "载入档案                                              [L]"
-alignment = 0
 
 [node name="BtnSettings" type="Button" parent="SafeMargin/LayoutHBox/MainPanel/MenuBox"]
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "游戏设置                                              [O]"
-alignment = 0
 
 [node name="BtnGuide" type="Button" parent="SafeMargin/LayoutHBox/MainPanel/MenuBox"]
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "拓荒指南                                              [H]"
-alignment = 0
 
 [node name="BtnQuit" type="Button" parent="SafeMargin/LayoutHBox/MainPanel/MenuBox"]
-custom_minimum_size = Vector2(0, 42)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "退出游戏                                              [ESC]"
-alignment = 0
 
 [node name="FooterLabel" type="Label" parent="SafeMargin/LayoutHBox/MainPanel"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.42, 0.45, 1)
+theme_override_colors/font_color = Color(0.42, 0.48, 0.58, 1)
 theme_override_font_sizes/font_size = 12
-text = "v0.3.0 | 遵循真实化学元素体系 | 4K/1080P 自适应"
+text = "v0.3.0 | 4K/1080P 自适应 | 基于 Vulkan Forward+ 现代图形架构"
+
+[node name="Spacer" type="Control" parent="SafeMargin/LayoutHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+
+[node name="RightPanel" type="VBoxContainer" parent="SafeMargin/LayoutHBox"]
+custom_minimum_size = Vector2(380, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+alignment = 2
+mouse_filter = 2
+
+[node name="ArchiveCard" type="PanelContainer" parent="SafeMargin/LayoutHBox/RightPanel"]
+custom_minimum_size = Vector2(380, 110)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="CardMargin" type="MarginContainer" parent="SafeMargin/LayoutHBox/RightPanel/ArchiveCard"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 14
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 14
+
+[node name="CardVBox" type="VBoxContainer" parent="SafeMargin/LayoutHBox/RightPanel/ArchiveCard/CardMargin"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="CardHeader" type="Label" parent="SafeMargin/LayoutHBox/RightPanel/ArchiveCard/CardMargin/CardVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.38, 0.82, 1, 1)
+theme_override_font_sizes/font_size = 14
+text = "【开拓档案快照】"
+
+[node name="CardBody" type="Label" parent="SafeMargin/LayoutHBox/RightPanel/ArchiveCard/CardMargin/CardVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.8, 0.85, 0.92, 1)
+theme_override_font_sizes/font_size = 12
+text = "正在检测本地文明探索进度..."
+
+[node name="CardHint" type="Label" parent="SafeMargin/LayoutHBox/RightPanel/ArchiveCard/CardMargin/CardVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.2, 0.85, 0.55, 1)
+theme_override_font_sizes/font_size = 11
+text = "按 [ENTER] 或点击【继续游戏】直接接入"
+
+[node name="KeyHintLabel" type="Label" parent="SafeMargin/LayoutHBox/RightPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.52, 0.62, 1)
+theme_override_font_sizes/font_size = 12
+text = "[↑/↓ / W/S] 导航切换   [ENTER] 确认执行   [ESC] 返回/退出"
 
 [node name="GuideModal" type="PanelContainer" parent="."]
 visible = false
