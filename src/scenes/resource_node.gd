@@ -142,21 +142,32 @@ func _draw() -> void:
 		_:
 			_draw_loose_stone()
 
-# 1. 孔雀石/铜矿晶簇 (Amber/Copper Faceted Crystals)
+# 1. 孔雀石晶簇 (Emerald Green Hex Crystals)
 func _draw_malachite_crystals() -> void:
-	_draw_crystal_poly(Vector2(-6, -2), Vector2(12, 24), Color(0.85, 0.48, 0.14), Color(0.98, 0.72, 0.25))
-	_draw_crystal_poly(Vector2(6, 2), Vector2(10, 18), Color(0.75, 0.38, 0.10), Color(0.95, 0.65, 0.20))
-	_draw_crystal_poly(Vector2(-1, 8), Vector2(8, 12), Color(0.90, 0.55, 0.18), Color(1.0, 0.82, 0.35))
+	_draw_crystal_poly(Vector2(-7, -2), Vector2(13, 26), Color(0.12, 0.65, 0.35), Color(0.25, 0.92, 0.52))
+	_draw_crystal_poly(Vector2(7, 2), Vector2(11, 20), Color(0.08, 0.52, 0.28), Color(0.20, 0.82, 0.45))
+	_draw_crystal_poly(Vector2(-1, 8), Vector2(9, 14), Color(0.16, 0.75, 0.42), Color(0.35, 0.98, 0.60))
 
-# 2. 赤铁矿钢锭 (Metallic Stacked Ingots)
+# 2. 赤铁矿多面岩 (Metallic Hematite Rocks)
 func _draw_hematite_rocks() -> void:
-	_draw_metallic_ingot(Vector2(-6, 5), Vector2(15, 7), Color(0.28, 0.32, 0.40))
-	_draw_metallic_ingot(Vector2(6, 5), Vector2(15, 7), Color(0.32, 0.36, 0.45))
-	_draw_metallic_ingot(Vector2(0, -3), Vector2(17, 8), Color(0.38, 0.44, 0.52))
+	draw_colored_polygon([
+		Vector2(-14, 6), Vector2(-10, -10), Vector2(4, -14),
+		Vector2(14, -4), Vector2(15, 10), Vector2(2, 13)
+	], Color(0.55, 0.16, 0.14))
+	draw_colored_polygon([
+		Vector2(-10, -10), Vector2(4, -14), Vector2(14, -4), Vector2(2, -2)
+	], Color(0.78, 0.28, 0.22))
+	draw_line(Vector2(-10, -10), Vector2(2, -2), Color(0.95, 0.55, 0.45), 1.8)
+	draw_line(Vector2(4, -14), Vector2(2, -2), Color(0.95, 0.55, 0.45), 1.8)
 
-# 3. 碳质分子结构环 (Fullerene Carbon Molecular Ring)
+# 3. 六边形饱满橡树 (Hexagon-Fitted Oak Tree)
 func _draw_hex_oak_tree() -> void:
-	_draw_carbon_molecule()
+	draw_circle(Vector2(0, 14), 16.0, Color(0.05, 0.12, 0.06, 0.35))
+	draw_rect(Rect2(-4, 0, 8, 14), Color(0.38, 0.22, 0.12))
+	draw_circle(Vector2(0, -6), 20.0, Color(0.12, 0.28, 0.14))
+	draw_circle(Vector2(0, -9), 17.0, Color(0.22, 0.48, 0.20))
+	draw_circle(Vector2(-3, -12), 12.0, Color(0.35, 0.65, 0.28))
+	draw_circle(Vector2(4, -13), 8.0, Color(0.45, 0.75, 0.35))
 
 # 4. 硫磺结晶 (Bright Yellow Sulfur)
 func _draw_sulfur_crystals() -> void:
