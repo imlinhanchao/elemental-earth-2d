@@ -170,6 +170,15 @@
   - **游戏性**：自动保存周期调节（30s / 45s / 60s / 关闭）、视野平移灵敏度调节；
   - 支持【保存并应用】与【恢复默认】。
 
+### 2.14 矢量图标高精度渲染与视网膜清晰度体系 (Icon Clarity & HiDPI Architecture)
+- **线性多级渐远滤波 (Linear Mipmap Filtering)**：
+  - 修正全局 `rendering/textures/canvas_textures/default_texture_filter=2`（Linear Mipmap，原为 0 Nearest 邻近采样导致的像素断裂失真），使所有图标与 UI 元素获得平滑抗锯齿向下采样。
+- **高分屏原生清晰支持 (Native HiDPI / Retina)**：
+  - 开启 `display/window/dpi/allow_hidpi=true`，消除 macOS Retina 屏幕下以 1x 缩放二次拉伸导致的文字与图元全局毛玻璃虚化。
+- **3x 超采样矢量栅格化与 Mipmaps 全量激活 (3x SVG Rasterization & Mipmaps)**：
+  - 全量 60 个 SVG 矢量图标在 `.import` 配置及 `ItemIconManager` 动态 ThorVG 载入中均采用 `scale=3.0`（生成 192x192 以上超清源贴图）并显式调用 `img.generate_mipmaps()`；
+  - 在无论是 16px（顶栏）、24px（队列）、36px（背包/抽屉）还是 64px（弹窗详情）下展示均保证线条饱满、反走样平滑、无任何噪点与模糊。
+
 ---
 
 ## 3. 当前操作控制一览表 (Mouse & Keyboard Controls)
