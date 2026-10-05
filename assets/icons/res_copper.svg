@@ -1,13 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="cuBadge" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#F97316"/>
-      <stop offset="100%" stop-color="#7C2D12"/>
+    <linearGradient id="cu_top" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FED7AA"/>
+      <stop offset="100%" stop-color="#FB923C"/>
+    </linearGradient>
+    <linearGradient id="cu_front" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA580C"/>
+      <stop offset="100%" stop-color="#9A3412"/>
     </linearGradient>
   </defs>
-  <!-- 元素小方卡 (参考图中的 Au 79 / Fe 26 风格卡片) -->
-  <rect x="8" y="8" width="48" height="48" rx="8" fill="url(#cuBadge)" stroke="#FDBA74" stroke-width="2.5"/>
-  <text x="44" y="22" font-family="sans-serif" font-size="10" font-weight="bold" fill="#FED7AA" text-anchor="middle">29</text>
-  <text x="32" y="40" font-family="sans-serif" font-size="20" font-weight="900" fill="#FFFFFF" text-anchor="middle">Cu</text>
-  <text x="32" y="50" font-family="sans-serif" font-size="8" fill="#FDBA74" text-anchor="middle">63.54</text>
+  <!-- Ingot top -->
+  <polygon points="18,18 46,18 54,30 10,30" fill="url(#cu_top)" stroke="#7C2D12" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Ingot front -->
+  <polygon points="10,30 54,30 48,48 16,48" fill="url(#cu_front)" stroke="#7C2D12" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Hallmark Cu -->
+  <text x="32" y="27" font-family="system-ui, sans-serif" font-weight="900" font-size="9" fill="#7C2D12" text-anchor="middle">Cu 29</text>
+  <!-- Highlight chamfer line -->
+  <line x1="10" y1="30" x2="54" y2="30" stroke="#FFEDD5" stroke-width="1.5"/>
 </svg>

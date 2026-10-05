@@ -1,13 +1,27 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="logBark" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#92400E"/>
+    <linearGradient id="bark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#B45309"/>
+      <stop offset="100%" stop-color="#78350F"/>
+    </linearGradient>
+    <linearGradient id="bark_dark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#78350F"/>
       <stop offset="100%" stop-color="#451A03"/>
     </linearGradient>
+    <linearGradient id="wood_face" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF3C7"/>
+      <stop offset="100%" stop-color="#FDE68A"/>
+    </linearGradient>
   </defs>
-  <!-- 圆木筒体 -->
-  <path d="M16 22 L44 14 Q52 14 52 24 L52 40 Q52 48 44 48 L16 48 Z" fill="url(#logBark)" stroke="#B45309" stroke-width="2"/>
-  <!-- 年轮截面 -->
-  <ellipse cx="20" cy="34" rx="8" ry="14" fill="#FDE68A" stroke="#B45309" stroke-width="2"/>
-  <ellipse cx="20" cy="34" rx="4" ry="7" fill="none" stroke="#D97706" stroke-width="1.5"/>
+  <!-- Log body -->
+  <path d="M18 16 L46 22 L46 46 L18 40 Z" fill="url(#bark)" stroke="#451A03" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M18 40 L46 46 L38 54 L12 48 Z" fill="url(#bark_dark)" stroke="#451A03" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Cross-section cut -->
+  <polygon points="18,16 12,24 12,48 18,40" fill="url(#wood_face)" stroke="#451A03" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Annual rings -->
+  <ellipse cx="15" cy="32" rx="4" ry="10" fill="none" stroke="#D97706" stroke-width="1.5"/>
+  <ellipse cx="15" cy="32" rx="2" ry="5" fill="#B45309"/>
+  <!-- Surface grain accents -->
+  <line x1="24" y1="23" x2="42" y2="27" stroke="#FDE68A" stroke-width="1.5" stroke-linecap="round"/>
+  <line x1="22" y1="34" x2="44" y2="38" stroke="#92400E" stroke-width="1.5" stroke-linecap="round"/>
 </svg>

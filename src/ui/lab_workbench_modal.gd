@@ -23,6 +23,12 @@ var solution_color: Color = Color(0.8, 0.9, 1.0, 0.2)
 func _ready() -> void:
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	var p_box = ThemeStyler.create_card_box(12, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER)
+	p_box.content_margin_left = 16
+	p_box.content_margin_top = 16
+	p_box.content_margin_right = 16
+	p_box.content_margin_bottom = 16
+	$CenterPanel.add_theme_stylebox_override("panel", p_box)
 	lab_vessel = GameState.lab_vessel
 	lab_vessel.container_type = "flask"
 	
@@ -46,11 +52,19 @@ func _on_reaction_occurred(rx_name: String, _prods: Array) -> void:
 		_add_log("实验台发生化学反应: %s" % rx_name)
 		_refresh_ui()
 
+func open() -> void:
+	visible = true
+	_refresh_ui()
+	btn_close.grab_focus()
+
+func close() -> void:
+	visible = false
+
 func toggle() -> void:
-	visible = not visible
 	if visible:
-		_refresh_ui()
-		btn_close.grab_focus()
+		close()
+	else:
+		open()
 
 func _input(event: InputEvent) -> void:
 	if not visible:

@@ -1,18 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <defs>
-    <linearGradient id="kilnStone2" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#475569"/>
-      <stop offset="100%" stop-color="#1E293B"/>
-    </linearGradient>
-    <radialGradient id="fireGlow2" cx="50%" cy="80%" r="60%">
-      <stop offset="0%" stop-color="#FEF08A"/>
-      <stop offset="40%" stop-color="#F97316"/>
-      <stop offset="100%" stop-color="#9A3412"/>
-    </radialGradient>
-  </defs>
-  <rect x="26" y="8" width="12" height="6" rx="2" fill="#334155" stroke="#64748B" stroke-width="1.5"/>
-  <path d="M14 54 C12 36 22 14 32 14 C42 14 52 36 50 54 Z" fill="url(#kilnStone2)" stroke="#64748B" stroke-width="2"/>
-  <rect x="10" y="52" width="44" height="6" rx="3" fill="#0F172A" stroke="#334155" stroke-width="1.5"/>
-  <path d="M22 52 C22 38 42 38 42 52 Z" fill="url(#fireGlow2)"/>
-  <path d="M28 52 C28 44 32 42 32 42 C32 42 36 44 36 52 Z" fill="#FEF08A"/>
+  <!-- Smelting kiln with hearth window -->
+  <path d="M18 52 L22 18 L42 18 L46 52 Z" fill="#1E293B" stroke="#EA580C" stroke-width="2" stroke-linejoin="round"/>
+  <rect x="26" y="12" width="12" height="6" fill="#475569" stroke="#EA580C" stroke-width="1.5"/>
+  <!-- Molten hearth arched window -->
+  <path d="M26 48 L26 38 C26 34 38 34 38 38 L38 48 Z" fill="#F59E0B" stroke="#DC2626" stroke-width="2"/>
+  <circle cx="32" cy="42" r="2" fill="#FEF08A"/>
 </svg>

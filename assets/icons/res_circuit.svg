@@ -1,19 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <defs>
-    <linearGradient id="pcbGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#10B981"/>
-      <stop offset="100%" stop-color="#064E3B"/>
-    </linearGradient>
-  </defs>
-  <!-- 芯片与集成电路 -->
-  <rect x="10" y="10" width="44" height="44" rx="6" fill="url(#pcbGrad)" stroke="#6EE7B7" stroke-width="2"/>
-  <rect x="22" y="22" width="20" height="20" rx="3" fill="#1E293B" stroke="#F59E0B" stroke-width="1.5"/>
-  <circle cx="32" cy="32" r="4" fill="#38BDF8"/>
-  <!-- 针脚 -->
-  <line x1="16" y1="6" x2="16" y2="10" stroke="#F59E0B" stroke-width="2"/>
-  <line x1="32" y1="6" x2="32" y2="10" stroke="#F59E0B" stroke-width="2"/>
-  <line x1="48" y1="6" x2="48" y2="10" stroke="#F59E0B" stroke-width="2"/>
-  <line x1="16" y1="54" x2="16" y2="58" stroke="#F59E0B" stroke-width="2"/>
-  <line x1="32" y1="54" x2="32" y2="58" stroke="#F59E0B" stroke-width="2"/>
-  <line x1="48" y1="54" x2="48" y2="58" stroke="#F59E0B" stroke-width="2"/>
+  <!-- PCB base -->
+  <rect x="14" y="14" width="36" height="36" rx="4" fill="#064E3B" stroke="#047857" stroke-width="2"/>
+  <!-- Central silicon die -->
+  <rect x="24" y="24" width="16" height="16" rx="2" fill="#0F172A" stroke="#38BDF8" stroke-width="1.5"/>
+  <!-- Gold bus leads -->
+  <line x1="8" y1="20" x2="14" y2="20" stroke="#F59E0B" stroke-width="2"/>
+  <line x1="8" y1="32" x2="14" y2="32" stroke="#F59E0B" stroke-width="2"/>
+  <line x1="8" y1="44" x2="14" y2="44" stroke="#F59E0B" stroke-width="2"/>
+  <line x1="50" y1="20" x2="56" y2="20" stroke="#F59E0B" stroke-width="2"/>
+  <line x1="50" y1="32" x2="56" y2="32" stroke="#F59E0B" stroke-width="2"/>
+  <line x1="50" y1="44" x2="56" y2="44" stroke="#F59E0B" stroke-width="2"/>
+  <!-- Trace lines -->
+  <circle cx="32" cy="32" r="3" fill="#38BDF8"/>
 </svg>

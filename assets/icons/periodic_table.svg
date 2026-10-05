@@ -1,12 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <rect x="8" y="8" width="48" height="48" rx="8" fill="#161936" stroke="#818CF8" stroke-width="2"/>
-  <!-- 网格元素方块 -->
-  <rect x="14" y="14" width="10" height="10" rx="2" fill="#38BDF8"/>
-  <rect x="40" y="14" width="10" height="10" rx="2" fill="#A855F7"/>
-  <rect x="14" y="27" width="10" height="10" rx="2" fill="#F59E0B"/>
-  <rect x="27" y="27" width="10" height="10" rx="2" fill="#10B981"/>
-  <rect x="40" y="27" width="10" height="10" rx="2" fill="#EF4444"/>
-  <rect x="14" y="40" width="10" height="10" rx="2" fill="#E2E8F0"/>
-  <rect x="27" y="40" width="10" height="10" rx="2" fill="#E2E8F0"/>
-  <rect x="40" y="40" width="10" height="10" rx="2" fill="#E2E8F0"/>
+  <!-- Element cell tile -->
+  <rect x="10" y="10" width="44" height="44" rx="4" fill="#0F172A" stroke="#38BDF8" stroke-width="2"/>
+  <text x="16" y="24" font-family="system-ui, sans-serif" font-weight="bold" font-size="9" fill="#94A3B8">1</text>
+  <text x="32" y="38" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#38BDF8" text-anchor="middle">H</text>
+  <text x="32" y="48" font-family="system-ui, sans-serif" font-weight="normal" font-size="7" fill="#E2E8F0" text-anchor="middle">1.008</text>
 </svg>

@@ -1,11 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="waterGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#E0F2FE"/>
-      <stop offset="40%" stop-color="#38BDF8"/>
-      <stop offset="100%" stop-color="#0284C7"/>
+    <linearGradient id="water_drop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38BDF8"/>
+      <stop offset="60%" stop-color="#0284C7"/>
+      <stop offset="100%" stop-color="#0369A1"/>
     </linearGradient>
   </defs>
-  <path d="M32 8 C32 8 14 30 14 42 A18 18 0 0 0 50 42 C50 30 32 8 32 8 Z" fill="url(#waterGrad)" stroke="#BAE6FD" stroke-width="2"/>
-  <path d="M24 38 A8 8 0 0 1 30 26" fill="none" stroke="#FFFFFF" stroke-width="2.5" stroke-linecap="round" opacity="0.8"/>
+  <!-- Outer aura ring -->
+  <ellipse cx="32" cy="46" rx="20" ry="8" fill="none" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.6"/>
+  <!-- Precision droplet -->
+  <path d="M32 8 C32 8 14 30 14 42 C14 52 22 58 32 58 C42 58 50 52 50 42 C50 30 32 8 32 8 Z" 
+        fill="url(#water_drop)" stroke="#082F49" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Inner specular crescent -->
+  <path d="M22 34 C20 38 20 44 24 48" fill="none" stroke="#E0F2FE" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="28" cy="24" r="2.5" fill="#FFFFFF"/>
 </svg>

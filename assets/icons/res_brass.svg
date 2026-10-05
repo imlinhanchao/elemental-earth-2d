@@ -1,12 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="brassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FEF08A"/>
-      <stop offset="40%" stop-color="#FACC15"/>
-      <stop offset="100%" stop-color="#A16207"/>
+    <linearGradient id="brs_top" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FEF9C3"/>
+      <stop offset="100%" stop-color="#FACC15"/>
+    </linearGradient>
+    <linearGradient id="brs_front" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#CA8A04"/>
+      <stop offset="100%" stop-color="#854D0E"/>
     </linearGradient>
   </defs>
-  <polygon points="16,22 48,22 56,42 8,42" fill="url(#brassGrad)" stroke="#FEF9C3" stroke-width="1.8"/>
-  <polygon points="16,22 48,22 42,16 22,16" fill="#FEF08A" stroke="#FFFFFF" stroke-width="1.5"/>
-  <text x="32" y="36" font-family="sans-serif" font-size="11" font-weight="bold" fill="#713F12" text-anchor="middle">BRASS</text>
+  <polygon points="18,18 46,18 54,30 10,30" fill="url(#brs_top)" stroke="#713F12" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="10,30 54,30 48,48 16,48" fill="url(#brs_front)" stroke="#713F12" stroke-width="2" stroke-linejoin="round"/>
+  <text x="32" y="27" font-family="system-ui, sans-serif" font-weight="900" font-size="9" fill="#713F12" text-anchor="middle">Cu-Zn</text>
+  <line x1="10" y1="30" x2="54" y2="30" stroke="#FFFFFF" stroke-width="1.5"/>
 </svg>

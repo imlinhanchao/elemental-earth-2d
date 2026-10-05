@@ -70,6 +70,12 @@ var drag_start_scroll: Vector2 = Vector2.ZERO
 func _ready() -> void:
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	var p_box = ThemeStyler.create_card_box(12, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER)
+	p_box.content_margin_left = 16
+	p_box.content_margin_top = 16
+	p_box.content_margin_right = 16
+	p_box.content_margin_bottom = 16
+	$CenterPanel.add_theme_stylebox_override("panel", p_box)
 	
 	lines_layer.tech_modal = self
 	
@@ -302,53 +308,65 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 	style.content_margin_bottom = 5
 	
 	if is_researched:
-		# 已研发 (紧凑墨绿高雅质感)
-		style.bg_color = Color(0.06, 0.14, 0.09, 0.92)
-		style.border_color = Color(0.15, 0.75, 0.40, 0.9)
+		# 已研发 (现代科学翡翠绿细线)
+		style.bg_color = Color(0.06, 0.12, 0.10, 0.92)
+		style.border_color = ThemeStyler.COLOR_SUCCESS
 		style.border_width_left = 1
 		style.border_width_top = 1
 		style.border_width_right = 1
 		style.border_width_bottom = 1
+		style.corner_radius_top_left = 6
+		style.corner_radius_top_right = 6
+		style.corner_radius_bottom_left = 6
+		style.corner_radius_bottom_right = 6
 		card.modulate = Color.WHITE
 		if cost_lbl:
-			cost_lbl.text = "✓ 已研发完毕"
-			cost_lbl.add_theme_color_override("font_color", Color(0.35, 0.95, 0.5))
+			cost_lbl.text = "已掌握核心技术"
+			cost_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS)
 		if btn_action:
 			btn_action.visible = false
 	elif prereqs_met:
-		# 可研发 (科技蔚蓝呼吸光)
-		style.bg_color = Color(0.08, 0.12, 0.18, 0.95)
-		style.border_color = Color(0.28, 0.65, 1.0, 1.0)
+		# 可研发 (电光青发丝线与辉光)
+		style.bg_color = ThemeStyler.COLOR_CARD_HOVER
+		style.border_color = ThemeStyler.COLOR_BORDER_FOCUS
 		style.border_width_left = 1
 		style.border_width_top = 1
 		style.border_width_right = 1
 		style.border_width_bottom = 1
+		style.corner_radius_top_left = 6
+		style.corner_radius_top_right = 6
+		style.corner_radius_bottom_left = 6
+		style.corner_radius_bottom_right = 6
 		card.modulate = Color.WHITE
 		if cost_lbl:
-			cost_lbl.text = ("需求: " + ", ".join(cost_texts)) if not cost_texts.is_empty() else "无消耗"
-			cost_lbl.add_theme_color_override("font_color", Color(0.4, 0.9, 0.5) if items_met else Color(0.95, 0.55, 0.45))
+			cost_lbl.text = ("需求: " + ", ".join(cost_texts)) if not cost_texts.is_empty() else "即时突破"
+			cost_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS if items_met else ThemeStyler.COLOR_WARNING)
 		if btn_action:
 			btn_action.visible = true
 			if items_met:
-				btn_action.text = "🔬 启动研发"
+				btn_action.text = "启动突破"
 				btn_action.disabled = false
-				btn_action.modulate = Color(0.3, 0.9, 1.0)
+				btn_action.modulate = Color(1.0, 1.0, 1.0, 1.0)
 			else:
-				btn_action.text = "材料不足"
+				btn_action.text = "资源不足"
 				btn_action.disabled = true
-				btn_action.modulate = Color(0.85, 0.6, 0.5)
+				btn_action.modulate = Color(0.85, 0.6, 0.5, 0.8)
 	else:
-		# 未解锁 (缺氧灰暗受控)
-		style.bg_color = Color(0.05, 0.06, 0.08, 0.70)
-		style.border_color = Color(0.18, 0.20, 0.24, 0.7)
+		# 未解锁 (极简冷灰受控状态)
+		style.bg_color = Color(0.05, 0.07, 0.10, 0.70)
+		style.border_color = ThemeStyler.COLOR_BORDER
 		style.border_width_left = 1
 		style.border_width_top = 1
 		style.border_width_right = 1
 		style.border_width_bottom = 1
-		card.modulate = Color(1, 1, 1, 0.55)
+		style.corner_radius_top_left = 6
+		style.corner_radius_top_right = 6
+		style.corner_radius_bottom_left = 6
+		style.corner_radius_bottom_right = 6
+		card.modulate = Color(1, 1, 1, 0.5)
 		if cost_lbl:
-			cost_lbl.text = "🔒 需: " + " / ".join(missing_prereqs) if not missing_prereqs.is_empty() else "未解锁"
-			cost_lbl.add_theme_color_override("font_color", Color(0.7, 0.45, 0.45))
+			cost_lbl.text = "需先掌握: " + " / ".join(missing_prereqs) if not missing_prereqs.is_empty() else "时代未达"
+			cost_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_MUTED)
 		if btn_action:
 			btn_action.visible = false
 			

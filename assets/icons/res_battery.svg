@@ -1,13 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="batGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38BDF8"/>
-      <stop offset="100%" stop-color="#0369A1"/>
+    <linearGradient id="bat_body" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
     </linearGradient>
   </defs>
-  <!-- 蓄电池/电堆 -->
-  <rect x="24" y="8" width="16" height="6" rx="2" fill="#E0F2FE" stroke="#38BDF8" stroke-width="1.5"/>
-  <rect x="16" y="14" width="32" height="42" rx="6" fill="url(#batGrad)" stroke="#7DD3FC" stroke-width="2"/>
-  <!-- 闪电能量标志 -->
-  <polygon points="34,22 24,36 32,36 30,48 40,34 32,34" fill="#FDE047" stroke="#FEF08A" stroke-width="1"/>
+  <!-- Positive terminal -->
+  <rect x="26" y="8" width="12" height="5" rx="1.5" fill="#94A3B8" stroke="#0F172A" stroke-width="1.5"/>
+  <!-- Battery casing -->
+  <rect x="16" y="13" width="32" height="42" rx="4" fill="url(#bat_body)" stroke="#38BDF8" stroke-width="2"/>
+  <!-- Cyan voltage arc -->
+  <polygon points="34,22 26,34 33,34 30,46 40,32 33,32" fill="#38BDF8"/>
+  <line x1="20" y1="50" x2="44" y2="50" stroke="#0284C7" stroke-width="2" stroke-linecap="round"/>
 </svg>

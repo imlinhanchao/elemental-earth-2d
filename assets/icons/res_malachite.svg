@@ -1,16 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="malaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6EE7B7"/>
-      <stop offset="50%" stop-color="#10B981"/>
+    <linearGradient id="mala_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10B981"/>
+      <stop offset="60%" stop-color="#059669"/>
       <stop offset="100%" stop-color="#064E3B"/>
     </linearGradient>
   </defs>
-  <!-- 主晶体 -->
-  <polygon points="32,6 44,24 38,54 26,54 20,24" fill="url(#malaGrad)" stroke="#A7F3D0" stroke-width="1.8"/>
-  <!-- 侧伴生晶簇 -->
-  <polygon points="16,28 26,16 28,42 12,46" fill="url(#malaGrad)" stroke="#A7F3D0" stroke-width="1.5"/>
-  <polygon points="46,26 54,34 46,50 38,42" fill="url(#malaGrad)" stroke="#A7F3D0" stroke-width="1.5"/>
-  <!-- 晶体棱线反光 -->
-  <line x1="32" y1="6" x2="32" y2="54" stroke="#ECFDF5" stroke-width="1.5"/>
+  <!-- Crystal cluster -->
+  <polygon points="32,8 50,18 56,40 42,54 22,54 8,40 14,18" fill="url(#mala_bg)" stroke="#022C22" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Concentric banding arcs -->
+  <path d="M16 26 Q32 16 48 26" fill="none" stroke="#34D399" stroke-width="2" stroke-linecap="round"/>
+  <path d="M12 36 Q32 24 52 36" fill="none" stroke="#A7F3D0" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M16 46 Q32 34 48 46" fill="none" stroke="#047857" stroke-width="2" stroke-linecap="round"/>
+  <!-- Crystal glint -->
+  <circle cx="32" cy="24" r="2.5" fill="#FFFFFF"/>
 </svg>

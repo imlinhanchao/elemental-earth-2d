@@ -151,6 +151,7 @@ func _ready() -> void:
 	
 	furnace_panel.visible = false
 	action_drawer.visible = false
+	_apply_scheme3_styling()
 	_update_inventory_ui()
 	_update_era_label()
 	_update_task_queue_ui()
@@ -526,17 +527,155 @@ func _add_inventory_subitems() -> void:
 		)
 		drawer_grid.add_child(card)
 
-# 通用制作/操作卡片创建函数 (严格遵循半透明禁用规范)
+# 方案三界面样式初始化 (现代科学信息图 · 极简冷灰几何风)
+func _apply_scheme3_styling() -> void:
+	# 1. 顶栏悬浮胶囊 Ribbon (Floating Capsule Ribbon)
+	var top_box = ThemeStyler.create_pill_box(18, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER)
+	top_box.content_margin_left = 16
+	top_box.content_margin_top = 4
+	top_box.content_margin_right = 16
+	top_box.content_margin_bottom = 4
+	$Margin/MainVBox/TopBarPanel.add_theme_stylebox_override("panel", top_box)
+	
+	if era_label:
+		era_label.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
+		era_label.add_theme_font_size_override("font_size", 13)
+	
+	# 2. 底栏悬浮交互坞 (Floating Action Dock)
+	var dock_box = ThemeStyler.create_pill_box(22, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER)
+	dock_box.content_margin_left = 14
+	dock_box.content_margin_top = 4
+	dock_box.content_margin_right = 14
+	dock_box.content_margin_bottom = 4
+	$Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel.add_theme_stylebox_override("panel", dock_box)
+	
+	# 底栏按钮悬停与激活态 (Pill Buttons)
+	var tab_buttons = [btn_tab_lab, btn_tab_tech, btn_tab_craft, btn_tab_build, btn_tab_production, btn_tab_inventory]
+	for btn in tab_buttons:
+		if btn:
+			var btn_norm = ThemeStyler.create_pill_box(14, Color(0.09, 0.12, 0.18, 0.8), ThemeStyler.COLOR_BORDER)
+			btn_norm.content_margin_left = 10
+			btn_norm.content_margin_right = 10
+			btn_norm.content_margin_top = 4
+			btn_norm.content_margin_bottom = 4
+			var btn_hov = ThemeStyler.create_pill_box(14, Color(0.13, 0.18, 0.26, 0.95), ThemeStyler.COLOR_BORDER_FOCUS)
+			btn_hov.content_margin_left = 10
+			btn_hov.content_margin_right = 10
+			btn_hov.content_margin_top = 4
+			btn_hov.content_margin_bottom = 4
+			var btn_press = ThemeStyler.create_pill_box(14, Color(0.06, 0.09, 0.14, 1.0), ThemeStyler.COLOR_ACCENT)
+			btn_press.content_margin_left = 10
+			btn_press.content_margin_right = 10
+			btn_press.content_margin_top = 4
+			btn_press.content_margin_bottom = 4
+			btn.add_theme_stylebox_override("normal", btn_norm)
+			btn.add_theme_stylebox_override("hover", btn_hov)
+			btn.add_theme_stylebox_override("pressed", btn_press)
+			btn.add_theme_stylebox_override("focus", btn_hov)
+			btn.add_theme_font_size_override("font_size", 12)
+			btn.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
+			btn.add_theme_color_override("font_hover_color", Color.WHITE)
+	
+	# 队列数字胶囊徽标 (Queue Badge)
+	if queue_badge:
+		var q_badge_box = StyleBoxFlat.new()
+		q_badge_box.bg_color = Color(0.22, 0.74, 0.97, 0.22)
+		q_badge_box.border_color = ThemeStyler.COLOR_ACCENT
+		q_badge_box.border_width_left = 1
+		q_badge_box.border_width_top = 1
+		q_badge_box.border_width_right = 1
+		q_badge_box.border_width_bottom = 1
+		q_badge_box.corner_radius_top_left = 8
+		q_badge_box.corner_radius_top_right = 8
+		q_badge_box.corner_radius_bottom_left = 8
+		q_badge_box.corner_radius_bottom_right = 8
+		q_badge_box.content_margin_left = 6
+		q_badge_box.content_margin_right = 6
+		q_badge_box.content_margin_top = 1
+		q_badge_box.content_margin_bottom = 1
+		queue_badge.add_theme_stylebox_override("normal", q_badge_box)
+		queue_badge.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
+	
+	# 3. 悬浮作业管线卡片 (Task Dock)
+	var task_box = ThemeStyler.create_card_box(10, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER)
+	task_box.content_margin_left = 12
+	task_box.content_margin_top = 10
+	task_box.content_margin_right = 12
+	task_box.content_margin_bottom = 10
+	$Margin/MainVBox/BodyHBox/RightBox/TaskDock.add_theme_stylebox_override("panel", task_box)
+	
+	# 作业进度条细线科技化
+	if task_progress_bar:
+		var pb_bg = StyleBoxFlat.new()
+		pb_bg.bg_color = Color(0.06, 0.08, 0.12, 0.95)
+		pb_bg.border_color = Color(0.18, 0.25, 0.35, 0.8)
+		pb_bg.border_width_left = 1
+		pb_bg.border_width_top = 1
+		pb_bg.border_width_right = 1
+		pb_bg.border_width_bottom = 1
+		pb_bg.corner_radius_top_left = 3
+		pb_bg.corner_radius_top_right = 3
+		pb_bg.corner_radius_bottom_left = 3
+		pb_bg.corner_radius_bottom_right = 3
+		var pb_fill = StyleBoxFlat.new()
+		pb_fill.bg_color = ThemeStyler.COLOR_ACCENT
+		pb_fill.corner_radius_top_left = 3
+		pb_fill.corner_radius_top_right = 3
+		pb_fill.corner_radius_bottom_left = 3
+		pb_fill.corner_radius_bottom_right = 3
+		task_progress_bar.add_theme_stylebox_override("background", pb_bg)
+		task_progress_bar.add_theme_stylebox_override("fill", pb_fill)
+	
+	# 4. 底部动作抽屉面板 (Action Drawer)
+	var drawer_box = ThemeStyler.create_card_box(14, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER)
+	drawer_box.content_margin_left = 16
+	drawer_box.content_margin_top = 12
+	drawer_box.content_margin_right = 16
+	drawer_box.content_margin_bottom = 14
+	action_drawer.add_theme_stylebox_override("panel", drawer_box)
+	
+	# 5. 熔炉监控面板 (Furnace Panel)
+	var f_box = ThemeStyler.create_card_box(10, ThemeStyler.COLOR_CARD, ThemeStyler.COLOR_BORDER)
+	f_box.content_margin_left = 12
+	f_box.content_margin_top = 10
+	f_box.content_margin_right = 12
+	f_box.content_margin_bottom = 10
+	furnace_panel.add_theme_stylebox_override("panel", f_box)
+
+# 通用制作/操作卡片创建函数 (严格遵循方案三信息图卡片规范)
 func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, badge_text: String, is_enabled: bool) -> Button:
 	var btn = Button.new()
 	btn.custom_minimum_size = Vector2(210, 110)
 	btn.size_flags_vertical = 3
 	btn.tooltip_text = "%s\n%s" % [title, subtitle]
 	
+	var card_norm = ThemeStyler.create_card_box(8, ThemeStyler.COLOR_CARD, ThemeStyler.COLOR_BORDER)
+	card_norm.content_margin_left = 12
+	card_norm.content_margin_top = 10
+	card_norm.content_margin_right = 12
+	card_norm.content_margin_bottom = 10
+	
+	var card_hover = ThemeStyler.create_card_box(8, ThemeStyler.COLOR_CARD_HOVER, ThemeStyler.COLOR_BORDER_FOCUS)
+	card_hover.content_margin_left = 12
+	card_hover.content_margin_top = 10
+	card_hover.content_margin_right = 12
+	card_hover.content_margin_bottom = 10
+	
+	var card_press = ThemeStyler.create_card_box(8, Color(0.06, 0.09, 0.14, 1.0), ThemeStyler.COLOR_ACCENT)
+	card_press.content_margin_left = 12
+	card_press.content_margin_top = 10
+	card_press.content_margin_right = 12
+	card_press.content_margin_bottom = 10
+	
+	btn.add_theme_stylebox_override("normal", card_norm)
+	btn.add_theme_stylebox_override("hover", card_hover)
+	btn.add_theme_stylebox_override("pressed", card_press)
+	btn.add_theme_stylebox_override("focus", card_hover)
+	
 	# 半透明禁用状态处理
 	if not is_enabled:
 		btn.disabled = true
-		btn.modulate = Color(1.0, 1.0, 1.0, 0.4)
+		btn.modulate = Color(1.0, 1.0, 1.0, 0.45)
 	else:
 		btn.modulate = Color(1.0, 1.0, 1.0, 1.0)
 		
@@ -578,7 +717,7 @@ func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, b
 	lbl_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lbl_title.text = title
 	lbl_title.add_theme_font_size_override("font_size", 13)
-	lbl_title.add_theme_color_override("font_color", Color(0.95, 0.95, 0.94))
+	lbl_title.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 	title_vbox.add_child(lbl_title)
 	
 	var lbl_badge = Label.new()
@@ -586,9 +725,9 @@ func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, b
 	lbl_badge.text = badge_text
 	lbl_badge.add_theme_font_size_override("font_size", 11)
 	if is_enabled:
-		lbl_badge.add_theme_color_override("font_color", Color(0.3, 0.55, 1.0))
+		lbl_badge.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 	else:
-		lbl_badge.add_theme_color_override("font_color", Color(0.8, 0.4, 0.4))
+		lbl_badge.add_theme_color_override("font_color", ThemeStyler.COLOR_DANGER)
 	title_vbox.add_child(lbl_badge)
 	
 	var lbl_sub = Label.new()
@@ -596,7 +735,7 @@ func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, b
 	lbl_sub.text = subtitle
 	lbl_sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl_sub.add_theme_font_size_override("font_size", 11)
-	lbl_sub.add_theme_color_override("font_color", Color(0.60, 0.62, 0.65))
+	lbl_sub.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 	vbox.add_child(lbl_sub)
 	
 	return btn

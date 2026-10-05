@@ -41,10 +41,10 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme_override_constants/margin_left = 48
-theme_override_constants/margin_top = 48
-theme_override_constants/margin_right = 48
-theme_override_constants/margin_bottom = 36
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 20
 
 [node name="MainVBox" type="VBoxContainer" parent="Margin"]
 layout_mode = 2
@@ -396,15 +396,15 @@ layout_mode = 2
 alignment = 1
 
 [node name="BottomDockPanel" type="PanelContainer" parent="Margin/MainVBox/BottomArea/BottomCenterRow"]
-custom_minimum_size = Vector2(0, 40)
+custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel"]
 layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 2
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 2
+theme_override_constants/margin_left = 14
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 14
+theme_override_constants/margin_bottom = 4
 
 [node name="DockHBox" type="HBoxContainer" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin"]
 layout_mode = 2

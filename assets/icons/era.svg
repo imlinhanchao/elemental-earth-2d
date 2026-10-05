@@ -1,17 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <defs>
-    <linearGradient id="eraGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FBBF24"/>
-      <stop offset="100%" stop-color="#D97706"/>
-    </linearGradient>
-  </defs>
-  <!-- 帕特农神庙/纪元圣殿 -->
-  <polygon points="32,10 12,24 52,24" fill="url(#eraGrad)" stroke="#FDE68A" stroke-width="2"/>
-  <rect x="16" y="24" width="32" height="4" fill="#FDE68A"/>
-  <!-- 四根多立克立柱 -->
-  <line x1="18" y1="28" x2="18" y2="48" stroke="#FDE68A" stroke-width="4"/>
-  <line x1="27" y1="28" x2="27" y2="48" stroke="#FDE68A" stroke-width="4"/>
-  <line x1="37" y1="28" x2="37" y2="48" stroke="#FDE68A" stroke-width="4"/>
-  <line x1="46" y1="28" x2="46" y2="48" stroke="#FDE68A" stroke-width="4"/>
-  <rect x="12" y="48" width="40" height="6" rx="2" fill="url(#eraGrad)" stroke="#FDE68A" stroke-width="1.5"/>
+  <!-- Astrolabe epoch ring -->
+  <circle cx="32" cy="32" r="22" fill="none" stroke="#38BDF8" stroke-width="2.5"/>
+  <ellipse cx="32" cy="32" rx="22" ry="9" fill="none" stroke="#0284C7" stroke-width="1.5" transform="rotate(-30 32 32)"/>
+  <circle cx="32" cy="32" r="5" fill="#F59E0B"/>
+  <circle cx="48" cy="22" r="2.5" fill="#FFFFFF"/>
 </svg>

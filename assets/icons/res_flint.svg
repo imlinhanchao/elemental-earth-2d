@@ -1,11 +1,21 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="flintGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="flint_l" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#475569"/>
-      <stop offset="100%" stop-color="#090D16"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="flint_r" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1E293B"/>
+      <stop offset="100%" stop-color="#0F172A"/>
     </linearGradient>
   </defs>
-  <polygon points="32,8 14,36 24,56 46,52 52,30" fill="url(#flintGrad)" stroke="#38BDF8" stroke-width="2"/>
-  <line x1="32" y1="8" x2="34" y2="44" stroke="#38BDF8" stroke-width="1.5" opacity="0.8"/>
-  <polyline points="14,36 34,44 52,30" fill="none" stroke="#94A3B8" stroke-width="1.5"/>
+  <!-- Flint silhouette -->
+  <polygon points="32,6 48,32 38,54 26,54 16,32" fill="url(#flint_l)" stroke="#090D16" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Right shadow bevel -->
+  <polygon points="32,6 48,32 38,54 32,48 32,6" fill="url(#flint_r)" stroke="#090D16" stroke-width="1.5" stroke-linejoin="round"/>
+  <!-- Conchoidal flake facets -->
+  <path d="M32 14 L24 28 L32 36 L40 28 Z" fill="#334155" stroke="#0F172A" stroke-width="1"/>
+  <!-- Electric cyan sharp edge glint -->
+  <polyline points="20,26 32,6 44,26" fill="none" stroke="#38BDF8" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="32" cy="6" r="2" fill="#BAE6FD"/>
 </svg>

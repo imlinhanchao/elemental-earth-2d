@@ -1,21 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="pitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#334155"/>
-      <stop offset="70%" stop-color="#0F172A"/>
-      <stop offset="100%" stop-color="#020617"/>
-    </linearGradient>
-    <filter id="radGlow" x="-20%" y="-20%" width="140%" height="140%">
-      <feGaussianBlur stdDeviation="2" result="blur"/>
-      <feMerge>
-        <feMergeNode in="blur"/>
-        <feMergeNode in="SourceGraphic"/>
-      </feMerge>
-    </filter>
+    <radialGradient id="ura_glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#10B981" stop-opacity="0.8"/>
+      <stop offset="100%" stop-color="#022C22" stop-opacity="0"/>
+    </radialGradient>
   </defs>
-  <polygon points="30,10 50,22 48,50 18,52 12,24" fill="url(#pitGrad)" stroke="#22C55E" stroke-width="1.8"/>
-  <!-- 铀辐射荧光裂隙 -->
-  <path d="M28,14 Q32,28 24,36 T36,48" stroke="#4ADE80" stroke-width="2.5" fill="none" filter="url(#radGlow)"/>
-  <circle cx="32" cy="30" r="3" fill="#86EFAC" filter="url(#radGlow)"/>
-  <circle cx="24" cy="42" r="2" fill="#4ADE80"/>
+  <!-- Radiation aura ring -->
+  <circle cx="32" cy="32" r="26" fill="url(#ura_glow)"/>
+  <circle cx="32" cy="32" r="22" fill="none" stroke="#34D399" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <!-- Pitchblende dark core -->
+  <polygon points="32,16 46,24 44,42 32,48 20,42 18,24" fill="#064E3B" stroke="#022C22" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Ionizing glow trefoil mark -->
+  <circle cx="32" cy="32" r="3" fill="#6EE7B7"/>
+  <line x1="32" y1="22" x2="32" y2="28" stroke="#6EE7B7" stroke-width="2"/>
+  <line x1="23" y1="37" x2="28" y2="34" stroke="#6EE7B7" stroke-width="2"/>
+  <line x1="41" y1="37" x2="36" y2="34" stroke="#6EE7B7" stroke-width="2"/>
 </svg>

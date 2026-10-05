@@ -9,15 +9,29 @@ extends Control
 func _ready() -> void:
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	var p_box = ThemeStyler.create_card_box(12, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER)
+	p_box.content_margin_left = 16
+	p_box.content_margin_top = 16
+	p_box.content_margin_right = 16
+	p_box.content_margin_bottom = 16
+	$CenterPanel.add_theme_stylebox_override("panel", p_box)
 	btn_close.pressed.connect(func(): visible = false)
 	GameState.element_discovered.connect(func(_num, _key): _refresh_grid())
 	_build_grid()
 
+func open() -> void:
+	visible = true
+	_refresh_grid()
+	btn_close.grab_focus()
+
+func close() -> void:
+	visible = false
+
 func toggle() -> void:
-	visible = not visible
 	if visible:
-		_refresh_grid()
-		btn_close.grab_focus()
+		close()
+	else:
+		open()
 
 func _input(event: InputEvent) -> void:
 	if not visible:
@@ -91,28 +105,28 @@ func _refresh_grid() -> void:
 		var elem = DataDB.get_element(i)
 		
 		var style = StyleBoxFlat.new()
-		style.corner_radius_top_left = 4
-		style.corner_radius_top_right = 4
-		style.corner_radius_bottom_left = 4
-		style.corner_radius_bottom_right = 4
+		style.corner_radius_top_left = 6
+		style.corner_radius_top_right = 6
+		style.corner_radius_bottom_left = 6
+		style.corner_radius_bottom_right = 6
 		style.border_width_left = 1
 		style.border_width_top = 1
 		style.border_width_right = 1
 		style.border_width_bottom = 1
 		
 		if is_disc:
-			style.bg_color = Color(0.12, 0.18, 0.28, 0.95)
-			style.border_color = ThemeStyler.COLOR_ACCENT
+			style.bg_color = ThemeStyler.COLOR_CARD_HOVER
+			style.border_color = ThemeStyler.COLOR_BORDER_FOCUS
 			sym_lbl.text = elem.get("symbol", "?")
 			name_lbl.text = elem.get("name", "?")
 			sym_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 			name_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 		else:
-			style.bg_color = Color(0.08, 0.09, 0.11, 0.6)
-			style.border_color = Color(0.18, 0.20, 0.23, 0.5)
+			style.bg_color = Color(0.065, 0.085, 0.125, 0.5)
+			style.border_color = ThemeStyler.COLOR_BORDER
 			sym_lbl.text = "?"
 			name_lbl.text = "???"
-			sym_lbl.add_theme_color_override("font_color", Color(0.35, 0.38, 0.42))
-			name_lbl.add_theme_color_override("font_color", Color(0.35, 0.38, 0.42))
+			sym_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_MUTED)
+			name_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_MUTED)
 			
 		panel.add_theme_stylebox_override("panel", style)

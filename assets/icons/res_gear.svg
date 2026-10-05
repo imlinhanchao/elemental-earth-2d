@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <linearGradient id="gearGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+    <linearGradient id="gear_metal" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" stop-color="#94A3B8"/>
-      <stop offset="100%" stop-color="#334155"/>
+      <stop offset="100%" stop-color="#475569"/>
     </linearGradient>
   </defs>
-  <circle cx="32" cy="32" r="22" fill="url(#gearGrad)" stroke="#CBD5E1" stroke-width="2"/>
-  <rect x="28" y="6" width="8" height="52" rx="2" fill="url(#gearGrad)"/>
-  <rect x="6" y="28" width="52" height="8" rx="2" fill="url(#gearGrad)"/>
-  <rect x="13" y="13" width="8" height="52" rx="2" fill="url(#gearGrad)" transform="rotate(45 32 32)"/>
-  <rect x="13" y="13" width="8" height="52" rx="2" fill="url(#gearGrad)" transform="rotate(-45 32 32)"/>
-  <circle cx="32" cy="32" r="10" fill="#0F172A" stroke="#94A3B8" stroke-width="2"/>
+  <!-- Gear cogwheel -->
+  <path d="M28 8 L36 8 L37 14 L42 16 L47 12 L52 17 L48 22 L50 27 L56 28 L56 36 L50 37 L48 42 L52 47 L47 52 L42 48 L37 50 L36 56 L28 56 L27 50 L22 48 L17 52 L12 47 L16 42 L14 37 L8 36 L8 28 L14 27 L16 22 L12 17 L17 12 L22 16 L27 14 Z" 
+        fill="url(#gear_metal)" stroke="#0F172A" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Center bore -->
+  <circle cx="32" cy="32" r="10" fill="#1E293B" stroke="#0F172A" stroke-width="2"/>
+  <circle cx="32" cy="32" r="4" fill="#F8FAFC"/>
 </svg>

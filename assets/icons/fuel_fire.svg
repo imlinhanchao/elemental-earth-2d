@@ -1,12 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
   <defs>
-    <radialGradient id="fireOuter" cx="50%" cy="80%" r="70%">
+    <linearGradient id="flame_out" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F97316"/>
+      <stop offset="50%" stop-color="#EA580C"/>
+      <stop offset="100%" stop-color="#DC2626"/>
+    </linearGradient>
+    <linearGradient id="flame_in" x1="0%" y1="0%" x2="0%" y2="100%">
       <stop offset="0%" stop-color="#FEF08A"/>
-      <stop offset="40%" stop-color="#F97316"/>
-      <stop offset="100%" stop-color="#B91C1C"/>
-    </radialGradient>
+      <stop offset="100%" stop-color="#F59E0B"/>
+    </linearGradient>
   </defs>
-  <path d="M32 6 C32 6 20 22 20 38 A16 16 0 0 0 52 38 C52 24 38 16 38 16 C38 16 42 26 36 28 C30 30 32 6 32 6 Z" 
-        fill="url(#fireOuter)" stroke="#FDE047" stroke-width="2"/>
-  <path d="M32 48 A6 8 0 0 0 32 32 A6 8 0 0 0 32 48 Z" fill="#FEF08A"/>
+  <!-- Outer flame -->
+  <path d="M32 6 C32 6 46 22 46 38 C46 48 38 56 32 58 C26 56 18 48 18 38 C18 26 26 18 28 14 C28 22 34 26 34 22 C34 16 32 6 32 6 Z" 
+        fill="url(#flame_out)" stroke="#7F1D1D" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Inner core flame -->
+  <path d="M32 26 C32 26 38 34 38 42 C38 48 35 52 32 54 C29 52 26 48 26 42 C26 36 30 32 32 26 Z" 
+        fill="url(#flame_in)"/>
+  <circle cx="32" cy="46" r="3" fill="#FFFFFF"/>
 </svg>

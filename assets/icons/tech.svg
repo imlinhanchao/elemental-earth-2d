@@ -1,16 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <defs>
-    <linearGradient id="techGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#38BDF8"/>
-      <stop offset="100%" stop-color="#1D4ED8"/>
-    </linearGradient>
-  </defs>
-  <circle cx="32" cy="32" r="26" fill="#131B2E" stroke="#3B82F6" stroke-width="2" stroke-dasharray="4 2"/>
-  <ellipse cx="32" cy="32" rx="22" ry="9" fill="none" stroke="#60A5FA" stroke-width="2.5" transform="rotate(30 32 32)"/>
-  <ellipse cx="32" cy="32" rx="22" ry="9" fill="none" stroke="#60A5FA" stroke-width="2.5" transform="rotate(-30 32 32)"/>
-  <ellipse cx="32" cy="32" rx="22" ry="9" fill="none" stroke="#60A5FA" stroke-width="2.5" transform="rotate(90 32 32)"/>
-  <circle cx="32" cy="32" r="8" fill="url(#techGrad2)" stroke="#DBEAFE" stroke-width="2"/>
-  <circle cx="30" cy="30" r="2.5" fill="#FFFFFF" opacity="0.9"/>
-  <circle cx="48" cy="23" r="2.5" fill="#60A5FA"/>
-  <circle cx="16" cy="41" r="2.5" fill="#93C5FD"/>
+  <!-- Central node -->
+  <circle cx="32" cy="32" r="6" fill="#38BDF8" stroke="#0284C7" stroke-width="2"/>
+  <!-- Orbiting constellation nodes -->
+  <circle cx="16" cy="18" r="4" fill="#0284C7" stroke="#38BDF8" stroke-width="1.5"/>
+  <circle cx="48" cy="18" r="4" fill="#0284C7" stroke="#38BDF8" stroke-width="1.5"/>
+  <circle cx="16" cy="46" r="4" fill="#0284C7" stroke="#38BDF8" stroke-width="1.5"/>
+  <circle cx="48" cy="46" r="4" fill="#0284C7" stroke="#38BDF8" stroke-width="1.5"/>
+  <!-- Clean interconnecting data lines -->
+  <line x1="32" y1="32" x2="16" y2="18" stroke="#38BDF8" stroke-width="2"/>
+  <line x1="32" y1="32" x2="48" y2="18" stroke="#38BDF8" stroke-width="2"/>
+  <line x1="32" y1="32" x2="16" y2="46" stroke="#38BDF8" stroke-width="2"/>
+  <line x1="32" y1="32" x2="48" y2="46" stroke="#38BDF8" stroke-width="2"/>
+  <circle cx="32" cy="32" r="2" fill="#FFFFFF"/>
 </svg>

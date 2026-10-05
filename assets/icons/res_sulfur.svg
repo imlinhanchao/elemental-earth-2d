@@ -1,12 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <defs>
-    <linearGradient id="sulfurGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FEF08A"/>
-      <stop offset="60%" stop-color="#EAB308"/>
-      <stop offset="100%" stop-color="#854D0E"/>
-    </linearGradient>
-  </defs>
-  <polygon points="32,8 46,20 42,48 22,50 16,24" fill="url(#sulfurGrad)" stroke="#FEF08A" stroke-width="2"/>
-  <polygon points="42,22 56,32 50,46 38,40" fill="url(#sulfurGrad)" stroke="#FEF08A" stroke-width="1.5"/>
-  <line x1="32" y1="8" x2="34" y2="48" stroke="#FEF9C3" stroke-width="1.8"/>
+  <polygon points="32,8 52,22 46,48 18,48 12,22" fill="#EAB308" stroke="#713F12" stroke-width="2" stroke-linejoin="round"/>
+  <polygon points="32,8 52,22 32,30 12,22" fill="#FEF08A" stroke="#713F12" stroke-width="1.5" stroke-linejoin="round"/>
+  <polygon points="12,22 32,30 26,48 18,48" fill="#CA8A04" stroke="#713F12" stroke-width="1.5" stroke-linejoin="round"/>
+  <polygon points="32,30 52,22 46,48 26,48" fill="#A16207" stroke="#713F12" stroke-width="1.5" stroke-linejoin="round"/>
 </svg>

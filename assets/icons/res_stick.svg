@@ -1,7 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <path d="M14 50 L48 14" stroke="#B45309" stroke-width="5" stroke-linecap="round"/>
-  <path d="M34 28 L44 24" stroke="#B45309" stroke-width="4" stroke-linecap="round"/>
-  <path d="M26 38 L20 34" stroke="#B45309" stroke-width="3.5" stroke-linecap="round"/>
-  <!-- 幼芽萌绿 (参考炼金生命意象) -->
-  <circle cx="45" cy="22" r="2.5" fill="#34D399"/>
+  <defs>
+    <linearGradient id="rod_grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D97706"/>
+      <stop offset="60%" stop-color="#B45309"/>
+      <stop offset="100%" stop-color="#78350F"/>
+    </linearGradient>
+  </defs>
+  <!-- Angled dowel -->
+  <path d="M48 10 L54 16 L18 52 L12 46 Z" fill="url(#rod_grad)" stroke="#451A03" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Top cut ellipse -->
+  <ellipse cx="51" cy="13" rx="4.2" ry="4.2" fill="#FEF3C7" stroke="#451A03" stroke-width="1.5"/>
+  <circle cx="51" cy="13" r="1.5" fill="#B45309"/>
+  <!-- Grain highlight line -->
+  <line x1="46" y1="16" x2="16" y2="46" stroke="#FDE68A" stroke-width="1.5" stroke-linecap="round"/>
 </svg>

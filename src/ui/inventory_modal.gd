@@ -43,22 +43,23 @@ func _ready() -> void:
 	floating_tooltip.visible = false
 
 func _apply_styles() -> void:
-	# 详情卡片半透明深邃科技样式
-	var tip_style = StyleBoxFlat.new()
-	tip_style.bg_color = Color(0.06, 0.08, 0.11, 0.94)
-	tip_style.border_color = Color(0.22, 0.55, 0.85, 0.9)
-	tip_style.border_width_left = 1
-	tip_style.border_width_top = 1
-	tip_style.border_width_right = 1
-	tip_style.border_width_bottom = 1
-	tip_style.corner_radius_top_left = 6
-	tip_style.corner_radius_top_right = 6
-	tip_style.corner_radius_bottom_left = 6
-	tip_style.corner_radius_bottom_right = 6
-	tip_style.content_margin_left = 12
-	tip_style.content_margin_top = 10
-	tip_style.content_margin_right = 12
-	tip_style.content_margin_bottom = 10
+	# 居中主面板浮动暗蓝磨砂几何样式
+	var panel_style = ThemeStyler.create_card_box(12, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER)
+	panel_style.content_margin_left = 16
+	panel_style.content_margin_top = 16
+	panel_style.content_margin_right = 16
+	panel_style.content_margin_bottom = 16
+	center_panel.add_theme_stylebox_override("panel", panel_style)
+
+	# 悬停卡片方案三电光青微光毛玻璃样式
+	var tip_style = ThemeStyler.create_card_box(10, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER_FOCUS)
+	tip_style.content_margin_left = 14
+	tip_style.content_margin_top = 12
+	tip_style.content_margin_right = 14
+	tip_style.content_margin_bottom = 12
+	tip_style.shadow_color = Color(0.0, 0.0, 0.0, 0.45)
+	tip_style.shadow_size = 10
+	tip_style.shadow_offset = Vector2(0, 3)
 	floating_tooltip.add_theme_stylebox_override("panel", tip_style)
 
 func _process(_delta: float) -> void:
@@ -146,27 +147,27 @@ func _create_occupied_slot(item_key: String, count: int) -> Control:
 	slot_panel.custom_minimum_size = Vector2(68, 68)
 	slot_panel.mouse_filter = Control.MOUSE_FILTER_STOP
 	
-	# 戴森球计划风格深色内嵌方格
+	# 方案三现代科学信息槽位
 	var norm_style = StyleBoxFlat.new()
-	norm_style.bg_color = Color(0.09, 0.11, 0.14, 0.9)
-	norm_style.border_color = Color(0.20, 0.24, 0.30, 0.95)
+	norm_style.bg_color = ThemeStyler.COLOR_CARD
+	norm_style.border_color = ThemeStyler.COLOR_BORDER
 	norm_style.border_width_left = 1
 	norm_style.border_width_top = 1
 	norm_style.border_width_right = 1
 	norm_style.border_width_bottom = 1
-	norm_style.corner_radius_top_left = 4
-	norm_style.corner_radius_top_right = 4
-	norm_style.corner_radius_bottom_left = 4
-	norm_style.corner_radius_bottom_right = 4
+	norm_style.corner_radius_top_left = 8
+	norm_style.corner_radius_top_right = 8
+	norm_style.corner_radius_bottom_left = 8
+	norm_style.corner_radius_bottom_right = 8
 	slot_panel.add_theme_stylebox_override("panel", norm_style)
 	
 	var hover_style = norm_style.duplicate()
-	hover_style.bg_color = Color(0.14, 0.19, 0.27, 1.0)
-	hover_style.border_color = Color(0.28, 0.65, 1.0, 1.0) # 高亮蓝光描边
-	hover_style.border_width_left = 2
-	hover_style.border_width_top = 2
-	hover_style.border_width_right = 2
-	hover_style.border_width_bottom = 2
+	hover_style.bg_color = ThemeStyler.COLOR_CARD_HOVER
+	hover_style.border_color = ThemeStyler.COLOR_BORDER_FOCUS # 电光青发光细描边
+	hover_style.border_width_left = 1
+	hover_style.border_width_top = 1
+	hover_style.border_width_right = 1
+	hover_style.border_width_bottom = 1
 	
 	var margin = MarginContainer.new()
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -219,16 +220,16 @@ func _create_empty_slot() -> Control:
 	slot_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	
 	var empty_style = StyleBoxFlat.new()
-	empty_style.bg_color = Color(0.065, 0.075, 0.09, 0.5)
-	empty_style.border_color = Color(0.14, 0.16, 0.20, 0.6)
+	empty_style.bg_color = Color(0.065, 0.085, 0.125, 0.5)
+	empty_style.border_color = Color(0.16, 0.22, 0.30, 0.5)
 	empty_style.border_width_left = 1
 	empty_style.border_width_top = 1
 	empty_style.border_width_right = 1
 	empty_style.border_width_bottom = 1
-	empty_style.corner_radius_top_left = 4
-	empty_style.corner_radius_top_right = 4
-	empty_style.corner_radius_bottom_left = 4
-	empty_style.corner_radius_bottom_right = 4
+	empty_style.corner_radius_top_left = 8
+	empty_style.corner_radius_top_right = 8
+	empty_style.corner_radius_bottom_left = 8
+	empty_style.corner_radius_bottom_right = 8
 	slot_panel.add_theme_stylebox_override("panel", empty_style)
 	
 	return slot_panel

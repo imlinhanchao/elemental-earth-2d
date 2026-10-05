@@ -93,6 +93,10 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 		hud.inventory_modal.open()
 	elif arg_name == "--screenshot-craft":
 		hud._toggle_category(hud.CategoryTab.CRAFT)
+	elif arg_name == "--screenshot-lab":
+		hud.lab_modal.open()
+	elif arg_name == "--screenshot-pt":
+		hud.periodic_modal.open()
 	elif arg_name == "--screenshot-hud":
 		pass # 保持主界面纯净 HUD 与大世界大视野
 	elif arg_name == "--screenshot-hud-queue":
