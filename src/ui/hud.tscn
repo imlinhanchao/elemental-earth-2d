@@ -93,22 +93,17 @@ layout_mode = 2
 theme_override_font_sizes/font_size = 9
 text = ""
 
-[node name="CenterBox" type="VBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
+[node name="EraBadgeBtn" type="Button" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox"]
+layout_mode = 2
+size_flags_vertical = 4
+focus_mode = 0
+mouse_default_cursor_shape = 2
+theme_override_font_sizes/font_size = 11
+text = "石器时代"
+
+[node name="Spacer" type="Control" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-alignment = 1
-theme_override_constants/separation = 2
-
-[node name="BadgesRow" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/CenterBox"]
-layout_mode = 2
-alignment = 1
-theme_override_constants/separation = 8
-
-[node name="TelemetryLabel" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/CenterBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 10
-horizontal_alignment = 1
-text = "领地范围: 48 瓦片  |  发现元素: 0/118  |  石器时代"
 
 [node name="ResourceRibbon" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
 layout_mode = 2

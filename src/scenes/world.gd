@@ -108,6 +108,8 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 		hud.periodic_modal.open()
 	elif arg_name == "--screenshot-hud":
 		pass # 保持主界面纯净 HUD 与大世界大视野
+	elif arg_name == "--screenshot-era-modal":
+		hud.era_modal.show_current_era_status()
 	elif arg_name == "--screenshot-context-menu":
 		var test_hex = Vector2i(1, 0)
 		var test_screen_pos = Vector2(850, 420)

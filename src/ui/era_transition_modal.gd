@@ -50,3 +50,40 @@ func _on_era_advanced(old_era: int, new_era: int, era_name: String) -> void:
 	var tw = create_tween()
 	tw.tween_property(self, "modulate:a", 1.0, 0.4)
 	tw.parallel().tween_property(self, "scale", Vector2.ONE, 0.4).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+
+func show_current_era_status() -> void:
+	var cur_era = GameState.current_era
+	var era_def = DataDB.get_era(cur_era)
+	var era_name = str(era_def.get("name", "石器时代")).split(" (")[0]
+	var era_desc = str(era_def.get("description", ""))
+	var milestones = era_def.get("milestones", [])
+	
+	title_label.text = "文 明 纪 元 进 程\n【%s】" % era_name
+	
+	var lines: Array[String] = []
+	if era_desc != "":
+		lines.append(era_desc)
+		lines.append("")
+	lines.append("【领地拓荒半径】%d 瓦片" % GameState.get_current_territory_radius())
+	lines.append("【已点亮元素】%d / 118" % GameState.discovered_elements.size())
+	lines.append("")
+	if milestones.size() > 0:
+		lines.append("【时代跃迁里程碑】")
+		for m in milestones:
+			var m_k = str(m.get("key", ""))
+			var m_desc = str(m.get("description", m_k))
+			var done = GameState.completed_milestones.has(m_k)
+			lines.append("  %s %s" % ["✅" if done else "⬜", m_desc])
+	else:
+		lines.append("【时代跃迁目标】深入探索大世界并冶炼新金属以突破新纪元！")
+		
+	desc_label.text = "\n".join(lines)
+	btn_continue.text = "返回游戏 [ESC]"
+	visible = true
+	btn_continue.grab_focus()
+	
+	modulate.a = 0.0
+	scale = Vector2(0.95, 0.95)
+	var tw = create_tween()
+	tw.tween_property(self, "modulate:a", 1.0, 0.2)
+	tw.parallel().tween_property(self, "scale", Vector2.ONE, 0.2).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)

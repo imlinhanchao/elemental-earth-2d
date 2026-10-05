@@ -15,11 +15,10 @@ enum CategoryTab { NONE, LAB, TECH, CRAFT, BUILD, PRODUCTION, INVENTORY }
 var current_tab: CategoryTab = CategoryTab.NONE
 
 # 顶部导航与状态条
-@onready var telemetry_label = $Margin/MainVBox/TopBarPanel/Margin/HBox/CenterBox/TelemetryLabel
-@onready var badges_row = $Margin/MainVBox/TopBarPanel/Margin/HBox/CenterBox/BadgesRow
 @onready var logo_icon = $Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoIcon
 @onready var logo_title = $Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoTextVBox/LogoTitle
 @onready var logo_sub = $Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoTextVBox/LogoSub
+@onready var era_badge_btn = $Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/EraBadgeBtn
 @onready var save_dot = $Margin/MainVBox/TopBarPanel/Margin/HBox/SaveDot
 @onready var btn_menu = $Margin/MainVBox/TopBarPanel/Margin/HBox/BtnMenu
 
@@ -153,12 +152,19 @@ func _ready() -> void:
 	btn_add_malachite.pressed.connect(_on_btn_add_malachite_pressed)
 	btn_add_iron_ore.pressed.connect(_on_btn_add_iron_ore_pressed)
 	
+	if era_badge_btn:
+		era_badge_btn.pressed.connect(_on_era_badge_pressed)
+	
 	furnace_panel.visible = false
 	action_drawer.visible = false
 	_apply_scheme3_styling()
 	_update_inventory_ui()
 	_update_era_label()
 	_update_task_queue_ui()
+
+func _on_era_badge_pressed() -> void:
+	if era_modal:
+		era_modal.show_current_era_status()
 
 func _toggle_category(tab: CategoryTab) -> void:
 	if tab == CategoryTab.TECH:
@@ -568,11 +574,38 @@ func _apply_scheme3_styling() -> void:
 	if logo_sub:
 		logo_sub.visible = false
 		logo_sub.text = ""
-	if telemetry_label:
-		telemetry_label.add_theme_color_override("font_color", Color(0.70, 0.80, 0.92, 0.9))
-		telemetry_label.add_theme_font_size_override("font_size", 10)
-	
-	_setup_element_badges()
+	if era_badge_btn:
+		var pill_normal = StyleBoxFlat.new()
+		pill_normal.bg_color = Color(0.12, 0.22, 0.35, 0.65)
+		pill_normal.border_color = Color(0.25, 0.55, 0.85, 0.75)
+		pill_normal.border_width_left = 1
+		pill_normal.border_width_top = 1
+		pill_normal.border_width_right = 1
+		pill_normal.border_width_bottom = 1
+		pill_normal.corner_radius_top_left = 12
+		pill_normal.corner_radius_top_right = 12
+		pill_normal.corner_radius_bottom_left = 12
+		pill_normal.corner_radius_bottom_right = 12
+		pill_normal.content_margin_left = 10
+		pill_normal.content_margin_right = 10
+		pill_normal.content_margin_top = 2
+		pill_normal.content_margin_bottom = 2
+		
+		var pill_hover = pill_normal.duplicate()
+		pill_hover.bg_color = Color(0.18, 0.32, 0.50, 0.9)
+		pill_hover.border_color = Color(0.35, 0.75, 1.0, 0.95)
+		
+		era_badge_btn.add_theme_stylebox_override("normal", pill_normal)
+		era_badge_btn.add_theme_stylebox_override("hover", pill_hover)
+		era_badge_btn.add_theme_stylebox_override("pressed", pill_hover)
+		era_badge_btn.add_theme_color_override("font_color", Color(0.38, 0.82, 1.0, 1.0))
+		era_badge_btn.add_theme_color_override("font_hover_color", Color.WHITE)
+		era_badge_btn.add_theme_font_size_override("font_size", 11)
+		
+		if ResourceLoader.exists("res://assets/icons/era.svg"):
+			era_badge_btn.icon = load("res://assets/icons/era.svg")
+			era_badge_btn.expand_icon = true
+			era_badge_btn.custom_minimum_size = Vector2(0, 24)
 	
 	# 2. 底栏悬浮交互坞 (Floating Action Dock - 纯白亮瓷发光胶囊岛)
 	var dock_box = StyleBoxFlat.new()
@@ -1024,58 +1057,42 @@ func _update_inventory_tooltip() -> void:
 	btn_tab_inventory.tooltip_text = "\n".join(lines)
 
 func _update_era_label() -> void:
-	if telemetry_label:
-		var terr_radius = GameState.get_current_territory_radius()
-		var terr_count = (3 * terr_radius * (terr_radius + 1) + 1)
-		var disc_count = GameState.discovered_elements.size()
-		var era_name = GameState.ERA_NAMES[GameState.current_era].split(" (")[0]
-		telemetry_label.text = "领地范围: %d 瓦片  |  发现元素: %d/118  |  %s" % [terr_count, disc_count, era_name]
-
-# 初始化顶栏圆形 IUPAC 元素徽标列 (方案三 Scheme 3 核心科技象征)
-func _setup_element_badges() -> void:
-	if not badges_row:
+	if not era_badge_btn:
 		return
-	for child in badges_row.get_children():
-		child.queue_free()
-	var badge_defs = [
-		{"sym": "H", "num": "1", "bg": Color(0.18, 0.78, 0.88)}, # Cyan
-		{"sym": "C", "num": "6", "bg": Color(0.24, 0.28, 0.35)}, # Slate
-		{"sym": "O", "num": "8", "bg": Color(0.92, 0.32, 0.32)}, # Coral
-		{"sym": "Cu", "num": "29", "bg": Color(0.85, 0.48, 0.18)}, # Copper
-		{"sym": "Fe", "num": "26", "bg": Color(0.78, 0.52, 0.14)}, # Amber
-		{"sym": "Au", "num": "79", "bg": Color(0.68, 0.55, 0.12)}, # Gold
-		{"sym": "Ag", "num": "47", "bg": Color(0.48, 0.55, 0.65)}, # Silver
-		{"sym": "He", "num": "2", "bg": Color(0.68, 0.28, 0.35)}  # Rose
-	]
-	for b in badge_defs:
-		var p = PanelContainer.new()
-		p.custom_minimum_size = Vector2(24, 24)
-		var style = StyleBoxFlat.new()
-		style.bg_color = b.bg
-		style.corner_radius_top_left = 12
-		style.corner_radius_top_right = 12
-		style.corner_radius_bottom_left = 12
-		style.corner_radius_bottom_right = 12
-		style.shadow_color = Color(0, 0, 0, 0.35)
-		style.shadow_size = 4
-		p.add_theme_stylebox_override("panel", style)
+	var terr_radius = GameState.get_current_territory_radius()
+	var terr_count = (3 * terr_radius * (terr_radius + 1) + 1)
+	var disc_count = GameState.discovered_elements.size()
+	var cur_era = GameState.current_era
+	var era_def = DataDB.get_era(cur_era)
+	var era_name = str(era_def.get("name", GameState.ERA_NAMES[cur_era])).split(" (")[0]
+	var milestones = era_def.get("milestones", [])
+	var total_ms = milestones.size()
+	var done_ms = 0
+	for m in milestones:
+		if GameState.completed_milestones.has(str(m.get("key", ""))):
+			done_ms += 1
+	
+	if total_ms > 0:
+		era_badge_btn.text = "%s  %d/%d" % [era_name, done_ms, total_ms]
+	else:
+		era_badge_btn.text = era_name
 		
-		var lbl = Label.new()
-		lbl.text = "%s%s" % [b.sym, _get_superscript(b.num)]
-		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		lbl.add_theme_font_size_override("font_size", 10)
-		lbl.add_theme_color_override("font_color", Color.WHITE)
-		p.add_child(lbl)
-		p.tooltip_text = "核心化学元素: %s (原子序号 %s)" % [b.sym, b.num]
-		badges_row.add_child(p)
-
-func _get_superscript(num: String) -> String:
-	var supers = {"0":"⁰","1":"¹","2":"²","3":"³","4":"⁴","5":"⁵","6":"⁶","7":"⁷","8":"⁸","9":"⁹"}
-	var res = ""
-	for c in num:
-		res += supers.get(c, c)
-	return res
+	var tooltip_lines: Array[String] = [
+		"【当前文明纪元】%s" % era_name,
+		"领地范围: %d 瓦片  |  已发现元素: %d/118" % [terr_count, disc_count],
+		""
+	]
+	if total_ms > 0:
+		tooltip_lines.append("【时代跃迁目标】")
+		for m in milestones:
+			var m_k = str(m.get("key", ""))
+			var m_desc = str(m.get("description", m_k))
+			var is_done = GameState.completed_milestones.has(m_k)
+			tooltip_lines.append("  %s %s" % ["✓" if is_done else "○", m_desc])
+	else:
+		tooltip_lines.append("深入探索大世界并冶炼新金属以突破新纪元！")
+	tooltip_lines.append("\n(点击打开纪元详情面板)")
+	era_badge_btn.tooltip_text = "\n".join(tooltip_lines)
 
 func update_current_biome(_biome: int) -> void:
 	pass
