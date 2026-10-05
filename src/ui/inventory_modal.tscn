@@ -115,10 +115,10 @@ text = "鼠标悬停查看物料详情与化学构成 · 按 [B] 或 [ESC] / 鼠
 [node name="FloatingTooltip" type="PanelContainer" parent="."]
 visible = false
 z_index = 20
-custom_minimum_size = Vector2(260, 0)
+custom_minimum_size = Vector2(280, 0)
 layout_mode = 0
-offset_right = 260.0
-offset_bottom = 140.0
+offset_right = 280.0
+offset_bottom = 120.0
 mouse_filter = 2
 
 [node name="TipVBox" type="VBoxContainer" parent="FloatingTooltip"]
@@ -154,6 +154,7 @@ layout_mode = 2
 mouse_filter = 2
 
 [node name="DescLabel" type="Label" parent="FloatingTooltip/TipVBox"]
+custom_minimum_size = Vector2(252, 0)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.72, 0.78, 1)
 theme_override_font_sizes/font_size = 12

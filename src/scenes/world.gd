@@ -100,6 +100,10 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 		
 	if arg_name == "--screenshot-inv":
 		hud.inventory_modal.open()
+		await get_tree().create_timer(0.2).timeout
+		get_viewport().warp_mouse(Vector2(480, 320))
+		var item_data = DataDB.get_item("flint")
+		hud.inventory_modal._show_tooltip_for_item("flint", item_data, 2)
 	elif arg_name == "--screenshot-craft":
 		hud._toggle_category(hud.CategoryTab.CRAFT)
 	elif arg_name == "--screenshot-lab":

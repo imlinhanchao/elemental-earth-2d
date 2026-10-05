@@ -51,16 +51,18 @@ func _apply_styles() -> void:
 	panel_style.content_margin_bottom = 16
 	center_panel.add_theme_stylebox_override("panel", panel_style)
 
-	# 悬停卡片方案三电光青微光毛玻璃样式
-	var tip_style = ThemeStyler.create_card_box(10, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER_FOCUS)
+	# 悬停卡片方案三电光青微光毛玻璃样式 (纯色深底保证不透光穿帮)
+	var tip_style = ThemeStyler.create_card_box(10, ThemeStyler.COLOR_BG_SOLID, ThemeStyler.COLOR_BORDER_FOCUS)
 	tip_style.content_margin_left = 14
 	tip_style.content_margin_top = 12
 	tip_style.content_margin_right = 14
 	tip_style.content_margin_bottom = 12
-	tip_style.shadow_color = Color(0.0, 0.0, 0.0, 0.45)
-	tip_style.shadow_size = 10
-	tip_style.shadow_offset = Vector2(0, 3)
+	tip_style.shadow_color = Color(0.0, 0.0, 0.0, 0.65)
+	tip_style.shadow_size = 14
+	tip_style.shadow_offset = Vector2(0, 4)
 	floating_tooltip.add_theme_stylebox_override("panel", tip_style)
+	
+	tip_desc.custom_minimum_size = Vector2(252, 0)
 
 func _process(_delta: float) -> void:
 	if visible and floating_tooltip.visible:
@@ -72,10 +74,14 @@ func _update_tooltip_position() -> void:
 	var tip_size = floating_tooltip.size
 	
 	var target_pos = mpos + Vector2(16, 16)
-	if target_pos.x + tip_size.x > vp_size.x - 16:
-		target_pos.x = mpos.x - tip_size.x - 16
-	if target_pos.y + tip_size.y > vp_size.y - 16:
-		target_pos.y = mpos.y - tip_size.y - 16
+	if target_pos.x + tip_size.x > vp_size.x - 16.0:
+		target_pos.x = mpos.x - tip_size.x - 16.0
+	if target_pos.y + tip_size.y > vp_size.y - 16.0:
+		target_pos.y = mpos.y - tip_size.y - 16.0
+		
+	# 边缘安全边界钳制：绝不溢出屏幕任何边缘 (特别是顶部)
+	target_pos.x = clampf(target_pos.x, 16.0, max(16.0, vp_size.x - tip_size.x - 16.0))
+	target_pos.y = clampf(target_pos.y, 16.0, max(16.0, vp_size.y - tip_size.y - 16.0))
 		
 	floating_tooltip.global_position = target_pos
 
@@ -266,6 +272,7 @@ func _show_tooltip_for_item(item_key: String, data: Dictionary, count: int) -> v
 	tip_attr.text = " · ".join(extra_attrs)
 	
 	floating_tooltip.visible = true
+	floating_tooltip.reset_size()
 	_update_tooltip_position()
 
 func _on_sort_pressed() -> void:

@@ -536,6 +536,20 @@
    - 顶栏圆角胶囊半径调整为 22px，上下边距调整至 6px，左右边距调整至 20px；
    - 系统菜单按钮由 28×28 放大至 **34×34 px**，保存指示点同步微调至 10×10 px。
 
+### 2.24 背包物品悬停详情卡片排版防溢出与自适应修复 (2026-10-05)
+
+针对用户反馈「背包鼠标移动上去显示空白」的严重显示 Bug 进行根因排查与全链路重构：
+
+1. **根因定位与排版计算陷阱消除**：
+   - **自动换行宽度坍塌 (Autowrap Width Collapse)**：浮动详情面板 `FloatingTooltip` 内的描述文本 `DescLabel` 启用了 `autowrap_mode = 3 (AUTOWRAP_WORD_SMART)`，但在 Godot 4 的流式布局中未指定明确的横向最小尺寸约束（`custom_minimum_size.x = 0`），导致容器测量时将其计算为单字宽度的极端竖列（宽度 1px，单字折行纵向膨胀至高达 **766 px**）。
+   - **视口翻转导致全内容溢出屏幕顶端**：由于测量高度超高（766px > 视口高度余量），浮动卡片自适应翻转计算触发向上偏移 `mpos.y - tip_size.y - 16`，导致全局位置 `target_pos.y` 直接被推移至屏幕外顶端（负数坐标 y < -450），使得卡片上部的主文字（名称、分类、化学构成、描述）全部处于视口外不可见区域，画面上仅露出了卡片底部的空白区域。
+
+2. **精细化布局尺寸与防越界钳制重构 (`inventory_modal.gd` & `inventory_modal.tscn`)**：
+   - **固定文本安全换行基准**：为浮动卡片设置 `custom_minimum_size = Vector2(280, 0)`，并为 `DescLabel` 显式注入安全排版宽度 `custom_minimum_size = Vector2(252, 0)`，多行描述文字自然折叠为舒适的 2~3 行紧凑结构（总高度降至 110~130px）。
+   - **纯色深底与电光青辉光**：卡片底板由带透明度的磨砂质感升级为 `ThemeStyler.COLOR_BG_SOLID`（纯色深底 #111722），杜绝底层槽位透光穿帮，叠加 14px 柔和阴影与青蓝边缘。
+   - **严格视口边界钳制 (Viewport Clamping)**：重写 `_update_tooltip_position()`，不仅计算翻转，还强制施加 `clampf(target_pos.x, 16.0, vp_size.x - tip_size.x - 16.0)` 与 `clampf(target_pos.y, 16.0, vp_size.y - tip_size.y - 16.0)`，彻底杜绝任何情况下飞出屏幕顶部或被边缘裁切的可能。
+   - **实时尺寸重测机制**：在 `_show_tooltip_for_item()` 填充数据后同步调用 `floating_tooltip.reset_size()`，确保不同长短文本切换时卡片尺寸瞬时自适应收缩。
+
 ---
 
 ## 3. 架构设计规范与数据流动
