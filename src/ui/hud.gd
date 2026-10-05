@@ -1007,8 +1007,15 @@ func _on_task_progress_updated(_task: Dictionary, percent: float, remaining_time
 func _update_inventory_ui() -> void:
 	# 顶栏只保留五个核心资源: 石头、木头、燧石、矿、燃料
 	val_stone.text = str(GameState.inventory.get_count("stone"))
-	val_wood.text = str(GameState.inventory.get_count("wood") + GameState.inventory.get_count("stick"))
+	chip_stone.tooltip_text = "【碎石】当前储量: %s\n基础建材，用于制造石镐与陶窑" % val_stone.text
+	
+	var wood_cnt = GameState.inventory.get_count("wood")
+	var stick_cnt = GameState.inventory.get_count("stick")
+	val_wood.text = str(wood_cnt + stick_cnt)
+	chip_wood.tooltip_text = "【木材/断枝】原木 %d, 枯枝 %d (合计 %s)\n用于工具把柄打造与生火" % [wood_cnt, stick_cnt, val_wood.text]
+	
 	val_flint.text = str(GameState.inventory.get_count("flint"))
+	chip_flint.tooltip_text = "【燧石】当前储量: %s\n高硬度锋利岩块，用于制造燧石斧与击石取火" % val_flint.text
 	
 	# 矿石统计 (孔雀石 + 赤铁矿 + 黄铁矿 + 闪锌矿 + 铝土矿 + 沥青铀矿)
 	var total_ores = (
@@ -1020,6 +1027,7 @@ func _update_inventory_ui() -> void:
 		GameState.inventory.get_count("pitchblende")
 	)
 	val_ore.text = str(total_ores)
+	chip_ore.tooltip_text = "【各类金属矿石】总计储量: %s\n包含孔雀石(铜矿)、赤铁矿(铁矿)等金属矿物" % val_ore.text
 	
 	# 燃料统计 (木炭 + 煤炭 + 焦炭)
 	var total_fuels = (
@@ -1028,6 +1036,7 @@ func _update_inventory_ui() -> void:
 		GameState.inventory.get_count("coke")
 	)
 	val_fuel.text = str(total_fuels)
+	chip_fuel.tooltip_text = "【熔炉燃料】总计储量: %s\n包含木炭、煤炭与焦炭，用于供给陶土熔炉高温冶炼" % val_fuel.text
 	
 	# 悬停在行囊上显示全量资源
 	_update_inventory_tooltip()
