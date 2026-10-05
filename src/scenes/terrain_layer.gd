@@ -1,5 +1,5 @@
 # terrain_layer.gd
-# 领地内采用无缝融合群系地貌绘图；未解锁地貌采用无缝云海；领地仅描最外圈金边，无外围蓝色双框
+# 领地内采用无缝融合自然群系地貌绘图；未解锁地貌采用暗色瓦片透视线框；领地仅描最外圈金边，无外围蓝色双框
 extends Node2D
 
 const HexWorldGenerator = preload("res://src/core/hex_world_generator.gd")
@@ -16,33 +16,18 @@ const HEX_EDGE_DIRS: Array[Vector2i] = [
 var world: Node2D = null
 var current_lod: int = 1 # 0: 远景简略 (zoom < 0.85), 1: 近景精细 (zoom >= 0.85)
 
-var cloud_texture: Texture2D = null
-
-func _ready() -> void:
-	texture_repeat = CanvasItem.TEXTURE_REPEAT_ENABLED
-	_get_cloud_texture()
-
-func _get_cloud_texture() -> Texture2D:
-	if cloud_texture:
-		return cloud_texture
-	if ResourceLoader.exists("res://assets/tilesets/cloud_tile.png"):
-		cloud_texture = load("res://assets/tilesets/cloud_tile.png")
-	if not cloud_texture:
-		var img = Image.new()
-		var global_path = ProjectSettings.globalize_path("res://assets/tilesets/cloud_tile.png")
-		if img.load(global_path) == OK:
-			cloud_texture = ImageTexture.create_from_image(img)
-	return cloud_texture
-
 func _draw() -> void:
 	if not world or world.generated_hexes.is_empty():
 		return
 		
 	var generated_hexes = world.generated_hexes
 	
-	# 1. 遍历渲染全部六边形地块：
+	# 1. 绘制深海蓝图背景网格 (Scientific Blueprint Coordinate Grid)
+	_draw_blueprint_grid()
+	
+	# 2. 遍历渲染全部六边形地块：
 	# - 已解锁地块 (in_territory): 渲染真实的群系底色、连通地貌 (海浪/草丛/熔岩/森林) 与群系边缘线
-	# - 未解锁地块 (not in_territory): 使用无缝云朵瓦片 (Seamless Cloud Tiles)
+	# - 未解锁地块 (not in_territory): 暗色瓦片显示 (暗蓝科技微光透视线框)
 	for coord in generated_hexes.keys():
 		var q = coord.x
 		var r = coord.y
@@ -86,8 +71,16 @@ func _draw() -> void:
 				for pt in points:
 					draw_circle(pt, 1.5, Color(1.0, 1.0, 1.0, 0.15))
 		else:
-			# === 未解锁地块：使用无缝云朵瓦片 (Seamless Cloud Tiles) ===
-			_draw_seamless_cloud_tile(center, points, coord)
+			# === 未解锁地块：暗色瓦片显示 (暗蓝科技微光透视线框) ===
+			var card_radius = HexWorldGenerator.HEX_RADIUS * 0.90
+			var dark_points = PackedVector2Array()
+			for i in range(6):
+				var angle = deg_to_rad(60.0 * i - 30.0)
+				dark_points.append(center + Vector2(cos(angle), sin(angle)) * card_radius)
+			dark_points.append(dark_points[0])
+			
+			draw_colored_polygon(dark_points, Color(0.08, 0.12, 0.18, 0.35))
+			draw_polyline(dark_points, Color(0.18, 0.26, 0.38, 0.45), 1.0)
 			
 	# 2. 绘制领地最外圈发光金边 (Territory Outermost Borders Only - 仅描最外圈，无外围蓝色双框)
 	for coord in generated_hexes.keys():
@@ -188,46 +181,18 @@ func _draw_biome_border_edge(p1: Vector2, p2: Vector2, biome: HexWorldGenerator.
 		HexWorldGenerator.BiomeType.PLAINS:
 			draw_line(p1, p2, Color(0.15, 0.26, 0.14, 0.45), 1.5)
 
-# 未解锁地块无缝云海瓦片渲染 (Seamless Cloud Tiles)
-func _draw_seamless_cloud_tile(center: Vector2, points: PackedVector2Array, coord: Vector2i) -> void:
-	var tex = _get_cloud_texture()
-	if tex:
-		var uvs = PackedVector2Array()
-		for pt in points:
-			uvs.append(pt / 256.0)
-		var cols = PackedColorArray()
-		for _i in range(6):
-			cols.append(Color(1.0, 1.0, 1.0, 1.0))
-		draw_polygon(points, cols, uvs, tex)
-	else:
-		draw_colored_polygon(points, Color(0.88, 0.92, 0.97, 1.0))
-
-	# 检查 6 个邻居：仅当邻居处于已解锁领地内时（即文明与未探索云海交界），描画蓬松卷曲云团边缘
-	var generated_hexes = world.generated_hexes
-	for e in range(6):
-		var n_coord = coord + HEX_EDGE_DIRS[e]
-		var neighbor_is_territory = generated_hexes.has(n_coord) and GameState.is_hex_in_territory(n_coord.x, n_coord.y)
-		if neighbor_is_territory:
-			var p1 = points[e]
-			var p2 = points[(e + 1) % 6]
-			if current_lod >= 1:
-				_draw_cloud_boundary_edge(p1, p2, center)
-			else:
-				draw_line(p1, p2, Color(0.92, 0.95, 0.99, 0.6), 3.0)
-
-# 云海与领地交界处的蓬松卷曲云团外沿
-func _draw_cloud_boundary_edge(p1: Vector2, p2: Vector2, center: Vector2) -> void:
-	var edge_vec = p2 - p1
-	var edge_len = edge_vec.length()
-	var edge_dir = edge_vec.normalized()
-	var mid = (p1 + p2) * 0.5
-	var inward = (center - mid).normalized()
+# 绘制深海蓝图背景网格 (Scientific Blueprint Coordinate Grid)
+func _draw_blueprint_grid() -> void:
+	var grid_color = Color(0.12, 0.18, 0.28, 0.35)
+	var extent = 1200.0
+	var step = 48.0
 	
-	var t_vals = [0.22, 0.52, 0.82]
-	var radii = [11.0, 14.0, 12.0]
-	for i in range(3):
-		var puff_center = p1 + edge_dir * (edge_len * t_vals[i]) + inward * 2.5
-		var r = radii[i]
-		draw_circle(puff_center - inward * 1.5, r + 2.0, Color(0.65, 0.75, 0.86, 0.35))
-		draw_circle(puff_center, r, Color(0.95, 0.97, 1.0, 0.88))
-		draw_circle(puff_center + inward * 1.5, r * 0.55, Color(1.0, 1.0, 1.0, 0.55))
+	var start_x = -extent
+	while start_x <= extent:
+		draw_line(Vector2(start_x, -extent), Vector2(start_x, extent), grid_color, 1.0)
+		start_x += step
+		
+	var start_y = -extent
+	while start_y <= extent:
+		draw_line(Vector2(-extent, start_y), Vector2(extent, start_y), grid_color, 1.0)
+		start_y += step
