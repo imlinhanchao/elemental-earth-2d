@@ -476,7 +476,7 @@ func _on_build_reactor_requested() -> void:
 
 func _on_structure_built(structure_key: String, hex: Vector2i) -> void:
 	var spawn_pos = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
-	if structure_key == "furnace" or structure_key == "fire_pit":
+	if GameState.sim.FURNACE_TYPES.has(structure_key):
 		var new_f = FurnaceScene.instantiate()
 		new_f.hex_coord = hex
 		new_f.building_type = structure_key

@@ -778,6 +778,17 @@
 - **图标管线**：`ItemIconManager.load_texture/get_icon` 只加载导入纹理并缓存，删除全部运行时 ThorVG 栅格化（导出包中原始 SVG 不存在）；
 - **测试**：修正 `test_save_v3` 研发扣减断言（前一步载入的 v2 存档残留了碎石），两套测试均通过。
 
+### 2.39 P0 进程死锁修复：六个时代全链路可达 (2026-10-06)
+
+- **可达性校验工具**：`tools/dump_map_resources.gd` 导出地图资源分布，`tools/check_progression.py` 按时代顺序模拟玩家进程（时代、领地半径、科技前置、容器、炉温、电压），任一时代里程碑无法完成即返回非零；修改数据表后必须运行；
+- **地图资源**：`iron_ore` / `halite` 统一更名为 items.json 中的 `hematite` / `rock_salt`（存档读取时自动迁移旧键）；新增锡石、软锰矿（火山）、石灰石、硝石（原野）、石墨（深林）、冰晶石（电化学外圈）、湖岸沙（盐湖），均受 `RESOURCE_ERA_REQUIREMENTS` 与镐具门槛约束；
+- **鼓风高炉**：正式实装（炉温上限 1500K，可作为 blast_furnace / kiln / crucible 容器）；未实现运行逻辑的建筑（蒸馏塔、电解槽等）在建造抽屉中隐藏且无法建造，`IMPLEMENTED_STRUCTURES` 为唯一来源；
+- **器皿系统**：背包中持有的筛子、坩埚、烧杯等器皿可满足配方的 `required_container`（`MixtureBuffer.available_containers`）；
+- **新增配方**：烧制耐火砖（粘土 + 沙/碎石，≥1000K）、碱液蒸发制纯碱、窑炉制作；木柴燃烧副产草木灰；
+- **数据驱动**：工具耗时改读 crafting.json 的 `work_time`；techs.json 新增 `era` 字段并由 `DataDB.get_tech_era` 直接读取；烧杯、试管、玻璃棒下调至近代化学时代；元素嬗变里程碑同时识别衰变与粒子轰击反应；
+- **交互修复**：科技树右键拖拽不再误关窗口（抬起且位移 < 6px 才关闭）；建造选址时 ESC/右键只由 world 处理；暂停菜单打开时屏蔽功能热键；删除 F / I 冗余热键；
+- **测试**：新增 `tests/test_progression.gd`（地图矿物、工具耗时、高炉炼铁、草木灰、器皿、嬗变里程碑），三套测试均通过。
+
 ---
 
 ## 4. 全局键盘与鼠标操作控制总览 (Global Controls & Hotkeys)

@@ -151,6 +151,21 @@ static func get_item(key: String) -> Dictionary:
 static func get_element(number: int) -> Dictionary:
 	return elements.get(number, {})
 
+static var _container_keys: Array = []
+
+# 所有配方中出现过的器皿键 (首次调用时从配方表汇总并缓存)
+static func get_container_keys() -> Array:
+	if _container_keys.is_empty():
+		var seen := {}
+		for f in formulas.values():
+			var rc = f.get("required_container")
+			if rc is String and rc != "":
+				seen[rc] = true
+			elif rc is Array:
+				for c in rc: seen[str(c)] = true
+		_container_keys = seen.keys()
+	return _container_keys
+
 static func get_formula(key: String) -> Dictionary:
 	return formulas.get(key, {})
 
@@ -169,31 +184,9 @@ static func get_tech(key: String) -> Dictionary:
 static func get_all_techs() -> Array:
 	return techs_list
 
+# 科技所属时代读取 techs.json 的 era 字段 (由 tools/check_progression.py 校验可达性)
 static func get_tech_era(tech_key: String) -> int:
-	var t = get_tech(tech_key)
-	if t.is_empty():
-		return 0
-	var req_techs = t.get("required_techs", [])
-	if req_techs.is_empty():
-		if tech_key in ["stone_tool_crafting", "wood_processing", "fire_starting"]:
-			return 0
-		elif tech_key in ["pottery", "bark_processing"]:
-			return 1
-		return 0
-	var first_req = req_techs[0]
-	if first_req in ["stone_tool_crafting", "stone_masonry"]:
-		return 0
-	elif first_req in ["pottery", "mold_making", "refractory_materials", "high_temp_furnace", "bronze_tool_crafting", "brass_tool_crafting"]:
-		return 1
-	elif first_req in ["iron_tool_crafting", "gas_collection", "sifting_technology", "explosives", "crystallization_tech"]:
-		return 2
-	elif first_req in ["electrochemistry", "manganese_alloy_smithing", "titanium_alloy_smithing", "chrome_alloy_smithing", "lithium_battery_tech", "glassworking", "production_tech", "nickel_cadmium_battery_tech"]:
-		return 3
-	elif first_req in ["high_pressure_tech", "advanced_chemical_equipment", "precision_machinery", "magnesium_aluminum_alloying", "gas_liquefaction"]:
-		return 4
-	elif first_req in ["nuclear_physics", "nuclear_reactor_tech", "particle_accelerator_tech", "jet_propulsion_tech", "solar_cell_manufacturing"]:
-		return 5
-	return 2
+	return int(get_tech(tech_key).get("era", 0))
 
 static func get_techs_for_era(era_order: int) -> Array:
 	var result = []
@@ -257,7 +250,7 @@ static func get_item_chemical_tags(item_key: String) -> Array[Dictionary]:
 	if item_key == "malachite":
 		tags.append({"text": "易还原铜矿", "color": Color(0.18, 0.85, 0.65)})
 		tags.append({"text": "受热热解", "color": Color(0.95, 0.35, 0.25)})
-	elif item_key in ["iron_ore", "hematite", "magnetite"]:
+	elif item_key in ["hematite", "magnetite"]:
 		tags.append({"text": "氧化铁矿", "color": Color(0.85, 0.40, 0.30)})
 		tags.append({"text": "冶炼原料", "color": Color(0.75, 0.60, 0.90)})
 	elif item_key in ["pyrite", "chalcopyrite", "sphalerite", "galena"]:
@@ -268,7 +261,7 @@ static func get_item_chemical_tags(item_key: String) -> Array[Dictionary]:
 		tags.append({"text": "需高温电解", "color": Color(0.20, 0.75, 0.95)})
 		
 	# 3. 盐类与溶剂
-	if item_key in ["halite", "rock_salt", "salt"]:
+	if item_key in ["rock_salt", "salt"]:
 		tags.append({"text": "水溶性盐", "color": Color(0.45, 0.80, 0.95)})
 		tags.append({"text": "电解氯碱源", "color": Color(0.25, 0.65, 0.95)})
 	elif item_key in ["water", "salt_water", "seawater"]:

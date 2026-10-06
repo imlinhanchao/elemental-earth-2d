@@ -58,7 +58,7 @@ var current_tab: CategoryTab = CategoryTab.NONE
 @onready var furnace_info = $Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox/FurnaceInfo
 @onready var btn_add_fuel = $Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox/BtnAddFuel
 @onready var btn_add_malachite = $Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox/BtnAddMalachite
-@onready var btn_add_iron_ore = $Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox/BtnAddIronOre
+@onready var btn_add_hematite = $Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox/BtnAddIronOre
 
 # 底部多分类动作坞 (Bottom Categorized Action Dock)
 @onready var action_drawer = $Margin/MainVBox/BottomArea/ActionDrawer
@@ -167,7 +167,7 @@ func _ready() -> void:
 	# 熔炉快速操作
 	btn_add_fuel.pressed.connect(_on_btn_add_fuel_pressed)
 	btn_add_malachite.pressed.connect(_on_btn_add_malachite_pressed)
-	btn_add_iron_ore.pressed.connect(_on_btn_add_iron_ore_pressed)
+	btn_add_hematite.pressed.connect(_on_btn_add_hematite_pressed)
 	
 	if era_badge_btn:
 		era_badge_btn.pressed.connect(_on_era_badge_pressed)
@@ -453,6 +453,8 @@ func _add_build_subitems() -> void:
 	var buildings = DataDB.buildings.values()
 	for b in buildings:
 		var b_key = b.get("key", "")
+		if not GameState.sim.IMPLEMENTED_STRUCTURES.has(b_key):
+			continue # 尚未实现运行逻辑的建筑暂不展示
 		var b_name = b.get("name", b_key)
 		var req_items = b.get("required_items", [])
 		var req_techs = b.get("required_techs", [])
@@ -549,18 +551,18 @@ func _add_production_subitems() -> void:
 	drawer_grid.add_child(copper_card)
 	
 	# 3. 赤铁矿冶炼铁
-	var iron_ore_cnt = GameState.inventory.get_count("iron_ore")
-	var can_smelt_iron = iron_ore_cnt >= 1 and current_nearby_furnace != null
+	var hematite_cnt = GameState.inventory.get_count("hematite")
+	var can_smelt_iron = hematite_cnt >= 1 and current_nearby_furnace != null
 	var iron_card = _create_action_card(
 		"赤铁矿冶铁",
-		"投入赤铁矿 x1 冶炼金属铁 (存量: %d)" % iron_ore_cnt,
-		get_item_icon("iron_ore"),
+		"投入赤铁矿 x1 冶炼金属铁 (存量: %d)" % hematite_cnt,
+		get_item_icon("hematite"),
 		("可投入" if can_smelt_iron else ("无就近熔炉" if current_nearby_furnace == null else "缺少赤铁矿")),
 		can_smelt_iron
 	)
 	if can_smelt_iron:
 		iron_card.pressed.connect(func():
-			_on_btn_add_iron_ore_pressed()
+			_on_btn_add_hematite_pressed()
 			_populate_drawer(CategoryTab.PRODUCTION)
 		)
 	drawer_grid.add_child(iron_card)
@@ -929,7 +931,14 @@ func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, b
 	
 	return btn
 
+func _is_world_placing() -> bool:
+	var w = get_parent()
+	return w != null and "is_placing_structure" in w and w.is_placing_structure
+
 func _unhandled_input(event: InputEvent) -> void:
+	# 输入层级：建造选址 > 抽屉 > 弹窗 > 暂停菜单。选址模式下 ESC / 右键由 world 处理
+	if _is_world_placing():
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
 		if action_drawer.visible:
 			_close_drawer()
@@ -940,18 +949,21 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			return
 		
-	if event is InputEventKey and event.pressed:
+	if event is InputEventKey and event.pressed and not event.echo:
+		# 暂停菜单打开时只响应 ESC
+		if pause_menu.visible and event.keycode != KEY_ESCAPE:
+			return
 		if event.keycode == KEY_L:
 			_toggle_category(CategoryTab.LAB)
 		elif event.keycode == KEY_K:
 			tech_modal.toggle()
 		elif event.keycode == KEY_T:
 			_toggle_category(CategoryTab.CRAFT)
-		elif event.keycode == KEY_C or event.keycode == KEY_F:
+		elif event.keycode == KEY_C:
 			_toggle_category(CategoryTab.BUILD)
 		elif event.keycode == KEY_R:
 			_toggle_category(CategoryTab.PRODUCTION)
-		elif event.keycode == KEY_B or event.keycode == KEY_I:
+		elif event.keycode == KEY_B:
 			_toggle_category(CategoryTab.INVENTORY)
 		elif event.keycode == KEY_P:
 			periodic_modal.toggle()
@@ -1105,7 +1117,7 @@ func _update_inventory_ui() -> void:
 	# 矿石统计 (孔雀石 + 赤铁矿 + 黄铁矿 + 闪锌矿 + 铝土矿 + 沥青铀矿)
 	var total_ores = (
 		GameState.inventory.get_count("malachite") +
-		GameState.inventory.get_count("iron_ore") +
+		GameState.inventory.get_count("hematite") +
 		GameState.inventory.get_count("pyrite") +
 		GameState.inventory.get_count("sphalerite") +
 		GameState.inventory.get_count("bauxite") +
@@ -1315,7 +1327,7 @@ func show_toast(msg: String, col: Color = Color.WHITE) -> void:
 func show_furnace_ui(furnace: Node2D) -> void:
 	current_nearby_furnace = furnace
 	furnace_panel.visible = true
-	var b_name = "原始篝火堆" if ("building_type" in furnace and furnace.building_type == "fire_pit") else "陶土熔炉"
+	var b_name = DataDB.get_building_recipe(furnace.building_type).get("name", "熔炉") if "building_type" in furnace else "熔炉"
 	if furnace_info:
 		furnace_info.text = "【%s】现场控制台\n温度: %d ℃" % [b_name, int(furnace.buffer.temperature - 273.15)]
 
@@ -1331,9 +1343,9 @@ func _on_btn_add_malachite_pressed() -> void:
 	if current_nearby_furnace:
 		current_nearby_furnace.add_ore("malachite", 1)
 
-func _on_btn_add_iron_ore_pressed() -> void:
+func _on_btn_add_hematite_pressed() -> void:
 	if current_nearby_furnace:
-		current_nearby_furnace.add_ore("iron_ore", 1)
+		current_nearby_furnace.add_ore("hematite", 1)
 
 func _on_build_structure_pressed(structure_key: String) -> void:
 	build_structure_requested.emit(structure_key)

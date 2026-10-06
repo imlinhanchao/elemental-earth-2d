@@ -12,6 +12,8 @@ var volume: float = 1.0         # 容积 (升 L)
 var applied_voltage: float = 0.0 # 外加电解电压 (V)
 
 var container_type: String = "flask"
+# 额外可用器皿：玩家背包中持有的筛子/坩埚/烧杯等，由模拟层每秒同步
+var available_containers: Array = []
 var reaction_timer: float = 0.0
 
 func add_substance(key: String, moles: float) -> void:

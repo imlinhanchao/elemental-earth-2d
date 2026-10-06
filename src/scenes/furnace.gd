@@ -7,7 +7,7 @@ const MixtureBuffer = preload("res://src/core/mixture_buffer.gd")
 signal open_workbench_requested(furnace_entity: Node2D)
 
 var hex_coord: Vector2i = Vector2i(9999, 9999)
-var building_type: String = "furnace" # "furnace" 或 "fire_pit"
+var building_type: String = "furnace" # "fire_pit" / "furnace" / "blast_furnace"
 
 var buffer: MixtureBuffer:
 	get:
@@ -43,13 +43,15 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if label_status:
-		var b_name = "原始篝火堆" if building_type == "fire_pit" else "陶土熔炉"
+		var b_name = DataDB.get_building_recipe(building_type).get("name", "熔炉")
 		label_status.text = "%s\n%d K (%d ℃)\n[点击打开]" % [b_name, int(buffer.temperature), int(buffer.temperature - 273.15)]
 	queue_redraw()
 
 func _draw() -> void:
 	if building_type == "fire_pit":
 		_draw_fire_pit()
+	elif building_type == "blast_furnace":
+		_draw_blast_furnace()
 	else:
 		_draw_furnace()
 
@@ -90,6 +92,23 @@ func _draw_furnace() -> void:
 		var fire_r = 13.0 * (0.9 + 0.12 * sin(Time.get_ticks_msec() * 0.02))
 		draw_circle(Vector2(0, 1), fire_r, Color(1.0, 0.4 * intensity, 0.05, 0.95))
 		draw_circle(Vector2.ZERO, fire_r * 0.6, Color(1.0, 0.85, 0.2, 1.0)) # 白炽金内焰
+
+# 3. 鼓风高炉绘制 (耐火砖方形竖炉、铁箍、鼓风管与炽白炉口)
+func _draw_blast_furnace() -> void:
+	draw_circle(Vector2(0, 5), 27.0, Color(0.1, 0.08, 0.06, 0.5)) # 地面阴影
+	draw_rect(Rect2(-20, -22, 40, 42), Color(0.58, 0.40, 0.26))      # 耐火砖炉身
+	for row in range(5):
+		var y = -22.0 + row * 8.4
+		draw_line(Vector2(-20, y), Vector2(20, y), Color(0.40, 0.26, 0.16), 1.0) # 砖缝
+	draw_rect(Rect2(-22, -10, 44, 3), Color(0.30, 0.30, 0.32))       # 铁箍
+	draw_rect(Rect2(-22, 6, 44, 3), Color(0.30, 0.30, 0.32))
+	draw_line(Vector2(20, 12), Vector2(30, 12), Color(0.35, 0.33, 0.30), 4.0) # 鼓风管
+	draw_rect(Rect2(-9, 4, 18, 12), Color(0.12, 0.08, 0.06))         # 出铁口暗腔
+	if buffer.temperature > 600.0 or is_active_fire:
+		var intensity = clamp((buffer.temperature - 600.0) / 900.0, 0.3, 1.0)
+		var flick = 0.9 + 0.12 * sin(Time.get_ticks_msec() * 0.02)
+		draw_rect(Rect2(-7, 6, 14, 9), Color(1.0, 0.45 * intensity + 0.3, 0.1, 0.95))
+		draw_circle(Vector2(0, -24), 7.0 * flick, Color(1.0, 0.75, 0.25, 0.85)) # 炉口火焰
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
 	var world_node = get_tree().get_first_node_in_group("world")

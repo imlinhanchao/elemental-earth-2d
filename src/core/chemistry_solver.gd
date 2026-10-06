@@ -115,13 +115,19 @@ func _matches_container(buffer: MixtureBuffer, formula: Dictionary) -> bool:
 	if not formula.has("required_container"):
 		return true
 	var req = formula["required_container"]
+	# 持有对应器皿即可在当前容器中完成该工艺
+	for c in buffer.available_containers:
+		if (req is String and req == c) or (req is Array and req.has(c)):
+			return true
 	if req is String:
 		if req == "" or buffer.container_type == "":
 			return true
 		if req == buffer.container_type:
 			return true
 		# 容器别名兼容匹配
-		if buffer.container_type == "furnace" and req in ["furnace", "kiln", "blast_furnace", "crucible"]:
+		if buffer.container_type == "furnace" and req in ["furnace", "kiln", "crucible"]:
+			return true
+		if buffer.container_type == "blast_furnace" and req in ["furnace", "kiln", "blast_furnace", "crucible"]:
 			return true
 		if buffer.container_type == "flask" and req in ["flask", "clay_pot", "beaker", "cell"]:
 			return true
@@ -131,8 +137,9 @@ func _matches_container(buffer: MixtureBuffer, formula: Dictionary) -> bool:
 			return true
 		if req.has(buffer.container_type):
 			return true
-		if buffer.container_type == "furnace":
-			for alias in ["furnace", "kiln", "blast_furnace", "crucible"]:
+		if buffer.container_type in ["furnace", "blast_furnace"]:
+			var aliases = ["furnace", "kiln", "crucible"] + (["blast_furnace"] if buffer.container_type == "blast_furnace" else [])
+			for alias in aliases:
 				if req.has(alias):
 					return true
 		if buffer.container_type == "flask":

@@ -111,6 +111,8 @@ func determine_resource_spawn(q: int, r: int, biome: BiomeType) -> String:
 			return "bauxite" if biome == BiomeType.PLAINS else "galena"
 		elif rand_val < 0.14:
 			return "sphalerite"
+		elif rand_val > 0.80 and rand_val <= 0.86:
+			return "cryolite"     # 冰晶石 (电解铝助熔剂)
 		
 	match biome:
 		BiomeType.PLAINS:
@@ -118,21 +120,31 @@ func determine_resource_spawn(q: int, r: int, biome: BiomeType) -> String:
 				return "malachite"    # 孔雀石
 			elif rand_val > 0.82:
 				return "clay"         # 粘土矿层
+			elif rand_val > 0.78:
+				return "limestone"    # 石灰岩露头 (水泥 / 生石灰原料)
+			elif rand_val > 0.74 and dist > 7:
+				return "niter"        # 硝石结壳 (火药与硝酸原料)
 			elif rand_val < 0.14:
 				return "wood"         # 散落橡树
 		BiomeType.VOLCANO:
 			if rand_val > 0.86:
 				return "sulfur"       # 硫磺矿床
+			elif rand_val > 0.12 and rand_val < 0.20:
+				return "cassiterite"  # 锡石砂矿 (青铜冶炼原料)
+			elif rand_val > 0.20 and rand_val < 0.26:
+				return "pyrolusite"   # 软锰矿 (锰钢原料)
 			elif rand_val < 0.12:
-				return "iron_ore"     # 伴生赤铁矿
+				return "hematite"     # 伴生赤铁矿
 			elif rand_val > 0.78:
 				return "pyrite"       # 黄铁矿
 		BiomeType.SALT_LAKE:
 			if rand_val > 0.85:
-				return "halite"       # 石盐矿床
+				return "rock_salt"       # 石盐矿床
 		BiomeType.DEEP_FOREST:
 			if rand_val > 0.80:
 				return "wood"         # 原始大橡树
 			elif rand_val < 0.10:
 				return "coal"         # 浅层煤矿
+			elif rand_val < 0.18:
+				return "graphite"     # 石墨矿层 (电极与核反应堆慢化剂)
 	return ""

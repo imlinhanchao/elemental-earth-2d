@@ -300,6 +300,16 @@
     "elemental": 26
   },
   {
+    "name": "熟铁",
+    "key": "iron",
+    "category": "材料",
+    "description": "银灰色的金属块，由铁矿石在熔炉中以木炭还原得到，质地坚韧，可锻打成形。",
+    "elemental": 26,
+    "type": [
+      "material"
+    ]
+  },
+  {
     "key": "steel",
     "name": "钢",
     "category": "材料",

@@ -10610,5 +10610,72 @@
     "required_techs": [
       "high_temp_furnace"
     ]
+  },
+  {
+    "key": "fire_brick_firing",
+    "name": "烧制耐火砖",
+    "description": "粘土掺入砂粒塑形后在熔炉中高温焙烧，得到耐高温的耐火砖。",
+    "min_temp": 1000.0,
+    "time_required": 1.0,
+    "required_container": [
+      "furnace",
+      "kiln",
+      "blast_furnace"
+    ],
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 2.0,
+        "isMain": true
+      },
+      {
+        "key": [
+          "sand",
+          "stone"
+        ],
+        "quantity": 1.0
+      }
+    ],
+    "products": [
+      {
+        "key": "fire_brick",
+        "quantity": 1.0,
+        "multiple": 1.0
+      }
+    ],
+    "required_era": "alchemy"
+  },
+  {
+    "key": "alkali_evaporation",
+    "name": "碱液蒸发制碱",
+    "description": "将草木灰浸出的碱液加热蒸干，析出白色碱块（纯碱）。",
+    "min_temp": 400.0,
+    "time_required": 1.0,
+    "required_container": [
+      "furnace",
+      "kiln",
+      "clay_pot",
+      "flask"
+    ],
+    "required_items": [
+      {
+        "key": "alkaline_solution",
+        "quantity": 2.0,
+        "isMain": true
+      }
+    ],
+    "products": [
+      {
+        "key": "sodium_carbonate",
+        "quantity": 1.0,
+        "multiple": 1.0
+      },
+      {
+        "key": "water",
+        "quantity": 1.0,
+        "multiple": 1.0
+      }
+    ],
+    "required_era": "alchemy"
   }
 ]

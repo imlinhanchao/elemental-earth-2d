@@ -122,14 +122,20 @@ func _init_hex_resources(coord: Vector2i, biome: HexWorldGenerator.BiomeType, sp
 				res = { "wood": 120, "stick": 30 }
 			"malachite":
 				res = { "malachite": 80, "stone": 40 }
-			"iron_ore":
-				res = { "iron_ore": 100, "stone": 40 }
+			"hematite":
+				res = { "hematite": 100, "stone": 40 }
+			"cassiterite":
+				res = { "cassiterite": 80, "stone": 30 }
+			"limestone":
+				res = { "limestone": 80, "stone": 30 }
+			"niter":
+				res = { "niter": 60, "stone": 20 }
 			"sulfur":
 				res = { "sulfur": 90, "flint": 25 }
 			"pyrite":
 				res = { "pyrite": 80, "flint": 20 }
-			"halite":
-				res = { "halite": 60, "water": 300 }
+			"rock_salt":
+				res = { "rock_salt": 60, "water": 300, "sand": 40 }
 			"coal":
 				res = { "coal": 100, "wood": 60, "stick": 20 }
 			"clay":
@@ -155,7 +161,7 @@ func _init_hex_resources(coord: Vector2i, biome: HexWorldGenerator.BiomeType, sp
 	else:
 		match biome:
 			HexWorldGenerator.BiomeType.SALT_LAKE:
-				res = { "water": 300, "halite": 40 }
+				res = { "water": 300, "rock_salt": 40, "sand": 30 }
 				world_resources[coord] = "water"
 			HexWorldGenerator.BiomeType.VOLCANO:
 				res = { "stone": 40, "flint": 20 }
@@ -188,8 +194,11 @@ func _on_solver_reaction_occurred(rx_name: String, prods: Array) -> void:
 		complete_milestone("first_electrolysis")
 	if rx_name.contains("电解"):
 		complete_milestone("first_electrolysis")
-	if rx_name.contains("嬗变") or rx_name.contains("核"):
-		complete_milestone("first_transmutation")
+	# 元素嬗变：核反应、放射性衰变与粒子轰击都会使一种元素转变为另一种元素
+	for w in ["嬗变", "核", "衰变", "轰击"]:
+		if rx_name.contains(w):
+			complete_milestone("first_transmutation")
+			break
 
 func _on_inventory_item_changed(key: String, count: int) -> void:
 	if count > 0 and key != "":
@@ -307,6 +316,14 @@ func _populate_resources_for_new_era(_era_order: int) -> void:
 				if spawn != "":
 					world_resources[coord] = spawn
 
+# 背包中持有的可用器皿 (配方 required_container 中出现过的物品键)
+func _get_owned_containers() -> Array:
+	var result: Array = []
+	for k in DataDB.get_container_keys():
+		if inventory.get_count(k) > 0:
+			result.append(k)
+	return result
+
 var _territory_cache_era: int = -1
 var _territory_cache_radius: int = 5
 
@@ -353,7 +370,9 @@ func _on_second_tick() -> void:
 			_complete_active_task()
 			
 	# 2. 实验台溶液结算 (共用一秒节拍)
+	var owned_containers = _get_owned_containers()
 	if lab_vessel and lab_vessel.total_moles() > 0:
+		lab_vessel.available_containers = owned_containers
 		solver.solve(lab_vessel, 1.0)
 		
 	# 3. 熔炉溶液结算 (共用一秒节拍)
@@ -363,13 +382,14 @@ func _on_second_tick() -> void:
 		if f.get("is_active_fire", false):
 			var b_timer = f.get("burn_timer", 0.0) - 1.0
 			f["burn_timer"] = max(0.0, b_timer)
-			buf.temperature = move_toward(buf.temperature, 1100.0, 180.0)
+			buf.temperature = move_toward(buf.temperature, float(FURNACE_MAX_TEMP.get(f.get("type", "furnace"), 1100.0)), 180.0)
 			if f["burn_timer"] <= 0.0:
 				f["is_active_fire"] = false
 		else:
 			buf.temperature = move_toward(buf.temperature, 293.15, 35.0)
 			
 		if buf.total_moles() > 0:
+			buf.available_containers = owned_containers
 			var res = solver.solve(buf, 1.0)
 			if res["occurred"]:
 				buf.consume_substance("carbon_dioxide", 999.0)
@@ -455,20 +475,21 @@ func consume_tile_resource(hex: Vector2i, item_key: String, count: int = 1) -> i
 
 # --- 任务队列调度与合并 ---
 
+# 作业耗时：徒手基准值，装配工具后读取 crafting.json 中的 work_time
+const BARE_HAND_AXE_TIME: float = 4.0
+const BARE_HAND_PICK_TIME: float = 5.0
+
 func calculate_task_duration(item_key: String) -> float:
-	var pick = equipped_tools.get("pickaxe", "bare_hands")
-	var axe = equipped_tools.get("axe", "bare_hands")
-	if item_key == "wood":
-		return 2.0 if axe == "flint_axe" else 4.0
-	elif item_key == "stick":
+	if item_key == "stick":
 		return 0.8
-	elif item_key == "stone" or item_key == "flint":
+	elif item_key == "stone" or item_key == "flint" or item_key == "water":
 		return 1.0
-	else:
-		if pick == "iron_pickaxe": return 1.2
-		elif pick == "copper_pickaxe": return 2.0
-		elif pick == "stone_pickaxe": return 3.0
-		else: return 5.0
+	var slot = "axe" if item_key == "wood" else "pickaxe"
+	var base = BARE_HAND_AXE_TIME if slot == "axe" else BARE_HAND_PICK_TIME
+	var tool_key = str(equipped_tools.get(slot, "bare_hands"))
+	if tool_key == "bare_hands":
+		return base
+	return float(DataDB.get_crafting_recipe(tool_key).get("work_time", base))
 
 # 各类资源在大世界显现与可开采的时代门槛配置
 const RESOURCE_ERA_REQUIREMENTS: Dictionary = {
@@ -479,9 +500,15 @@ const RESOURCE_ERA_REQUIREMENTS: Dictionary = {
 	"wood": 0,
 	"clay": 0,
 	"malachite": 0,
-	"halite": 0,
-	"iron_ore": 1,
+	"rock_salt": 0,
 	"hematite": 1,
+	"cassiterite": 1,
+	"limestone": 1,
+	"graphite": 2,
+	"niter": 2,
+	"pyrolusite": 2,
+	"cryolite": 3,
+	"sand": 0,
 	"coal": 1,
 	"sulfur": 1,
 	"pyrite": 1,
@@ -497,7 +524,7 @@ func get_resource_required_tool(item_key: String) -> String:
 	match item_key:
 		"wood":
 			return "axe"
-		"clay", "malachite", "iron_ore", "hematite", "coal", "sulfur", "pyrite", "galena", "sphalerite", "bauxite", "monazite", "pitchblende":
+		"clay", "malachite", "hematite", "cassiterite", "limestone", "niter", "graphite", "pyrolusite", "cryolite", "coal", "sulfur", "pyrite", "galena", "sphalerite", "bauxite", "monazite", "pitchblende":
 			return "pickaxe"
 		_:
 			return "bare_hands"
@@ -534,7 +561,7 @@ func can_mine(item_key: String) -> Dictionary:
 	if item_key == "wood":
 		if axe == "bare_hands":
 			return { "allowed": false, "reason": "徒手无法砍伐原木！请先在制作栏 (T) 制作并装配【原始燧石斧】！" }
-	elif item_key in ["malachite", "iron_ore", "hematite", "sulfur", "coal", "clay", "bauxite", "galena", "sphalerite", "monazite", "pitchblende"]:
+	elif item_key in ["malachite", "hematite", "cassiterite", "limestone", "niter", "graphite", "pyrolusite", "cryolite", "sulfur", "coal", "clay", "bauxite", "galena", "sphalerite", "monazite", "pitchblende"]:
 		if pick == "bare_hands":
 			return { "allowed": false, "reason": "徒手无法开采坚硬矿脉与沉积层！请先在制作栏 (T) 制作并装配【粗制石镐】！" }
 	return { "allowed": true, "reason": "" }
@@ -697,7 +724,7 @@ func _complete_active_task() -> void:
 	# 1. 产物收入背包及伴生物掉落
 	inventory.add_item(t_key, amount)
 	if t_key == "water" and randf() < 0.25:
-		inventory.add_item("halite", 1)
+		inventory.add_item("rock_salt", 1)
 	elif t_key == "stone" and randf() < 0.15:
 		inventory.add_item("flint", 1)
 	elif t_key == "wood":
@@ -791,6 +818,12 @@ func craft_tool(recipe_key: String) -> bool:
 	post_notice(notice_text, Color.GREEN)
 	return true
 
+# 已实现运行逻辑的建筑；数据表中其余建筑在实现前不可建造 (避免只扣料不生成)
+const FURNACE_TYPES: Array[String] = ["fire_pit", "furnace", "blast_furnace"]
+const IMPLEMENTED_STRUCTURES: Array[String] = ["fire_pit", "furnace", "blast_furnace", "industrial_reactor"]
+# 各类炉体的最高炉温 (K)
+const FURNACE_MAX_TEMP: Dictionary = {"fire_pit": 1100.0, "furnace": 1100.0, "blast_furnace": 1500.0}
+
 func build_structure(structure_key: String, hex: Vector2i) -> bool:
 	if not is_hex_in_territory(hex.x, hex.y):
 		post_notice("无法在此建造：超出当前文明领地边界！", Color(1.0, 0.4, 0.4))
@@ -801,8 +834,8 @@ func build_structure(structure_key: String, hex: Vector2i) -> bool:
 		return false
 		
 	var recipe = DataDB.get_building_recipe(structure_key)
-	if recipe.is_empty():
-		post_notice("未知建筑类型: %s" % structure_key, Color.RED)
+	if recipe.is_empty() or not IMPLEMENTED_STRUCTURES.has(structure_key):
+		post_notice("该建筑尚未开放: %s" % recipe.get("name", structure_key), Color.RED)
 		return false
 		
 	var req_items = recipe.get("required_items", [])
@@ -813,7 +846,7 @@ func build_structure(structure_key: String, hex: Vector2i) -> bool:
 	_consume_all_ingredients(req_items)
 	depleted_tiles[hex] = true
 	
-	if structure_key == "furnace" or structure_key == "fire_pit":
+	if FURNACE_TYPES.has(structure_key):
 		var f_buf = MixtureBuffer.new()
 		f_buf.container_type = structure_key
 		f_buf.temperature = 373.15 if structure_key == "fire_pit" else 293.15
@@ -899,15 +932,19 @@ func furnace_add_fuel(hex: Vector2i) -> bool:
 	if not built_furnaces.has(hex):
 		return false
 	var f = built_furnaces[hex]
-	if inventory.remove_item("charcoal", 1) or inventory.remove_item("wood", 2) or inventory.remove_item("stick", 3):
-		f["is_active_fire"] = true
-		f["burn_timer"] = f.get("burn_timer", 0.0) + 18.0
-		f["buffer"].add_substance("charcoal", 1.0)
-		post_notice("投入燃料，火焰熊熊燃烧！", Color.ORANGE)
-		return true
-	else:
-		post_notice("背包中没有木炭、原木或树枝可用作燃料！", Color.RED)
-		return false
+	var burned_wood = false
+	if not inventory.remove_item("charcoal", 1):
+		if not (inventory.remove_item("wood", 2) or inventory.remove_item("stick", 3)):
+			post_notice("背包中没有木炭、原木或树枝可用作燃料！", Color.RED)
+			return false
+		burned_wood = true
+	if burned_wood:
+		inventory.add_item("wood_ash", 1) # 木柴燃尽留下草木灰
+	f["is_active_fire"] = true
+	f["burn_timer"] = f.get("burn_timer", 0.0) + 18.0
+	f["buffer"].add_substance("charcoal", 1.0)
+	post_notice("投入燃料，火焰熊熊燃烧！", Color.ORANGE)
+	return true
 
 func furnace_add_ore(hex: Vector2i, key: String, amount: int = 1) -> bool:
 	if not built_furnaces.has(hex):

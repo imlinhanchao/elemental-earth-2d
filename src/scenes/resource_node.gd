@@ -67,14 +67,14 @@ func _draw() -> void:
 	match item_key:
 		"malachite":
 			_draw_malachite_crystals()
-		"iron_ore":
+		"hematite":
 			_draw_hematite_rocks()
 		"wood":
 			_draw_hex_oak_tree()
 		"sulfur":
 			_draw_sulfur_crystals()
-		"halite":
-			_draw_halite_cubes()
+		"rock_salt":
+			_draw_rock_salt_cubes()
 		"stone":
 			_draw_loose_stone()
 		"flint":
@@ -134,7 +134,7 @@ func _draw_sulfur_crystals() -> void:
 	_draw_crystal_poly(Vector2(6, 4), Vector2(10, 18), Color(0.75, 0.65, 0.10), Color(0.95, 0.88, 0.30))
 
 # 5. 石盐立方晶体 (Halite / Salt)
-func _draw_halite_cubes() -> void:
+func _draw_rock_salt_cubes() -> void:
 	draw_circle(Vector2(0, 4), 20.0, Color(0.1, 0.15, 0.2, 0.5))
 	# 立方体 1
 	_draw_cube(Vector2(-8, -4), 14.0, Color(0.70, 0.82, 0.92, 0.9))
@@ -374,9 +374,9 @@ func _draw_connecting_mineral_veins() -> void:
 func _get_mineral_vein_color(key: String) -> Color:
 	match key:
 		"malachite": return Color(0.20, 0.85, 0.45)
-		"iron_ore": return Color(0.85, 0.25, 0.18)
+		"hematite": return Color(0.85, 0.25, 0.18)
 		"sulfur": return Color(0.95, 0.85, 0.20)
-		"halite": return Color(0.65, 0.85, 0.98)
+		"rock_salt": return Color(0.65, 0.85, 0.98)
 		"pyrite": return Color(0.95, 0.82, 0.25)
 		"galena": return Color(0.55, 0.60, 0.70)
 		"bauxite": return Color(0.90, 0.45, 0.20)

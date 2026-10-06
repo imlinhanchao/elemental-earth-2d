@@ -465,12 +465,18 @@ func toggle() -> void:
 		_refresh_all()
 		btn_close.grab_focus()
 
+var _right_press_pos: Vector2 = Vector2.ZERO
+
 func _input(event: InputEvent) -> void:
 	if not visible:
 		return
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed and not is_dragging_canvas:
-		visible = false
-		get_viewport().set_input_as_handled()
+	# 右键：按下记录位置；抬起时位移 < 6px 视为单击关闭，否则为拖拽平移画布
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
+		if event.pressed:
+			_right_press_pos = event.position
+		elif (event.position - _right_press_pos).length() < 6.0:
+			visible = false
+			get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.pressed and not event.echo and (event.keycode == KEY_ESCAPE or event.keycode == KEY_K):
 		visible = false
 		get_viewport().set_input_as_handled()

@@ -6,6 +6,9 @@ extends RefCounted
 const ProcessBlueprint = preload("res://src/core/process_blueprint.gd")
 const MixtureBuffer = preload("res://src/core/mixture_buffer.gd")
 
+# 旧版存档中已更名的物品键
+const LEGACY_ITEM_KEYS: Dictionary = {"iron_ore": "hematite", "halite": "rock_salt"}
+
 const SLOT_DEFINITIONS: Array[Dictionary] = [
 	{ "id": "auto", "name": "自动存档", "is_auto": true },
 	{ "id": "slot_1", "name": "手动档案 1", "is_auto": false },
@@ -238,7 +241,9 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
 	GameState.inventory.items = {}
 	var inv_data = gs_data.get("inventory", {})
 	for k in inv_data.keys():
-		GameState.inventory.items[k] = int(inv_data[k])
+		# 旧档物品键迁移：iron_ore → hematite，halite → rock_salt (与 items.json 对齐)
+		var nk = LEGACY_ITEM_KEYS.get(k, k)
+		GameState.inventory.items[nk] = GameState.inventory.items.get(nk, 0) + int(inv_data[k])
 	GameState.inventory.item_changed.emit("", 0)
 	
 	_deserialize_blueprints(gs_data.get("unlocked_blueprints", {}))

@@ -13,7 +13,8 @@
         "quantity": 10
       }
     ],
-    "time_required": 10
+    "time_required": 10,
+    "era": 0
   },
   {
     "name": "石材加工技术",
@@ -32,7 +33,8 @@
     "required_techs": [
       "stone_tool_crafting"
     ],
-    "time_required": 120
+    "time_required": 120,
+    "era": 0
   },
   {
     "key": "rammed_earth_technology",
@@ -55,7 +57,8 @@
     ],
     "required_techs": [
       "stone_masonry"
-    ]
+    ],
+    "era": 1
   },
   {
     "name": "木材加工",
@@ -67,7 +70,8 @@
         "quantity": 15
       }
     ],
-    "time_required": 15
+    "time_required": 15,
+    "era": 0
   },
   {
     "name": "火种制作",
@@ -83,7 +87,8 @@
         "quantity": 10
       }
     ],
-    "time_required": 8
+    "time_required": 8,
+    "era": 0
   },
   {
     "name": "陶器制作",
@@ -96,7 +101,8 @@
       }
     ],
     "time_required": 12,
-    "milestone": "research_pottery"
+    "milestone": "research_pottery",
+    "era": 1
   },
   {
     "key": "mold_making",
@@ -117,7 +123,8 @@
       "pottery",
       "sifting_technology",
       "bronze_tool_crafting"
-    ]
+    ],
+    "era": 1
   },
   {
     "name": "树皮揉制",
@@ -133,7 +140,8 @@
         "quantity": 10
       }
     ],
-    "time_required": 20
+    "time_required": 20,
+    "era": 1
   },
   {
     "name": "耐火材料",
@@ -149,7 +157,8 @@
       "pottery",
       "fire_starting"
     ],
-    "time_required": 120
+    "time_required": 120,
+    "era": 1
   },
   {
     "name": "高温熔炉",
@@ -172,7 +181,8 @@
     "required_techs": [
       "refractory_materials"
     ],
-    "time_required": 180
+    "time_required": 180,
+    "era": 1
   },
   {
     "key": "iron_tool_crafting",
@@ -192,7 +202,8 @@
     "required_techs": [
       "refractory_materials",
       "bronze_tool_crafting"
-    ]
+    ],
+    "era": 1
   },
   {
     "key": "gas_collection",
@@ -213,7 +224,8 @@
       "pottery",
       "iron_tool_crafting"
     ],
-    "milestone": "research_gas_collection"
+    "milestone": "research_gas_collection",
+    "era": 2
   },
   {
     "key": "bronze_tool_crafting",
@@ -228,7 +240,8 @@
     ],
     "required_techs": [
       "pottery"
-    ]
+    ],
+    "era": 1
   },
   {
     "name": "黄铜锻造",
@@ -245,7 +258,8 @@
       "high_temp_furnace",
       "mold_making"
     ],
-    "time_required": 120
+    "time_required": 120,
+    "era": 2
   },
   {
     "key": "sifting_technology",
@@ -265,7 +279,8 @@
     "required_techs": [
       "wood_processing",
       "bark_processing"
-    ]
+    ],
+    "era": 1
   },
   {
     "key": "explosives",
@@ -284,7 +299,8 @@
     ],
     "required_techs": [
       "high_temp_furnace"
-    ]
+    ],
+    "era": 2
   },
   {
     "key": "electrochemistry",
@@ -307,7 +323,8 @@
     ],
     "required_techs": [
       "glassworking"
-    ]
+    ],
+    "era": 3
   },
   {
     "key": "manganese_alloy_smithing",
@@ -323,7 +340,8 @@
     "required_techs": [
       "high_temp_furnace",
       "iron_tool_crafting"
-    ]
+    ],
+    "era": 2
   },
   {
     "key": "titanium_alloy_smithing",
@@ -339,7 +357,8 @@
     "required_techs": [
       "high_temp_furnace",
       "manganese_alloy_smithing"
-    ]
+    ],
+    "era": 3
   },
   {
     "key": "chrome_alloy_smithing",
@@ -355,7 +374,8 @@
     "required_techs": [
       "high_temp_furnace",
       "titanium_alloy_smithing"
-    ]
+    ],
+    "era": 3
   },
   {
     "key": "high_explosive_tech",
@@ -375,7 +395,8 @@
     "required_techs": [
       "explosives",
       "detonation_tech"
-    ]
+    ],
+    "era": 3
   },
   {
     "key": "lithium_battery_tech",
@@ -395,7 +416,8 @@
     "required_techs": [
       "electrochemistry",
       "high_explosive_tech"
-    ]
+    ],
+    "era": 3
   },
   {
     "key": "glassworking",
@@ -411,7 +433,8 @@
     "required_techs": [
       "high_temp_furnace",
       "gas_collection"
-    ]
+    ],
+    "era": 2
   },
   {
     "key": "production_tech",
@@ -432,7 +455,8 @@
       "glassworking",
       "steel_construction",
       "mold_making"
-    ]
+    ],
+    "era": 3
   },
   {
     "key": "detonation_tech",
@@ -451,7 +475,8 @@
     ],
     "required_techs": [
       "explosives"
-    ]
+    ],
+    "era": 2
   },
   {
     "key": "crystallization_tech",
@@ -479,7 +504,8 @@
     ],
     "required_techs": [
       "glassworking"
-    ]
+    ],
+    "era": 2
   },
   {
     "key": "high_pressure_tech",
@@ -495,7 +521,8 @@
     "required_techs": [
       "gas_collection",
       "manganese_alloy_smithing"
-    ]
+    ],
+    "era": 2
   },
   {
     "key": "advanced_chemical_equipment",
@@ -520,7 +547,8 @@
     "required_techs": [
       "glassworking",
       "high_pressure_tech"
-    ]
+    ],
+    "era": 4
   },
   {
     "name": "核物理",
@@ -539,7 +567,8 @@
     "required_techs": [
       "advanced_chemical_equipment"
     ],
-    "time_required": 300
+    "time_required": 300,
+    "era": 5
   },
   {
     "key": "nuclear_reactor_tech",
@@ -559,7 +588,8 @@
     "required_techs": [
       "nuclear_physics",
       "chrome_alloy_smithing"
-    ]
+    ],
+    "era": 5
   },
   {
     "key": "precision_machinery",
@@ -580,7 +610,8 @@
       "advanced_chemical_equipment",
       "tenon_mortise_tech",
       "brass_tool_crafting"
-    ]
+    ],
+    "era": 4
   },
   {
     "key": "particle_accelerator_tech",
@@ -605,7 +636,8 @@
     "required_techs": [
       "nuclear_physics",
       "precision_machinery"
-    ]
+    ],
+    "era": 5
   },
   {
     "key": "nickel_cadmium_battery_tech",
@@ -632,7 +664,8 @@
     ],
     "required_techs": [
       "electrochemistry"
-    ]
+    ],
+    "era": 3
   },
   {
     "key": "roman_architecture",
@@ -651,7 +684,8 @@
     ],
     "required_techs": [
       "rammed_earth_technology"
-    ]
+    ],
+    "era": 2
   },
   {
     "key": "steel_construction",
@@ -671,7 +705,8 @@
     "required_techs": [
       "roman_architecture",
       "high_temp_furnace"
-    ]
+    ],
+    "era": 2
   },
   {
     "name": "榫卯构造技艺",
@@ -691,7 +726,8 @@
       "wood_processing",
       "iron_tool_crafting"
     ],
-    "time_required": 120
+    "time_required": 120,
+    "era": 1
   },
   {
     "key": "magnesium_aluminum_alloying",
@@ -710,7 +746,8 @@
     ],
     "required_techs": [
       "precision_machinery"
-    ]
+    ],
+    "era": 4
   },
   {
     "key": "gas_liquefaction",
@@ -730,7 +767,8 @@
     "required_techs": [
       "precision_machinery",
       "high_pressure_tech"
-    ]
+    ],
+    "era": 4
   },
   {
     "key": "jet_propulsion_tech",
@@ -751,7 +789,8 @@
       "precision_machinery",
       "gas_liquefaction",
       "detonation_tech"
-    ]
+    ],
+    "era": 4
   },
   {
     "key": "solar_cell_manufacturing",
@@ -772,6 +811,7 @@
       "precision_machinery",
       "crystallization_tech",
       "electrochemistry"
-    ]
+    ],
+    "era": 4
   }
 ]
