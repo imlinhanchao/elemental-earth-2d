@@ -30,6 +30,10 @@ func _draw() -> void:
 		draw_polyline(h_points, Color(1, 1, 1, 0.55), 4.5)
 		draw_polyline(h_points, h_col, 2.0)
 	
+	# 教程目标地块：铜色脉动圆环 + 下落箭头
+	if GameState.is_tutorial_active and GameState.tutorial_marker_hex != Vector2i(9999, 9999):
+		_draw_tutorial_marker(GameState.tutorial_marker_hex)
+
 	# 2. 绘制当前正在进行的任务的世界地块指示器
 	if not GameState.active_task.is_empty():
 		var t_pos = Vector2(
@@ -127,3 +131,17 @@ func _draw_ghost_reactor(pos: Vector2) -> void:
 	draw_rect(Rect2(pos.x - 14, pos.y - 16, 28, 30), Color(0.2, 0.6, 0.9, 0.65))
 	draw_rect(Rect2(pos.x - 10, pos.y - 24, 20, 8), Color(0.3, 0.7, 1.0, 0.75))
 	draw_circle(pos + Vector2(0, 0), 7.0, Color(0.2, 0.9, 1.0, 0.85))
+
+func _draw_tutorial_marker(hex: Vector2i) -> void:
+	var c = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
+	var t = Time.get_ticks_msec() / 1000.0
+	var col = ThemeStyler.COLOR_ACCENT
+	var r = HexWorldGenerator.HEX_RADIUS * (0.95 + 0.08 * sin(t * 4.0))
+	draw_arc(c, r, 0, TAU, 40, Color(1, 1, 1, 0.7), 5.0)
+	draw_arc(c, r, 0, TAU, 40, col, 2.5)
+	# 外扩涟漪
+	var phase = fmod(t, 1.2) / 1.2
+	draw_arc(c, r + phase * 18.0, 0, TAU, 40, Color(col.r, col.g, col.b, 0.5 * (1.0 - phase)), 2.0)
+	# 指向地块的下落箭头
+	var tip = c + Vector2(0, -r - 4.0 - absf(sin(t * 3.0)) * 6.0)
+	draw_colored_polygon(PackedVector2Array([tip, tip + Vector2(-9, -14), tip + Vector2(9, -14)]), col)

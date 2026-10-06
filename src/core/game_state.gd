@@ -33,6 +33,8 @@ signal tutorial_completed
 
 var is_tutorial_active: bool = false
 var tutorial_step: int = 0
+# 教程当前指向的地图地块 (overlay_layer 绘制标记)；Vector2i(9999, 9999) 表示无
+var tutorial_marker_hex: Vector2i = Vector2i(9999, 9999)
 
 var sim: Simulation
 
@@ -245,6 +247,7 @@ func reset_to_new_game() -> void:
 	sim.reset_to_new_game()
 	is_tutorial_active = false
 	tutorial_step = 0
+	tutorial_marker_hex = Vector2i(9999, 9999)
 
 func start_tutorial() -> void:
 	is_tutorial_active = true
@@ -262,6 +265,7 @@ func set_tutorial_step(step: int) -> void:
 
 func complete_tutorial() -> void:
 	is_tutorial_active = false
+	tutorial_marker_hex = Vector2i(9999, 9999)
 	SettingsManager.set_tutorial_completed(true)
 	tutorial_state_changed.emit(false)
 	tutorial_completed.emit()
@@ -269,6 +273,7 @@ func complete_tutorial() -> void:
 
 func skip_tutorial() -> void:
 	is_tutorial_active = false
+	tutorial_marker_hex = Vector2i(9999, 9999)
 	SettingsManager.set_tutorial_completed(true)
 	tutorial_state_changed.emit(false)
 	tutorial_completed.emit()

@@ -262,6 +262,7 @@ func _populate_drawer(tab: CategoryTab) -> void:
 		if is_instance_valid(n): n.queue_free()
 	_drawer_extras.clear()
 	_card_used = 0
+	drawer_card_by_key.clear()
 	_fill_drawer(tab)
 	# 本次没有用到的池中卡片隐藏
 	for i in range(_card_used, _card_pool.size()):
@@ -412,6 +413,7 @@ func _add_craft_subitems() -> void:
 			status_text,
 			can_craft
 		)
+		drawer_card_by_key[recipe_key] = card
 		if can_craft:
 			card.pressed.connect(func():
 				if GameState.craft_tool(recipe_key):
@@ -477,6 +479,7 @@ func _add_build_subitems() -> void:
 			status_text,
 			can_build
 		)
+		drawer_card_by_key[b_key] = card
 		if can_build:
 			card.pressed.connect(func():
 				_on_build_structure_pressed(b_key)
@@ -739,6 +742,8 @@ func _apply_scheme3_styling() -> void:
 # 通用制作/操作卡片创建函数
 # 抽屉卡片对象池：卡片节点只在首次需要时创建，之后每次刷新只改文字、图标与状态，
 # 不再整组 queue_free + 重建 (制作抽屉 54 张卡片原需约 25ms)
+# 本次刷新中配方 / 建筑 key -> 卡片 (教程高亮具体卡片用)
+var drawer_card_by_key: Dictionary = {}
 var _card_pool: Array[Button] = []
 var _card_used: int = 0
 var _drawer_extras: Array[Node] = []

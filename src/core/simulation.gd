@@ -1014,10 +1014,41 @@ func _get_ingredients_desc(req_items: Array) -> String:
 		var q = req.get("quantity", 1)
 		var k = req.get("key")
 		if k is Array:
-			desc_parts.append("%s x%d" % [k[0], q])
+			var names: Array[String] = []
+			for alt in k:
+				names.append(str(DataDB.get_item(alt).get("name", alt)))
+			desc_parts.append("%s ×%d" % ["或".join(names), q])
 		else:
-			desc_parts.append("%s x%d" % [k, q])
-	return ", ".join(desc_parts)
+			desc_parts.append("%s ×%d" % [DataDB.get_item(k).get("name", k), q])
+	return "、".join(desc_parts)
+
+# 距 from_hex 最近、位于领地内、仍有储量且当前可开采的 item_key 地块；没有时返回 Vector2i(9999, 9999)。
+# 优先选择地表显示的就是 item_key、且左键点击就会采到它的地块，找不到再退回任意有储量的地块。
+func find_nearest_resource(item_key: String, from_hex: Vector2i) -> Vector2i:
+	var none := Vector2i(9999, 9999)
+	if not is_resource_minable(item_key):
+		return none
+	var best_primary := none
+	var best_any := none
+	var d_primary := 1 << 30
+	var d_any := 1 << 30
+	for hex in tile_resources.keys():
+		if int(tile_resources[hex].get(item_key, 0)) <= 0:
+			continue
+		if not is_hex_in_territory(hex.x, hex.y) or built_furnaces.has(hex) or built_reactors.has(hex):
+			continue
+		var dq = hex.x - from_hex.x
+		var dr = hex.y - from_hex.y
+		var d = (abs(dq) + abs(dq + dr) + abs(dr)) / 2
+		if d < d_any:
+			d_any = d
+			best_any = hex
+		if d < d_primary:
+			var avail = get_tile_available_resources(hex)
+			if world_resources.get(hex, "") == item_key and not avail.is_empty() and avail[0].get("key", "") == item_key:
+				d_primary = d
+				best_primary = hex
+	return best_primary if best_primary != none else best_any
 
 func get_formatted_playtime() -> String:
 	var total_sec = int(playtime_seconds)

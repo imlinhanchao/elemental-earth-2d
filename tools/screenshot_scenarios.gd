@@ -46,6 +46,14 @@ static func run(w: Node2D, arg_name: String) -> void:
 	elif arg_name == "--screenshot-codex":
 		w.hud.lab_modal.open()
 		w.hud.lab_modal._switch_tab(1)
+	elif arg_name == "--screenshot-tutorial-craft":
+		GameState.inventory.add_item("stone", 2)
+		GameState.inventory.add_item("stick", 2)
+		GameState.inventory.add_item("flint", 2)
+		GameState.start_tutorial()
+		GameState.set_tutorial_step(2)
+		w.hud.tutorial_dock.visible = true
+		w.hud._toggle_category(w.hud.CategoryTab.CRAFT)
 	elif arg_name == "--screenshot-tutorial":
 		GameState.start_tutorial()
 		w.hud.tutorial_dock.visible = true

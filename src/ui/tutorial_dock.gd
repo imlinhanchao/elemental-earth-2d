@@ -1,250 +1,233 @@
 # tutorial_dock.gd
-# 现代化科学沉浸式新手教学悬浮导引坞: 动态步骤任务链、实时条件追踪、快捷键高亮、完成推进与跳过
+# 新手教程：每一步只有一个目标。地图上标出要点击的地块，界面上高亮要按的按钮，
+# 达成目标后自动进入下一步，全程约 5 分钟。
 extends Control
 
 const ThemeStyler = preload("res://src/ui/theme_styler.gd")
+const HexWorldGenerator = preload("res://src/core/hex_world_generator.gd")
 
 signal tutorial_finished
 signal tutorial_skipped
 
-@onready var panel_container = $PanelContainer
-@onready var header_hbox = $PanelContainer/Margin/VBox/HeaderHBox
-@onready var step_badge = $PanelContainer/Margin/VBox/HeaderHBox/StepBadge
-@onready var step_badge_lbl = $PanelContainer/Margin/VBox/HeaderHBox/StepBadge/BadgeLbl
-@onready var btn_skip = $PanelContainer/Margin/VBox/HeaderHBox/BtnSkip
+const NO_HEX := Vector2i(9999, 9999)
+const ADVANCE_DELAY := 0.8 # 目标达成后停留多久再进入下一步 (秒)
 
-@onready var title_lbl = $PanelContainer/Margin/VBox/TitleLabel
-@onready var desc_lbl = $PanelContainer/Margin/VBox/DescLabel
-@onready var goals_vbox = $PanelContainer/Margin/VBox/GoalsVBox
-
-@onready var footer_hbox = $PanelContainer/Margin/VBox/FooterHBox
-@onready var status_lbl = $PanelContainer/Margin/VBox/FooterHBox/StatusLbl
-@onready var btn_next = $PanelContainer/Margin/VBox/FooterHBox/BtnNext
-
-# 教学步骤元数据定义
+# text: 一句话指令；hint: 补充说明；goal / target: 完成条件；
+# resource: 要在地图上标出的资源；ui: 要高亮的界面元素 ("craft:<配方>" / "build:<建筑>" / "tech")
 const STAGES: Array[Dictionary] = [
-	{
-		"title": "初临大地 · 视野与地表拾取",
-		"desc": "在这片原始大地上，万物皆由化学元素筑就。\n• 按住 [color=#9C5A1E][鼠标右键][/color] 拖拽地图平移视野\n• 滚动 [color=#9C5A1E][滚轮][/color] 缩放视野范围\n• 用 [color=#9C5A1E][鼠标左键][/color] 点击地表散落的【碎石】与【枯树枝】加入工作队列",
-		"goals": [
-			{"id": "stone", "text": "拾取碎石", "target": 2},
-			{"id": "stick", "text": "拾取枯树枝", "target": 2}
-		]
-	},
-	{
-		"title": "锐利石刃 · 寻找燧石与盐湖汲水",
-		"desc": "坚硬锐利的石刃是制作第一柄工具的关键：\n• 在原野中寻找带深色青蓝刃口的【燧石】并点击拾取\n• 前往西侧灰蓝色的水泊，点击【盐湖】汲取天然盐水",
-		"goals": [
-			{"id": "flint", "text": "拾取燧石", "target": 1},
-			{"id": "water", "text": "盐湖汲水", "target": 1}
-		]
-	},
-	{
-		"title": "工匠破雾 · 打造手斧与橡树现形",
-		"desc": "素材已齐备！正式迈向石器工匠时代：\n• 按键盘快捷键 [color=#9C5A1E][T][/color] 呼出底部【制作栏】\n• 打造你的第一件工具【原始燧石手斧】\n• 制作完成后工具将自动装配——观察大地图：深林处的【大橡树】破除迷雾显现了！",
-		"goals": [
-			{"id": "axe", "text": "打造并装备原始燧石斧", "target": 1}
-		]
-	},
-	{
-		"title": "伐木拓荒 · 采伐原木与构筑营地",
-		"desc": "手斧赋予了你砍伐坚硬林木的生产力：\n• 点击显现的大橡树，采伐【原木】\n• 提示：右键单点地块可呼出【批次/无尽开采】菜单\n• 收集木材后，按快捷键 [color=#9C5A1E][C][/color] 建造一座【原始篝火堆】！",
-		"goals": [
-			{"id": "wood", "text": "砍伐获取原木", "target": 4},
-			{"id": "structure", "text": "建造原始篝火堆或熔炉", "target": 1}
-		]
-	},
-	{
-		"title": "科学晨曦 · 科技星图与化学圣殿",
-		"desc": "火与工具点燃了人类理性的第一缕晨光：\n• 按键盘 [color=#9C5A1E][K][/color] 查阅 40 项全景【科技星图】，研读前沿突破\n• 按键盘 [color=#9C5A1E][L][/color] 进入【微观化学实验台】，探秘 118 种元素合成之道\n• 恭喜你掌握了生存与科研之法，广袤的元素宇宙已为你敞开！",
-		"goals": [
-			{"id": "complete", "text": "启程迈入自由沙盒", "target": 1}
-		]
-	}
+	{"text": "点击地图上标出的碎石，采集 2 块", "hint": "左键点击地块加入作业队列。右键拖拽移动视野，滚轮缩放。", "goal": "stone", "target": 2, "resource": "stone"},
+	{"text": "采集 2 根枯树枝", "hint": "作业会排队依次完成，可以连续点击多个地块。", "goal": "stick", "target": 2, "resource": "stick"},
+	{"text": "制作燧石手斧", "hint": "打开制作 [T]，点击「原始燧石手斧」。制作后自动装备。", "goal": "axe", "target": 1, "ui": "craft:flint_axe"},
+	{"text": "砍伐 4 根原木", "hint": "装备斧头后，树木出现在地图上。右键点击树可以一次安排多次砍伐。", "goal": "wood", "target": 4, "resource": "wood"},
+	{"text": "再采集 4 块碎石", "hint": "篝火堆需要 4 根原木和 4 块碎石（燧石也可以）。", "goal": "stone_or_flint", "target": 4, "resource": "stone"},
+	{"text": "建造篝火堆", "hint": "打开建造 [C]，点击「原始篝火堆」，再在领地内点一块空地放下。", "goal": "structure", "target": 1, "ui": "build:fire_pit"},
+	{"text": "打开科技树，看看下一步研发什么", "hint": "研发科技可以解锁新的工具和建筑。按 [K] 或点击底栏「科技」。", "goal": "tech_opened", "target": 1, "ui": "tech"},
 ]
 
+@onready var panel_container: PanelContainer = $PanelContainer
+@onready var step_lbl: Label = $PanelContainer/Margin/VBox/HeaderHBox/StepLbl
+@onready var btn_skip: Button = $PanelContainer/Margin/VBox/HeaderHBox/BtnSkip
+@onready var step_bar: ProgressBar = $PanelContainer/Margin/VBox/StepBar
+@onready var title_lbl: Label = $PanelContainer/Margin/VBox/TitleLabel
+@onready var hint_lbl: Label = $PanelContainer/Margin/VBox/HintLabel
+@onready var goal_lbl: Label = $PanelContainer/Margin/VBox/GoalLabel
+
 var current_stage_idx: int = 0
-var goal_checkboxes: Array[Dictionary] = []
-var stage_completed: bool = false
-var pulse_time: float = 0.0
+var _advancing: bool = false
+var _tech_seen: bool = false
+var _check_timer: float = 0.0
+var _highlight: Control = null
+var _highlight_target: Control = null
 
 func _ready() -> void:
 	_apply_styles()
-	_bind_events()
-	_load_stage(GameState.tutorial_step)
-	
-	GameState.tutorial_step_changed.connect(func(step):
-		_load_stage(step)
-	)
-	GameState.tutorial_state_changed.connect(func(active):
-		visible = active
-	)
+	btn_skip.pressed.connect(_on_skip_pressed)
+	# 界面高亮框：挂在 HUD (CanvasLayer) 下、绘制在所有界面之上，不拦截鼠标
+	_highlight = Control.new()
+	_highlight.name = "TutorialHighlight"
+	_highlight.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_highlight.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_highlight.visible = false
+	_highlight.draw.connect(_on_highlight_draw)
+	get_parent().add_child.call_deferred(_highlight)
 
-var _goal_timer: float = 0.0
+	GameState.tutorial_step_changed.connect(_load_stage)
+	GameState.tutorial_state_changed.connect(func(active): visible = active)
+	_load_stage(GameState.tutorial_step)
 
 func _process(delta: float) -> void:
-	if not visible:
+	if not visible or not GameState.is_tutorial_active:
+		if _highlight: _highlight.visible = false
 		return
-	
-	_goal_timer -= delta
-	if _goal_timer <= 0.0:
-		_goal_timer = 0.25
-		_check_current_goals()
-	
-	if stage_completed and is_instance_valid(btn_next):
-		pulse_time += delta * 4.0
-		var glow = 0.85 + sin(pulse_time) * 0.15
-		btn_next.modulate = Color(glow, 1.0, glow)
+	var hud = get_parent()
+	if hud.tech_modal.visible:
+		_tech_seen = true
+
+	_check_timer -= delta
+	if _check_timer <= 0.0:
+		_check_timer = 0.25
+		_check_goal()
+
+	# 地图标记与界面高亮需要逐帧动画
+	if GameState.tutorial_marker_hex != NO_HEX:
+		var w = _world()
+		if w: w.overlay_layer.queue_redraw()
+	_highlight_target = _resolve_ui_target()
+	if _highlight:
+		_highlight.visible = _highlight_target != null
+		if _highlight.visible:
+			_highlight.queue_redraw()
 
 func _apply_styles() -> void:
-	# 悬浮磨砂现代深蓝玻璃卡片
-	var card_box = ThemeStyler.create_card_box(14, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER_FOCUS)
-	card_box.content_margin_left = 18
-	card_box.content_margin_top = 16
-	card_box.content_margin_right = 18
-	card_box.content_margin_bottom = 16
-	card_box.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
-	card_box.shadow_size = 16
-	card_box.shadow_offset = Vector2(0, 4)
+	var card_box = ThemeStyler.create_card_box(12, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER_FOCUS)
+	card_box.content_margin_left = 16
+	card_box.content_margin_top = 12
+	card_box.content_margin_right = 16
+	card_box.content_margin_bottom = 14
+	card_box.shadow_color = ThemeStyler.COLOR_SHADOW
+	card_box.shadow_size = 12
+	card_box.shadow_offset = Vector2(0, 3)
 	panel_container.add_theme_stylebox_override("panel", card_box)
-	
-	# 进度药丸徽章
-	var badge_box = ThemeStyler.create_pill_box(6, Color(0.80, 0.86, 0.93, 0.95), Color(0.18, 0.62, 0.40, 0.80))
-	badge_box.content_margin_left = 10
-	badge_box.content_margin_right = 10
-	badge_box.content_margin_top = 3
-	badge_box.content_margin_bottom = 3
-	step_badge.add_theme_stylebox_override("panel", badge_box)
-	
-	# 下一步按钮样式
-	var next_box = ThemeStyler.create_pill_box(8, Color(0.80, 0.93, 0.89, 0.95), Color(0.16, 0.62, 0.42, 0.90))
-	next_box.content_margin_left = 14
-	next_box.content_margin_right = 14
-	next_box.content_margin_top = 6
-	next_box.content_margin_bottom = 6
-	btn_next.add_theme_stylebox_override("normal", next_box)
-	
-	var next_hover = ThemeStyler.create_pill_box(8, Color(0.80, 0.93, 0.89, 1.00), Color(0.25, 0.62, 0.47, 1.00))
-	next_hover.content_margin_left = 14
-	next_hover.content_margin_right = 14
-	next_hover.content_margin_top = 6
-	next_hover.content_margin_bottom = 6
-	btn_next.add_theme_stylebox_override("hover", next_hover)
-	btn_next.add_theme_stylebox_override("pressed", next_hover)
 
-func _bind_events() -> void:
-	btn_next.pressed.connect(_on_next_pressed)
-	btn_skip.pressed.connect(_on_skip_pressed)
+	var bar_bg = ThemeStyler.create_card_box(2, ThemeStyler.COLOR_CARD, Color(0, 0, 0, 0))
+	var bar_fill = ThemeStyler.create_card_box(2, ThemeStyler.COLOR_ACCENT, Color(0, 0, 0, 0))
+	step_bar.add_theme_stylebox_override("background", bar_bg)
+	step_bar.add_theme_stylebox_override("fill", bar_fill)
+	step_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
+	hint_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
+	btn_skip.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_MUTED)
+	btn_skip.add_theme_color_override("font_hover_color", ThemeStyler.COLOR_DANGER)
 
 func _load_stage(stage_idx: int) -> void:
-	if stage_idx < 0: stage_idx = 0
 	if stage_idx >= STAGES.size():
 		_finish_tutorial()
 		return
-		
-	current_stage_idx = stage_idx
-	stage_completed = false
-	pulse_time = 0.0
-	btn_next.modulate = Color.WHITE
-	
+	current_stage_idx = max(stage_idx, 0)
+	_advancing = false
+	_tech_seen = false
 	var stage = STAGES[current_stage_idx]
-	step_badge_lbl.text = "教程 %d / %d" % [current_stage_idx + 1, STAGES.size()]
-	title_lbl.text = stage["title"]
-	desc_lbl.text = stage["desc"]
-	
-	# 重建目标清单
-	for c in goals_vbox.get_children():
-		c.queue_free()
-	goal_checkboxes.clear()
-	
-	for g in stage["goals"]:
-		var hbox = HBoxContainer.new()
-		hbox.add_theme_constant_override("separation", 8)
-		
-		var icon_lbl = Label.new()
-		icon_lbl.name = "Icon"
-		icon_lbl.text = "○"
-		icon_lbl.add_theme_font_size_override("font_size", 14)
-		icon_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_MUTED)
-		hbox.add_child(icon_lbl)
-		
-		var text_lbl = Label.new()
-		text_lbl.name = "Text"
-		text_lbl.text = "%s (0 / %d)" % [g["text"], g["target"]]
-		text_lbl.add_theme_font_size_override("font_size", 14)
-		text_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
-		hbox.add_child(text_lbl)
-		
-		goals_vbox.add_child(hbox)
-		goal_checkboxes.append({
-			"id": g["id"],
-			"target": g["target"],
-			"text": g["text"],
-			"icon_lbl": icon_lbl,
-			"text_lbl": text_lbl
-		})
-		
-	if current_stage_idx == STAGES.size() - 1:
-		btn_next.text = "完成"
-	else:
-		btn_next.text = "下一步"
-		
-	_check_current_goals()
+	step_lbl.text = "教程 %d / %d" % [current_stage_idx + 1, STAGES.size()]
+	step_bar.max_value = STAGES.size()
+	step_bar.value = current_stage_idx
+	title_lbl.text = stage["text"]
+	hint_lbl.text = stage["hint"]
+	GameState.tutorial_marker_hex = NO_HEX
+	_check_goal()
+	if GameState.tutorial_marker_hex != NO_HEX:
+		_focus_camera(GameState.tutorial_marker_hex)
 
-func _check_current_goals() -> void:
+func _goal_progress(stage: Dictionary) -> int:
+	var inv = GameState.inventory
+	match stage["goal"]:
+		"stone", "stick", "wood":
+			return inv.get_count(stage["goal"])
+		"stone_or_flint":
+			return inv.get_count("stone") + inv.get_count("flint")
+		"axe":
+			return 1 if GameState.equipped_tools.get("axe", "bare_hands") != "bare_hands" else 0
+		"structure":
+			return GameState.built_furnaces.size()
+		"tech_opened":
+			return 1 if _tech_seen else 0
+	return 0
+
+func _check_goal() -> void:
 	if current_stage_idx >= STAGES.size():
 		return
-		
-	var all_met = true
-	
-	for item in goal_checkboxes:
-		var gid = item["id"]
-		var target = item["target"]
-		var current = 0
-		
-		match gid:
-			"stone":
-				current = GameState.inventory.get_count("stone")
-			"stick":
-				current = GameState.inventory.get_count("stick")
-			"flint":
-				current = GameState.inventory.get_count("flint")
-			"water":
-				current = GameState.inventory.get_count("water")
-			"axe":
-				current = 1 if GameState.equipped_tools.get("axe", "bare_hands") == "flint_axe" else 0
-			"wood":
-				current = GameState.inventory.get_count("wood")
-			"structure":
-				current = 1 if (GameState.built_furnaces.size() > 0 or GameState.inventory.get_count("fire_pit") > 0) else 0
-			"complete":
-				current = 1
-		
-		var met = (current >= target)
-		if not met:
-			all_met = false
-			
-		item["icon_lbl"].text = "✓" if met else "○"
-		item["icon_lbl"].add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS if met else ThemeStyler.COLOR_TEXT_MUTED)
-		item["text_lbl"].text = "%s (%d / %d)" % [item["text"], min(current, target), target]
-		item["text_lbl"].add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS if met else ThemeStyler.COLOR_TEXT_PRIMARY)
-		
-	stage_completed = all_met
-	btn_next.disabled = not stage_completed
-	if stage_completed:
-		status_lbl.text = "目标完成，点击下一步"
-		status_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS)
-	else:
-		status_lbl.text = "按上面的提示操作"
-		status_lbl.add_theme_color_override("font_color", Color(0.28, 0.42, 0.62))
+	var stage = STAGES[current_stage_idx]
+	var target = int(stage["target"])
+	var cur = _goal_progress(stage)
+	var done = cur >= target
 
-func _on_next_pressed() -> void:
-	if not stage_completed:
+	if target > 1:
+		goal_lbl.text = "%s %d / %d" % ["已完成" if done else "进度", min(cur, target), target]
+	else:
+		goal_lbl.text = "已完成" if done else "未完成"
+	goal_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS if done else ThemeStyler.COLOR_TEXT_PRIMARY)
+
+	if done:
+		GameState.tutorial_marker_hex = NO_HEX
+		if not _advancing:
+			_advancing = true
+			step_bar.value = current_stage_idx + 1
+			get_tree().create_timer(ADVANCE_DELAY).timeout.connect(_advance)
+		return
+
+	# 地图标记：当前标记地块仍有资源就保持不动，否则找最近的一块
+	var res_key = str(stage.get("resource", ""))
+	if res_key == "":
+		GameState.tutorial_marker_hex = NO_HEX
+		return
+	var mk = GameState.tutorial_marker_hex
+	if mk == NO_HEX or int(GameState.tile_resources.get(mk, {}).get(res_key, 0)) <= 0:
+		var from = mk if mk != NO_HEX else Vector2i.ZERO
+		GameState.tutorial_marker_hex = GameState.sim.find_nearest_resource(res_key, from)
+
+func _advance() -> void:
+	if not GameState.is_tutorial_active:
 		return
 	if current_stage_idx < STAGES.size() - 1:
 		GameState.next_tutorial_step()
 	else:
 		_finish_tutorial()
+
+# 目标地块不在视野中央附近时，把镜头平移过去
+func _focus_camera(hex: Vector2i) -> void:
+	var w = _world()
+	if w == null:
+		return
+	var p = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
+	var view = w.get_viewport_rect().size / w.camera.zoom
+	if absf(p.x - w.camera.position.x) < view.x * 0.3 and absf(p.y - w.camera.position.y) < view.y * 0.25:
+		return
+	var tw = w.create_tween()
+	tw.tween_property(w.camera, "position", w._clamp_camera(p), 0.6).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+func _world() -> Node:
+	return get_tree().get_first_node_in_group("world")
+
+# 当前步骤要高亮的界面元素：先指向底栏按钮，抽屉打开后指向具体卡片
+func _resolve_ui_target() -> Control:
+	if _advancing or current_stage_idx >= STAGES.size():
+		return null
+	var ui = str(STAGES[current_stage_idx].get("ui", ""))
+	if ui == "":
+		return null
+	var hud = get_parent()
+	var w = _world()
+	if w and w.is_placing_structure:
+		return null
+	var parts = ui.split(":")
+	var target: Control = null
+	match parts[0]:
+		"craft", "build":
+			if not ModalStack.is_empty():
+				return null
+			var tab = hud.CategoryTab.CRAFT if parts[0] == "craft" else hud.CategoryTab.BUILD
+			if hud.action_drawer.visible and hud.current_tab == tab:
+				target = hud.drawer_card_by_key.get(parts[1])
+			else:
+				target = hud.btn_tab_craft if parts[0] == "craft" else hud.btn_tab_build
+		"tech":
+			if hud.tech_modal.visible or not ModalStack.is_empty():
+				return null
+			target = hud.btn_tab_tech
+	if target == null or not is_instance_valid(target) or not target.is_visible_in_tree():
+		return null
+	return target
+
+func _on_highlight_draw() -> void:
+	if _highlight_target == null or not is_instance_valid(_highlight_target):
+		return
+	var t = Time.get_ticks_msec() / 1000.0
+	var col = ThemeStyler.COLOR_ACCENT
+	var rect = _highlight_target.get_global_rect().grow(4.0 + sin(t * 4.0) * 1.5)
+	_highlight.draw_rect(rect.grow(2.0), Color(1, 1, 1, 0.6), false, 4.0)
+	_highlight.draw_rect(rect, col, false, 2.5)
+	# 上方指示箭头
+	var tip = Vector2(rect.get_center().x, rect.position.y - 6.0 - absf(sin(t * 3.0)) * 5.0)
+	var tri = PackedVector2Array([tip, tip + Vector2(-8, -12), tip + Vector2(8, -12)])
+	_highlight.draw_colored_polygon(tri, col)
 
 func _on_skip_pressed() -> void:
 	GameState.skip_tutorial()
@@ -252,6 +235,8 @@ func _on_skip_pressed() -> void:
 	tutorial_skipped.emit()
 
 func _finish_tutorial() -> void:
+	if not GameState.is_tutorial_active:
+		return
 	GameState.complete_tutorial()
 	visible = false
 	tutorial_finished.emit()

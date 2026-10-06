@@ -24,7 +24,7 @@
 | :--- | :--- | :--- |
 | **直接启动游戏** | `/Applications/Godot.app/Contents/MacOS/Godot --path /Users/hancel/Documents/project/elemental-earth-2d` | 窗口模式启动游玩 |
 | **无头实机截图测试** | `/Applications/Godot.app/Contents/MacOS/Godot --path /Users/hancel/Documents/project/elemental-earth-2d ++ --screenshot` | 启动并在1.2s后输出 `screenshot_current.png` 并安全退出 |
-| **运行测试** | `Godot --headless --path . -s res://tests/test_progression.gd`、`-s res://tests/test_chemistry.gd`、`-s res://tests/test_modal_stack.gd`、`res://tests/test_save_v3.tscn` | 四套测试均需通过 |
+| **运行测试** | `Godot --headless --path . -s res://tests/test_progression.gd`、`-s res://tests/test_chemistry.gd`、`-s res://tests/test_modal_stack.gd`、`res://tests/test_save_v3.tscn`、`res://tests/test_tutorial.tscn` | 五套测试均需通过 |
 | **性能剖析** | `Godot --path . -s res://tools/profile_load.gd \| grep PROF` | 输出加载、帧时间、存读档与重绘耗时 |
 | **进程可达性检查** | `Godot --headless --path . -s res://tools/dump_map_resources.gd \| grep MAPDUMP > /tmp/map.txt && python3 tools/check_progression.py /tmp/map.txt` | 修改 data/*.json 后必须运行 |
 | **Git 状态检查** | `git status` | 检查修改状态 |
@@ -854,6 +854,15 @@
 - **四档字号**（`ThemeStyler.FONT_CAPTION / BODY / HEADING / TITLE` = 12 / 14 / 16 / 20）：原先混用 12、13、14、15、16、18、20、22 共 8 档，统一归并到 4 档；主菜单标题（46）与元素符号（62）作为展示字号保留；
 - **重复通知合并**：元素发现只保留模拟层的一条通知加发现弹窗（HUD 不再额外弹一条）；时代跃迁只弹一条「进入 X，领地扩展到半径 N 格」；
 - **修复**：科技树弹窗的「研发」按钮原先绕过模拟层，自己扣材料、登记科技，导致科技里程碑（如「研究陶器制作」）不会完成，也不会检查时代跃迁。现改为调用 `GameState.research_tech`。
+
+### 2.47 P3 交互改版（三）：地图指引式新手教程 (2026-10-06)
+
+- **7 个单目标步骤**（`tutorial_dock.gd` 的 `STAGES`）：采集 2 块碎石 → 采集 2 根枯树枝 → 制作燧石手斧 → 砍伐 4 根原木 → 再采集 4 块碎石 → 建造篝火堆 → 打开科技树。每步只有一句指令和一句补充说明，全程约 5 分钟；
+- **地图标记**：需要采集的步骤由 `Simulation.find_nearest_resource` 选出最近的、地表显示的就是该资源且左键点击就会采到它的地块，写入 `GameState.tutorial_marker_hex`。`overlay_layer` 在该地块绘制铜色脉动圆环、涟漪与下落箭头。标记地块采空后自动换到下一块；目标在视野外时镜头平移过去；
+- **界面高亮**：需要操作界面的步骤先高亮底栏按钮（制作 / 建造 / 科技）。抽屉打开后改为高亮具体卡片（`hud.drawer_card_by_key`），建造选址时隐藏高亮；
+- **自动推进**：目标达成后停留 0.8 秒自动进入下一步，不再需要点「下一步」。最后一步完成即结束教程并清除标记。「跳过教程」随时可用；开局提示在教程中不再弹出；
+- **测试**：新增 `tests/test_tutorial.tscn`，逐步验证标记位置、自动推进与结束清理。测试会备份并还原玩家的 `auto` 存档与教程完成设置；
+- 截图场景新增 `--screenshot-tutorial-craft`（第 3 步，制作抽屉已打开并高亮手斧卡片）。
 
 ---
 

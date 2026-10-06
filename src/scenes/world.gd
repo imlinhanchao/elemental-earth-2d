@@ -103,7 +103,7 @@ func _ready() -> void:
 		SaveManager.pending_load_slot = ""
 		SaveManager.load_from_slot(target, self)
 		hud._update_era_label()
-	else:
+	elif not GameState.is_tutorial_active:
 		GameState.post_notice("点击碎石、枯树枝开始采集，点击盐湖打水，右键拖拽移动视野", Color(1.0, 0.88, 0.4))
 	
 	# 开发截图：携带 --screenshot[-场景名] 参数时运行 tools/screenshot_scenarios.gd
