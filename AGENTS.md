@@ -792,6 +792,21 @@
      - 提供 `[✔ 收录入科学图谱 [空格/ESC]]` 按钮，支持空格、回车、ESC 或鼠标右键快捷收起；
      - **弹窗队列保护机制**：若某元素提纯同时达成时代跃迁条件（如铜触发迈向炼金术时代），`era_transition_modal` 自动挂起并等待玩家关闭元素发现弹窗后无缝接力呈现时代升级大典，杜绝多弹窗重叠冲突。
 
+### 2.36 顶栏纪元进度勋标与里程碑达成状态实时同步响应机制 (2026-10-06)
+
+针对用户反馈「已经完成一个时代里程碑，顶栏依然显示 0/2」的数据展示不同步问题，排查并修复了信号管线断层：
+
+1. **根因分析**：
+   - 当玩家完成某项时代里程碑（如打造首把石镐 `craft_stone_pickaxe`）时，`Simulation` 正常将键值加入 `completed_milestones` 并广播了 `milestone_completed` 信号；
+   - 但在 `src/ui/hud.gd` 中，未侦听该 `milestone_completed` 信号，顶栏徽标刷新函数 `_update_era_label()` 仅在场景初次启动 `_ready()` 或跨时代升级 `_on_era_advanced()` 时才被动执行一次；
+   - 导致大世界顶栏的 `era_badge_btn` 长期滞留在旧状态（如 `石器时代  0/2`），而点击弹出的史册弹窗由于每次展开均现场读取数据，反而显示正确的 `1/2 (50%)`，造成两处 UI 矛盾。
+
+2. **多层即时同步与微动效强化 (`src/ui/hud.gd`, `src/ui/era_transition_modal.gd`, `src/scenes/world.gd`)**：
+   - **全局信号直连**：`hud.gd` 挂载 `GameState.milestone_completed.connect(_on_milestone_completed)`；
+   - **顶栏状态与动态微动效**：当里程碑达成时，即刻重新统计 `done_ms` / `total_ms` 并刷新文本为 `石器时代  1/2`，并对勋标施加弹性缩放微动画 (`scale 1.12 -> 1.0`) 与悬停提示更新（`✓ 制作第一把石镐`）；
+   - **纪元史册弹窗实时联动**：`era_transition_modal.gd` 同样侦听 `milestone_completed`，若玩家在弹窗开启状态下后台达成任务，弹窗内进度条与里程碑卡片瞬时更新为绿色完成态；
+   - **读档后强制重校验**：在 `world.gd` 从槽位加载进度后，增加对 `hud._update_era_label()` 的主动触发，杜绝读档后数值迟滞。
+
 ---
 
 ## 3. 架构设计规范与数据流动

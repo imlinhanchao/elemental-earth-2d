@@ -91,10 +91,12 @@ func _ready() -> void:
 		var target = SaveManager.pending_load_slot
 		SaveManager.pending_load_slot = ""
 		SaveManager.load_from_slot(target, self)
+		hud._update_era_label()
 	elif not GameState.is_tutorial_active and SaveManager.has_any_save() and GameState.inventory.items.is_empty() and GameState.current_era == 0 and GameState.discovered_elements.is_empty():
 		var latest = SaveManager.get_latest_save_slot()
 		if latest != "":
 			SaveManager.load_from_slot(latest, self)
+			hud._update_era_label()
 	else:
 		GameState.post_notice("[开局引导] 鼠标点击地表【碎石】、【枯树枝】加入工作队列！点击盐湖打水！右键拖拽视野！", Color(1.0, 0.88, 0.4))
 	
@@ -118,6 +120,21 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 		get_viewport().warp_mouse(Vector2(480, 320))
 		var item_data = DataDB.get_item("bark")
 		hud.inventory_modal._show_tooltip_for_item("bark", item_data, 15)
+	elif arg_name == "--screenshot-milestone":
+		GameState.current_era = 0
+		GameState.discovered_elements = [6]
+		GameState.completed_milestones = []
+		hud._update_era_label()
+		await get_tree().create_timer(0.1).timeout
+		GameState.complete_milestone("craft_stone_pickaxe")
+		if hud.element_discovery_modal:
+			hud.element_discovery_modal.close()
+		hud.era_modal.show_current_era_status()
+		await get_tree().create_timer(0.4).timeout
+		camera.position = Vector2.ZERO
+		camera.zoom = Vector2(1.0, 1.0)
+		target_zoom = Vector2(1.0, 1.0)
+		camera.reset_smoothing()
 	elif arg_name == "--screenshot-element-discovery":
 		GameState.unlock_element(29, "copper")
 		await get_tree().create_timer(0.4).timeout

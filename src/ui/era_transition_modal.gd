@@ -62,6 +62,7 @@ func _ready() -> void:
 	btn_close.pressed.connect(func(): visible = false)
 	btn_continue.pressed.connect(func(): visible = false)
 	GameState.era_advanced.connect(_on_era_advanced)
+	GameState.milestone_completed.connect(_on_milestone_completed)
 
 func _input(event: InputEvent) -> void:
 	if not visible:
@@ -206,6 +207,10 @@ func on_element_discovery_closed() -> void:
 		var target_era = pending_era_celebration
 		pending_era_celebration = -1
 		_render_era_view(target_era, true)
+
+func _on_milestone_completed(_key: String) -> void:
+	if visible and pending_era_celebration < 0:
+		show_current_era_status()
 
 func _render_era_view(era_order: int, is_celebration: bool) -> void:
 	var era_def = DataDB.get_era(era_order)

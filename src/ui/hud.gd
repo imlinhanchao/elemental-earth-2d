@@ -120,6 +120,7 @@ func _ready() -> void:
 	GameState.element_discovered.connect(_on_element_discovered)
 	GameState.inventory.item_changed.connect(_on_item_changed)
 	GameState.era_advanced.connect(_on_era_advanced)
+	GameState.milestone_completed.connect(_on_milestone_completed)
 	
 	# 作业队列信号
 	GameState.task_started.connect(func(_t): _update_task_queue_ui())
@@ -1215,6 +1216,16 @@ func update_current_biome(_biome: int) -> void:
 
 func _on_era_advanced(_old: int, _new: int, _name: String) -> void:
 	_update_era_label()
+
+func _on_milestone_completed(_key: String) -> void:
+	_update_era_label()
+	if era_badge_btn:
+		era_badge_btn.pivot_offset = era_badge_btn.size * 0.5
+		var tw = create_tween()
+		tw.tween_property(era_badge_btn, "scale", Vector2(1.12, 1.12), 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		tw.tween_property(era_badge_btn, "scale", Vector2.ONE, 0.2)
+	if era_modal and era_modal.visible:
+		era_modal.show_current_era_status()
 
 func _on_item_changed(_key: String, _count: int) -> void:
 	_update_inventory_ui()
