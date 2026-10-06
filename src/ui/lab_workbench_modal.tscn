@@ -111,7 +111,7 @@ layout_mode = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.44, 0.22, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "反应活性探测仪"
+text = "反应预测"
 
 [node name="SensorSpacer" type="Control" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox/SensorHeader"]
 layout_mode = 2
@@ -121,13 +121,13 @@ size_flags_horizontal = 3
 layout_mode = 2
 theme_override_colors/font_color = Color(0.37, 0.34, 0.30, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "[待命中]"
+text = "[空烧瓶]"
 
 [node name="SensorDetail" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.37, 0.34, 0.30, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "向烧瓶投入试剂以侦测潜在化学反应活性"
+text = "从下方选择试剂投入烧瓶"
 
 [node name="Controls" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/LeftView"]
 layout_mode = 2
@@ -142,8 +142,8 @@ text = "点燃酒精灯"
 [node name="TempLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/Controls"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.44, 0.22, 1.00)
-theme_override_font_sizes/font_size = 13
-text = "烧瓶温度: 293 K (20 ℃)"
+theme_override_font_sizes/font_size = 14
+text = "烧瓶 20 ℃（293 K）"
 
 [node name="ReagentScroll" type="ScrollContainer" parent="CenterPanel/VBox/Body/HBox/LeftView"]
 custom_minimum_size = Vector2(0, 42)
@@ -175,12 +175,12 @@ theme_override_constants/separation = 8
 [node name="BtnTabMonitor" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/TabSwitchHBox"]
 custom_minimum_size = Vector2(130, 30)
 layout_mode = 2
-text = "实验台监控"
+text = "实验记录"
 
 [node name="BtnTabCodex" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/TabSwitchHBox"]
 custom_minimum_size = Vector2(140, 30)
 layout_mode = 2
-text = "配方灵感图鉴"
+text = "配方图鉴"
 
 [node name="Spacer" type="Control" parent="CenterPanel/VBox/Body/HBox/RightView/TabSwitchHBox"]
 layout_mode = 2
@@ -205,14 +205,14 @@ theme_override_constants/separation = 10
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "收获反应产物至背包"
+text = "收取产物"
 
 [node name="BtnExportBlueprint" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/ViewMonitor/ActionHBox"]
 visible = false
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
 size_flags_horizontal = 3
-text = "固化实验参数 ➔ 导出工业蓝图"
+text = "导出工艺蓝图"
 
 [node name="LogLabel" type="RichTextLabel" parent="CenterPanel/VBox/Body/HBox/RightView/ViewMonitor"]
 layout_mode = 2
@@ -229,7 +229,7 @@ theme_override_constants/separation = 8
 layout_mode = 2
 theme_override_colors/font_color = Color(0.25, 0.50, 0.62, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "时代前沿科研猜想与已确证配方 · 点击原料可快捷投入烧瓶"
+text = "当前时代可尝试的配方 · 点击原料投入烧瓶"
 
 [node name="CodexScroll" type="ScrollContainer" parent="CenterPanel/VBox/Body/HBox/RightView/ViewCodex"]
 layout_mode = 2

@@ -31,7 +31,7 @@ text = "<"
 [node name="TitleLabel" type="Label" parent="Margin/VBox/Header"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "区块开采"
+text = "采集"
 theme_override_font_sizes/font_size = 12
 
 [node name="CloseButton" type="Button" parent="Margin/VBox/Header"]

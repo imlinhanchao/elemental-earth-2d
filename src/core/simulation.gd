@@ -75,9 +75,9 @@ var ERA_NAMES: Array[String]:
 	get:
 		var names: Array[String] = []
 		for era in DataDB.eras:
-			names.append(str(era.get("display_name", era.get("name", ""))))
+			names.append(str(era.get("display_name", era.get("name", ""))).split(" (")[0])
 		if names.is_empty():
-			names = ["石器时代 (Stone Age)", "炼金术时代 (Alchemy Age)", "近代化学时代 (Modern Chemistry)"]
+			names = ["石器时代", "炼金术时代", "近代化学时代"]
 		return names
 
 func _init() -> void:
@@ -226,7 +226,7 @@ func complete_milestone(milestone_key: String) -> void:
 			if m.get("key") == milestone_key:
 				m_desc = m.get("description", milestone_key)
 				break
-	post_notice("【文明里程碑达成】%s！" % m_desc, Color(1.0, 0.85, 0.2))
+	post_notice("达成里程碑：%s" % m_desc, Color(1.0, 0.85, 0.2))
 	milestone_completed.emit(milestone_key)
 	_check_era_advancement()
 
@@ -243,7 +243,7 @@ func unlock_element(elem_num: int, item_key: String) -> void:
 		var elem = DataDB.get_element(elem_num)
 		var sym = elem.get("symbol", "?")
 		var cname = elem.get("name", item_key)
-		var banner = "【重大发现】你首次提纯并点亮了第 %d 号化学元素：%s (%s)！" % [elem_num, cname, sym]
+		var banner = "发现新元素：%d 号 %s（%s）" % [elem_num, cname, sym]
 		post_notice(banner, Color(1.0, 0.85, 0.2))
 		element_discovered.emit(elem_num, item_key)
 		_check_era_advancement()
@@ -252,7 +252,7 @@ func unlock_blueprint(bp: ProcessBlueprint) -> void:
 	if not unlocked_blueprints.has(bp.id):
 		unlocked_blueprints[bp.id] = bp
 		blueprint_unlocked.emit(bp)
-		post_notice("成功固化导出【工业工艺蓝图: %s】！可插入反应塔批量生产！" % bp.display_name, Color.CYAN)
+		post_notice("已导出工艺蓝图：%s。可装入反应塔连续生产" % bp.display_name, Color.CYAN)
 		_check_era_advancement()
 
 func equip_tool(slot: String, tool_key: String) -> void:
@@ -263,7 +263,7 @@ func equip_tool(slot: String, tool_key: String) -> void:
 		t_name = "原始燧石手斧"
 	elif tool_key == "stone_pickaxe":
 		t_name = "粗制石镐"
-	post_notice("成功装配工具: 【%s】！能力大幅解锁！" % t_name, Color.GREEN)
+	post_notice("已装备 %s" % t_name, Color.GREEN)
 
 func _check_era_advancement() -> void:
 	var era_def = DataDB.get_era(current_era)
@@ -300,7 +300,7 @@ func advance_era(target_era: int) -> void:
 		var old = current_era
 		current_era = target_era
 		era_advanced.emit(old, current_era, ERA_NAMES[current_era])
-		post_notice("【伟大跨越】文明迈入新纪元：%s！" % ERA_NAMES[current_era], Color(1.0, 0.88, 0.3))
+		post_notice("进入%s，领地扩展到半径 %d 格" % [ERA_NAMES[current_era], get_current_territory_radius()], Color(1.0, 0.88, 0.3))
 
 # 背包中持有的可用器皿 (配方 required_container 中出现过的物品键)
 func _get_owned_containers() -> Array:
@@ -403,7 +403,7 @@ func _on_second_tick() -> void:
 						if p_int > 0:
 							inventory.add_item(p_key, p_int)
 							var iname = DataDB.get_item(p_key).get("name", p_key)
-							post_notice("熔炉炼制完成！成功收获 %s x%d，已收入背包！" % [iname, p_int], Color(0.9, 0.65, 0.2))
+							post_notice("熔炉产出 %s ×%d，已放入行囊" % [iname, p_int], Color(0.9, 0.65, 0.2))
 
 	# 3. 工业反应塔结算 (共用一秒节拍)
 	for hex in built_reactors.keys():
@@ -426,7 +426,7 @@ func _on_second_tick() -> void:
 						var out_qty = int(ceil(bp.outputs[out_k]))
 						inventory.add_item(out_k, out_qty)
 						r["total_produced"] = r.get("total_produced", 0) + out_qty
-					post_notice("工业反应塔批量产出: %s 完成！累计自动化产出: %d" % [bp.display_name, r["total_produced"]], Color(0.3, 0.8, 1.0))
+					post_notice("反应塔产出 %s，累计 %d 批" % [bp.display_name, r["total_produced"]], Color(0.3, 0.8, 1.0))
 
 # --- 地块资源查询与扣减 (有限量，取完了就没了) ---
 
@@ -571,13 +571,13 @@ func can_mine(item_key: String) -> Dictionary:
 # 核心开采任务下发：支持开采次数 (5/10/20/100/1000/无尽) 与任务自动合并
 func queue_hex_harvest(hex: Vector2i, item_key: String, count: int = 1, world_pos: Vector2 = Vector2.ZERO) -> bool:
 	if not is_hex_in_territory(hex.x, hex.y):
-		post_notice("此资源超出当前文明领地边界！请提升时代纪元以拓疆辟土！", Color(1.0, 0.45, 0.3))
+		post_notice("该地块在领地外，进入下一时代后可开采", Color(1.0, 0.45, 0.3))
 		return false
 		
 	var avail = int(tile_resources.get(hex, {}).get(item_key, 0))
 	var iname = DataDB.get_item(item_key).get("name", item_key)
 	if avail <= 0:
-		post_notice("该区块的【%s】已被开采殆尽！" % iname, Color.ORANGE)
+		post_notice("该地块的%s已采完" % iname, Color.ORANGE)
 		return false
 		
 	var check = can_mine(item_key)
@@ -586,10 +586,10 @@ func queue_hex_harvest(hex: Vector2i, item_key: String, count: int = 1, world_po
 		return false
 		
 	var dur = calculate_task_duration(item_key)
-	var action_tag = "[开采]"
-	if item_key == "wood": action_tag = "[伐木]"
-	elif item_key == "stick": action_tag = "[拾取]"
-	elif item_key == "water": action_tag = "[打水]"
+	var action_tag = "开采"
+	if item_key == "wood": action_tag = "伐木"
+	elif item_key == "stick": action_tag = "拾取"
+	elif item_key == "water": action_tag = "打水"
 	
 	var actual_count = count
 	if actual_count != -1:
@@ -603,13 +603,13 @@ func queue_hex_harvest(hex: Vector2i, item_key: String, count: int = 1, world_po
 		if a_hex == hex and a_key == item_key:
 			if actual_count == -1 or int(active_task.get("repeat_count", 1)) == -1:
 				active_task["repeat_count"] = -1
-				active_task["title"] = "%s %s (无尽)" % [action_tag, iname]
+				active_task["title"] = "%s%s · 持续" % [action_tag, iname]
 			else:
 				var new_rep = int(active_task.get("repeat_count", 1)) + actual_count
 				active_task["repeat_count"] = min(new_rep, avail)
-				active_task["title"] = "%s %s x%d" % [action_tag, iname, active_task["repeat_count"]]
+				active_task["title"] = "%s%s ×%d" % [action_tag, iname, active_task["repeat_count"]]
 			task_queue_changed.emit()
-			post_notice("已合并至进行中的【%s】作业！" % iname, Color.CYAN)
+			post_notice("已追加到进行中的%s作业" % iname, Color.CYAN)
 			return true
 			
 	# 2. 检查待办队列中的任务
@@ -620,21 +620,21 @@ func queue_hex_harvest(hex: Vector2i, item_key: String, count: int = 1, world_po
 		if q_hex == hex and q_key == item_key:
 			if actual_count == -1 or int(q_task.get("repeat_count", 1)) == -1:
 				q_task["repeat_count"] = -1
-				q_task["title"] = "%s %s (无尽)" % [action_tag, iname]
+				q_task["title"] = "%s%s · 持续" % [action_tag, iname]
 			else:
 				var new_rep = int(q_task.get("repeat_count", 1)) + actual_count
 				q_task["repeat_count"] = min(new_rep, avail)
-				q_task["title"] = "%s %s x%d" % [action_tag, iname, q_task["repeat_count"]]
+				q_task["title"] = "%s%s ×%d" % [action_tag, iname, q_task["repeat_count"]]
 			task_queue_changed.emit()
-			post_notice("已合并至队列中的【%s】作业！" % iname, Color.CYAN)
+			post_notice("已追加到队列中的%s作业" % iname, Color.CYAN)
 			return true
 			
 	# 3. 新建独立作业项
-	var title_str = "%s %s" % [action_tag, iname]
+	var title_str = "%s%s" % [action_tag, iname]
 	if actual_count == -1:
-		title_str = "%s %s (无尽)" % [action_tag, iname]
+		title_str = "%s%s · 持续" % [action_tag, iname]
 	elif actual_count > 1:
-		title_str = "%s %s x%d" % [action_tag, iname, actual_count]
+		title_str = "%s%s ×%d" % [action_tag, iname, actual_count]
 		
 	var task: Dictionary = {
 		"action_id": "harvest",
@@ -678,7 +678,7 @@ func queue_hex_forage(hex: Vector2i, _biome_name: String, count: int = 1, world_
 
 func add_task(task_data: Dictionary) -> bool:
 	if task_queue.size() >= MAX_QUEUE_SIZE:
-		post_notice("工作队列已满（上限 %d 项），请等待当前作业完成！" % MAX_QUEUE_SIZE, Color.YELLOW)
+		post_notice("队列已满（最多 %d 项）" % MAX_QUEUE_SIZE, Color.YELLOW)
 		return false
 		
 	_task_id_counter += 1
@@ -760,7 +760,7 @@ func _complete_active_task() -> void:
 	# 4. 全部次数执行完毕或资源已采空
 	if rem_res <= 0:
 		var iname = DataDB.get_item(t_key).get("name", t_key)
-		post_notice("【资源采空】该区块的【%s】已全部开采完毕！" % iname, Color.ORANGE)
+		post_notice("该地块的%s已采完" % iname, Color.ORANGE)
 		
 	task_completed.emit(finished_task)
 	active_task.clear()
@@ -788,12 +788,12 @@ func get_active_task_hex() -> Vector2i:
 func craft_tool(recipe_key: String) -> bool:
 	var recipe = DataDB.get_crafting_recipe(recipe_key)
 	if recipe.is_empty():
-		post_notice("未知制造配方: %s" % recipe_key, Color.RED)
+		post_notice("未知配方：%s" % recipe_key, Color.RED)
 		return false
 		
 	var req_items = recipe.get("required_items", [])
 	if not _has_all_ingredients(req_items):
-		post_notice("原料不足！制作【%s】失败" % recipe.get("name", recipe_key), Color.RED)
+		post_notice("材料不足，无法制作%s" % recipe.get("name", recipe_key), Color.RED)
 		return false
 		
 	_consume_all_ingredients(req_items)
@@ -834,21 +834,21 @@ const FURNACE_MAX_TEMP: Dictionary = {"fire_pit": 1100.0, "furnace": 1100.0, "bl
 
 func build_structure(structure_key: String, hex: Vector2i) -> bool:
 	if not is_hex_in_territory(hex.x, hex.y):
-		post_notice("无法在此建造：超出当前文明领地边界！", Color(1.0, 0.4, 0.4))
+		post_notice("无法建造：在领地外", Color(1.0, 0.4, 0.4))
 		return false
 		
 	if built_furnaces.has(hex) or built_reactors.has(hex):
-		post_notice("无法在此建造：该地块已有建筑设施！", Color(1.0, 0.4, 0.4))
+		post_notice("无法建造：地块已被占用", Color(1.0, 0.4, 0.4))
 		return false
 		
 	var recipe = DataDB.get_building_recipe(structure_key)
 	if recipe.is_empty() or not IMPLEMENTED_STRUCTURES.has(structure_key):
-		post_notice("该建筑尚未开放: %s" % recipe.get("name", structure_key), Color.RED)
+		post_notice("该建筑尚未开放：%s" % recipe.get("name", structure_key), Color.RED)
 		return false
 		
 	var req_items = recipe.get("required_items", [])
 	if not _has_all_ingredients(req_items):
-		post_notice("建造原料不足！需要: %s" % _get_ingredients_desc(req_items), Color.RED)
+		post_notice("材料不足，需要 %s" % _get_ingredients_desc(req_items), Color.RED)
 		return false
 		
 	_consume_all_ingredients(req_items)
@@ -904,14 +904,14 @@ func can_research_tech(tech_key: String) -> bool:
 
 func research_tech(tech_key: String) -> bool:
 	if researched_techs.has(tech_key):
-		post_notice("科技【%s】已完成研发！" % DataDB.get_tech(tech_key).get("name", tech_key), Color.YELLOW)
+		post_notice("%s已研发" % DataDB.get_tech(tech_key).get("name", tech_key), Color.YELLOW)
 		return false
 	var tech = DataDB.get_tech(tech_key)
 	if tech.is_empty():
-		post_notice("未知科技: %s" % tech_key, Color.RED)
+		post_notice("未知科技：%s" % tech_key, Color.RED)
 		return false
 	if not can_research_tech(tech_key):
-		post_notice("无法研发【%s】：前置科技未完成或材料不足！" % tech.get("name", tech_key), Color.RED)
+		post_notice("无法研发%s：缺少前置科技或材料" % tech.get("name", tech_key), Color.RED)
 		return false
 		
 	var req_items = tech.get("required_items", [])
@@ -932,7 +932,7 @@ func research_tech(tech_key: String) -> bool:
 	elif tech_key == "advanced_chemical_equipment":
 		complete_milestone("unlock_advanced_chem_tools")
 		
-	post_notice("科技突破！成功研发【%s】！" % tech.get("name", tech_key), Color(0.3, 0.9, 0.5))
+	post_notice("研发完成：%s" % tech.get("name", tech_key), Color(0.3, 0.9, 0.5))
 	_check_era_advancement()
 	return true
 
@@ -943,7 +943,7 @@ func furnace_add_fuel(hex: Vector2i) -> bool:
 	var burned_wood = false
 	if not inventory.remove_item("charcoal", 1):
 		if not (inventory.remove_item("wood", 2) or inventory.remove_item("stick", 3)):
-			post_notice("背包中没有木炭、原木或树枝可用作燃料！", Color.RED)
+			post_notice("行囊里没有木炭、原木或树枝", Color.RED)
 			return false
 		burned_wood = true
 	if burned_wood:
@@ -951,7 +951,7 @@ func furnace_add_fuel(hex: Vector2i) -> bool:
 	f["is_active_fire"] = true
 	f["burn_timer"] = f.get("burn_timer", 0.0) + 18.0
 	f["buffer"].add_substance("charcoal", 1.0)
-	post_notice("投入燃料，火焰熊熊燃烧！", Color.ORANGE)
+	post_notice("已添加燃料", Color.ORANGE)
 	return true
 
 func furnace_add_ore(hex: Vector2i, key: String, amount: int = 1) -> bool:
@@ -961,10 +961,10 @@ func furnace_add_ore(hex: Vector2i, key: String, amount: int = 1) -> bool:
 	if inventory.remove_item(key, amount):
 		f["buffer"].add_substance(key, float(amount))
 		var iname = DataDB.get_item(key).get("name", key)
-		post_notice("投入原料: %s x%d 到炉膛中" % [iname, amount], Color.CYAN)
+		post_notice("已投入 %s ×%d" % [iname, amount], Color.CYAN)
 		return true
 	else:
-		post_notice("背包中没有足够的原料！", Color.RED)
+		post_notice("行囊里的原料不足", Color.RED)
 		return false
 
 func reactor_install_blueprint(hex: Vector2i, bp_id: String) -> bool:
@@ -974,7 +974,7 @@ func reactor_install_blueprint(hex: Vector2i, bp_id: String) -> bool:
 		return false
 	built_reactors[hex]["blueprint_id"] = bp_id
 	built_reactors[hex]["cycle_progress"] = 0.0
-	post_notice("已向工业反应塔插装芯片: 【%s】" % unlocked_blueprints[bp_id].display_name, Color.CYAN)
+	post_notice("反应塔已装入蓝图：%s" % unlocked_blueprints[bp_id].display_name, Color.CYAN)
 	return true
 
 func _has_all_ingredients(req_items: Array) -> bool:

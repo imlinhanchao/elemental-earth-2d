@@ -57,8 +57,8 @@ stretch_mode = 5
 
 [node name="HeaderTitle" type="Label" parent="Center/Panel/Margin/MainVBox/HeaderHBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "文明纪元史册"
+theme_override_font_sizes/font_size = 16
+text = "时代进度"
 
 [node name="HeaderSpacer" type="Control" parent="Center/Panel/Margin/MainVBox/HeaderHBox"]
 layout_mode = 2
@@ -116,13 +116,13 @@ text = "第 I 纪元 · 原始物质改造"
 
 [node name="EraNameLabel" type="Label" parent="Center/Panel/Margin/MainVBox/HeroPanel/HeroMargin/HeroHBox/HeroVBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 20
 text = "【石器时代】 Stone Age"
 
 [node name="EraDescLabel" type="Label" parent="Center/Panel/Margin/MainVBox/HeroPanel/HeroMargin/HeroHBox/HeroVBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "人类第一次将天然石块打磨成工具，用燧石点燃火焰，开启了征服自然的壮丽史诗。"
+text = ""
 autowrap_mode = 2
 
 [node name="TelemetryHBox" type="HBoxContainer" parent="Center/Panel/Margin/MainVBox"]
@@ -142,7 +142,7 @@ theme_override_constants/margin_bottom = 4
 [node name="TerritoryLabel" type="Label" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/TerritoryBadge/Margin"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "领地半径: 5 瓦片 (91 格)"
+text = "领地半径 5 格（共 91 格）"
 
 [node name="ElementsBadge" type="PanelContainer" parent="Center/Panel/Margin/MainVBox/TelemetryHBox"]
 layout_mode = 2
@@ -157,7 +157,7 @@ theme_override_constants/margin_bottom = 4
 [node name="ElementsLabel" type="Label" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ElementsBadge/Margin"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "点亮元素: 0 / 118 种"
+text = "已发现元素 0 / 118"
 
 [node name="ProgressVBox" type="VBoxContainer" parent="Center/Panel/Margin/MainVBox/TelemetryHBox"]
 layout_mode = 2
@@ -171,7 +171,7 @@ layout_mode = 2
 [node name="ProgressTitle" type="Label" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ProgressVBox/ProgressHeaderHBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "时代跃迁达成度"
+text = "时代进度"
 
 [node name="Spacer" type="Control" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ProgressVBox/ProgressHeaderHBox"]
 layout_mode = 2
@@ -195,7 +195,7 @@ theme_override_constants/separation = 8
 [node name="SectionTitle" type="Label" parent="Center/Panel/Margin/MainVBox/MilestonesSection"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "【时代跃迁关键里程碑】 (达成全部目标后即可迈向新纪元)"
+text = "里程碑（全部完成后进入下一时代）"
 
 [node name="ScrollContainer" type="ScrollContainer" parent="Center/Panel/Margin/MainVBox/MilestonesSection"]
 layout_mode = 2
@@ -215,7 +215,7 @@ theme_override_constants/separation = 12
 layout_mode = 2
 size_flags_vertical = 4
 theme_override_font_sizes/font_size = 12
-text = "按 [ESC]、[空格] 或 [回车] 键随时返回大世界"
+text = "按 ESC、空格或回车返回地图"
 
 [node name="FooterSpacer" type="Control" parent="Center/Panel/Margin/MainVBox/FooterHBox"]
 layout_mode = 2
@@ -227,5 +227,5 @@ layout_mode = 2
 size_flags_vertical = 4
 focus_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 13
-text = "返回大世界 [ESC]"
+theme_override_font_sizes/font_size = 14
+text = "返回地图 [ESC]"

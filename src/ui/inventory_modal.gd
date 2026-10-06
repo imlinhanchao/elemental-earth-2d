@@ -129,7 +129,7 @@ func _refresh_slots() -> void:
 		if int(items_dict[k]) > 0:
 			active_keys.append(k)
 			
-	capacity_label.text = "已占用: %d / %d 槽位" % [active_keys.size(), max(BASE_SLOTS_COUNT, (ceil(float(active_keys.size()) / 10.0) * 10))]
+	capacity_label.text = "%d / %d 格" % [active_keys.size(), max(BASE_SLOTS_COUNT, (ceil(float(active_keys.size()) / 10.0) * 10))]
 	
 	var total_slots = max(BASE_SLOTS_COUNT, int(ceil(float(active_keys.size()) / 10.0) * 10))
 	
@@ -251,13 +251,13 @@ func _show_tooltip_for_item(item_key: String, data: Dictionary, count: int) -> v
 	if elem_num > 0:
 		var elem_info = DataDB.get_element(elem_num)
 		var sym = elem_info.get("symbol", "")
-		tip_chem.text = "化学纯质: %s (%s · %d号元素)" % [iname, sym, elem_num]
+		tip_chem.text = "单质：%s（%s · %d 号元素）" % [iname, sym, elem_num]
 		tip_chem.visible = true
 	else:
 		tip_chem.visible = false
 		
 	tip_desc.text = desc
-	tip_count.text = "库存数量: %d" % count
+	tip_count.text = "数量 %d" % count
 	
 	# 方案 2: 渲染化学特性标签胶囊 (用于直观启发玩家反应潜能)
 	var tags_box = $FloatingTooltip/TipVBox.get_node_or_null("TagsHBox")
@@ -325,4 +325,4 @@ func _show_tooltip_for_item(item_key: String, data: Dictionary, count: int) -> v
 func _on_sort_pressed() -> void:
 	# 触发刷新排序
 	_refresh_slots()
-	GameState.post_notice("物品清单已按类别整理完毕", ThemeStyler.COLOR_ACCENT)
+	GameState.post_notice("已按类别整理", ThemeStyler.COLOR_ACCENT)

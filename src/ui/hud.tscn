@@ -83,7 +83,7 @@ alignment = 1
 
 [node name="LogoTitle" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoTextVBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 20
 text = "元素纪元"
 
 [node name="LogoSub" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/LogoBox/LogoTextVBox"]
@@ -97,7 +97,7 @@ layout_mode = 2
 size_flags_vertical = 4
 focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 14
 text = "石器时代"
 
 [node name="Spacer" type="Control" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
@@ -122,7 +122,7 @@ stretch_mode = 5
 
 [node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipStone"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "0"
 
 [node name="ChipWood" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
@@ -139,7 +139,7 @@ stretch_mode = 5
 
 [node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipWood"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "0"
 
 [node name="ChipFlint" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
@@ -156,7 +156,7 @@ stretch_mode = 5
 
 [node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFlint"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "0"
 
 [node name="ChipOre" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
@@ -173,7 +173,7 @@ stretch_mode = 5
 
 [node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipOre"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "0"
 
 [node name="ChipFuel" type="HBoxContainer" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon"]
@@ -190,7 +190,7 @@ stretch_mode = 5
 
 [node name="Val" type="Label" parent="Margin/MainVBox/TopBarPanel/Margin/HBox/ResourceRibbon/ChipFuel"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "0"
 
 [node name="SaveDot" type="Control" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
@@ -202,7 +202,7 @@ tooltip_text = "自动保存就绪"
 [node name="BtnMenu" type="Button" parent="Margin/MainVBox/TopBarPanel/Margin/HBox"]
 custom_minimum_size = Vector2(28, 28)
 layout_mode = 2
-tooltip_text = "系统菜单 [ESC]"
+tooltip_text = "菜单 [ESC]"
 focus_mode = 0
 mouse_default_cursor_shape = 2
 icon = ExtResource("11_menu")
@@ -250,8 +250,8 @@ layout_mode = 2
 [node name="Title" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/Header"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.44, 0.22, 1.00)
-theme_override_font_sizes/font_size = 13
-text = "进行中的作业"
+theme_override_font_sizes/font_size = 14
+text = "作业队列"
 
 [node name="Spacer" type="Control" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/Header"]
 layout_mode = 2
@@ -280,7 +280,7 @@ text = "作业中"
 visible = false
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
-tooltip_text = "取消当前进行中的作业"
+tooltip_text = "取消当前作业"
 theme_override_font_sizes/font_size = 12
 text = "✕"
 
@@ -334,8 +334,8 @@ theme_override_constants/separation = 8
 [node name="Title" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.44, 0.22, 1.00)
-theme_override_font_sizes/font_size = 13
-text = "陶土熔炉近场状态"
+theme_override_font_sizes/font_size = 14
+text = "熔炉"
 
 [node name="FurnaceInfo" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
 layout_mode = 2
@@ -348,19 +348,19 @@ text = "温度: 298 K
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "+ 投掷木炭 (升温)"
+text = "添加木炭"
 
 [node name="BtnAddMalachite" type="Button" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "+ 投入孔雀石 (冶铜)"
+text = "投入孔雀石（炼铜）"
 
 [node name="BtnAddIronOre" type="Button" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "+ 投入赤铁矿 (冶铁)"
+text = "投入赤铁矿（炼铁）"
 
 [node name="BottomArea" type="VBoxContainer" parent="Margin/MainVBox"]
 layout_mode = 2
@@ -389,7 +389,7 @@ layout_mode = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.44, 0.22, 1.00)
 theme_override_font_sizes/font_size = 14
-text = "分类子项列表"
+text = ""
 
 [node name="Spacer" type="Control" parent="Margin/MainVBox/BottomArea/ActionDrawer/Margin/VBox/Header"]
 layout_mode = 2

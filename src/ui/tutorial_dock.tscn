@@ -44,7 +44,7 @@ layout_mode = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.23, 0.62, 0.42, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "教学指引 · 1 / 5"
+text = "教程 1 / 5"
 
 [node name="Spacer" type="Control" parent="PanelContainer/Margin/VBox/HeaderHBox"]
 layout_mode = 2
@@ -63,7 +63,7 @@ flat = true
 [node name="TitleLabel" type="Label" parent="PanelContainer/Margin/VBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.15, 0.14, 0.13, 1.00)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "初临大地 · 视野与地表拾取"
 
 [node name="DescLabel" type="RichTextLabel" parent="PanelContainer/Margin/VBox"]
@@ -91,7 +91,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.28, 0.42, 0.62, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "请根据上方指引在世界中执行操作"
+text = "按上面的提示操作"
 autowrap_mode = 2
 
 [node name="BtnNext" type="Button" parent="PanelContainer/Margin/VBox/FooterHBox"]
@@ -100,4 +100,4 @@ layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.15, 0.14, 0.13, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "下一步 ›"
+text = "下一步"

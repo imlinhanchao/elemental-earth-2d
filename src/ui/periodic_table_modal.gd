@@ -80,7 +80,7 @@ func _build_grid() -> void:
 		var sym_lbl = Label.new()
 		sym_lbl.text = sym
 		sym_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		sym_lbl.add_theme_font_size_override("font_size", 15)
+		sym_lbl.add_theme_font_size_override("font_size", 16)
 		
 		var name_lbl = Label.new()
 		name_lbl.text = cname
@@ -97,7 +97,7 @@ func _build_grid() -> void:
 
 func _refresh_grid() -> void:
 	var total_disc = GameState.discovered_elements.size()
-	count_label.text = "已点亮: %d / 118" % total_disc
+	count_label.text = "已发现 %d / 118" % total_disc
 	
 	for i in range(1, 119):
 		var panel = grid_container.get_node_or_null("Elem_%d" % i)

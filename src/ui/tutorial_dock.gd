@@ -148,7 +148,7 @@ func _load_stage(stage_idx: int) -> void:
 	btn_next.modulate = Color.WHITE
 	
 	var stage = STAGES[current_stage_idx]
-	step_badge_lbl.text = "教学指引 · %d / %d" % [current_stage_idx + 1, STAGES.size()]
+	step_badge_lbl.text = "教程 %d / %d" % [current_stage_idx + 1, STAGES.size()]
 	title_lbl.text = stage["title"]
 	desc_lbl.text = stage["desc"]
 	
@@ -171,7 +171,7 @@ func _load_stage(stage_idx: int) -> void:
 		var text_lbl = Label.new()
 		text_lbl.name = "Text"
 		text_lbl.text = "%s (0 / %d)" % [g["text"], g["target"]]
-		text_lbl.add_theme_font_size_override("font_size", 13)
+		text_lbl.add_theme_font_size_override("font_size", 14)
 		text_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 		hbox.add_child(text_lbl)
 		
@@ -185,9 +185,9 @@ func _load_stage(stage_idx: int) -> void:
 		})
 		
 	if current_stage_idx == STAGES.size() - 1:
-		btn_next.text = "完成教学"
+		btn_next.text = "完成"
 	else:
-		btn_next.text = "下一步 ›"
+		btn_next.text = "下一步"
 		
 	_check_current_goals()
 
@@ -232,10 +232,10 @@ func _check_current_goals() -> void:
 	stage_completed = all_met
 	btn_next.disabled = not stage_completed
 	if stage_completed:
-		status_lbl.text = "阶段目标已达成！点击进入下一步"
+		status_lbl.text = "目标完成，点击下一步"
 		status_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS)
 	else:
-		status_lbl.text = "请根据上方指引在世界中执行操作"
+		status_lbl.text = "按上面的提示操作"
 		status_lbl.add_theme_color_override("font_color", Color(0.28, 0.42, 0.62))
 
 func _on_next_pressed() -> void:

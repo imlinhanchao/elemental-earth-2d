@@ -61,6 +61,12 @@ const ERA_ACCENTS: Array[Color] = [
 static func get_era_accent(era: int) -> Color:
 	return ERA_ACCENTS[clampi(era, 0, ERA_ACCENTS.size() - 1)]
 
+# 字号四档 (界面只使用这四档；主菜单标题、元素符号等展示字号除外)
+const FONT_CAPTION = 12  # 注释、标签、快捷键提示
+const FONT_BODY = 14     # 正文、按钮、列表
+const FONT_HEADING = 16  # 弹窗标题、卡片标题、数值
+const FONT_TITLE = 20    # 顶栏品牌、时代名、元素名
+
 # 字体：Noto Sans SC 正文 + JetBrains Mono 数值
 # 注意：两者均为可变字体，Noto Sans SC 的 wght 轴默认值为 100 (Thin)，
 # 必须通过 FontVariation 显式指定字重，否则全局文字会以极细字重渲染而显得发虚。
@@ -211,7 +217,7 @@ static func create_scientific_theme() -> Theme:
 	var sans = get_font_sans()
 	if sans:
 		theme.default_font = sans
-	theme.default_font_size = 14
+	theme.default_font_size = FONT_BODY
 	# 按钮文字使用中粗字重，提升可点击元素辨识度
 	var bold = get_font_sans_bold()
 	if bold:

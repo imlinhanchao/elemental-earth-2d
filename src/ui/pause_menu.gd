@@ -109,7 +109,7 @@ func _input(event: InputEvent) -> void:
 				get_viewport().set_input_as_handled()
 
 func _on_main_menu_pressed() -> void:
-	confirm_label.text = "确认返回主标题菜单吗？\n请确保当前进度已妥善保存！"
+	confirm_label.text = "返回主菜单？\n未保存的进度会丢失。"
 	pending_action = func():
 		close()
 		return_to_main_menu_requested.emit()
@@ -118,7 +118,7 @@ func _on_main_menu_pressed() -> void:
 	btn_confirm_ok.grab_focus()
 
 func _on_quit_pressed() -> void:
-	confirm_label.text = "确认直接退出游戏吗？\n未保存的数据可能会丢失！"
+	confirm_label.text = "退出游戏？\n未保存的进度会丢失。"
 	pending_action = func():
 		quit_game_requested.emit()
 		get_tree().quit(0)

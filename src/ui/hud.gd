@@ -235,7 +235,7 @@ func show_placement_mode(structure_name: String) -> void:
 		placement_bar.add_child(hbox)
 		
 		placement_label = Label.new()
-		placement_label.add_theme_font_size_override("font_size", 13)
+		placement_label.add_theme_font_size_override("font_size", 14)
 		placement_label.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 		hbox.add_child(placement_label)
 		
@@ -250,7 +250,7 @@ func show_placement_mode(structure_name: String) -> void:
 		bottom_area.add_child(placement_bar)
 		bottom_area.move_child(placement_bar, bottom_area.get_child_count() - 2)
 	
-	placement_label.text = "建造选址: 点击领地空闲地块安放【%s】(右键或ESC取消)" % structure_name
+	placement_label.text = "选择位置放置%s（右键或 ESC 取消）" % structure_name
 	placement_bar.visible = true
 
 func hide_placement_mode() -> void:
@@ -270,16 +270,16 @@ func _populate_drawer(tab: CategoryTab) -> void:
 func _fill_drawer(tab: CategoryTab) -> void:
 	match tab:
 		CategoryTab.TECH:
-			drawer_title.text = "【科技】人类文明科学与技术突破演进"
+			drawer_title.text = "科技"
 			_add_tech_subitems()
 		CategoryTab.CRAFT:
-			drawer_title.text = "【制作】工具与装备锻造工坊"
+			drawer_title.text = "制作工具与器皿"
 			_add_craft_subitems()
 		CategoryTab.BUILD:
-			drawer_title.text = "【建造】基础设施与工业巨构施工"
+			drawer_title.text = "建造设施"
 			_add_build_subitems()
 		CategoryTab.INVENTORY:
-			drawer_title.text = "【行囊】当前全量物资与化学试剂储备"
+			drawer_title.text = "行囊"
 			_add_inventory_subitems()
 
 # --- 2. 科技分类细项 ---
@@ -404,7 +404,7 @@ func _add_craft_subitems() -> void:
 				if missing_reason == "": missing_reason = "缺少材料"
 				
 		var cost_str = " · ".join(cost_desc_list)
-		var status_text = "可打造" if can_craft else missing_reason
+		var status_text = "可制作" if can_craft else missing_reason
 		var card = _create_action_card(
 			recipe_name,
 			cost_str,
@@ -466,10 +466,10 @@ func _add_build_subitems() -> void:
 			cost_desc_list.append("%s: %d/%d" % [mat_name, owned, r_qty])
 			if owned < r_qty:
 				can_build = false
-				if missing_reason == "": missing_reason = "缺少建材"
+				if missing_reason == "": missing_reason = "缺少材料"
 				
 		var cost_str = " · ".join(cost_desc_list)
-		var status_text = "可施工" if can_build else missing_reason
+		var status_text = "可建造" if can_build else missing_reason
 		var card = _create_action_card(
 			b_name,
 			cost_str,
@@ -487,7 +487,7 @@ func _add_build_subitems() -> void:
 func _add_inventory_subitems() -> void:
 	if GameState.inventory.items.is_empty():
 		var empty_label = Label.new()
-		empty_label.text = "当前行囊空空如也，请前往大世界开采采集资源。"
+		empty_label.text = "行囊是空的，去地图上采集资源吧"
 		empty_label.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 		_add_drawer_extra(empty_label)
 		return
@@ -529,7 +529,7 @@ func _apply_scheme3_styling() -> void:
 	if logo_title:
 		logo_title.text = "元素纪元"
 		logo_title.add_theme_color_override("font_color", ThemeStyler.PAPER_INK)
-		logo_title.add_theme_font_size_override("font_size", 18)
+		logo_title.add_theme_font_size_override("font_size", 20)
 	if logo_sub:
 		logo_sub.visible = false
 		logo_sub.text = ""
@@ -560,13 +560,13 @@ func _apply_scheme3_styling() -> void:
 		era_badge_btn.add_theme_stylebox_override("pressed", pill_hover)
 		era_badge_btn.add_theme_color_override("font_color", era_col.darkened(0.35))
 		era_badge_btn.add_theme_color_override("font_hover_color", era_col.darkened(0.5))
-		era_badge_btn.add_theme_font_size_override("font_size", 13)
+		era_badge_btn.add_theme_font_size_override("font_size", 14)
 		era_badge_btn.custom_minimum_size = Vector2(0, 30)
 	
 	# 右侧资源数值字体放大
 	for val_lbl in [val_stone, val_wood, val_flint, val_ore, val_fuel]:
 		if val_lbl:
-			val_lbl.add_theme_font_size_override("font_size", 15)
+			val_lbl.add_theme_font_size_override("font_size", 16)
 			val_lbl.add_theme_color_override("font_color", ThemeStyler.PAPER_INK)
 			var mono = ThemeStyler.get_font_mono()
 			if mono:
@@ -663,8 +663,7 @@ func _apply_scheme3_styling() -> void:
 			btn.add_theme_stylebox_override("hover", btn_hov)
 			btn.add_theme_stylebox_override("pressed", btn_press)
 			btn.add_theme_stylebox_override("focus", btn_hov)
-			btn.add_theme_font_size_override("font_size", 12)
-			btn.add_theme_font_size_override("font_size", 13)
+			btn.add_theme_font_size_override("font_size", ThemeStyler.FONT_BODY)
 			btn.add_theme_color_override("font_color", ThemeStyler.PAPER_INK)
 			btn.add_theme_color_override("font_hover_color", dock_accent.darkened(0.45))
 			btn.add_theme_color_override("font_pressed_color", dock_accent.darkened(0.45))
@@ -804,7 +803,7 @@ func _new_pool_card() -> Button:
 	
 	var lbl_title = Label.new()
 	lbl_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lbl_title.add_theme_font_size_override("font_size", 13)
+	lbl_title.add_theme_font_size_override("font_size", 14)
 	lbl_title.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 	title_vbox.add_child(lbl_title)
 	
@@ -920,9 +919,9 @@ func _process(delta: float) -> void:
 			return
 		_furnace_info_timer = 0.25
 		var buf = current_nearby_furnace.buffer
-		furnace_info.text = "温度: %d K (%d ℃)\n状态: %s\n物料: %s" % [
-			int(buf.temperature),
+		furnace_info.text = "温度 %d ℃（%d K）\n状态：%s\n炉内：%s" % [
 			int(buf.temperature - 273.15),
+			int(buf.temperature),
 			("燃烧中" if current_nearby_furnace.is_active_fire else "未生火"),
 			_describe_components(buf.components)
 		]
@@ -943,8 +942,8 @@ func _setup_save_dot() -> void:
 	if save_dot:
 		save_dot.custom_minimum_size = Vector2(8, 8)
 		save_dot.mouse_filter = Control.MOUSE_FILTER_STOP
-		save_dot.tooltip_text = "自动存档就绪 (正常运行)"
-		_set_save_dot_status(true, "自动存档就绪 (正常运行)")
+		save_dot.tooltip_text = "自动保存正常"
+		_set_save_dot_status(true, "自动保存正常")
 		
 		# 监听保存信号与自定义绘制
 		if not save_dot.is_connected("draw", _on_save_dot_draw):
@@ -984,7 +983,7 @@ func _update_task_queue_ui() -> void:
 	task_queue_count.text = "%d 待办" % q_size
 	
 	if GameState.active_task.is_empty():
-		task_active_title.text = "空闲中"
+		task_active_title.text = "空闲"
 		task_progress_box.visible = false
 		task_btn_cancel_active.visible = false
 	else:
@@ -993,9 +992,9 @@ func _update_task_queue_ui() -> void:
 		var cur_c = int(t.get("current_cycle", 1))
 		var title_base = t.get("title", "作业中")
 		if rep == -1:
-			task_active_title.text = "%s (第 %d 轮 · 无尽)" % [title_base, cur_c]
+			task_active_title.text = "%s（第 %d 次）" % [title_base, cur_c]
 		elif rep > 1:
-			task_active_title.text = "%s (%d/%d)" % [title_base, cur_c, rep]
+			task_active_title.text = "%s（%d/%d）" % [title_base, cur_c, rep]
 		else:
 			task_active_title.text = "%s" % title_base
 		task_progress_box.visible = true
@@ -1019,14 +1018,14 @@ func _update_task_queue_ui() -> void:
 		var rep = int(q_task.get("repeat_count", 1))
 		var chip = Button.new()
 		if rep == -1:
-			chip.text = "#%d %s (无尽) ✕" % [i + 1, q_task.get("title", "工作")]
+			chip.text = "%d. %s  ✕" % [i + 1, q_task.get("title", "作业")]
 		elif rep > 1:
-			chip.text = "#%d %s x%d ✕" % [i + 1, q_task.get("title", "工作"), rep]
+			chip.text = "%d. %s  ✕" % [i + 1, q_task.get("title", "作业")]
 		else:
-			chip.text = "#%d %s (%.1fs) ✕" % [i + 1, q_task.get("title", "工作"), q_task.get("time_required", 1.0)]
+			chip.text = "%d. %s · %.1f 秒  ✕" % [i + 1, q_task.get("title", "作业"), q_task.get("time_required", 1.0)]
 		chip.custom_minimum_size = Vector2(0, 24)
 		chip.add_theme_font_size_override("font_size", 12)
-		chip.tooltip_text = "点击从队列中撤销此工作"
+		chip.tooltip_text = "点击取消此作业"
 		chip.pressed.connect(func(): GameState.cancel_task(task_id))
 		task_queue_list.add_child(chip)
 
@@ -1038,15 +1037,15 @@ func _on_task_progress_updated(_task: Dictionary, percent: float, remaining_time
 func _update_inventory_ui() -> void:
 	# 顶栏只保留五个核心资源: 石头、木头、燧石、矿、燃料
 	val_stone.text = str(GameState.inventory.get_count("stone"))
-	chip_stone.tooltip_text = "【碎石】当前储量: %s\n基础建材，用于制造石镐与陶窑" % val_stone.text
+	chip_stone.tooltip_text = "碎石 %s\n基础建材，用于制作石镐、建造窑炉" % val_stone.text
 	
 	var wood_cnt = GameState.inventory.get_count("wood")
 	var stick_cnt = GameState.inventory.get_count("stick")
 	val_wood.text = str(wood_cnt + stick_cnt)
-	chip_wood.tooltip_text = "【木材/断枝】原木 %d, 枯枝 %d (合计 %s)\n用于工具把柄打造与生火" % [wood_cnt, stick_cnt, val_wood.text]
+	chip_wood.tooltip_text = "木材 %s（原木 %d · 枯枝 %d）\n用于制作工具柄和生火" % [val_wood.text, wood_cnt, stick_cnt]
 	
 	val_flint.text = str(GameState.inventory.get_count("flint"))
-	chip_flint.tooltip_text = "【燧石】当前储量: %s\n高硬度锋利岩块，用于制造燧石斧与击石取火" % val_flint.text
+	chip_flint.tooltip_text = "燧石 %s\n坚硬锋利，用于制作燧石斧和火种" % val_flint.text
 	
 	# 矿石统计 (孔雀石 + 赤铁矿 + 黄铁矿 + 闪锌矿 + 铝土矿 + 沥青铀矿)
 	var total_ores = (
@@ -1058,7 +1057,7 @@ func _update_inventory_ui() -> void:
 		GameState.inventory.get_count("pitchblende")
 	)
 	val_ore.text = str(total_ores)
-	chip_ore.tooltip_text = "【各类金属矿石】总计储量: %s\n包含孔雀石(铜矿)、赤铁矿(铁矿)等金属矿物" % val_ore.text
+	chip_ore.tooltip_text = "矿石 %s\n孔雀石（铜矿）、赤铁矿（铁矿）等金属矿物合计" % val_ore.text
 	
 	# 燃料统计 (木炭 + 煤炭 + 焦炭)
 	var total_fuels = (
@@ -1067,7 +1066,7 @@ func _update_inventory_ui() -> void:
 		GameState.inventory.get_count("coke")
 	)
 	val_fuel.text = str(total_fuels)
-	chip_fuel.tooltip_text = "【熔炉燃料】总计储量: %s\n包含木炭、煤炭与焦炭，用于供给陶土熔炉高温冶炼" % val_fuel.text
+	chip_fuel.tooltip_text = "燃料 %s\n木炭、煤炭、焦炭合计，用于熔炉冶炼" % val_fuel.text
 	
 	# 悬停在行囊上显示全量资源
 	_update_inventory_tooltip()
@@ -1135,20 +1134,20 @@ func _update_era_label() -> void:
 		era_badge_btn.custom_minimum_size = Vector2(0, 30)
 		
 	var tooltip_lines: Array[String] = [
-		"【当前文明纪元】%s" % era_name,
-		"领地范围: %d 瓦片  |  已发现元素: %d/118" % [terr_count, disc_count],
+		"%s" % era_name,
+		"领地 %d 格 · 已发现元素 %d/118" % [terr_count, disc_count],
 		""
 	]
 	if total_ms > 0:
-		tooltip_lines.append("【时代跃迁目标】")
+		tooltip_lines.append("进入下一时代需要：")
 		for m in milestones:
 			var m_k = str(m.get("key", ""))
 			var m_desc = str(m.get("description", m_k))
 			var is_done = GameState.completed_milestones.has(m_k)
 			tooltip_lines.append("  %s %s" % ["✓" if is_done else "○", m_desc])
 	else:
-		tooltip_lines.append("深入探索大世界并冶炼新金属以突破新纪元！")
-	tooltip_lines.append("\n(点击打开纪元详情面板)")
+		tooltip_lines.append("已是最后一个时代")
+	tooltip_lines.append("\n点击查看详情")
 	era_badge_btn.tooltip_text = "\n".join(tooltip_lines)
 
 func update_current_biome(_biome: int) -> void:
@@ -1174,10 +1173,6 @@ func _on_item_changed(_key: String, _count: int) -> void:
 func _on_element_discovered(num: int, key: String) -> void:
 	if element_discovery_modal:
 		element_discovery_modal.show_discovery(num, key)
-	var elem = DataDB.get_element(num)
-	var sym = elem.get("symbol", "?")
-	var cname = elem.get("name", key)
-	show_toast("元素周期表突破: 成功点亮第 %d 号元素【%s (%s)】！" % [num, cname, sym], ThemeStyler.COLOR_ACCENT)
 
 var toast_container: VBoxContainer = null
 
@@ -1253,7 +1248,7 @@ func show_toast(msg: String, col: Color = Color.WHITE) -> void:
 	var lbl = Label.new()
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lbl.text = msg
-	lbl.add_theme_font_size_override("font_size", 13)
+	lbl.add_theme_font_size_override("font_size", 14)
 	lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 	hbox.add_child(lbl)
 
@@ -1271,7 +1266,7 @@ func show_furnace_ui(furnace: Node2D) -> void:
 	furnace_panel.visible = true
 	var b_name = DataDB.get_building_recipe(furnace.building_type).get("name", "熔炉") if "building_type" in furnace else "熔炉"
 	if furnace_info:
-		furnace_info.text = "【%s】现场控制台\n温度: %d ℃" % [b_name, int(furnace.buffer.temperature - 273.15)]
+		furnace_info.text = "%s\n温度 %d ℃" % [b_name, int(furnace.buffer.temperature - 273.15)]
 
 func hide_furnace_ui() -> void:
 	current_nearby_furnace = null

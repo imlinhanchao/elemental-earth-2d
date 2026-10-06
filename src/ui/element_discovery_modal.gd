@@ -112,7 +112,7 @@ func _build_ui() -> void:
 	main_vbox.add_child(top_hbox)
 
 	var header_title = Label.new()
-	header_title.text = "重大科学突破"
+	header_title.text = "发现新元素"
 	header_title.add_theme_font_size_override("font_size", 12)
 	header_title.add_theme_color_override("font_color", Color(0.58, 0.49, 0.17))
 	top_hbox.add_child(header_title)
@@ -228,7 +228,7 @@ func _build_ui() -> void:
 	progress_vbox.add_child(prog_head)
 
 	var prog_title = Label.new()
-	prog_title.text = "元素周期表总览进度"
+	prog_title.text = "周期表进度"
 	prog_title.add_theme_font_size_override("font_size", 12)
 	prog_title.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 	prog_head.add_child(prog_title)
@@ -257,7 +257,7 @@ func _build_ui() -> void:
 	btn_view_pt = Button.new()
 	btn_view_pt.text = "查看周期表 [P]"
 	btn_view_pt.custom_minimum_size = Vector2(170, 38)
-	btn_view_pt.add_theme_font_size_override("font_size", 13)
+	btn_view_pt.add_theme_font_size_override("font_size", 14)
 	btn_view_pt.pressed.connect(_on_view_pt_pressed)
 	btn_hbox.add_child(btn_view_pt)
 
@@ -265,7 +265,7 @@ func _build_ui() -> void:
 	btn_confirm.text = "收录 [空格]"
 	btn_confirm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_confirm.custom_minimum_size = Vector2(0, 38)
-	btn_confirm.add_theme_font_size_override("font_size", 13)
+	btn_confirm.add_theme_font_size_override("font_size", 14)
 	btn_confirm.pressed.connect(close)
 	btn_hbox.add_child(btn_confirm)
 
@@ -294,15 +294,15 @@ func show_discovery(elem_num: int, item_key: String = "") -> void:
 	symbol_label.add_theme_color_override("font_color", cat_color)
 
 	name_label.text = "%s · %s" % [cname, ename] if ename != "" else cname
-	mass_label.text = "原子量: %s" % mass
+	mass_label.text = "原子量 %s" % mass
 	category_badge.text = "[%s]" % cat_name
 	category_badge.add_theme_color_override("font_color", cat_color)
 	position_label.text = "周期 %d · 族 %d" % [row, col]
 
-	story_label.text = "[color=#3D5A8A][b]探索纪实：[/b][/color]\n" + story
+	story_label.text = "[color=#3D5A8A][b]发现史[/b][/color]\n" + story
 
 	var total_disc = GameState.discovered_elements.size()
-	progress_label.text = "已点亮 %d / 118 种元素" % total_disc
+	progress_label.text = "已发现 %d / 118" % total_disc
 	progress_bar.value = float(total_disc)
 
 	# 卡片边框与辉光跟随元素族主题色

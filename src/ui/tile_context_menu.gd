@@ -48,7 +48,7 @@ func open_at(screen_pos: Vector2, hex: Vector2i, resources: Array) -> void:
 	selected_item_key = ""
 	
 	if resources.is_empty():
-		GameState.post_notice("该区块暂无可开采的资源储备！", ThemeStyler.COLOR_TEXT_MUTED)
+		GameState.post_notice("该地块没有可采集的资源", ThemeStyler.COLOR_TEXT_MUTED)
 		close()
 		return
 		
@@ -74,7 +74,7 @@ func close() -> void:
 # 步骤 1: 若有多种资源，先选择目标资源
 func _show_resource_selection() -> void:
 	btn_back.visible = false
-	title_label.text = "选择开采物料"
+	title_label.text = "采集什么？"
 	_clear_content()
 	
 	for res in current_resources:
@@ -84,7 +84,7 @@ func _show_resource_selection() -> void:
 		
 		var btn = Button.new()
 		btn.custom_minimum_size = Vector2(180, 32)
-		btn.text = " %s  (剩余: %d)" % [iname, amount]
+		btn.text = " %s  剩余 %d" % [iname, amount]
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		
 		var icon_tex = ItemIconManager.get_icon(key)
@@ -105,11 +105,11 @@ func _show_count_selection(res_info: Dictionary) -> void:
 	btn_back.visible = (current_resources.size() > 1)
 	var iname = res_info.get("name", selected_item_key)
 	var remaining = int(res_info.get("amount", 0))
-	title_label.text = "开采 %s (%d)" % [iname, remaining]
+	title_label.text = "采集%s（剩余 %d）" % [iname, remaining]
 	_clear_content()
 	
 	var desc_label = Label.new()
-	desc_label.text = "选择作业循环次数:"
+	desc_label.text = "采集几次？"
 	desc_label.add_theme_font_size_override("font_size", 12)
 	desc_label.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 	content_box.add_child(desc_label)
@@ -133,7 +133,7 @@ func _show_count_selection(res_info: Dictionary) -> void:
 	# 无尽按钮 (加宽加亮)
 	var btn_infinite = Button.new()
 	btn_infinite.custom_minimum_size = Vector2(180, 30)
-	btn_infinite.text = "∞ 无尽开采 (直到采空)"
+	btn_infinite.text = "一直采到采完"
 	btn_infinite.add_theme_font_size_override("font_size", 12)
 	btn_infinite.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 	btn_infinite.pressed.connect(func():

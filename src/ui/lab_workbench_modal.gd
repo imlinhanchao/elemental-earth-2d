@@ -118,7 +118,7 @@ func _switch_tab(tab_idx: int) -> void:
 
 func _on_reaction_occurred(rx_name: String, _prods: Array) -> void:
 	if visible:
-		_add_log("实验台发生化学反应: %s" % rx_name)
+		_add_log("发生反应：%s" % rx_name)
 		_refresh_ui()
 
 func open() -> void:
@@ -158,7 +158,7 @@ func _process(delta: float) -> void:
 	# 温度由模拟层 (Simulation.tick) 推进，这里只做显示
 	bubble_phase += delta * (8.0 if is_burner_on else 1.5)
 		
-	temp_label.text = "烧瓶温度: %d K (%d ℃)" % [int(lab_vessel.temperature), int(lab_vessel.temperature - 273.15)]
+	temp_label.text = "烧瓶 %d ℃（%d K）" % [int(lab_vessel.temperature - 273.15), int(lab_vessel.temperature)]
 	vessel_draw.queue_redraw()
 	_update_sensor_probe()
 
@@ -166,32 +166,32 @@ func _on_burner_toggled(button_pressed: bool) -> void:
 	GameState.sim.lab_burner_on = button_pressed
 	if is_burner_on:
 		btn_burner.text = "熄灭酒精灯"
-		_add_log("点燃实验室酒精喷灯，温度迅速升高...")
+		_add_log("点燃酒精灯，开始加热")
 	else:
 		btn_burner.text = "点燃酒精灯"
-		_add_log("熄灭酒精喷灯，体系逐步自然冷却。")
+		_add_log("熄灭酒精灯，开始冷却")
 	_update_sensor_probe()
 
 func add_reagent(item_key: String, amount: float) -> void:
 	if not GameState.inventory.has_item(item_key, int(amount)):
-		GameState.post_notification("行囊中缺少试剂: %s" % item_key, Color(1, 0.4, 0.4))
+		GameState.post_notification("行囊里没有%s" % DataDB.get_item(item_key).get("name", item_key), Color(1, 0.4, 0.4))
 		return
 		
 	GameState.inventory.remove_item(item_key, int(amount))
 	lab_vessel.add_substance(item_key, amount)
-	_add_log("向烧瓶投入试剂 [%s] x%.1f" % [item_key, amount])
+	_add_log("投入 %s ×%d" % [DataDB.get_item(item_key).get("name", item_key), int(amount)])
 	_refresh_ui()
 
 func clear_vessel() -> void:
 	lab_vessel.clear()
-	_add_log("彻底倒空并清洗实验烧瓶。")
+	_add_log("已清空烧瓶")
 	_refresh_ui()
 
 func _refresh_ui() -> void:
 	_refresh_reagent_bar()
 	_update_sensor_probe()
 	
-	var text = "【微观烧瓶物料组分】\n"
+	var text = "烧瓶内容\n"
 	if lab_vessel.components.is_empty():
 		text += "（空烧瓶）\n"
 		solution_color = Color(0.8, 0.9, 1.0, 0.2)
@@ -199,7 +199,7 @@ func _refresh_ui() -> void:
 		for k in lab_vessel.components.keys():
 			var item = DataDB.get_item(k)
 			var iname = item.get("name", k)
-			text += "• %s (%s): %.2f mol/单位\n" % [iname, k, lab_vessel.components[k]]
+			text += "• %s  %.2f 份\n" % [iname, lab_vessel.components[k]]
 			
 		if lab_vessel.has_substance("copper"):
 			solution_color = Color(0.85, 0.55, 0.35, 0.85)
@@ -249,7 +249,7 @@ func _update_sensor_probe() -> void:
 		
 	var comp_keys = lab_vessel.components.keys()
 	if comp_keys.is_empty():
-		_set_sensor_ui("待命中", "烧瓶洁净放空中，请从下方快捷投入试剂以启动化学侦测", ThemeStyler.COLOR_TEXT_SECONDARY, ThemeStyler.COLOR_CARD)
+		_set_sensor_ui("空烧瓶", "从下方选择试剂投入烧瓶", ThemeStyler.COLOR_TEXT_SECONDARY, ThemeStyler.COLOR_CARD)
 		return
 		
 	var best_match_formula: Dictionary = {}
@@ -298,13 +298,13 @@ func _update_sensor_probe() -> void:
 		if temp_needed > 0.0 and cur_temp < temp_needed:
 			var target_c = int(temp_needed - 273.15)
 			var cur_c = int(cur_temp - 273.15)
-			_set_sensor_ui("潜在活性 (温度不足)", "【%s】原料齐备！但温度不足，请点燃喷灯加热至 %d ℃ 以上 (当前 %d ℃)" % [f_name, target_c, cur_c], ThemeStyler.COLOR_WARNING, ThemeStyler.TINT_WARNING)
+			_set_sensor_ui("温度不足", "%s：原料已齐，需加热到 %d ℃ 以上（当前 %d ℃）" % [f_name, target_c, cur_c], ThemeStyler.COLOR_WARNING, ThemeStyler.TINT_WARNING)
 		else:
-			_set_sensor_ui("反应进行中！", "【%s】微观分子剧烈转化与重构中，产物正在生成析出..." % f_name, ThemeStyler.COLOR_SUCCESS, ThemeStyler.TINT_SUCCESS)
+			_set_sensor_ui("反应中", "%s：正在生成产物" % f_name, ThemeStyler.COLOR_SUCCESS, ThemeStyler.TINT_SUCCESS)
 	elif has_partial_match:
-		_set_sensor_ui("微弱化学亲和力", "投入的试剂为某已知未知反应的部分原料，尚需尝试添加还原剂、矿石或水相溶剂", ThemeStyler.COLOR_INFO, ThemeStyler.TINT_INFO)
+		_set_sensor_ui("缺少原料", "这些试剂是某个反应的一部分原料，试试加入还原剂、矿石或水", ThemeStyler.COLOR_INFO, ThemeStyler.TINT_INFO)
 	else:
-		_set_sensor_ui("惰性混合体系", "当前混合试剂在当前工艺下未侦测到任何已知化学反应迹象", ThemeStyler.COLOR_TEXT_MUTED, ThemeStyler.COLOR_CARD)
+		_set_sensor_ui("无反应", "当前试剂组合不会发生已知反应", ThemeStyler.COLOR_TEXT_MUTED, ThemeStyler.COLOR_CARD)
 
 func _set_sensor_ui(badge_text: String, detail_text: String, accent_color: Color, bg_color: Color) -> void:
 	sensor_badge.text = "[%s]" % badge_text
@@ -368,13 +368,13 @@ func _refresh_codex_view() -> void:
 		var title_row = HBoxContainer.new()
 		var lbl_title = Label.new()
 		lbl_title.text = ( "✓ " if is_proven else "[猜想] " ) + clue_data.get("title", f_key)
-		lbl_title.add_theme_font_size_override("font_size", 13)
+		lbl_title.add_theme_font_size_override("font_size", 14)
 		lbl_title.add_theme_color_override("font_color", Color(0.21, 0.62, 0.41) if is_proven else Color(0.25, 0.53, 0.62))
 		lbl_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		title_row.add_child(lbl_title)
 		
 		var lbl_tag = Label.new()
-		lbl_tag.text = "[已确证工艺]" if is_proven else "[探索猜想中]"
+		lbl_tag.text = "[已掌握]" if is_proven else "[探索猜想中]"
 		lbl_tag.add_theme_font_size_override("font_size", 12)
 		lbl_tag.add_theme_color_override("font_color", Color(0.21, 0.62, 0.41) if is_proven else Color(0.62, 0.49, 0.20))
 		title_row.add_child(lbl_tag)
@@ -393,7 +393,7 @@ func _refresh_codex_view() -> void:
 		cond_row.add_theme_constant_override("separation", 12)
 		
 		var lbl_mat = Label.new()
-		lbl_mat.text = "所需原料: " + clue_data.get("materials_hint", "未知")
+		lbl_mat.text = "原料：" + clue_data.get("materials_hint", "未知")
 		lbl_mat.add_theme_font_size_override("font_size", 12)
 		lbl_mat.add_theme_color_override("font_color", Color(0.58, 0.55, 0.26))
 		cond_row.add_child(lbl_mat)
@@ -414,7 +414,7 @@ func _refresh_codex_view() -> void:
 		# 快速投料按钮 (若玩家手头有相关原料)
 		if f_data.has("required_items"):
 			var btn_fill = Button.new()
-			btn_fill.text = "尝试投入此配方原料至烧瓶"
+			btn_fill.text = "把原料投入烧瓶"
 			btn_fill.custom_minimum_size = Vector2(0, 26)
 			btn_fill.add_theme_font_size_override("font_size", 12)
 			btn_fill.pressed.connect(func():
@@ -428,7 +428,7 @@ func _refresh_codex_view() -> void:
 				if filled > 0:
 					_switch_tab(0)
 				else:
-					GameState.post_notification("随身行囊中暂无对应原料！请前往大世界开采", Color(1.0, 0.6, 0.3))
+					GameState.post_notification("行囊里没有这些原料，去地图上采集吧", Color(1.0, 0.6, 0.3))
 			)
 			vbox.add_child(btn_fill)
 			
@@ -442,10 +442,10 @@ func _on_collect_products_pressed() -> void:
 			GameState.inventory.add_item(k, amt)
 			lab_vessel.components[k] -= amt
 			harvested += amt
-			_add_log("回收物料 [%s] x%d 至随身行囊" % [k, amt])
+			_add_log("收取 %s ×%d" % [DataDB.get_item(k).get("name", k), amt])
 	
 	if harvested == 0:
-		GameState.post_notification("烧瓶中暂无整数结晶产物可提取", Color(1, 0.8, 0.4))
+		GameState.post_notification("烧瓶里还没有可收取的产物", Color(1, 0.8, 0.4))
 	_refresh_ui()
 
 func _add_log(msg: String) -> void:

@@ -212,13 +212,13 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 	
 	# 1. 顶栏标题与标识
 	if is_celebration:
-		header_title.text = "文明纪元跃迁"
+		header_title.text = "进入新时代"
 		header_title.add_theme_color_override("font_color", Color(0.58, 0.51, 0.20))
-		btn_continue.text = "迈向新纪元 [ENTER]"
+		btn_continue.text = "继续 [ENTER]"
 	else:
-		header_title.text = "文明纪元史册"
+		header_title.text = "时代进度"
 		header_title.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
-		btn_continue.text = "返回大世界 [ESC]"
+		btn_continue.text = "返回地图 [ESC]"
 	
 	# 2. 时代专属发光大徽章
 	var emblem_tex = _load_era_emblem(era_order)
@@ -242,10 +242,10 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 	emblem_container.add_theme_stylebox_override("panel", emblem_box)
 	
 	# 3. 时代名称与描述
-	era_order_tag.text = "第 %s 纪元 · %s" % [roman_num, ERA_TAGS.get(era_order, "科学演进时代")]
+	era_order_tag.text = "第 %s 时代 · %s" % [roman_num, ERA_TAGS.get(era_order, "科学演进时代")]
 	era_order_tag.add_theme_color_override("font_color", accent_color)
 	
-	era_name_label.text = "【%s】 %s" % [era_name, era_def.get("key", "").capitalize()]
+	era_name_label.text = era_name
 	era_name_label.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 	
 	era_desc_label.text = era_desc
@@ -253,8 +253,8 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 	# 4. 核心宏观指标
 	var terr_radius = GameState.get_current_territory_radius()
 	var terr_count = (3 * terr_radius * (terr_radius + 1) + 1)
-	territory_label.text = "领地半径: %d 瓦片 (%d 格已拓荒)" % [terr_radius, terr_count]
-	elements_label.text = "点亮元素: %d / 118 种" % GameState.discovered_elements.size()
+	territory_label.text = "领地半径 %d 格（共 %d 格）" % [terr_radius, terr_count]
+	elements_label.text = "已发现元素 %d / 118" % GameState.discovered_elements.size()
 	
 	# 5. 里程碑完成度计算
 	var total_ms = milestones.size()
@@ -267,7 +267,7 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 	if total_ms > 0:
 		progress_percent.text = "%d%% (%d/%d)" % [pct, done_ms, total_ms]
 	else:
-		progress_percent.text = "探明更高级矿物中"
+		progress_percent.text = "最终时代"
 	progress_bar.value = pct
 	
 	# 6. 里程碑卡片清单生成
@@ -275,7 +275,7 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 		child.queue_free()
 	
 	if milestones.size() > 0:
-		section_title.text = "【时代跃迁关键里程碑】 (达成全部目标后即可迈向新纪元)"
+		section_title.text = "里程碑（全部完成后进入下一时代）"
 		for m in milestones:
 			var m_k = str(m.get("key", ""))
 			var m_desc = str(m.get("description", m_k))
@@ -283,8 +283,8 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 			var card = _create_milestone_card(m_k, m_desc, is_done, accent_color)
 			milestones_list.add_child(card)
 	else:
-		section_title.text = "【时代宏观演进要求】"
-		var card = _create_milestone_card("explore_deep", "深入拓荒大世界群落，在微观实验台突破新反应以晋阶下一纪元！", false, accent_color)
+		section_title.text = "后续目标"
+		var card = _create_milestone_card("explore_deep", "继续探索地图，在实验台发现新反应", false, accent_color)
 		milestones_list.add_child(card)
 	
 	visible = true
@@ -301,33 +301,33 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 const MILESTONE_GUIDES: Dictionary = {
 	"craft_stone_pickaxe": {
 		"title": "制作第一把石镐",
-		"guide": "在碎石地表开采【碎石】与干燥【枯树枝】，按 [T] 打开制作台打磨装配出原始石镐。装备后可开采深层坚硬矿物。",
+		"guide": "采集碎石和枯树枝，按 [T] 制作石镐。装备后可以开采矿石。",
 		"field": "碎石平原、荒野林带",
-		"route": "制作栏 [T] ➔ 原始石镐"
+		"route": "制作 [T] → 石镐"
 	},
 	"craft_fire_seed": {
 		"title": "制作第一个火种",
-		"guide": "开采深黑色贝壳状【燧石】与【枯树枝】，按 [T] 打开制作台击石引火制作文明火种。火种是后续一切冶炼与加热的核心！",
+		"guide": "采集燧石和枯树枝，按 [T] 制作火种。之后的冶炼和加热都需要火。",
 		"field": "火山边缘、碎石滩涂",
-		"route": "制作栏 [T] ➔ 燧石火种"
+		"route": "制作 [T] → 火种"
 	},
 	"build_kiln": {
 		"title": "建造第一个窑炉",
-		"guide": "在湿润滩涂采集高岭土与黏土，配合坚实石块，按 [C] 在建造坞筑造耐受千度高温的高大窑炉，开启大宗冶金时代。",
+		"guide": "采集黏土和碎石，按 [C] 建造窑炉。窑炉能耐千度高温，用于冶金。",
 		"field": "湿地泥沼、高岭土矿脉",
-		"route": "建造坞 [C] ➔ 土法窑炉"
+		"route": "建造 [C] → 窑炉"
 	},
 	"first_smelt": {
 		"title": "完成第一次焙烧",
-		"guide": "在微观实验台 [L] 或熔炉中，投入孔雀石与木炭，点燃酒精喷灯持续加温至 600℃ 以上固相还原出第一块金属铜！",
+		"guide": "把孔雀石和木炭投入实验台 [L] 或熔炉，加热到 600 ℃ 以上，炼出第一块铜。",
 		"field": "东部火山群系、林地干馏木炭",
-		"route": "实验台 [L] 或 熔炉 ➔ 固相热还原"
+		"route": "实验台 [L] 或熔炉"
 	},
 	"research_pottery": {
 		"title": "研究陶器制作科技",
-		"guide": "按 [K] 打开科技树研习火与土的转化之道，掌握耐火陶罐烧制。陶器容器可耐受酸碱腐蚀并承载液体实验。",
+		"guide": "按 [K] 打开科技树研发制陶术。陶器耐酸碱，可以盛放液体做实验。",
 		"field": "科技树 [K]",
-		"route": "科技树 [K] ➔ 陶器制作"
+		"route": "科技 [K] → 制陶术"
 	}
 }
 
@@ -379,13 +379,13 @@ func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Co
 	lbl_desc.text = desc
 	lbl_desc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	lbl_desc.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	lbl_desc.add_theme_font_size_override("font_size", 13)
+	lbl_desc.add_theme_font_size_override("font_size", 14)
 	lbl_desc.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY if is_done else ThemeStyler.COLOR_TEXT_SECONDARY)
 	hbox.add_child(lbl_desc)
 	
 	# 右侧状态胶囊标签
 	var tag = Label.new()
-	tag.text = "[已确证达成]" if is_done else "[待科研攻关]"
+	tag.text = "已完成" if is_done else "未完成"
 	tag.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	tag.add_theme_font_size_override("font_size", 12)
 	tag.add_theme_color_override("font_color", Color(0.20, 0.62, 0.42) if is_done else accent)
@@ -412,14 +412,14 @@ func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Co
 		guide_panel.add_child(g_vbox)
 		
 		var lbl_guide = Label.new()
-		lbl_guide.text = "攻关指引：" + str(g_info.get("guide", ""))
+		lbl_guide.text = "怎么做：" + str(g_info.get("guide", ""))
 		lbl_guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		lbl_guide.add_theme_font_size_override("font_size", 12)
 		lbl_guide.add_theme_color_override("font_color", Color(0.28, 0.62, 0.45) if is_done else Color(0.62, 0.52, 0.28))
 		g_vbox.add_child(lbl_guide)
 		
 		var lbl_meta = Label.new()
-		lbl_meta.text = "建议探索：%s   ·   关键途径：%s" % [g_info.get("field", ""), g_info.get("route", "")]
+		lbl_meta.text = "去哪里：%s　·　入口：%s" % [g_info.get("field", ""), g_info.get("route", "")]
 		lbl_meta.add_theme_font_size_override("font_size", 12)
 		lbl_meta.add_theme_color_override("font_color", Color(0.26, 0.49, 0.62))
 		g_vbox.add_child(lbl_meta)

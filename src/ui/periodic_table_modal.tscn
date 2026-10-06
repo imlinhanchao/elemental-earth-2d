@@ -54,13 +54,13 @@ theme_override_constants/separation = 16
 [node name="Title" type="Label" parent="CenterPanel/VBox/Header/HBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "元素周期图鉴 (118 元素谱系)"
+text = "元素周期表"
 
 [node name="CountLabel" type="Label" parent="CenterPanel/VBox/Header/HBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.44, 0.22, 1.00)
-theme_override_font_sizes/font_size = 13
-text = "已点亮: 0 / 118"
+theme_override_font_sizes/font_size = 14
+text = "已发现 0 / 118"
 
 [node name="Spacer" type="Control" parent="CenterPanel/VBox/Header/HBox"]
 layout_mode = 2

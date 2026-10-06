@@ -264,7 +264,7 @@ func _create_oni_tech_card(tech: Dictionary) -> PanelContainer:
 func _refresh_all() -> void:
 	var total = DataDB.techs.size()
 	var researched = GameState.researched_techs.size()
-	count_label.text = "已研发: %d / %d 项核心科技" % [researched, total]
+	count_label.text = "已研发 %d / %d" % [researched, total]
 	
 	for tech_key in tech_card_nodes.keys():
 		var card = tech_card_nodes[tech_key]
@@ -328,7 +328,7 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 		style.corner_radius_bottom_right = 6
 		card.modulate = Color.WHITE
 		if cost_lbl:
-			cost_lbl.text = "已掌握核心技术"
+			cost_lbl.text = "已研发"
 			cost_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS)
 		if btn_action:
 			btn_action.visible = false
@@ -346,16 +346,16 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 		style.corner_radius_bottom_right = 6
 		card.modulate = Color.WHITE
 		if cost_lbl:
-			cost_lbl.text = ("需求: " + ", ".join(cost_texts)) if not cost_texts.is_empty() else "即时突破"
+			cost_lbl.text = ("需要 " + "、".join(cost_texts)) if not cost_texts.is_empty() else "无需材料"
 			cost_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS if items_met else ThemeStyler.COLOR_WARNING)
 		if btn_action:
 			btn_action.visible = true
 			if items_met:
-				btn_action.text = "启动突破"
+				btn_action.text = "研发"
 				btn_action.disabled = false
 				btn_action.modulate = Color(1.0, 1.0, 1.0, 1.0)
 			else:
-				btn_action.text = "资源不足"
+				btn_action.text = "材料不足"
 				btn_action.disabled = true
 				btn_action.modulate = Color(0.85, 0.6, 0.5, 0.8)
 	else:
@@ -372,32 +372,17 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 		style.corner_radius_bottom_right = 6
 		card.modulate = Color(1, 1, 1, 0.5)
 		if cost_lbl:
-			cost_lbl.text = "需先掌握: " + " / ".join(missing_prereqs) if not missing_prereqs.is_empty() else "时代未达"
+			cost_lbl.text = "需要先研发：" + " / ".join(missing_prereqs) if not missing_prereqs.is_empty() else "时代未达"
 			cost_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_MUTED)
 		if btn_action:
 			btn_action.visible = false
 			
 	card.add_theme_stylebox_override("panel", style)
 
-func _on_tech_card_action(tech_key: String, tech: Dictionary) -> void:
-	if GameState.researched_techs.has(tech_key):
-		return
-		
-	var req_items = tech.get("required_items", [])
-	# 扣除材料
-	for req in req_items:
-		var item_k = req.get("key", "")
-		var item_qty = int(req.get("quantity", 1))
-		GameState.inventory.remove_item(item_k, item_qty)
-		
-	# 登记已研发
-	GameState.researched_techs.append(tech_key)
-	GameState.tech_researched.emit(tech_key)
-	
-	var iname = tech.get("name", tech_key)
-	GameState.post_notice("【科技突破】人类文明成功攻克【%s】！" % iname, Color(0.2, 0.9, 0.4))
-	
-	_refresh_all()
+func _on_tech_card_action(tech_key: String, _tech: Dictionary) -> void:
+	# 统一走模拟层：扣除材料、登记科技、完成里程碑并检查时代跃迁
+	if GameState.research_tech(tech_key):
+		_refresh_all()
 
 # 缺氧连线绘制系统: 从前置节点右侧针脚平滑弯曲连接至后继节点左侧针脚
 func _draw_connecting_lines(canvas_ctrl: Control) -> void:

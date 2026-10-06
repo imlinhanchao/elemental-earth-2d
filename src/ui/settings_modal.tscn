@@ -54,7 +54,7 @@ layout_mode = 2
 [node name="Title" type="Label" parent="CenterPanel/VBox/Header/HBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "系统设置"
+text = "设置"
 
 [node name="Spacer" type="Control" parent="CenterPanel/VBox/Header/HBox"]
 layout_mode = 2
@@ -89,19 +89,19 @@ theme_override_constants/separation = 6
 [node name="TabAudio" type="Button" parent="CenterPanel/VBox/Body/HBox/CategoryList"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "音频设置"
+text = "声音"
 alignment = 0
 
 [node name="TabDisplay" type="Button" parent="CenterPanel/VBox/Body/HBox/CategoryList"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "画面显示"
+text = "画面"
 alignment = 0
 
 [node name="TabGame" type="Button" parent="CenterPanel/VBox/Body/HBox/CategoryList"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
-text = "游戏参数"
+text = "游戏"
 alignment = 0
 
 [node name="VSeparator" type="VSeparator" parent="CenterPanel/VBox/Body/HBox"]
@@ -138,7 +138,7 @@ value = 1.0
 [node name="ValLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio/MasterBox"]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 14
 text = "100%"
 horizontal_alignment = 2
 
@@ -163,7 +163,7 @@ value = 0.8
 [node name="ValLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio/BgmBox"]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 14
 text = "80%"
 horizontal_alignment = 2
 
@@ -188,7 +188,7 @@ value = 1.0
 [node name="ValLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecAudio/SfxBox"]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 14
 text = "100%"
 horizontal_alignment = 2
 
@@ -201,13 +201,13 @@ theme_override_constants/separation = 16
 [node name="CheckFullscreen" type="CheckBox" parent="CenterPanel/VBox/Body/HBox/RightContent/SecDisplay"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
-text = "全屏显示模式 (Alt + Enter)"
+text = "全屏"
 
 [node name="ResolutionInfo" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecDisplay"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.37, 0.34, 0.30, 1.00)
-theme_override_font_sizes/font_size = 13
-text = "基准分辨率: 1920 × 1080 (16:9 点对点画布渲染，4K 自动等比缩放)"
+theme_override_font_sizes/font_size = 14
+text = "界面按 1920 × 1080 设计，其他分辨率自动缩放"
 
 [node name="SecGame" type="VBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightContent"]
 visible = false
@@ -251,7 +251,7 @@ value = 1.0
 [node name="ValLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecGame/CamSpeedBox"]
 custom_minimum_size = Vector2(60, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 14
 text = "1.0x"
 horizontal_alignment = 2
 
@@ -272,7 +272,7 @@ layout_mode = 2
 [node name="BtnDefault" type="Button" parent="CenterPanel/VBox/Footer/HBox"]
 custom_minimum_size = Vector2(110, 36)
 layout_mode = 2
-text = "恢复默认设置"
+text = "恢复默认"
 
 [node name="Spacer" type="Control" parent="CenterPanel/VBox/Footer/HBox"]
 layout_mode = 2
@@ -281,4 +281,4 @@ size_flags_horizontal = 3
 [node name="BtnApply" type="Button" parent="CenterPanel/VBox/Footer/HBox"]
 custom_minimum_size = Vector2(140, 36)
 layout_mode = 2
-text = "保存并应用 [ENTER]"
+text = "应用 [ENTER]"

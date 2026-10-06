@@ -188,33 +188,33 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	if not file:
 		print("[SaveManager] 写入槽位失败: %s" % path)
-		GameState.post_notice("存档写入失败！", Color.RED)
+		GameState.post_notice("保存失败：无法写入存档", Color.RED)
 		return false
 		
 	file.store_string(JSON.stringify(save_dict))
 	file.close()
 	print("[SaveManager] 进度已成功保存至槽位 (v%d): %s (%s)" % [SAVE_VERSION, slot_id, path])
 	if slot_id != "auto":
-		GameState.post_notice("进度已成功保存至【%s】！" % def_name, Color(0.3, 0.9, 0.5))
+		GameState.post_notice("已保存到%s" % def_name, Color(0.3, 0.9, 0.5))
 	return true
 
 static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
 	check_legacy_migration()
 	var path = get_slot_path(slot_id)
 	if not FileAccess.file_exists(path):
-		GameState.post_notice("该存档槽位为空！", Color.YELLOW)
+		GameState.post_notice("该存档位为空", Color.YELLOW)
 		return false
 		
 	var file = FileAccess.open(path, FileAccess.READ)
 	if not file:
-		GameState.post_notice("无法打开存档文件！", Color.RED)
+		GameState.post_notice("无法打开存档文件", Color.RED)
 		return false
 		
 	var json_str = file.get_as_text()
 	file.close()
 	var parsed = JSON.parse_string(json_str)
 	if not (parsed is Dictionary):
-		GameState.post_notice("存档数据损坏或格式错误！", Color.RED)
+		GameState.post_notice("存档已损坏，无法读取", Color.RED)
 		return false
 		
 	var version = int(parsed.get("version", 1))
@@ -287,7 +287,7 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
 		world_node.deserialize_world_state(world_data)
 		
 	GameState.era_advanced.emit(0, GameState.current_era, GameState.ERA_NAMES[GameState.current_era])
-	GameState.post_notice("成功载入【%s】(v%d)！当前时代: %s" % [
+	GameState.post_notice("已载入%s（v%d · %s）" % [
 		parsed.get("slot_name", slot_id),
 		version,
 		GameState.ERA_NAMES[GameState.current_era]

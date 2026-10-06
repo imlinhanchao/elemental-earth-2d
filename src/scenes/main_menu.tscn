@@ -67,7 +67,7 @@ theme_override_constants/separation = 8
 [node name="SubTitle" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox/BrandRow/BrandTextVBox/SubTitleRow"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.44, 0.22, 1.00)
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 14
 text = "ELEMENTAL EARTH"
 
 [node name="Badge" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox/BrandRow/BrandTextVBox/SubTitleRow"]
@@ -79,8 +79,8 @@ text = "· 2D CHRONICLES"
 [node name="Desc" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.37, 0.34, 0.30, 1.00)
-theme_override_font_sizes/font_size = 13
-text = "微观化学实验 · 元素拓荒发现 · 宏观工业连续流"
+theme_override_font_sizes/font_size = 14
+text = "采集 · 冶炼 · 实验 · 发现元素"
 
 [node name="EraTimeline" type="HBoxContainer" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox"]
 layout_mode = 2
@@ -125,7 +125,7 @@ layout_mode = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.54, 0.50, 0.44, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "v0.3.0 | 4K/1080P 自适应 | 基于 Vulkan Forward+ 现代图形架构"
+text = "v0.3.0"
 
 [node name="Spacer" type="Control" parent="SafeMargin/LayoutHBox"]
 layout_mode = 2
@@ -161,25 +161,25 @@ theme_override_constants/separation = 6
 layout_mode = 2
 theme_override_colors/font_color = Color(0.62, 0.47, 0.27, 1.00)
 theme_override_font_sizes/font_size = 14
-text = "【开拓档案快照】"
+text = "最近存档"
 
 [node name="CardBody" type="Label" parent="SafeMargin/LayoutHBox/RightPanel/ArchiveCard/CardMargin/CardVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.15, 0.14, 0.13, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "正在检测本地文明探索进度..."
+text = "正在读取存档…"
 
 [node name="CardHint" type="Label" parent="SafeMargin/LayoutHBox/RightPanel/ArchiveCard/CardMargin/CardVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.28, 0.62, 0.28, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "按 [ENTER] 或点击【继续游戏】直接接入"
+text = "按 ENTER 继续"
 
 [node name="KeyHintLabel" type="Label" parent="SafeMargin/LayoutHBox/RightPanel"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.54, 0.50, 0.44, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "[↑/↓ / W/S] 导航切换   [ENTER] 确认执行   [ESC] 返回/退出"
+text = "↑↓ 选择　ENTER 确认　ESC 退出"
 
 [node name="GuideModal" type="PanelContainer" parent="."]
 visible = false
@@ -215,7 +215,7 @@ layout_mode = 2
 [node name="Title" type="Label" parent="GuideModal/VBox/Header/HBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "拓荒指南与操作手册"
+text = "操作指南"
 
 [node name="Spacer" type="Control" parent="GuideModal/VBox/Header/HBox"]
 layout_mode = 2
@@ -241,7 +241,7 @@ theme_override_constants/margin_bottom = 16
 [node name="RichTextLabel" type="RichTextLabel" parent="GuideModal/VBox/Body"]
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_font_sizes/normal_font_size = 13
+theme_override_font_sizes/normal_font_size = 14
 bbcode_enabled = true
 text = "[color=#9C5A1E]【核心战略哲学】[/color]
 玩家从原始石器时代起步，通过规划与时间调度开采地表碎石、原木、矿脉与盐湖汲水。
@@ -298,13 +298,13 @@ layout_mode = 2
 
 [node name="Title" type="Label" parent="ConfirmDialog/Margin/VBox/Header"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "操作确认"
+theme_override_font_sizes/font_size = 16
+text = "确认"
 
 [node name="ConfirmText" type="Label" parent="ConfirmDialog/Margin/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "确认执行此操作吗？"
+theme_override_font_sizes/font_size = 14
+text = "确定执行吗？"
 autowrap_mode = 2
 
 [node name="BtnHBox" type="HBoxContainer" parent="ConfirmDialog/Margin/VBox"]

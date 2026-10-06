@@ -222,13 +222,13 @@ func _setup_era_timeline() -> void:
 			era_timeline.add_child(arrow)
 
 func _setup_buttons() -> void:
-	_configure_menu_btn(btn_continue, "继续游戏", "RESUME EXPLORATION", "res://assets/icons/save.svg", "ENTER")
-	_configure_menu_btn(btn_new_game, "开启新程", "NEW CHRONICLE", "res://assets/icons/tab_craft.svg", "N")
-	_configure_menu_btn(btn_tutorial, "新手教程", "GUIDED TUTORIAL", "res://assets/icons/tab_experiment.svg", "U")
-	_configure_menu_btn(btn_load_game, "载入档案", "ARCHIVES & SLOTS", "res://assets/icons/load.svg", "L")
-	_configure_menu_btn(btn_settings, "游戏设置", "SYSTEM SETTINGS", "res://assets/icons/settings.svg", "O")
-	_configure_menu_btn(btn_guide, "拓荒图录", "SURVIVAL GUIDE", "res://assets/icons/periodic_table.svg", "H")
-	_configure_menu_btn(btn_quit, "退出游戏", "EXIT TO DESKTOP", "res://assets/icons/tab_production.svg", "ESC")
+	_configure_menu_btn(btn_continue, "继续游戏", "CONTINUE", "res://assets/icons/save.svg", "ENTER")
+	_configure_menu_btn(btn_new_game, "新游戏", "NEW GAME", "res://assets/icons/tab_craft.svg", "N")
+	_configure_menu_btn(btn_tutorial, "新手教程", "TUTORIAL", "res://assets/icons/tab_experiment.svg", "U")
+	_configure_menu_btn(btn_load_game, "载入游戏", "LOAD", "res://assets/icons/load.svg", "L")
+	_configure_menu_btn(btn_settings, "设置", "SETTINGS", "res://assets/icons/settings.svg", "O")
+	_configure_menu_btn(btn_guide, "操作指南", "GUIDE", "res://assets/icons/periodic_table.svg", "H")
+	_configure_menu_btn(btn_quit, "退出游戏", "QUIT", "res://assets/icons/tab_production.svg", "ESC")
 
 func _configure_menu_btn(btn: Button, title: String, en_title: String, icon_res: String, key_hint: String) -> void:
 	btn.text = ""
@@ -282,7 +282,7 @@ func _configure_menu_btn(btn: Button, title: String, en_title: String, icon_res:
 	var title_lbl = Label.new()
 	title_lbl.name = "TitleLbl"
 	title_lbl.text = title
-	title_lbl.add_theme_font_size_override("font_size", 15)
+	title_lbl.add_theme_font_size_override("font_size", 16)
 	title_lbl.add_theme_color_override("font_color", Color(0.15, 0.14, 0.13))
 	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	text_vbox.add_child(title_lbl)
@@ -387,20 +387,20 @@ func _setup_archive_card() -> void:
 	var latest_slot = SaveManager.get_latest_save_slot()
 	if latest_slot != "":
 		var meta = SaveManager.get_slot_meta(latest_slot)
-		header_lbl.text = "【开拓档案快照 · %s】" % meta.get("slot_name", "自动存档")
+		header_lbl.text = "最近存档 · %s" % meta.get("slot_name", "自动存档")
 		header_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 		
 		var era_name = meta.get("era_name", "石器时代")
 		var ptime = meta.get("playtime_formatted", "00:00")
 		var dtime = meta.get("datetime", "")
-		body_lbl.text = "当前时代：%s\n累计探索时长：%s   保存时间：%s" % [era_name, ptime, dtime]
-		hint_lbl.text = "按 [ENTER] 或点击【继续游戏】无缝接入世界"
+		body_lbl.text = "%s · 已玩 %s\n保存于 %s" % [era_name, ptime, dtime]
+		hint_lbl.text = "按 ENTER 继续"
 		hint_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS)
 	else:
-		header_lbl.text = "【初临序章 · 元素宏图】"
+		header_lbl.text = "欢迎"
 		header_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
-		body_lbl.text = "万物皆由 118 种元素筑就。\n拾取地表碎石与燧石，点亮属于人类文明的科学之火。"
-		hint_lbl.text = "按 [N] 开启全新的拓荒征程"
+		body_lbl.text = "从石器时代出发，采集、冶炼、实验，\n一步步发现 118 种元素。"
+		hint_lbl.text = "按 N 开始新游戏"
 		hint_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 
 func _play_entrance_animation() -> void:
@@ -658,7 +658,7 @@ func _on_continue_pressed() -> void:
 func _on_new_game_pressed() -> void:
 	var latest_slot = SaveManager.get_latest_save_slot()
 	if latest_slot != "":
-		confirm_text.text = "开启新的征程将重置当前的探索环境。\n确认开启新游戏吗？"
+		confirm_text.text = "开始新游戏？\n自动存档会被覆盖。"
 		pending_action = func():
 			GameState.reset_to_new_game()
 			SaveManager.pending_load_slot = ""
@@ -677,7 +677,7 @@ func _on_new_game_pressed() -> void:
 func _on_tutorial_pressed() -> void:
 	var latest_slot = SaveManager.get_latest_save_slot()
 	if latest_slot != "":
-		confirm_text.text = "进入新手教程将重置当前世界状态以开启教学演练。\n确认开启新手教程吗？"
+		confirm_text.text = "开始教程？\n教程会使用新的世界，自动存档会被覆盖。"
 		pending_action = func():
 			GameState.reset_to_new_game()
 			SaveManager.pending_load_slot = ""
@@ -699,7 +699,7 @@ func _on_slot_selected_from_modal(slot_id: String, _mode: int) -> void:
 	_enter_world()
 
 func _on_quit_pressed() -> void:
-	confirm_text.text = "确认退出《元素纪元》并返回桌面吗？"
+	confirm_text.text = "退出游戏？"
 	pending_action = func():
 		get_tree().quit(0)
 	confirm_dialog.visible = true

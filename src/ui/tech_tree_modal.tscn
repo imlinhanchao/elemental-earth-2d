@@ -51,14 +51,14 @@ theme_override_constants/separation = 16
 
 [node name="Title" type="Label" parent="CenterPanel/VBox/Header/HBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "文明科技演进星图 (Technological Evolution Tree)"
+theme_override_font_sizes/font_size = 16
+text = "科技树"
 
 [node name="CountLabel" type="Label" parent="CenterPanel/VBox/Header/HBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.18, 0.46, 0.62, 1.00)
-theme_override_font_sizes/font_size = 13
-text = "已研发: 0 / 40"
+theme_override_font_sizes/font_size = 14
+text = "已研发 0 / 40"
 
 [node name="Spacer" type="Control" parent="CenterPanel/VBox/Header/HBox"]
 layout_mode = 2
@@ -68,7 +68,7 @@ size_flags_horizontal = 3
 custom_minimum_size = Vector2(80, 28)
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "居中重置"
+text = "回到起点"
 
 [node name="BtnClose" type="Button" parent="CenterPanel/VBox/Header/HBox"]
 custom_minimum_size = Vector2(84, 28)

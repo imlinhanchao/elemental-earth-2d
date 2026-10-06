@@ -54,14 +54,14 @@ stretch_mode = 5
 
 [node name="Title" type="Label" parent="CenterPanel/VBox/Header"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "物品清单"
+theme_override_font_sizes/font_size = 16
+text = "行囊"
 
 [node name="CapacityLabel" type="Label" parent="CenterPanel/VBox/Header"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.37, 0.34, 0.30, 1.00)
-theme_override_font_sizes/font_size = 13
-text = "已占用: 0 / 80"
+theme_override_font_sizes/font_size = 14
+text = "0 / 80 格"
 
 [node name="Spacer" type="Control" parent="CenterPanel/VBox/Header"]
 layout_mode = 2
@@ -70,7 +70,7 @@ size_flags_horizontal = 3
 [node name="BtnSort" type="Button" parent="CenterPanel/VBox/Header"]
 custom_minimum_size = Vector2(80, 28)
 layout_mode = 2
-text = "规整排序"
+text = "整理"
 
 [node name="BtnClose" type="Button" parent="CenterPanel/VBox/Header"]
 custom_minimum_size = Vector2(84, 28)
@@ -111,7 +111,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.37, 0.34, 0.30, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "鼠标悬停查看物料详情与化学构成 · 按 [B] 或 [ESC] / 鼠标右键关闭清单"
+text = "悬停查看详情 · B、ESC 或右键关闭"
 
 [node name="FloatingTooltip" type="PanelContainer" parent="."]
 visible = false
@@ -135,7 +135,7 @@ mouse_filter = 2
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.15, 0.14, 0.13, 1.00)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 16
 text = "物品名称"
 
 [node name="CategoryBadge" type="Label" parent="FloatingTooltip/TipVBox/TitleRow"]
@@ -148,7 +148,7 @@ text = "【材料】"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.58, 0.48, 0.16, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "化学组成: -"
+text = "单质：-"
 
 [node name="Sep1" type="HSeparator" parent="FloatingTooltip/TipVBox"]
 layout_mode = 2
@@ -175,7 +175,7 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.28, 0.62, 0.34, 1.00)
 theme_override_font_sizes/font_size = 12
-text = "库存数量: 0"
+text = "数量 0"
 
 [node name="AttrLabel" type="Label" parent="FloatingTooltip/TipVBox/BottomRow"]
 layout_mode = 2

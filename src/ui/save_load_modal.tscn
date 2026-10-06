@@ -54,7 +54,7 @@ layout_mode = 2
 [node name="TitleLabel" type="Label" parent="CenterPanel/VBox/Header/HBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 16
-text = "档案库管理"
+text = "存档"
 
 [node name="Spacer" type="Control" parent="CenterPanel/VBox/Header/HBox"]
 layout_mode = 2
@@ -118,13 +118,13 @@ layout_mode = 2
 
 [node name="Title" type="Label" parent="ConfirmDialog/Margin/VBox/Header"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "档案操作确认"
+theme_override_font_sizes/font_size = 16
+text = "确认"
 
 [node name="ConfirmText" type="Label" parent="ConfirmDialog/Margin/VBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 13
-text = "确认覆盖或删除此档案吗？"
+theme_override_font_sizes/font_size = 14
+text = "确定执行吗？"
 autowrap_mode = 2
 
 [node name="BtnHBox" type="HBoxContainer" parent="ConfirmDialog/Margin/VBox"]

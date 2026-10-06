@@ -90,11 +90,10 @@ func _ready() -> void:
 		overlay_layer.queue_redraw()
 	)
 	
-	GameState.era_advanced.connect(func(_old, _new, era_name):
+	GameState.era_advanced.connect(func(_old, _new, _era_name):
 		apply_depleted_tiles_to_nodes()
 		terrain_layer.refresh()
 		overlay_layer.queue_redraw()
-		GameState.post_notice("【领地疆域扩展】随着迈向【%s】，文明疆域拓展至半径 %d 格！" % [era_name, GameState.get_current_territory_radius()], Color(1.0, 0.85, 0.2))
 		SaveManager.save_to_slot("auto", self)
 	)
 	
@@ -105,7 +104,7 @@ func _ready() -> void:
 		SaveManager.load_from_slot(target, self)
 		hud._update_era_label()
 	else:
-		GameState.post_notice("[开局引导] 鼠标点击地表【碎石】、【枯树枝】加入工作队列！点击盐湖打水！右键拖拽视野！", Color(1.0, 0.88, 0.4))
+		GameState.post_notice("点击碎石、枯树枝开始采集，点击盐湖打水，右键拖拽移动视野", Color(1.0, 0.88, 0.4))
 	
 	# 开发截图：携带 --screenshot[-场景名] 参数时运行 tools/screenshot_scenarios.gd
 	for arg in OS.get_cmdline_user_args() + OS.get_cmdline_args():
@@ -215,12 +214,12 @@ func _clamp_camera(pos: Vector2) -> Vector2:
 
 func _handle_tile_click(hex: Vector2i) -> void:
 	if not GameState.is_hex_in_territory(hex.x, hex.y):
-		GameState.post_notice("此区域超出当前文明领地边界！", Color(1.0, 0.45, 0.3))
+		GameState.post_notice("该地块在领地外", Color(1.0, 0.45, 0.3))
 		return
 		
 	var available = GameState.get_tile_available_resources(hex)
 	if available.is_empty():
-		GameState.post_notice("该区块无可开采的资源储备（已采尽）！", Color.GRAY)
+		GameState.post_notice("该地块已采完", Color.GRAY)
 		return
 		
 	# 点击一下只开采一下主要资源
@@ -230,12 +229,12 @@ func _handle_tile_click(hex: Vector2i) -> void:
 
 func _handle_tile_right_click(hex: Vector2i, screen_pos: Vector2) -> void:
 	if not GameState.is_hex_in_territory(hex.x, hex.y):
-		GameState.post_notice("此区域超出当前文明领地边界！", Color(1.0, 0.45, 0.3))
+		GameState.post_notice("该地块在领地外", Color(1.0, 0.45, 0.3))
 		return
 		
 	var available = GameState.get_tile_available_resources(hex)
 	if available.is_empty():
-		GameState.post_notice("该区块无可开采的资源储备（已采尽）！", Color.GRAY)
+		GameState.post_notice("该地块已采完", Color.GRAY)
 		return
 		
 	if tile_context_menu:
@@ -281,7 +280,7 @@ func enter_placement_mode(structure_key: String) -> void:
 	var recipe = DataDB.get_building_recipe(structure_key)
 	var b_name = recipe.get("name", structure_key)
 	hud.show_placement_mode(b_name)
-	GameState.post_notice("建造选址: 请在领地空闲地块点击安放【%s】(右键或ESC取消)" % b_name, Color(0.3, 0.9, 0.6))
+	GameState.post_notice("选择位置放置%s（右键或 ESC 取消）" % b_name, Color(0.3, 0.9, 0.6))
 	overlay_layer.queue_redraw()
 
 func cancel_placement_mode() -> void:
@@ -296,7 +295,7 @@ func cancel_placement_mode() -> void:
 func confirm_placement(hex: Vector2i) -> void:
 	var check = get_build_validity(hex)
 	if not check.get("valid", false):
-		GameState.post_notice("无法在此建造: %s" % check.get("reason", "无效地块"), Color(1.0, 0.4, 0.4))
+		GameState.post_notice("无法在此建造：%s" % check.get("reason", "无效地块"), Color(1.0, 0.4, 0.4))
 		return
 	var key = placing_structure_key
 	is_placing_structure = false
@@ -322,11 +321,11 @@ func _find_valid_build_hex(preferred_hex: Vector2i) -> Vector2i:
 func _on_build_structure_requested(structure_key: String) -> void:
 	var recipe = DataDB.get_building_recipe(structure_key)
 	if recipe.is_empty():
-		GameState.post_notice("未知建筑类型: %s" % structure_key, Color.RED)
+		GameState.post_notice("未知建筑：%s" % structure_key, Color.RED)
 		return
 	var req_items = recipe.get("required_items", [])
 	if not GameState.sim.has_ingredients(req_items):
-		GameState.post_notice("建造原料不足！需要: %s" % GameState.sim.describe_ingredients(req_items), Color.RED)
+		GameState.post_notice("材料不足，需要 %s" % GameState.sim.describe_ingredients(req_items), Color.RED)
 		return
 		
 	# 启动地图自由交互放置模式
