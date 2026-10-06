@@ -769,6 +769,15 @@
 - 所有模态弹窗、教程坞、元素发现弹窗、主菜单的深海蓝/电光青硬编码色替换为暖墨与铜赭；
 - 已知遗留：`tests/test_save_v3.tscn` 中「研发材料消耗扣减」断言在本次改动前即失败，与美术改动无关。
 
+### 2.38 文字清晰度修复与卡顿根因治理 (2026-10-06)
+
+- **文字发虚根因**：Noto Sans SC 为可变字体，`wght` 轴默认值是 100 (Thin)，导致全局文字以极细字重渲染。`ThemeStyler` 改用 `FontVariation` 固定字重（正文 400、按钮 700、数值 500）；
+- **分辨率适配**：`window/stretch/aspect` 由 `keep` 改为 `expand`，非 16:9 窗口不再出现黑边、等比缩小；所有 SVG 导入统一 `svg/scale=3.0` 加 mipmaps；全部字号不低于 12px；用户可见文案去除 emoji；
+- **地形不再逐帧重建**：`terrain_layer` 固定绘制半径 26 圈（外圈为廉价网格），镜头平移和缩放只移动 Camera2D，仅在 LOD 阈值、时代跃迁、读档时重绘；镜头限制在 ±1500px 内；领地半径按时代缓存；
+- **资源节点被动化**：`resource_node` 不再有 `_process`、5 个全局信号连接和物理拾取，由 `world.resource_nodes` 索引驱动悬停、采空和重生，作业进度环只由 `overlay_layer` 绘制；
+- **图标管线**：`ItemIconManager.load_texture/get_icon` 只加载导入纹理并缓存，删除全部运行时 ThorVG 栅格化（导出包中原始 SVG 不存在）；
+- **测试**：修正 `test_save_v3` 研发扣减断言（前一步载入的 v2 存档残留了碎石），两套测试均通过。
+
 ---
 
 ## 4. 全局键盘与鼠标操作控制总览 (Global Controls & Hotkeys)
