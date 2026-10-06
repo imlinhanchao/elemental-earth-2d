@@ -181,7 +181,7 @@ func _setup_era_timeline() -> void:
 	for i in range(eras.size()):
 		var e = eras[i]
 		var chip = PanelContainer.new()
-		var chip_box = ThemeStyler.create_pill_box(10, Color(0.08, 0.12, 0.18, 0.85), Color(0.20, 0.28, 0.38, 0.65))
+		var chip_box = ThemeStyler.create_pill_box(10, Color(0.16, 0.145, 0.13, 0.85), Color(0.33, 0.30, 0.26, 0.65))
 		chip_box.content_margin_left = 6
 		chip_box.content_margin_right = 8
 		chip_box.content_margin_top = 2
@@ -212,7 +212,7 @@ func _setup_era_timeline() -> void:
 			var arrow = Label.new()
 			arrow.text = "›"
 			arrow.add_theme_font_size_override("font_size", 11)
-			arrow.add_theme_color_override("font_color", Color(0.32, 0.42, 0.55))
+			arrow.add_theme_color_override("font_color", Color(0.45, 0.41, 0.36))
 			era_timeline.add_child(arrow)
 
 func _setup_buttons() -> void:
@@ -248,7 +248,7 @@ func _configure_menu_btn(btn: Button, title: String, en_title: String, icon_res:
 	var indicator = ColorRect.new()
 	indicator.name = "Indicator"
 	indicator.custom_minimum_size = Vector2(4, 28)
-	indicator.color = Color(0.22, 0.74, 0.97, 0.0) # 默认隐藏
+	indicator.color = Color(0.85, 0.60, 0.30, 0.0) # 默认隐藏
 	indicator.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	indicator.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	hbox.add_child(indicator)
@@ -277,7 +277,7 @@ func _configure_menu_btn(btn: Button, title: String, en_title: String, icon_res:
 	title_lbl.name = "TitleLbl"
 	title_lbl.text = title
 	title_lbl.add_theme_font_size_override("font_size", 15)
-	title_lbl.add_theme_color_override("font_color", Color(0.95, 0.96, 0.98))
+	title_lbl.add_theme_color_override("font_color", Color(0.96, 0.93, 0.87))
 	title_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	text_vbox.add_child(title_lbl)
 	
@@ -285,7 +285,7 @@ func _configure_menu_btn(btn: Button, title: String, en_title: String, icon_res:
 	en_lbl.name = "EnLbl"
 	en_lbl.text = en_title
 	en_lbl.add_theme_font_size_override("font_size", 10)
-	en_lbl.add_theme_color_override("font_color", Color(0.45, 0.52, 0.62))
+	en_lbl.add_theme_color_override("font_color", Color(0.55, 0.51, 0.45))
 	en_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	text_vbox.add_child(en_lbl)
 	
@@ -299,7 +299,7 @@ func _configure_menu_btn(btn: Button, title: String, en_title: String, icon_res:
 	var badge_panel = PanelContainer.new()
 	badge_panel.name = "KeyBadge"
 	badge_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	var badge_style = ThemeStyler.create_pill_box(6, Color(0.06, 0.09, 0.14, 0.95), Color(0.20, 0.28, 0.38, 0.7))
+	var badge_style = ThemeStyler.create_pill_box(6, Color(0.12, 0.11, 0.10, 0.95), Color(0.33, 0.30, 0.26, 0.7))
 	badge_style.content_margin_left = 8
 	badge_style.content_margin_right = 8
 	badge_style.content_margin_top = 2
@@ -311,18 +311,18 @@ func _configure_menu_btn(btn: Button, title: String, en_title: String, icon_res:
 	key_lbl.name = "KeyLbl"
 	key_lbl.text = key_hint
 	key_lbl.add_theme_font_size_override("font_size", 11)
-	key_lbl.add_theme_color_override("font_color", Color(0.55, 0.65, 0.78))
+	key_lbl.add_theme_color_override("font_color", Color(0.68, 0.63, 0.56))
 	key_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	badge_panel.add_child(key_lbl)
 	
 	# 按钮本体底板样式
-	var norm_box = ThemeStyler.create_card_box(8, Color(0.075, 0.10, 0.15, 0.85), Color(0.18, 0.24, 0.34, 0.6))
+	var norm_box = ThemeStyler.create_card_box(8, Color(0.14, 0.13, 0.12, 0.85), Color(0.30, 0.27, 0.23, 0.6))
 	norm_box.content_margin_left = 0
 	norm_box.content_margin_right = 0
 	norm_box.content_margin_top = 0
 	norm_box.content_margin_bottom = 0
 	
-	var hover_box = ThemeStyler.create_card_box(8, Color(0.11, 0.16, 0.25, 0.95), Color(0.22, 0.74, 0.97, 0.9))
+	var hover_box = ThemeStyler.create_card_box(8, Color(0.20, 0.18, 0.16, 0.95), Color(0.85, 0.60, 0.30, 0.9))
 	hover_box.content_margin_left = 0
 	hover_box.content_margin_right = 0
 	hover_box.content_margin_top = 0
@@ -339,18 +339,18 @@ func _configure_menu_btn(btn: Button, title: String, en_title: String, icon_res:
 	var on_enter = func():
 		var tw = btn.create_tween().set_parallel(true)
 		tw.tween_property(btn, "position:x", 12.0, 0.16).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tw.tween_property(indicator, "color", Color(0.22, 0.74, 0.97, 1.0), 0.15)
+		tw.tween_property(indicator, "color", Color(0.85, 0.60, 0.30, 1.0), 0.15)
 		tw.tween_property(title_lbl, "theme_override_colors/font_color", Color(1.0, 1.0, 1.0), 0.15)
-		tw.tween_property(en_lbl, "theme_override_colors/font_color", Color(0.38, 0.82, 1.0), 0.15)
-		tw.tween_property(key_lbl, "theme_override_colors/font_color", Color(0.38, 0.82, 1.0), 0.15)
+		tw.tween_property(en_lbl, "theme_override_colors/font_color", Color(0.93, 0.70, 0.40), 0.15)
+		tw.tween_property(key_lbl, "theme_override_colors/font_color", Color(0.93, 0.70, 0.40), 0.15)
 		
 	var on_exit = func():
 		var tw = btn.create_tween().set_parallel(true)
 		tw.tween_property(btn, "position:x", 0.0, 0.20).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-		tw.tween_property(indicator, "color", Color(0.22, 0.74, 0.97, 0.0), 0.15)
-		tw.tween_property(title_lbl, "theme_override_colors/font_color", Color(0.95, 0.96, 0.98), 0.15)
-		tw.tween_property(en_lbl, "theme_override_colors/font_color", Color(0.45, 0.52, 0.62), 0.15)
-		tw.tween_property(key_lbl, "theme_override_colors/font_color", Color(0.55, 0.65, 0.78), 0.15)
+		tw.tween_property(indicator, "color", Color(0.85, 0.60, 0.30, 0.0), 0.15)
+		tw.tween_property(title_lbl, "theme_override_colors/font_color", Color(0.96, 0.93, 0.87), 0.15)
+		tw.tween_property(en_lbl, "theme_override_colors/font_color", Color(0.55, 0.51, 0.45), 0.15)
+		tw.tween_property(key_lbl, "theme_override_colors/font_color", Color(0.68, 0.63, 0.56), 0.15)
 		
 	btn.mouse_entered.connect(on_enter)
 	btn.mouse_exited.connect(on_exit)
@@ -360,7 +360,7 @@ func _configure_menu_btn(btn: Button, title: String, en_title: String, icon_res:
 func _setup_archive_card() -> void:
 	if not archive_card:
 		return
-	var card_box = ThemeStyler.create_card_box(12, ThemeStyler.COLOR_BG_SOLID, Color(0.22, 0.74, 0.97, 0.6))
+	var card_box = ThemeStyler.create_card_box(12, ThemeStyler.COLOR_BG_SOLID, Color(0.85, 0.60, 0.30, 0.6))
 	card_box.content_margin_left = 18
 	card_box.content_margin_top = 16
 	card_box.content_margin_right = 18
@@ -382,7 +382,7 @@ func _setup_archive_card() -> void:
 	if latest_slot != "":
 		var meta = SaveManager.get_slot_meta(latest_slot)
 		header_lbl.text = "【开拓档案快照 · %s】" % meta.get("slot_name", "自动存档")
-		header_lbl.add_theme_color_override("font_color", Color(0.38, 0.82, 1.0))
+		header_lbl.add_theme_color_override("font_color", Color(0.93, 0.70, 0.40))
 		
 		var era_name = meta.get("era_name", "石器时代")
 		var ptime = meta.get("playtime_formatted", "00:00")
@@ -395,7 +395,7 @@ func _setup_archive_card() -> void:
 		header_lbl.add_theme_color_override("font_color", Color(0.95, 0.75, 0.35))
 		body_lbl.text = "万物皆由 118 种元素筑就。\n拾取地表碎石与燧石，点亮属于人类文明的科学之火。"
 		hint_lbl.text = "✨ 按 [N] 开启全新的拓荒征程"
-		hint_lbl.add_theme_color_override("font_color", Color(0.38, 0.82, 1.0))
+		hint_lbl.add_theme_color_override("font_color", Color(0.93, 0.70, 0.40))
 
 func _play_entrance_animation() -> void:
 	# 入场级联展开动效
@@ -418,16 +418,16 @@ func _draw() -> void:
 	var size = get_viewport_rect().size
 	
 	# 1. 深度夜蓝底色
-	draw_rect(Rect2(Vector2.ZERO, size), Color(0.045, 0.060, 0.090, 1.0))
+	draw_rect(Rect2(Vector2.ZERO, size), Color(0.070, 0.064, 0.058, 1.0))
 	
 	var center = Vector2(size.x * 0.71, size.y * 0.46) + mouse_parallax
 	
 	# 2. 径向多层天象仪能量微光
 	var glow_layers = [
-		{"r": 480.0, "col": Color(0.06, 0.12, 0.22, 0.08)},
-		{"r": 320.0, "col": Color(0.08, 0.18, 0.35, 0.14)},
-		{"r": 180.0, "col": Color(0.12, 0.32, 0.55, 0.22)},
-		{"r": 90.0, "col": Color(0.22, 0.65, 0.95, 0.32)}
+		{"r": 480.0, "col": Color(0.14, 0.10, 0.06, 0.08)},
+		{"r": 320.0, "col": Color(0.22, 0.15, 0.08, 0.14)},
+		{"r": 180.0, "col": Color(0.40, 0.26, 0.12, 0.22)},
+		{"r": 90.0, "col": Color(0.85, 0.58, 0.28, 0.32)}
 	]
 	for g in glow_layers:
 		draw_circle(center, g["r"] + sin(bg_time * 1.5) * 6.0, g["col"])
@@ -459,7 +459,7 @@ func _draw_background_hex_lattice(center: Vector2, size: Vector2) -> void:
 			if dist < 650.0:
 				var wave = sin(bg_time * 0.8 - dist * 0.008)
 				var alpha = clampf(0.015 + 0.025 * wave, 0.005, 0.045) * (1.0 - dist / 650.0)
-				_draw_hex_wire(Vector2(cx, cy), hex_r * 0.95, Color(0.22, 0.74, 0.97, alpha))
+				_draw_hex_wire(Vector2(cx, cy), hex_r * 0.95, Color(0.85, 0.60, 0.30, alpha))
 
 func _draw_particles() -> void:
 	var font = get_theme_default_font()
@@ -467,7 +467,7 @@ func _draw_particles() -> void:
 		var pulse = sin(p["phase"]) * 0.3 + 0.7
 		var alpha = p["base_alpha"] * pulse
 		if p["symbol"] != "" and font:
-			var col = Color(0.38, 0.82, 1.0, alpha)
+			var col = Color(0.93, 0.70, 0.40, alpha)
 			draw_string(font, p["pos"], p["symbol"], HORIZONTAL_ALIGNMENT_CENTER, -1, 11, col)
 		else:
 			var col = Color(0.38, 0.75, 1.0, alpha * 0.6)
@@ -476,15 +476,15 @@ func _draw_particles() -> void:
 func _draw_atomic_orbitals(center: Vector2) -> void:
 	# 核心原子核
 	var nuc_pulse = sin(bg_time * 2.5) * 3.0
-	draw_circle(center, 26.0 + nuc_pulse, Color(0.15, 0.45, 0.80, 0.35))
-	draw_circle(center, 15.0 + nuc_pulse * 0.5, Color(0.22, 0.74, 0.97, 0.75))
-	draw_circle(center, 7.0, Color(0.96, 0.98, 1.0, 1.0))
+	draw_circle(center, 26.0 + nuc_pulse, Color(0.60, 0.38, 0.18, 0.35))
+	draw_circle(center, 15.0 + nuc_pulse * 0.5, Color(0.85, 0.60, 0.30, 0.75))
+	draw_circle(center, 7.0, Color(0.98, 0.95, 0.88, 1.0))
 	
 	# 3 个核心互旋核子
 	for k in range(3):
 		var k_ang = bg_time * 1.8 + k * (TAU / 3.0)
 		var k_pos = center + Vector2(cos(k_ang), sin(k_ang)) * 14.0
-		var k_col = Color(0.38, 0.82, 1.0) if k % 2 == 0 else Color(1.0, 0.75, 0.35)
+		var k_col = Color(0.93, 0.70, 0.40) if k % 2 == 0 else Color(1.0, 0.75, 0.35)
 		draw_circle(k_pos, 4.0, k_col)
 		
 	# 4 条倾斜玻尔椭圆轨道与发光电子流
@@ -503,7 +503,7 @@ func _draw_atomic_orbitals(center: Vector2) -> void:
 			var a = (float(i) / float(segs)) * TAU
 			var raw = Vector2(cos(a) * o["rx"], sin(a) * o["ry"])
 			pts.append(center + raw.rotated(o["tilt"]))
-		draw_polyline(pts, Color(0.22, 0.74, 0.97, 0.22), 1.0, true)
+		draw_polyline(pts, Color(0.85, 0.60, 0.30, 0.22), 1.0, true)
 		
 		# 绘制轨道上的高速电子与发光拖尾
 		var num_e = o["electrons"]
@@ -517,12 +517,12 @@ func _draw_atomic_orbitals(center: Vector2) -> void:
 				var raw_p = Vector2(cos(past_t) * o["rx"], sin(past_t) * o["ry"]).rotated(o["tilt"])
 				var trail_pos = center + raw_p
 				var trail_alpha = (1.0 - float(t_step) / float(trail_len)) * 0.35
-				draw_circle(trail_pos, 2.5 * (1.0 - float(t_step) / float(trail_len)), Color(0.22, 0.74, 0.97, trail_alpha))
+				draw_circle(trail_pos, 2.5 * (1.0 - float(t_step) / float(trail_len)), Color(0.85, 0.60, 0.30, trail_alpha))
 				
 			# 电子核心发光点
 			var cur_p = Vector2(cos(base_t) * o["rx"], sin(base_t) * o["ry"]).rotated(o["tilt"])
 			var e_pos = center + cur_p
-			draw_circle(e_pos, 7.5, Color(0.22, 0.74, 0.97, 0.35))
+			draw_circle(e_pos, 7.5, Color(0.85, 0.60, 0.30, 0.35))
 			draw_circle(e_pos, 3.2, Color(1.0, 1.0, 1.0, 1.0))
 
 func _draw_elemental_satellites(center: Vector2) -> void:
@@ -534,7 +534,7 @@ func _draw_elemental_satellites(center: Vector2) -> void:
 	for i in range(73):
 		var a = (float(i) / 72.0) * TAU
 		ring_pts.append(center + Vector2(cos(a), sin(a)) * sat_r)
-	draw_polyline(ring_pts, Color(0.22, 0.74, 0.97, 0.14), 1.0, true)
+	draw_polyline(ring_pts, Color(0.85, 0.60, 0.30, 0.14), 1.0, true)
 	
 	# 6 颗代表性元素公转卫星
 	for idx in range(SATELLITE_ELEMENTS.size()):
@@ -543,14 +543,14 @@ func _draw_elemental_satellites(center: Vector2) -> void:
 		var sat_pos = center + Vector2(cos(sat_angle), sin(sat_angle)) * sat_r
 		
 		# 核心连接脉冲光束
-		draw_line(center, sat_pos, Color(0.22, 0.74, 0.97, 0.10), 1.0)
+		draw_line(center, sat_pos, Color(0.85, 0.60, 0.30, 0.10), 1.0)
 		var pulse_t = fmod(bg_time * 0.5 + idx * 0.16, 1.0)
 		var pulse_pos = center.lerp(sat_pos, pulse_t)
-		draw_circle(pulse_pos, 2.5, Color(0.38, 0.82, 1.0, 0.7))
+		draw_circle(pulse_pos, 2.5, Color(0.93, 0.70, 0.40, 0.7))
 		
 		# 六边形卫星外框与底板
 		var hex_size = 22.0
-		_draw_hex_filled(sat_pos, hex_size, Color(0.07, 0.10, 0.16, 0.90))
+		_draw_hex_filled(sat_pos, hex_size, Color(0.14, 0.13, 0.12, 0.90))
 		_draw_hex_wire(sat_pos, hex_size, info["col"])
 		
 		# 绘制元素符号与原子序数

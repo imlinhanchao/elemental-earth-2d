@@ -1,8 +1,9 @@
 # terrain_layer.gd
-# 领地内采用无缝融合自然群系地貌绘图；未解锁地貌采用全屏动态暗色瓦片透视线框；领地仅描最外圈金边
+# 地质测绘图风格：领地内为浅色群系底色 + 墨线地图符号；未解锁区域为图纸白与铅笔网格；领地仅描最外圈边界
 extends Node2D
 
 const HexWorldGenerator = preload("res://src/core/hex_world_generator.gd")
+const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 
 const HEX_EDGE_DIRS: Array[Vector2i] = [
 	Vector2i(1, 0),   # edge 0: vertex 0 -> 1 (East)
@@ -35,7 +36,7 @@ func _draw() -> void:
 	var min_y = center_pos.y - half_h
 	var max_y = center_pos.y + half_h
 		
-	# 绘制深海蓝图背景网格 (动态全屏覆盖)
+	# 绘制测绘图纸网格 (动态全屏覆盖)
 	_draw_blueprint_grid(min_x - 300.0, max_x + 300.0, min_y - 300.0, max_y + 300.0)
 	
 	# 2. 遍历整个屏幕可见范围内的所有六边形 (q, r)，实现 100% 铺满全屏
@@ -74,7 +75,7 @@ func _draw() -> void:
 					_draw_connected_biome_terrain(center, points, biome, same_biome_neighbors, q, r)
 				else:
 					var base_col = HexWorldGenerator.get_biome_color(biome)
-					draw_circle(center, 10.0, Color(base_col.r * 1.15, base_col.g * 1.15, base_col.b * 1.15, 0.25))
+					draw_circle(center, 3.0, base_col.darkened(0.35))
 				
 				# 领地内不同群系交界处的自然有机散落过渡
 				for e in range(6):
@@ -89,7 +90,7 @@ func _draw() -> void:
 				# 战术六边形微弱顶点标记
 				if current_lod >= 1:
 					for pt in points:
-						draw_circle(pt, 1.5, Color(1.0, 1.0, 1.0, 0.15))
+						draw_circle(pt, 1.2, Color(0.20, 0.18, 0.15, 0.12))
 			else:
 				# === 未解锁地块：暗色瓦片透视线框 (铺满整个视野与全图) ===
 				var card_radius = HexWorldGenerator.HEX_RADIUS * 0.90
@@ -99,10 +100,11 @@ func _draw() -> void:
 					dark_points.append(center + Vector2(cos(angle), sin(angle)) * card_radius)
 				dark_points.append(dark_points[0])
 				
-				draw_colored_polygon(dark_points, Color(0.08, 0.12, 0.18, 0.35))
-				draw_polyline(dark_points, Color(0.18, 0.26, 0.38, 0.45), 1.0)
+				draw_colored_polygon(dark_points, Color(0.95, 0.93, 0.89, 0.85))
+				draw_polyline(dark_points, Color(0.55, 0.50, 0.43, 0.30), 1.0)
 				
-	# 3. 绘制领地最外圈发光金边 (仅描最外圈边界)
+	# 3. 绘制领地最外圈边界 (仅描最外圈，颜色随时代强调色)
+	var border_col: Color = ThemeStyler.get_era_accent(GameState.current_era)
 	for coord in generated_hexes.keys():
 		if GameState.is_hex_in_territory(coord.x, coord.y):
 			var c = HexWorldGenerator.hex_to_pixel(coord.x, coord.y)
@@ -113,72 +115,66 @@ func _draw() -> void:
 					var a2 = deg_to_rad(60.0 * ((i + 1) % 6) - 30.0)
 					var p1 = c + Vector2(cos(a1), sin(a1)) * HexWorldGenerator.HEX_RADIUS
 					var p2 = c + Vector2(cos(a2), sin(a2)) * HexWorldGenerator.HEX_RADIUS
-					draw_line(p1, p2, Color(1.0, 0.85, 0.2, 0.35), 4.5)
-					draw_line(p1, p2, Color(1.0, 0.90, 0.35, 0.95), 1.8)
+					# 测绘图行政边界：时代色柔晕 + 深色虚线
+					draw_line(p1, p2, Color(border_col.r, border_col.g, border_col.b, 0.28), 6.0)
+					draw_dashed_line(p1, p2, border_col.darkened(0.25), 2.2, 7.0)
 
-# 群系连通融合绘制系统
+# 群系地图符号绘制 (地质测绘图图例风格：墨线符号，低对比、少而精)
 func _draw_connected_biome_terrain(center: Vector2, points: PackedVector2Array, biome: HexWorldGenerator.BiomeType, same_neighbors: Array[int], _q: int, _r: int) -> void:
+	var seed_f = float(_q * 73 + _r * 151)
 	match biome:
 		HexWorldGenerator.BiomeType.VOLCANO:
-			draw_circle(center + Vector2(0, 1), 12.0, Color(0.12, 0.04, 0.03, 0.9))
-			draw_circle(center, 7.5, Color(0.85, 0.25, 0.08, 0.92))
-			draw_circle(center, 3.5, Color(1.0, 0.85, 0.25, 0.98))
-			draw_circle(center, 1.5, Color(1.0, 0.98, 0.80, 1.0))
-			
+			# 火山：晕滃线 (hachure) 山体符号 + 熔岩脉细红线
+			var peak = center + Vector2(0, -2)
+			draw_colored_polygon(PackedVector2Array([peak + Vector2(-9, 7), peak + Vector2(0, -7), peak + Vector2(9, 7)]), Color(0.55, 0.32, 0.24, 0.45))
+			for k in range(5):
+				var base_pt = peak + Vector2(-9, 7).lerp(Vector2(9, 7), float(k) / 4.0)
+				var top_pt = (peak + Vector2(0, -7)).lerp(base_pt, 0.35)
+				draw_line(top_pt, base_pt, Color(0.35, 0.18, 0.12, 0.55), 1.0)
+			draw_circle(peak + Vector2(0, -7), 1.8, Color(0.80, 0.30, 0.18, 0.9))
 			for e in same_neighbors:
 				if (e + _q * 2 + _r) % 3 == 0:
-					var p1 = points[e]
-					var p2 = points[(e + 1) % 6]
-					var edge_mid = (p1 + p2) * 0.5
+					var edge_mid = (points[e] + points[(e + 1) % 6]) * 0.5
 					var delta_v = edge_mid - center
 					var norm = Vector2(-delta_v.y, delta_v.x).normalized()
-					var bend_mag = sin(float(_q * 43 + _r * 71 + e * 23)) * 3.0
-					var waypoint = (center + edge_mid) * 0.5 + norm * bend_mag
-					
-					draw_polyline([center, waypoint, edge_mid], Color(0.85, 0.20, 0.05, 0.25), 5.0)
-					draw_polyline([center, waypoint, edge_mid], Color(0.12, 0.05, 0.04, 0.85), 3.2)
-					draw_polyline([center, waypoint, edge_mid], Color(1.0, 0.45, 0.12, 0.95), 1.8)
-					draw_polyline([center, waypoint, edge_mid], Color(1.0, 0.90, 0.45, 0.95), 0.8)
-				
+					var waypoint = (center + edge_mid) * 0.5 + norm * sin(seed_f + e * 23.0) * 3.0
+					draw_polyline([center + Vector2(0, 6), waypoint, edge_mid], Color(0.75, 0.28, 0.16, 0.55), 1.4)
+
 		HexWorldGenerator.BiomeType.SALT_LAKE:
-			draw_arc(center + Vector2(-4, -2), 14.0, 0.2, PI - 0.2, 12, Color(0.55, 0.80, 0.95, 0.35), 2.2)
-			draw_arc(center + Vector2(6, 4), 10.0, PI + 0.2, TAU - 0.2, 10, Color(0.65, 0.88, 1.0, 0.30), 2.0)
-			
-			for e in same_neighbors:
-				var p1 = points[e]
-				var p2 = points[(e + 1) % 6]
-				var edge_mid = (p1 + p2) * 0.5
-				var wave_center = (center + edge_mid) * 0.5
-				draw_arc(wave_center, 9.0, 0, PI, 8, Color(0.60, 0.85, 1.0, 0.35), 1.8)
-				
+			# 盐湖：水域平行波纹 (地图水体符号) + 盐渍白点
+			var wave_col = Color(0.28, 0.45, 0.55, 0.45)
+			for k in range(3):
+				var y = -8.0 + float(k) * 8.0
+				var x0 = -11.0 + sin(seed_f + k) * 2.0
+				var pts = PackedVector2Array()
+				for j in range(7):
+					pts.append(center + Vector2(x0 + float(j) * 3.6, y + (1.2 if j % 2 == 0 else -1.2)))
+				draw_polyline(pts, wave_col, 1.0)
+			draw_circle(center + Vector2(9, 9), 1.4, Color(1, 1, 1, 0.7))
+			draw_circle(center + Vector2(-10, 6), 1.1, Color(1, 1, 1, 0.6))
+
 		HexWorldGenerator.BiomeType.DEEP_FOREST:
-			draw_circle(center + Vector2(0, 4), 18.0, Color(0.04, 0.10, 0.05, 0.45))
-			draw_circle(center, 16.0, Color(0.07, 0.16, 0.09))
-			draw_circle(center + Vector2(-2, -3), 13.0, Color(0.13, 0.30, 0.15))
-			draw_circle(center + Vector2(-3, -5), 8.5, Color(0.22, 0.48, 0.22))
-			draw_circle(center + Vector2(2, -6), 5.5, Color(0.35, 0.65, 0.32))
-			
+			# 深林：林地符号 (圆冠 + 树干)，向相邻林地延伸
+			_draw_tree_symbol(center + Vector2(-6, 2))
+			_draw_tree_symbol(center + Vector2(6, -3))
 			for e in same_neighbors:
-				var p1 = points[e]
-				var p2 = points[(e + 1) % 6]
-				var edge_mid = (p1 + p2) * 0.5
-				var bridge_pos = center * 0.45 + edge_mid * 0.55
-				draw_circle(bridge_pos + Vector2(0, 3), 12.0, Color(0.04, 0.10, 0.05, 0.4))
-				draw_circle(bridge_pos, 11.0, Color(0.08, 0.18, 0.10))
-				draw_circle(bridge_pos + Vector2(-2, -2), 8.0, Color(0.15, 0.34, 0.17))
-				draw_circle(bridge_pos + Vector2(-3, -3), 5.0, Color(0.25, 0.54, 0.25))
-				
+				if e % 2 == 0:
+					var edge_mid = (points[e] + points[(e + 1) % 6]) * 0.5
+					_draw_tree_symbol(center * 0.45 + edge_mid * 0.55)
+
 		HexWorldGenerator.BiomeType.PLAINS:
-			draw_arc(center + Vector2(-6, -4), 12.0, 0.3, PI - 0.3, 10, Color(0.28, 0.44, 0.24, 0.40), 1.5)
-			draw_arc(center + Vector2(8, 6), 9.0, PI + 0.3, TAU - 0.3, 8, Color(0.32, 0.48, 0.26, 0.35), 1.5)
-			for e in same_neighbors:
-				var p1 = points[e]
-				var p2 = points[(e + 1) % 6]
-				var edge_mid = (p1 + p2) * 0.5
-				var mid_pos = center * 0.5 + edge_mid * 0.5
-				draw_line(mid_pos + Vector2(-3, 0), mid_pos + Vector2(-4, -5), Color(0.34, 0.54, 0.28), 1.3)
-				draw_line(mid_pos + Vector2(-3, 0), mid_pos + Vector2(-1, -6), Color(0.36, 0.58, 0.30), 1.3)
-				draw_circle(mid_pos + Vector2(3, 2), 1.8, Color(0.95, 0.88, 0.38, 0.70))
+			# 原野：稀疏草丛符号 (ψ 形短笔触)
+			var grass = Color(0.36, 0.45, 0.28, 0.55)
+			for k in range(2):
+				var gp = center + Vector2(cos(seed_f + k * 2.4), sin(seed_f + k * 2.4)) * 9.0
+				draw_line(gp, gp + Vector2(0, -4), grass, 1.0)
+				draw_line(gp, gp + Vector2(-2.5, -3), grass, 1.0)
+				draw_line(gp, gp + Vector2(2.5, -3), grass, 1.0)
+
+func _draw_tree_symbol(pos: Vector2) -> void:
+	draw_line(pos + Vector2(0, 2), pos + Vector2(0, 6), Color(0.30, 0.25, 0.18, 0.7), 1.2)
+	draw_circle(pos, 4.5, Color(0.30, 0.45, 0.30, 0.55))
+	draw_arc(pos, 4.5, 0, TAU, 12, Color(0.18, 0.28, 0.18, 0.75), 1.0)
 
 # 渐变过渡群系绘图系统：中心保持本群系核心纯色，外周多边形通过三角扇面 Gouraud 顶点色彩平滑过渡至邻居群系
 func _draw_gradient_biome_hex(center: Vector2, coord: Vector2i, biome: HexWorldGenerator.BiomeType, outer_pts: PackedVector2Array, generated_hexes: Dictionary) -> void:
@@ -263,52 +259,30 @@ func _draw_gradient_biome_hex(center: Vector2, coord: Vector2i, biome: HexWorldG
 			PackedColorArray([center_col, m_col, v_col2])
 		)
 
-# 异群系交界处自然有机过渡散落系统 (水草沙洲、泥泞湿地、落灰熔岩纹、林缘苔藓)
-func _draw_natural_biome_transition(p1: Vector2, p2: Vector2, my_biome: HexWorldGenerator.BiomeType, n_biome: HexWorldGenerator.BiomeType, center: Vector2, coord: Vector2i, edge_idx: int) -> void:
-	var edge_mid = (p1 + p2) * 0.5
-	var inward = (center - edge_mid).normalized()
-	var tangent = (p2 - p1).normalized()
-	var edge_seed = float(coord.x * 53 + coord.y * 97 + edge_idx * 13)
-	
-	# 1. 盐湖与陆地 (原野/森林/火山) 交界：滩涂湖岸与浅水沙洲柔和微观结构
-	if my_biome == HexWorldGenerator.BiomeType.SALT_LAKE or n_biome == HexWorldGenerator.BiomeType.SALT_LAKE:
-		# 渐变过渡带微波水纹
-		if my_biome == HexWorldGenerator.BiomeType.SALT_LAKE:
-			# 水域一侧微弧水纹
-			var wave_center = edge_mid + inward * 4.0
-			draw_arc(wave_center, 8.0, -0.6, 0.6, 6, Color(0.65, 0.85, 0.98, 0.28), 1.5)
-		else:
-			# 陆地一侧湿润泥沙斑与微小卵石
-			if current_lod >= 1:
-				for k in range(2):
-					var t = 0.35 + 0.3 * float(k) + sin(edge_seed + k) * 0.1
-					var pos = p1.lerp(p2, t) + inward * (2.0 + sin(edge_seed * 2.0 + k) * 1.5)
-					draw_circle(pos, 1.6, Color(0.55, 0.68, 0.60, 0.35))
+# 异群系交界：测绘图式岸线与轮廓 (仅在一侧绘制，避免重复描边)
+func _draw_natural_biome_transition(p1: Vector2, p2: Vector2, my_biome: HexWorldGenerator.BiomeType, n_biome: HexWorldGenerator.BiomeType, center: Vector2, _coord: Vector2i, _edge_idx: int) -> void:
+	var inward = (center - (p1 + p2) * 0.5).normalized()
+	# 盐湖岸线：水域一侧深蓝细岸线 + 内侧浅色复线
+	if my_biome == HexWorldGenerator.BiomeType.SALT_LAKE:
+		draw_line(p1 + inward * 1.0, p2 + inward * 1.0, Color(0.22, 0.38, 0.48, 0.65), 1.3)
+		draw_line(p1 + inward * 4.0, p2 + inward * 4.0, Color(0.30, 0.48, 0.58, 0.25), 1.0)
 		return
-		
-	# 2. 火山与原野/森林交界：焦土落灰与岩缝地貌
-	if my_biome == HexWorldGenerator.BiomeType.VOLCANO or n_biome == HexWorldGenerator.BiomeType.VOLCANO:
-		if my_biome == HexWorldGenerator.BiomeType.VOLCANO:
-			# 火山一侧微弱地表温热发丝裂纹
-			var crack_pt = edge_mid + inward * 5.0 + tangent * sin(edge_seed) * 4.0
-			draw_line(edge_mid, crack_pt, Color(0.85, 0.35, 0.12, 0.30), 1.0)
-		else:
-			# 陆地一侧炭黑灰斑
-			if current_lod >= 1:
-				var ash_pos = edge_mid + inward * 2.5
-				draw_circle(ash_pos, 2.0, Color(0.18, 0.14, 0.12, 0.25))
+	if n_biome == HexWorldGenerator.BiomeType.SALT_LAKE:
 		return
-		
-	# 3. 原始森林与原野交界：林缘树荫苔草自然过渡
-	if my_biome == HexWorldGenerator.BiomeType.DEEP_FOREST or n_biome == HexWorldGenerator.BiomeType.DEEP_FOREST:
-		if my_biome == HexWorldGenerator.BiomeType.DEEP_FOREST:
-			# 树荫投影半弧
-			draw_arc(edge_mid + inward * 2.0, 9.0, 0, PI, 6, Color(0.06, 0.14, 0.08, 0.30), 1.6)
+	# 火山边缘：短晕滃线
+	if my_biome == HexWorldGenerator.BiomeType.VOLCANO:
+		for k in range(3):
+			var pt = p1.lerp(p2, 0.25 + 0.25 * float(k)) + inward * 2.0
+			draw_line(pt, pt + inward * 4.0, Color(0.40, 0.22, 0.15, 0.40), 1.0)
+		return
+	# 林缘：森林一侧浅墨细线
+	if my_biome == HexWorldGenerator.BiomeType.DEEP_FOREST:
+		draw_line(p1 + inward * 1.5, p2 + inward * 1.5, Color(0.22, 0.32, 0.22, 0.30), 1.0)
 
-# 绘制深海蓝图背景网格 (根据视口坐标范围动态平铺)
+# 绘制测绘图纸经纬网格 (根据视口坐标范围动态平铺)
 func _draw_blueprint_grid(start_x: float, end_x: float, start_y: float, end_y: float) -> void:
-	var grid_color = Color(0.12, 0.18, 0.28, 0.35)
-	var step = 48.0
+	var grid_color = Color(0.55, 0.50, 0.43, 0.14)
+	var step = 96.0
 	
 	var cur_x = floor(start_x / step) * step
 	while cur_x <= end_x:

@@ -205,7 +205,7 @@ text = "全屏显示模式 (Alt + Enter)"
 
 [node name="ResolutionInfo" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecDisplay"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
+theme_override_colors/font_color = Color(0.72, 0.67, 0.59, 1)
 theme_override_font_sizes/font_size = 13
 text = "基准分辨率: 1920 × 1080 (16:9 点对点画布渲染，4K 自动等比缩放)"
 

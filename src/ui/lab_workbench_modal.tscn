@@ -109,7 +109,7 @@ layout_mode = 2
 
 [node name="SensorTitle" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox/SensorHeader"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.3, 0.8, 1, 1)
+theme_override_colors/font_color = Color(0.85, 0.6, 0.3, 1)
 theme_override_font_sizes/font_size = 12
 text = "⚡ 反应活性探测仪"
 
@@ -141,7 +141,7 @@ text = "点燃酒精灯"
 
 [node name="TempLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/Controls"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_colors/font_color = Color(0.85, 0.6, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "烧瓶温度: 293 K (20 ℃)"
 

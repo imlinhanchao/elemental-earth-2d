@@ -107,11 +107,11 @@ func _switch_tab(tab_idx: int) -> void:
 	view_codex.visible = (tab_idx == 1)
 	
 	if tab_idx == 0:
-		btn_tab_monitor.add_theme_color_override("font_color", Color(0.3, 0.85, 1.0))
-		btn_tab_codex.add_theme_color_override("font_color", Color(0.65, 0.70, 0.80))
+		btn_tab_monitor.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
+		btn_tab_codex.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 	else:
-		btn_tab_monitor.add_theme_color_override("font_color", Color(0.65, 0.70, 0.80))
-		btn_tab_codex.add_theme_color_override("font_color", Color(0.3, 0.85, 1.0))
+		btn_tab_monitor.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
+		btn_tab_codex.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 		_refresh_codex_view()
 
 func _on_reaction_occurred(rx_name: String, _prods: Array) -> void:
@@ -248,7 +248,7 @@ func _update_sensor_probe() -> void:
 		
 	var comp_keys = lab_vessel.components.keys()
 	if comp_keys.is_empty():
-		_set_sensor_ui("❄️ 待命中", "烧瓶洁净放空中，请从下方快捷投入试剂以启动化学侦测", Color(0.55, 0.65, 0.75), Color(0.15, 0.25, 0.35, 0.5))
+		_set_sensor_ui("❄️ 待命中", "烧瓶洁净放空中，请从下方快捷投入试剂以启动化学侦测", ThemeStyler.COLOR_TEXT_SECONDARY, Color(0.25, 0.23, 0.20, 0.5))
 		return
 		
 	var best_match_formula: Dictionary = {}
@@ -337,10 +337,10 @@ func _refresh_codex_view() -> void:
 		var card = PanelContainer.new()
 		var card_style = StyleBoxFlat.new()
 		if is_proven:
-			card_style.bg_color = Color(0.06, 0.15, 0.14, 0.85)
+			card_style.bg_color = Color(0.12, 0.16, 0.11, 0.85)
 			card_style.border_color = Color(0.20, 0.80, 0.55, 0.8)
 		else:
-			card_style.bg_color = Color(0.08, 0.12, 0.19, 0.85)
+			card_style.bg_color = ThemeStyler.COLOR_CARD
 			card_style.border_color = Color(0.25, 0.45, 0.70, 0.6)
 		card_style.border_width_left = 1
 		card_style.border_width_top = 1

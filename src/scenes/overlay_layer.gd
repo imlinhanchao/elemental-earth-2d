@@ -4,6 +4,7 @@
 extends Node2D
 
 const HexWorldGenerator = preload("res://src/core/hex_world_generator.gd")
+const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 
 var world: Node2D = null
 
@@ -23,8 +24,11 @@ func _draw() -> void:
 			var pt = h_center + Vector2(cos(angle), sin(angle)) * HexWorldGenerator.HEX_RADIUS
 			h_points.append(pt)
 		h_points.append(h_points[0])
-		var h_col = Color(0.3, 0.9, 1.0, 0.85) if GameState.is_hex_in_territory(world.hovered_hex.x, world.hovered_hex.y) else Color(1.0, 0.4, 0.4, 0.7)
-		draw_polyline(h_points, h_col, 2.5)
+		# 浅色测绘底图上使用深墨描边 + 纸白内衬，保证悬停框清晰
+		var in_terr = GameState.is_hex_in_territory(world.hovered_hex.x, world.hovered_hex.y)
+		var h_col = ThemeStyler.PAPER_INK if in_terr else ThemeStyler.COLOR_DANGER
+		draw_polyline(h_points, Color(1, 1, 1, 0.55), 4.5)
+		draw_polyline(h_points, h_col, 2.0)
 	
 	# 2. 绘制当前正在进行的任务的世界地块指示器
 	if not GameState.active_task.is_empty():
@@ -36,8 +40,9 @@ func _draw() -> void:
 		var begin_time = int(GameState.active_task.get("begin_time", 0))
 		var elapsed = (Time.get_ticks_msec() - begin_time) / 1000.0 if begin_time > 0 else float(GameState.active_task.get("elapsed_time", 0.0))
 		var pct = clamp(elapsed / max(total, 0.001), 0.0, 1.0)
-		draw_arc(t_pos, 28.0, 0, TAU, 32, Color(1.0, 0.85, 0.2, 0.35), 4.0)
-		draw_arc(t_pos, 28.0, -PI/2, -PI/2 + pct * TAU, 32, Color(1.0, 0.88, 0.3, 0.95), 5.0)
+		var ring_col = ThemeStyler.get_era_accent(GameState.current_era).darkened(0.15)
+		draw_arc(t_pos, 28.0, 0, TAU, 32, Color(0.15, 0.14, 0.13, 0.25), 4.0)
+		draw_arc(t_pos, 28.0, -PI/2, -PI/2 + pct * TAU, 32, ring_col, 5.0)
 
 	# 3. 绘制排队中任务的地块指示环
 	for i in range(GameState.task_queue.size()):
@@ -46,8 +51,8 @@ func _draw() -> void:
 			float(q_task.get("world_pos_x", q_task.get("world_pos", Vector2.ZERO).x)),
 			float(q_task.get("world_pos_y", q_task.get("world_pos", Vector2.ZERO).y))
 		)
-		draw_circle(q_pos, 16.0, Color(0.1, 0.2, 0.3, 0.3))
-		draw_arc(q_pos, 20.0, 0, TAU, 24, Color(0.8, 0.8, 0.3, 0.5), 2.0)
+		draw_circle(q_pos, 16.0, Color(0.96, 0.94, 0.90, 0.35))
+		draw_arc(q_pos, 20.0, 0, TAU, 24, Color(0.15, 0.14, 0.13, 0.55), 1.5)
 
 func _draw_placement_preview(hex: Vector2i) -> void:
 	var check = world.get_build_validity(hex) if world.has_method("get_build_validity") else {"valid": true, "reason": ""}
@@ -65,12 +70,12 @@ func _draw_placement_preview(hex: Vector2i) -> void:
 	var poly_outline = h_points.duplicate()
 	poly_outline.append(h_points[0])
 	
-	var font = ThemeDB.fallback_font
+	var font = ThemeStyler.get_font_sans() if ThemeStyler.get_font_sans() else ThemeDB.fallback_font
 	
 	if is_valid:
 		# 翡翠绿发光填充与边框
-		draw_colored_polygon(h_points, Color(0.15, 0.85, 0.45, 0.28))
-		draw_polyline(poly_outline, Color(0.25, 1.0, 0.55, 0.95), 3.5)
+		draw_colored_polygon(h_points, Color(0.42, 0.66, 0.42, 0.30))
+		draw_polyline(poly_outline, ThemeStyler.COLOR_SUCCESS.darkened(0.3), 3.0)
 		
 		# 虚影建筑预览
 		var p_key = world.placing_structure_key if "placing_structure_key" in world else "fire_pit"
@@ -86,14 +91,16 @@ func _draw_placement_preview(hex: Vector2i) -> void:
 		
 		# 提示文字
 		if font:
-			draw_string(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), "✔ 点击左键安放", HORIZONTAL_ALIGNMENT_CENTER, -1, 13, Color(0.35, 1.0, 0.55))
+			draw_string_outline(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), "点击左键安放", HORIZONTAL_ALIGNMENT_CENTER, -1, 13, 5, Color(0.96, 0.94, 0.90, 0.95))
+			draw_string(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), "点击左键安放", HORIZONTAL_ALIGNMENT_CENTER, -1, 13, ThemeStyler.COLOR_SUCCESS.darkened(0.45))
 	else:
 		# 红色警示填充与边框
-		draw_colored_polygon(h_points, Color(0.85, 0.15, 0.15, 0.25))
-		draw_polyline(poly_outline, Color(1.0, 0.3, 0.3, 0.90), 3.0)
+		draw_colored_polygon(h_points, Color(0.80, 0.33, 0.27, 0.25))
+		draw_polyline(poly_outline, ThemeStyler.COLOR_DANGER.darkened(0.2), 3.0)
 		
 		if font:
-			draw_string(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), "✖ " + reason, HORIZONTAL_ALIGNMENT_CENTER, -1, 12, Color(1.0, 0.4, 0.4))
+			draw_string_outline(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), reason, HORIZONTAL_ALIGNMENT_CENTER, -1, 12, 5, Color(0.96, 0.94, 0.90, 0.95))
+			draw_string(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), reason, HORIZONTAL_ALIGNMENT_CENTER, -1, 12, ThemeStyler.COLOR_DANGER.darkened(0.3))
 
 func _draw_ghost_fire_pit(pos: Vector2) -> void:
 	# 8 块半透明小河卵石环

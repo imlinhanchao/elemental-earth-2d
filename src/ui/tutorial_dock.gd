@@ -93,7 +93,7 @@ func _process(delta: float) -> void:
 
 func _apply_styles() -> void:
 	# 悬浮磨砂现代深蓝玻璃卡片
-	var card_box = ThemeStyler.create_card_box(14, Color(0.07, 0.10, 0.16, 0.94), Color(0.22, 0.74, 0.97, 0.75))
+	var card_box = ThemeStyler.create_card_box(14, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER_FOCUS)
 	card_box.content_margin_left = 18
 	card_box.content_margin_top = 16
 	card_box.content_margin_right = 18
@@ -167,7 +167,7 @@ func _load_stage(stage_idx: int) -> void:
 		text_lbl.name = "Text"
 		text_lbl.text = "%s (0 / %d)" % [g["text"], g["target"]]
 		text_lbl.add_theme_font_size_override("font_size", 13)
-		text_lbl.add_theme_color_override("font_color", Color(0.85, 0.90, 0.96))
+		text_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 		hbox.add_child(text_lbl)
 		
 		goals_vbox.add_child(hbox)
@@ -222,7 +222,7 @@ func _check_current_goals() -> void:
 		item["icon_lbl"].text = "☑" if met else "☐"
 		item["icon_lbl"].add_theme_color_override("font_color", Color(0.25, 0.95, 0.55) if met else Color(0.45, 0.55, 0.68))
 		item["text_lbl"].text = "%s (%d / %d)" % [item["text"], min(current, target), target]
-		item["text_lbl"].add_theme_color_override("font_color", Color(0.25, 0.95, 0.55) if met else Color(0.85, 0.90, 0.96))
+		item["text_lbl"].add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS if met else ThemeStyler.COLOR_TEXT_PRIMARY)
 		
 	stage_completed = all_met
 	btn_next.disabled = not stage_completed

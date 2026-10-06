@@ -226,7 +226,7 @@ func _create_empty_slot() -> Control:
 	slot_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	
 	var empty_style = StyleBoxFlat.new()
-	empty_style.bg_color = Color(0.065, 0.085, 0.125, 0.5)
+	empty_style.bg_color = Color(0.12, 0.11, 0.10, 0.5)
 	empty_style.border_color = Color(0.16, 0.22, 0.30, 0.5)
 	empty_style.border_width_left = 1
 	empty_style.border_width_top = 1
@@ -325,4 +325,4 @@ func _show_tooltip_for_item(item_key: String, data: Dictionary, count: int) -> v
 func _on_sort_pressed() -> void:
 	# 触发刷新排序
 	_refresh_slots()
-	GameState.post_notice("物品清单已按类别整理完毕", Color(0.3, 0.8, 1.0))
+	GameState.post_notice("物品清单已按类别整理完毕", ThemeStyler.COLOR_ACCENT)

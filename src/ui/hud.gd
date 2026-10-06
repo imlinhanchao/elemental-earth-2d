@@ -214,8 +214,8 @@ func show_placement_mode(structure_name: String) -> void:
 		placement_bar = PanelContainer.new()
 		placement_bar.custom_minimum_size = Vector2(460, 42)
 		var sbox = StyleBoxFlat.new()
-		sbox.bg_color = Color(0.08, 0.14, 0.18, 0.94)
-		sbox.border_color = Color(0.2, 0.9, 0.5, 0.85)
+		sbox.bg_color = ThemeStyler.COLOR_BG
+		sbox.border_color = ThemeStyler.COLOR_SUCCESS
 		sbox.border_width_left = 2
 		sbox.border_width_right = 2
 		sbox.border_width_top = 2
@@ -235,11 +235,11 @@ func show_placement_mode(structure_name: String) -> void:
 		
 		placement_label = Label.new()
 		placement_label.add_theme_font_size_override("font_size", 13)
-		placement_label.add_theme_color_override("font_color", Color(0.92, 1.0, 0.95))
+		placement_label.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 		hbox.add_child(placement_label)
 		
 		btn_cancel_placement = Button.new()
-		btn_cancel_placement.text = "✕ 取消建造 [ESC]"
+		btn_cancel_placement.text = "取消建造 [ESC]"
 		btn_cancel_placement.custom_minimum_size = Vector2(120, 28)
 		btn_cancel_placement.add_theme_font_size_override("font_size", 12)
 		btn_cancel_placement.pressed.connect(func(): cancel_placement_requested.emit())
@@ -249,7 +249,7 @@ func show_placement_mode(structure_name: String) -> void:
 		bottom_area.add_child(placement_bar)
 		bottom_area.move_child(placement_bar, bottom_area.get_child_count() - 2)
 	
-	placement_label.text = "🔨 建造选址: 点击领地空闲地块安放【%s】(右键或ESC取消)" % structure_name
+	placement_label.text = "建造选址: 点击领地空闲地块安放【%s】(右键或ESC取消)" % structure_name
 	placement_bar.visible = true
 
 func hide_placement_mode() -> void:
@@ -581,7 +581,7 @@ func _add_inventory_subitems() -> void:
 	if GameState.inventory.items.is_empty():
 		var empty_label = Label.new()
 		empty_label.text = "当前行囊空空如也，请前往大世界开采采集资源。"
-		empty_label.add_theme_color_override("font_color", Color(0.6, 0.65, 0.7))
+		empty_label.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 		drawer_grid.add_child(empty_label)
 		return
 		
@@ -603,10 +603,11 @@ func _add_inventory_subitems() -> void:
 		)
 		drawer_grid.add_child(card)
 
-# 方案三界面样式初始化 (现代科学信息图 · 极简冷灰几何风)
+# 界面样式初始化 (地质测绘图 × 实验手稿：纸面 HUD + 暖墨弹窗)
 func _apply_scheme3_styling() -> void:
 	# 1. 顶栏悬浮胶囊 Ribbon (Floating Capsule Ribbon)
-	var top_box = ThemeStyler.create_pill_box(22, Color(0.045, 0.07, 0.12, 0.94), ThemeStyler.COLOR_BORDER)
+	var top_box = ThemeStyler.create_pill_box(22, ThemeStyler.PAPER_BG, ThemeStyler.PAPER_BORDER)
+	top_box.shadow_color = Color(0.25, 0.20, 0.12, 0.18)
 	top_box.content_margin_left = 20
 	top_box.content_margin_top = 6
 	top_box.content_margin_right = 20
@@ -635,15 +636,16 @@ func _apply_scheme3_styling() -> void:
 	
 	if logo_title:
 		logo_title.text = "元素纪元"
-		logo_title.add_theme_color_override("font_color", Color.WHITE)
+		logo_title.add_theme_color_override("font_color", ThemeStyler.PAPER_INK)
 		logo_title.add_theme_font_size_override("font_size", 18)
 	if logo_sub:
 		logo_sub.visible = false
 		logo_sub.text = ""
 	if era_badge_btn:
+		var era_col = ThemeStyler.get_era_accent(GameState.current_era)
 		var pill_normal = StyleBoxFlat.new()
-		pill_normal.bg_color = Color(0.12, 0.22, 0.35, 0.65)
-		pill_normal.border_color = Color(0.25, 0.55, 0.85, 0.75)
+		pill_normal.bg_color = Color(era_col.r, era_col.g, era_col.b, 0.14)
+		pill_normal.border_color = Color(era_col.r, era_col.g, era_col.b, 0.75)
 		pill_normal.border_width_left = 1
 		pill_normal.border_width_top = 1
 		pill_normal.border_width_right = 1
@@ -658,14 +660,14 @@ func _apply_scheme3_styling() -> void:
 		pill_normal.content_margin_bottom = 4
 		
 		var pill_hover = pill_normal.duplicate()
-		pill_hover.bg_color = Color(0.18, 0.32, 0.50, 0.9)
-		pill_hover.border_color = Color(0.35, 0.75, 1.0, 0.95)
+		pill_hover.bg_color = Color(era_col.r, era_col.g, era_col.b, 0.26)
+		pill_hover.border_color = era_col
 		
 		era_badge_btn.add_theme_stylebox_override("normal", pill_normal)
 		era_badge_btn.add_theme_stylebox_override("hover", pill_hover)
 		era_badge_btn.add_theme_stylebox_override("pressed", pill_hover)
-		era_badge_btn.add_theme_color_override("font_color", Color(0.38, 0.82, 1.0, 1.0))
-		era_badge_btn.add_theme_color_override("font_hover_color", Color.WHITE)
+		era_badge_btn.add_theme_color_override("font_color", era_col.darkened(0.35))
+		era_badge_btn.add_theme_color_override("font_hover_color", era_col.darkened(0.5))
 		era_badge_btn.add_theme_font_size_override("font_size", 13)
 		era_badge_btn.custom_minimum_size = Vector2(0, 30)
 	
@@ -673,7 +675,10 @@ func _apply_scheme3_styling() -> void:
 	for val_lbl in [val_stone, val_wood, val_flint, val_ore, val_fuel]:
 		if val_lbl:
 			val_lbl.add_theme_font_size_override("font_size", 15)
-			val_lbl.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0))
+			val_lbl.add_theme_color_override("font_color", ThemeStyler.PAPER_INK)
+			var mono = ThemeStyler.get_font_mono()
+			if mono:
+				val_lbl.add_theme_font_override("font", mono)
 			
 	# 右端菜单按钮：纯粹无框扁平图标 (Ghost Icon Button)，鼠标悬停微光轻抚
 	if btn_menu:
@@ -683,7 +688,7 @@ func _apply_scheme3_styling() -> void:
 		btn_menu.add_theme_stylebox_override("disabled", empty_box)
 		
 		var menu_hover = StyleBoxFlat.new()
-		menu_hover.bg_color = Color(1.0, 1.0, 1.0, 0.10)
+		menu_hover.bg_color = Color(0.15, 0.14, 0.13, 0.08)
 		menu_hover.corner_radius_top_left = 6
 		menu_hover.corner_radius_top_right = 6
 		menu_hover.corner_radius_bottom_left = 6
@@ -691,7 +696,7 @@ func _apply_scheme3_styling() -> void:
 		btn_menu.add_theme_stylebox_override("hover", menu_hover)
 		
 		var menu_pressed = StyleBoxFlat.new()
-		menu_pressed.bg_color = Color(1.0, 1.0, 1.0, 0.20)
+		menu_pressed.bg_color = Color(0.15, 0.14, 0.13, 0.16)
 		menu_pressed.corner_radius_top_left = 6
 		menu_pressed.corner_radius_top_right = 6
 		menu_pressed.corner_radius_bottom_left = 6
@@ -700,8 +705,8 @@ func _apply_scheme3_styling() -> void:
 	
 	# 2. 底栏悬浮交互坞 (Floating Action Dock - 纯白亮瓷发光胶囊岛)
 	var dock_box = StyleBoxFlat.new()
-	dock_box.bg_color = Color(0.97, 0.98, 1.0, 0.98) # 纯净瓷白悬浮卡片
-	dock_box.border_color = Color(0.85, 0.90, 0.96, 0.95)
+	dock_box.bg_color = ThemeStyler.PAPER_BG # 米白纸面悬浮卡片
+	dock_box.border_color = ThemeStyler.PAPER_BORDER
 	dock_box.border_width_left = 1
 	dock_box.border_width_top = 1
 	dock_box.border_width_right = 1
@@ -710,7 +715,7 @@ func _apply_scheme3_styling() -> void:
 	dock_box.corner_radius_top_right = 24
 	dock_box.corner_radius_bottom_left = 24
 	dock_box.corner_radius_bottom_right = 24
-	dock_box.shadow_color = Color(0, 0, 0, 0.35)
+	dock_box.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
 	dock_box.shadow_size = 14
 	dock_box.shadow_offset = Vector2(0, 4)
 	dock_box.content_margin_left = 16
@@ -720,6 +725,7 @@ func _apply_scheme3_styling() -> void:
 	$Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel.add_theme_stylebox_override("panel", dock_box)
 	
 	# 底栏按钮悬停与激活态 (高对比冷灰极简深色文字与图标)
+	var dock_accent = ThemeStyler.get_era_accent(GameState.current_era)
 	var tab_buttons = [btn_tab_lab, btn_tab_tech, btn_tab_craft, btn_tab_build, btn_tab_production, btn_tab_inventory]
 	for btn in tab_buttons:
 		if btn:
@@ -735,8 +741,8 @@ func _apply_scheme3_styling() -> void:
 			btn_norm.content_margin_bottom = 4
 
 			var btn_hov = StyleBoxFlat.new()
-			btn_hov.bg_color = Color(0.22, 0.74, 0.97, 0.16)
-			btn_hov.border_color = Color(0.22, 0.74, 0.97, 0.8)
+			btn_hov.bg_color = Color(dock_accent.r, dock_accent.g, dock_accent.b, 0.14)
+			btn_hov.border_color = Color(dock_accent.r, dock_accent.g, dock_accent.b, 0.8)
 			btn_hov.border_width_left = 1
 			btn_hov.border_width_top = 1
 			btn_hov.border_width_right = 1
@@ -751,7 +757,7 @@ func _apply_scheme3_styling() -> void:
 			btn_hov.content_margin_bottom = 4
 
 			var btn_press = StyleBoxFlat.new()
-			btn_press.bg_color = Color(0.22, 0.74, 0.97, 0.32)
+			btn_press.bg_color = Color(dock_accent.r, dock_accent.g, dock_accent.b, 0.28)
 			btn_press.corner_radius_top_left = 12
 			btn_press.corner_radius_top_right = 12
 			btn_press.corner_radius_bottom_left = 12
@@ -766,15 +772,17 @@ func _apply_scheme3_styling() -> void:
 			btn.add_theme_stylebox_override("pressed", btn_press)
 			btn.add_theme_stylebox_override("focus", btn_hov)
 			btn.add_theme_font_size_override("font_size", 12)
-			btn.add_theme_color_override("font_color", Color(0.08, 0.12, 0.20, 1.0))
-			btn.add_theme_color_override("font_hover_color", Color(0.02, 0.38, 0.65, 1.0))
-			btn.add_theme_color_override("icon_normal_color", Color(0.12, 0.18, 0.28, 1.0))
-			btn.add_theme_color_override("icon_hover_color", Color(0.02, 0.45, 0.85, 1.0))
+			btn.add_theme_font_size_override("font_size", 13)
+			btn.add_theme_color_override("font_color", ThemeStyler.PAPER_INK)
+			btn.add_theme_color_override("font_hover_color", dock_accent.darkened(0.45))
+			btn.add_theme_color_override("font_pressed_color", dock_accent.darkened(0.45))
+			btn.add_theme_color_override("icon_normal_color", ThemeStyler.PAPER_INK)
+			btn.add_theme_color_override("icon_hover_color", dock_accent.darkened(0.3))
 	
 	# 队列数字胶囊徽标 (Queue Badge)
 	if queue_badge:
 		var q_badge_box = StyleBoxFlat.new()
-		q_badge_box.bg_color = Color(0.22, 0.74, 0.97, 0.22)
+		q_badge_box.bg_color = Color(ThemeStyler.COLOR_ACCENT.r, ThemeStyler.COLOR_ACCENT.g, ThemeStyler.COLOR_ACCENT.b, 0.22)
 		q_badge_box.border_color = ThemeStyler.COLOR_ACCENT
 		q_badge_box.border_width_left = 1
 		q_badge_box.border_width_top = 1
@@ -802,8 +810,8 @@ func _apply_scheme3_styling() -> void:
 	# 作业进度条细线科技化
 	if task_progress_bar:
 		var pb_bg = StyleBoxFlat.new()
-		pb_bg.bg_color = Color(0.06, 0.08, 0.12, 0.95)
-		pb_bg.border_color = Color(0.18, 0.25, 0.35, 0.8)
+		pb_bg.bg_color = ThemeStyler.COLOR_BG_SOLID
+		pb_bg.border_color = ThemeStyler.COLOR_BORDER
 		pb_bg.border_width_left = 1
 		pb_bg.border_width_top = 1
 		pb_bg.border_width_right = 1
@@ -837,7 +845,7 @@ func _apply_scheme3_styling() -> void:
 	f_box.content_margin_bottom = 10
 	furnace_panel.add_theme_stylebox_override("panel", f_box)
 
-# 通用制作/操作卡片创建函数 (严格遵循方案三信息图卡片规范)
+# 通用制作/操作卡片创建函数
 func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, badge_text: String, is_enabled: bool) -> Button:
 	var btn = Button.new()
 	btn.custom_minimum_size = Vector2(210, 110)
@@ -856,7 +864,7 @@ func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, b
 	card_hover.content_margin_right = 12
 	card_hover.content_margin_bottom = 10
 	
-	var card_press = ThemeStyler.create_card_box(8, Color(0.06, 0.09, 0.14, 1.0), ThemeStyler.COLOR_ACCENT)
+	var card_press = ThemeStyler.create_card_box(8, ThemeStyler.COLOR_BG_SOLID, ThemeStyler.COLOR_ACCENT)
 	card_press.content_margin_left = 12
 	card_press.content_margin_top = 10
 	card_press.content_margin_right = 12
@@ -1215,6 +1223,7 @@ func update_current_biome(_biome: int) -> void:
 	pass
 
 func _on_era_advanced(_old: int, _new: int, _name: String) -> void:
+	_apply_scheme3_styling() # 时代强调色随纪元切换
 	_update_era_label()
 
 func _on_milestone_completed(_key: String) -> void:
@@ -1236,7 +1245,7 @@ func _on_element_discovered(num: int, key: String) -> void:
 	var elem = DataDB.get_element(num)
 	var sym = elem.get("symbol", "?")
 	var cname = elem.get("name", key)
-	show_toast("✨ 元素周期表突破: 成功点亮第 %d 号元素【%s (%s)】！" % [num, cname, sym], Color(0.22, 0.74, 0.97))
+	show_toast("元素周期表突破: 成功点亮第 %d 号元素【%s (%s)】！" % [num, cname, sym], ThemeStyler.COLOR_ACCENT)
 
 var toast_container: VBoxContainer = null
 
@@ -1280,7 +1289,7 @@ func show_toast(msg: String, col: Color = Color.WHITE) -> void:
 	toast_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	var sbox = StyleBoxFlat.new()
-	sbox.bg_color = Color(0.06, 0.09, 0.15, 0.94)
+	sbox.bg_color = ThemeStyler.COLOR_BG
 	sbox.border_color = col
 	sbox.border_width_left = 3
 	sbox.border_width_top = 1
@@ -1313,7 +1322,7 @@ func show_toast(msg: String, col: Color = Color.WHITE) -> void:
 	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lbl.text = msg
 	lbl.add_theme_font_size_override("font_size", 13)
-	lbl.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0))
+	lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 	hbox.add_child(lbl)
 
 	toast_container.add_child(toast_panel)

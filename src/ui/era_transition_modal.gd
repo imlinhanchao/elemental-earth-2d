@@ -80,7 +80,7 @@ func _input(event: InputEvent) -> void:
 func _apply_visual_styling() -> void:
 	# 1. 核心大面板深空微光卡片
 	var main_box = StyleBoxFlat.new()
-	main_box.bg_color = Color(0.045, 0.07, 0.12, 0.96)
+	main_box.bg_color = ThemeStyler.COLOR_BG
 	main_box.border_color = Color(0.22, 0.55, 0.85, 0.8)
 	main_box.border_width_left = 1
 	main_box.border_width_top = 1
@@ -96,7 +96,7 @@ func _apply_visual_styling() -> void:
 	
 	# 2. Hero 展区深冷玻璃卡
 	var hero_box = StyleBoxFlat.new()
-	hero_box.bg_color = Color(0.07, 0.11, 0.19, 0.85)
+	hero_box.bg_color = ThemeStyler.COLOR_CARD
 	hero_box.border_color = Color(0.25, 0.48, 0.75, 0.5)
 	hero_box.border_width_left = 1
 	hero_box.border_width_top = 1
@@ -125,7 +125,7 @@ func _apply_visual_styling() -> void:
 	
 	# 4. 指标胶囊外观
 	var kpi_box = StyleBoxFlat.new()
-	kpi_box.bg_color = Color(0.08, 0.13, 0.22, 0.7)
+	kpi_box.bg_color = Color(0.16, 0.15, 0.13, 0.7)
 	kpi_box.border_color = Color(0.20, 0.40, 0.65, 0.45)
 	kpi_box.border_width_left = 1
 	kpi_box.border_width_top = 1
@@ -140,7 +140,7 @@ func _apply_visual_styling() -> void:
 	
 	# 5. 进度条质感
 	var prog_bg = StyleBoxFlat.new()
-	prog_bg.bg_color = Color(0.08, 0.12, 0.20, 0.8)
+	prog_bg.bg_color = ThemeStyler.COLOR_BG_SOLID
 	prog_bg.corner_radius_top_left = 4
 	prog_bg.corner_radius_top_right = 4
 	prog_bg.corner_radius_bottom_left = 4
@@ -148,7 +148,7 @@ func _apply_visual_styling() -> void:
 	progress_bar.add_theme_stylebox_override("background", prog_bg)
 	
 	var prog_fill = StyleBoxFlat.new()
-	prog_fill.bg_color = Color(0.20, 0.78, 0.95)
+	prog_fill.bg_color = ThemeStyler.COLOR_ACCENT
 	prog_fill.corner_radius_top_left = 4
 	prog_fill.corner_radius_top_right = 4
 	prog_fill.corner_radius_bottom_left = 4
@@ -217,7 +217,7 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 	var era_name = str(era_def.get("name", "石器时代")).split(" (")[0]
 	var era_desc = str(era_def.get("description", ""))
 	var milestones = era_def.get("milestones", [])
-	var accent_color = ERA_THEME_COLORS.get(era_order, Color(0.20, 0.78, 0.95))
+	var accent_color = ERA_THEME_COLORS.get(era_order, ThemeStyler.COLOR_ACCENT)
 	var roman_num = ERA_ROMAN[clamp(era_order, 0, ERA_ROMAN.size() - 1)]
 	
 	# 1. 顶栏标题与标识
@@ -227,7 +227,7 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 		btn_continue.text = "迈向新纪元 [ENTER]"
 	else:
 		header_title.text = "✦ 文 明 纪 元 史 册 · EPOCH ARCHIVE ✦"
-		header_title.add_theme_color_override("font_color", Color(0.38, 0.82, 1.0))
+		header_title.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 		btn_continue.text = "返回大世界 [ESC]"
 	
 	# 2. 时代专属发光大徽章
@@ -237,7 +237,7 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 	
 	# 徽章容器边框按时代主色调发光
 	var emblem_box = StyleBoxFlat.new()
-	emblem_box.bg_color = Color(0.09, 0.14, 0.24, 0.9)
+	emblem_box.bg_color = ThemeStyler.COLOR_CARD_HOVER
 	emblem_box.border_color = accent_color
 	emblem_box.border_width_left = 2
 	emblem_box.border_width_top = 2
@@ -346,10 +346,10 @@ func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Co
 	var p = PanelContainer.new()
 	var box = StyleBoxFlat.new()
 	if is_done:
-		box.bg_color = Color(0.06, 0.16, 0.14, 0.85) # 达成后柔和微翠绿
+		box.bg_color = Color(0.12, 0.16, 0.11, 0.85) # 达成后柔和苔绿
 		box.border_color = Color(0.15, 0.65, 0.45, 0.8)
 	else:
-		box.bg_color = Color(0.07, 0.11, 0.18, 0.85) # 进行中深冷灰
+		box.bg_color = ThemeStyler.COLOR_CARD # 进行中暖墨
 		box.border_color = Color(0.25, 0.45, 0.68, 0.6)
 	box.border_width_left = 1
 	box.border_width_top = 1
@@ -381,7 +381,7 @@ func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Co
 	mark.text = "✓" if is_done else "○"
 	mark.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	mark.add_theme_font_size_override("font_size", 14)
-	mark.add_theme_color_override("font_color", Color(0.20, 0.90, 0.60) if is_done else Color(0.55, 0.65, 0.75))
+	mark.add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS if is_done else ThemeStyler.COLOR_TEXT_SECONDARY)
 	hbox.add_child(mark)
 	
 	# 里程碑描述
@@ -390,7 +390,7 @@ func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Co
 	lbl_desc.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	lbl_desc.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	lbl_desc.add_theme_font_size_override("font_size", 13)
-	lbl_desc.add_theme_color_override("font_color", Color.WHITE if is_done else Color(0.85, 0.90, 0.98))
+	lbl_desc.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY if is_done else ThemeStyler.COLOR_TEXT_SECONDARY)
 	hbox.add_child(lbl_desc)
 	
 	# 右侧状态胶囊标签
@@ -406,7 +406,7 @@ func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Co
 		var g_info = MILESTONE_GUIDES[key]
 		var guide_panel = PanelContainer.new()
 		var g_style = StyleBoxFlat.new()
-		g_style.bg_color = Color(0.04, 0.08, 0.14, 0.7)
+		g_style.bg_color = Color(0.10, 0.09, 0.08, 0.7)
 		g_style.border_color = Color(accent.r * 0.4, accent.g * 0.4, accent.b * 0.4, 0.5)
 		g_style.border_width_left = 2
 		g_style.corner_radius_top_left = 4

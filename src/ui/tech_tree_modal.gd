@@ -180,7 +180,7 @@ func _build_tech_tree_graph() -> void:
 		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 		lbl.add_theme_font_size_override("font_size", 11)
-		lbl.add_theme_color_override("font_color", Color(0.75, 0.88, 1.0))
+		lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 		header_panel.add_child(lbl)
 		headers_layer.add_child(header_panel)
 		header_panel.position = Vector2(TIER_START_X + tier * TIER_X_SPACING, 15)
@@ -309,7 +309,7 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 	
 	if is_researched:
 		# 已研发 (现代科学翡翠绿细线)
-		style.bg_color = Color(0.06, 0.12, 0.10, 0.92)
+		style.bg_color = Color(0.12, 0.16, 0.11, 0.92)
 		style.border_color = ThemeStyler.COLOR_SUCCESS
 		style.border_width_left = 1
 		style.border_width_top = 1
@@ -353,7 +353,7 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 				btn_action.modulate = Color(0.85, 0.6, 0.5, 0.8)
 	else:
 		# 未解锁 (极简冷灰受控状态)
-		style.bg_color = Color(0.05, 0.07, 0.10, 0.70)
+		style.bg_color = Color(0.10, 0.09, 0.08, 0.70)
 		style.border_color = ThemeStyler.COLOR_BORDER
 		style.border_width_left = 1
 		style.border_width_top = 1
@@ -429,9 +429,9 @@ func _draw_connecting_lines(canvas_ctrl: Control) -> void:
 			if is_child_done and is_parent_done:
 				# 双方均已完成: 璀璨电青色能量光晕
 				canvas_ctrl.draw_polyline(points, Color(0.18, 0.75, 1.0, 0.28), 4.5)
-				canvas_ctrl.draw_polyline(points, Color(0.35, 0.95, 1.0, 0.95), 1.8)
-				canvas_ctrl.draw_circle(pin_out, 2.5, Color(0.35, 0.95, 1.0))
-				canvas_ctrl.draw_circle(pin_in, 2.5, Color(0.35, 0.95, 1.0))
+				canvas_ctrl.draw_polyline(points, ThemeStyler.COLOR_SUCCESS, 1.8)
+				canvas_ctrl.draw_circle(pin_out, 2.5, ThemeStyler.COLOR_SUCCESS)
+				canvas_ctrl.draw_circle(pin_in, 2.5, ThemeStyler.COLOR_SUCCESS)
 			elif is_parent_done:
 				# 前置已满足可研发: 金色脉动能量流
 				canvas_ctrl.draw_polyline(points, Color(1.0, 0.75, 0.20, 0.25), 3.5)

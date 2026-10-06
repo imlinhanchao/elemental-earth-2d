@@ -139,7 +139,7 @@ text = "物品名称"
 
 [node name="CategoryBadge" type="Label" parent="FloatingTooltip/TipVBox/TitleRow"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.3, 0.8, 1, 1)
+theme_override_colors/font_color = Color(0.85, 0.6, 0.3, 1)
 theme_override_font_sizes/font_size = 12
 text = "【材料】"
 

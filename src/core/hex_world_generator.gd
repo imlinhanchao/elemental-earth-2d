@@ -78,13 +78,13 @@ func get_biome(q: int, r: int) -> BiomeType:
 static func get_biome_color(biome: BiomeType) -> Color:
 	match biome:
 		BiomeType.PLAINS:
-			return Color(0.22, 0.34, 0.20) # 生机原野绿
+			return Color(0.74, 0.78, 0.62) # 原野 · 灰绿测绘色 #BDC79E
 		BiomeType.VOLCANO:
-			return Color(0.32, 0.16, 0.14) # 焦黑玄武岩/硫磺赤红
+			return Color(0.72, 0.52, 0.42) # 火山 · 赭红地质色 #B8856B
 		BiomeType.SALT_LAKE:
-			return Color(0.35, 0.48, 0.55) # 灰蓝盐湖水泊
+			return Color(0.62, 0.74, 0.78) # 盐湖 · 灰蓝水域 #9EBDC7
 		BiomeType.DEEP_FOREST:
-			return Color(0.12, 0.24, 0.14) # 苍翠深林
+			return Color(0.52, 0.64, 0.50) # 深林 · 墨绿 #85A380
 	return Color.GRAY
 
 # 根据群落与径向地貌决定伴生生成的资源类型 (覆盖各时代特色矿脉)

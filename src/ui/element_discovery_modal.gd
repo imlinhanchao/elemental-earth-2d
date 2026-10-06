@@ -67,7 +67,7 @@ func _build_ui() -> void:
 	# 1. 全屏柔和暗色微光蒙版
 	backdrop = ColorRect.new()
 	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	backdrop.color = Color(0.04, 0.06, 0.10, 0.88)
+	backdrop.color = Color(0.06, 0.05, 0.04, 0.85)
 	add_child(backdrop)
 
 	# 2. 居中容器
@@ -81,8 +81,8 @@ func _build_ui() -> void:
 	center_box.add_child(card_panel)
 
 	var card_style = StyleBoxFlat.new()
-	card_style.bg_color = Color(0.07, 0.10, 0.16, 0.98)
-	card_style.border_color = Color(0.22, 0.74, 0.97, 0.9)
+	card_style.bg_color = ThemeStyler.COLOR_BG_SOLID
+	card_style.border_color = ThemeStyler.COLOR_BORDER_FOCUS
 	card_style.border_width_left = 2
 	card_style.border_width_top = 2
 	card_style.border_width_right = 2
@@ -123,14 +123,14 @@ func _build_ui() -> void:
 	num_label = Label.new()
 	num_label.text = "NO. 29"
 	num_label.add_theme_font_size_override("font_size", 16)
-	num_label.add_theme_color_override("font_color", Color(0.38, 0.82, 1.0))
+	num_label.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 	top_hbox.add_child(num_label)
 
 	# 中央元素大图示卡片 (内嵌发光框)
 	var elem_box = PanelContainer.new()
 	elem_box.custom_minimum_size = Vector2(0, 160)
 	var e_box_style = StyleBoxFlat.new()
-	e_box_style.bg_color = Color(0.09, 0.13, 0.20, 0.9)
+	e_box_style.bg_color = ThemeStyler.COLOR_CARD
 	e_box_style.border_color = Color(0.28, 0.40, 0.58, 0.5)
 	e_box_style.border_width_left = 1
 	e_box_style.border_width_top = 1
@@ -183,14 +183,14 @@ func _build_ui() -> void:
 	position_label = Label.new()
 	position_label.text = "周期 4 · 族 11"
 	position_label.add_theme_font_size_override("font_size", 12)
-	position_label.add_theme_color_override("font_color", Color(0.6, 0.7, 0.8))
+	position_label.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 	meta_hbox.add_child(position_label)
 
 	# 科学史料卡片
 	var story_panel = PanelContainer.new()
 	story_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var s_style = StyleBoxFlat.new()
-	s_style.bg_color = Color(0.05, 0.08, 0.12, 0.7)
+	s_style.bg_color = Color(0.10, 0.09, 0.08, 0.7)
 	s_style.border_color = Color(0.18, 0.26, 0.38, 0.4)
 	s_style.border_width_left = 1
 	s_style.border_width_top = 1
@@ -229,7 +229,7 @@ func _build_ui() -> void:
 	var prog_title = Label.new()
 	prog_title.text = "元素周期表总览进度"
 	prog_title.add_theme_font_size_override("font_size", 11)
-	prog_title.add_theme_color_override("font_color", Color(0.6, 0.7, 0.8))
+	prog_title.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 	prog_head.add_child(prog_title)
 
 	var sp_prog = Control.new()
@@ -239,7 +239,7 @@ func _build_ui() -> void:
 	progress_label = Label.new()
 	progress_label.text = "已点亮 1 / 118"
 	progress_label.add_theme_font_size_override("font_size", 11)
-	progress_label.add_theme_color_override("font_color", Color(0.22, 0.74, 0.97))
+	progress_label.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 	prog_head.add_child(progress_label)
 
 	progress_bar = ProgressBar.new()

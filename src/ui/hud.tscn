@@ -251,7 +251,7 @@ layout_mode = 2
 
 [node name="Title" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/Header"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_colors/font_color = Color(0.85, 0.6, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "进行中的作业"
 
@@ -261,7 +261,7 @@ size_flags_horizontal = 3
 
 [node name="QueueCount" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/Header"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.604, 0.62, 0.651, 1)
+theme_override_colors/font_color = Color(0.72, 0.67, 0.59, 1)
 theme_override_font_sizes/font_size = 11
 text = "0 待办"
 
@@ -335,7 +335,7 @@ theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_colors/font_color = Color(0.85, 0.6, 0.3, 1)
 theme_override_font_sizes/font_size = 13
 text = "陶土熔炉近场状态"
 
@@ -389,7 +389,7 @@ layout_mode = 2
 
 [node name="DrawerTitle" type="Label" parent="Margin/MainVBox/BottomArea/ActionDrawer/Margin/VBox/Header"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_colors/font_color = Color(0.85, 0.6, 0.3, 1)
 theme_override_font_sizes/font_size = 14
 text = "分类子项列表"
 
@@ -493,7 +493,7 @@ text = "行囊 [B]"
 
 [node name="QueueBadge" type="Label" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.298, 0.553, 1, 1)
+theme_override_colors/font_color = Color(0.85, 0.6, 0.3, 1)
 theme_override_font_sizes/font_size = 12
 text = "0"
 
