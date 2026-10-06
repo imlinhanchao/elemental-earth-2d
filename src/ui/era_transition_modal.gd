@@ -173,17 +173,7 @@ func _apply_visual_styling() -> void:
 # 动态加载时代专属大徽章图标
 func _load_era_emblem(era_order: int) -> Texture2D:
 	var path = ERA_ICONS.get(era_order, "res://assets/icons/era.svg")
-	if FileAccess.file_exists(path):
-		var file = FileAccess.open(path, FileAccess.READ)
-		if file:
-			var svg_text = file.get_as_text()
-			file.close()
-			var img = Image.new()
-			if img.load_svg_from_string(svg_text, 3.0) == OK:
-				return ImageTexture.create_from_image(img)
-	if ResourceLoader.exists(path):
-		return load(path)
-	return null
+	return ItemIconManager.load_texture(path)
 
 # 查看当前时代进程面板
 func show_current_era_status() -> void:

@@ -615,21 +615,7 @@ func _apply_scheme3_styling() -> void:
 	$Margin/MainVBox/TopBarPanel.add_theme_stylebox_override("panel", top_box)
 	
 	if logo_icon:
-		var logo_tex: Texture2D = null
-		if ResourceLoader.exists("res://assets/icons/game_logo.png"):
-			logo_tex = load("res://assets/icons/game_logo.png")
-		elif FileAccess.file_exists("res://assets/icons/game_logo.png"):
-			var img = Image.load_from_file("res://assets/icons/game_logo.png")
-			if img:
-				logo_tex = ImageTexture.create_from_image(img)
-		if not logo_tex and FileAccess.file_exists("res://assets/icons/game_logo.svg"):
-			var file = FileAccess.open("res://assets/icons/game_logo.svg", FileAccess.READ)
-			if file:
-				var svg_text = file.get_as_text()
-				file.close()
-				var img = Image.new()
-				if img.load_svg_from_string(svg_text, 3.0) == OK:
-					logo_tex = ImageTexture.create_from_image(img)
+		var logo_tex: Texture2D = ItemIconManager.load_texture("res://assets/icons/game_logo.png")
 		if logo_tex:
 			logo_icon.texture = logo_tex
 			logo_icon.custom_minimum_size = Vector2(34, 34)
@@ -1186,17 +1172,9 @@ func _update_era_label() -> void:
 		era_badge_btn.text = era_name
 		
 	var era_icon_path = "res://assets/icons/era_%s.svg" % era_def.get("key", "stone")
-	var era_tex: Texture2D = null
-	if FileAccess.file_exists(era_icon_path):
-		var file = FileAccess.open(era_icon_path, FileAccess.READ)
-		if file:
-			var svg_text = file.get_as_text()
-			file.close()
-			var img = Image.new()
-			if img.load_svg_from_string(svg_text, 2.0) == OK:
-				era_tex = ImageTexture.create_from_image(img)
-	if not era_tex and ResourceLoader.exists("res://assets/icons/era.svg"):
-		era_tex = load("res://assets/icons/era.svg")
+	var era_tex: Texture2D = ItemIconManager.load_texture(era_icon_path)
+	if not era_tex:
+		era_tex = ItemIconManager.load_texture("res://assets/icons/era.svg")
 	if era_tex:
 		era_badge_btn.icon = era_tex
 		era_badge_btn.expand_icon = true

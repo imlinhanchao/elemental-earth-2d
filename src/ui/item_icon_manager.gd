@@ -1,6 +1,6 @@
 # item_icon_manager.gd
 # 全局专属物品与建筑矢量图标管理器
-# 基础预加载确保语法解析零失败，ThorVG 动态渲染支持任意新专属矢量 SVG
+# 所有图标均通过 Godot 导入管线加载并缓存
 class_name ItemIconManager
 extends RefCounted
 
@@ -37,34 +37,36 @@ const BASE_ICONS: Dictionary = {
 	"res_ore": preload("res://assets/icons/res_ore.svg")
 }
 
-# 运行时动态加载与缓存字典 (利用 Godot 4 内核 ThorVG 瞬时解析任意未导入 SVG)
-static var _dynamic_cache: Dictionary = {}
+# 纹理缓存：只使用导入管线产出的纹理 (svg/scale=3.0 + mipmaps)，
+# 不在运行时用 ThorVG 栅格化 SVG (首次显示会卡顿，且导出包中原始 .svg 不存在)
+static var _cache: Dictionary = {}
+
+# 通用纹理加载 (带缓存)，供 HUD / 弹窗 / 主菜单加载 logo 与时代徽章
+static func load_texture(path: String) -> Texture2D:
+	if _cache.has(path):
+		return _cache[path]
+	var tex: Texture2D = load(path) if ResourceLoader.exists(path) else null
+	_cache[path] = tex
+	return tex
 
 static func get_icon(key: String) -> Texture2D:
-	if _dynamic_cache.has(key):
-		return _dynamic_cache[key]
-		
-	# 1. 尝试从本地 SVG 资源文件中直接加载 (支持自定义或新增加的矢量图标)
-	var possible_paths = [
+	var cache_key = "key:" + key
+	if _cache.has(cache_key):
+		return _cache[cache_key]
+	var tex = _resolve_icon(key)
+	_cache[cache_key] = tex
+	return tex
+
+static func _resolve_icon(key: String) -> Texture2D:
+	# 1. 按命名约定查找已导入的专属图标
+	for path in [
 		"res://assets/icons/res_%s.svg" % key,
 		"res://assets/icons/bldg_%s.svg" % key,
 		"res://assets/icons/tool_%s.svg" % key,
 		"res://assets/icons/%s.svg" % key
-	]
-	
-	for path in possible_paths:
-		if FileAccess.file_exists(path):
-			var file = FileAccess.open(path, FileAccess.READ)
-			if file:
-				var svg_text = file.get_as_text()
-				file.close()
-				var img = Image.new()
-				var err = img.load_svg_from_string(svg_text, 3.0)
-				if err == OK:
-					img.generate_mipmaps()
-					var tex = ImageTexture.create_from_image(img)
-					_dynamic_cache[key] = tex
-					return tex
+	]:
+		if ResourceLoader.exists(path):
+			return load(path)
 
 	# 2. 从已导入的基础基准图标表中匹配
 	if BASE_ICONS.has(key):

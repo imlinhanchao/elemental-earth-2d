@@ -196,11 +196,13 @@ func _ready() -> void:
 	GameState.researched_techs = ["stone_tool_crafting"]
 	GameState.inventory.add_item("stone", 60)
 	GameState.inventory.add_item("wood", 30)
+	var stone_before = GameState.inventory.get_count("stone") # 之前载入的 v2 存档已带有碎石
 	assert(GameState.can_research_tech("stone_masonry"), "满足前置与材料应可研发石材加工技术!")
 	var tech_ok = GameState.research_tech("stone_masonry")
 	assert(tech_ok, "研发石材加工技术必须成功!")
 	assert(GameState.researched_techs.has("stone_masonry"), "石材加工技术必须记入已研发列表!")
-	assert(GameState.inventory.get_count("stone") == 10, "研发材料消耗扣减必须准确!")
+	var stone_cost = int(DataDB.get_tech("stone_masonry").get("cost", {}).get("stone", 50))
+	assert(GameState.inventory.get_count("stone") == stone_before - stone_cost, "研发材料消耗扣减必须准确!")
 	print(" -> 科技研发系统与前置/材料消耗校验通过")
 	
 	# 清理测试存档文件

@@ -12,118 +12,53 @@ var current_health: int
 var is_hovered: bool = false
 var anim_scale: Vector2 = Vector2.ONE
 var anim_rotation: float = 0.0
-var _is_working: bool = false
 
 @onready var label = $NameLabel
 
+# 纯表现节点：不跑 _process、不连全局信号、不参与物理拾取。
+# 悬停 / 采空 / 重生均由 world.gd 通过 hex 索引直接调用下列方法驱动；作业进度环由 overlay_layer 统一绘制。
 func _ready() -> void:
 	current_health = max_health
-	mouse_entered.connect(_on_mouse_entered)
-	mouse_exited.connect(_on_mouse_exited)
-	
-	GameState.tile_depleted.connect(_on_tile_depleted)
-	GameState.tile_respawned.connect(_on_tile_respawned)
-	GameState.task_completed.connect(_on_task_finished)
-	GameState.task_cancelled.connect(_on_task_finished)
-	GameState.task_queue_changed.connect(_on_task_queue_changed)
-	
+	input_pickable = false
 	if label:
 		label.text = item_name
 		label.visible = false
 	queue_redraw()
 
-func _on_task_finished(_t: Dictionary) -> void:
-	if _is_working:
-		_is_working = false
-		queue_redraw()
-
-func _on_task_queue_changed() -> void:
-	var active_hex = GameState.get_active_task_hex()
-	if _is_working and (active_hex != hex_coord or active_hex == Vector2i(9999, 9999)):
-		_is_working = false
-		queue_redraw()
-
-func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
-	var world_node = get_tree().get_first_node_in_group("world")
-	if world_node and "is_placing_structure" in world_node and world_node.is_placing_structure:
+func set_hovered(v: bool) -> void:
+	if is_hovered == v:
 		return
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		get_viewport().set_input_as_handled()
-		request_mine_task()
-
-func _on_mouse_entered() -> void:
-	is_hovered = true
-	if label: label.visible = true
+	is_hovered = v
+	if label: label.visible = v
 	queue_redraw()
 
-func _on_mouse_exited() -> void:
-	is_hovered = false
-	if label: label.visible = false
+func on_respawned() -> void:
+	visible = true
+	var tw = create_tween()
+	scale = Vector2.ZERO
+	tw.tween_property(self, "scale", Vector2.ONE, 0.25)
 	queue_redraw()
-
-func request_mine_task() -> void:
-	if not visible:
-		return
-	GameState.queue_hex_mine(hex_coord, item_key, 1, global_position)
-
-func _on_tile_depleted(hex: Vector2i) -> void:
-	if hex == hex_coord:
-		harvest_complete()
-
-func _on_tile_respawned(hex: Vector2i) -> void:
-	if hex == hex_coord:
-		visible = true
-		var tw = create_tween()
-		scale = Vector2.ZERO
-		tw.tween_property(self, "scale", Vector2.ONE, 0.25)
-		queue_redraw()
 
 func harvest_complete() -> void:
-	# 受击弹性挤压与暂时隐匿动画
+	# 受击弹性挤压与暂时隐匿动画 (仅动画期间逐帧重绘)
 	var tw = create_tween()
 	anim_scale = Vector2(1.3, 0.6)
 	anim_rotation = randf_range(-0.15, 0.15)
-	tw.tween_property(self, "anim_scale", Vector2.ZERO, 0.15)
-	tw.parallel().tween_property(self, "anim_rotation", 0.0, 0.15)
+	tw.tween_method(_set_anim_t, 0.0, 1.0, 0.15)
 	await tw.finished
 	visible = false
 	anim_scale = Vector2.ONE
+	anim_rotation = 0.0
 
-func _process(_delta: float) -> void:
-	# 动态根据领地状态调暗超出领地的节点
-	if not GameState.is_pos_in_territory(global_position):
-		modulate = Color(0.65, 0.65, 0.75, 0.55)
-	else:
-		modulate = Color.WHITE
-
-	# 若当前节点正是正在开工的目标，持续重绘显示工作环；开工结束时立即触发单次重绘擦除绿圈
-	var active_hex = GameState.get_active_task_hex()
-	var is_active = (active_hex == hex_coord and active_hex != Vector2i(9999, 9999))
-	if is_active:
-		_is_working = true
-		queue_redraw()
-	elif _is_working:
-		_is_working = false
-		queue_redraw()
-	elif anim_scale != Vector2.ONE or anim_rotation != 0.0:
-		queue_redraw()
+func _set_anim_t(t: float) -> void:
+	anim_scale = Vector2(1.3, 0.6).lerp(Vector2.ZERO, t)
+	anim_rotation = lerpf(anim_rotation, 0.0, t)
+	queue_redraw()
 
 func _draw() -> void:
-	# 若当前节点被选中且正由任务作业，先绘制环形发光进度环
-	var active_hex = GameState.get_active_task_hex()
-	if active_hex == hex_coord and active_hex != Vector2i(9999, 9999):
-		var total = float(GameState.active_task.get("time_required", GameState.active_task.get("total_time", 1.0)))
-		var begin_time = int(GameState.active_task.get("begin_time", 0))
-		var elapsed = (Time.get_ticks_msec() - begin_time) / 1000.0 if begin_time > 0 else float(GameState.active_task.get("elapsed_time", 0.0))
-		var pct = clamp(elapsed / max(total, 0.001), 0.0, 1.0)
-		# 阴影发光底环
-		draw_arc(Vector2.ZERO, 24.0, 0, TAU, 32, Color(0.1, 0.6, 0.8, 0.35), 4.0)
-		# 充能进度环
-		draw_arc(Vector2.ZERO, 24.0, -PI/2, -PI/2 + pct * TAU, 32, Color(0.3, 1.0, 0.6, 0.95), 4.5)
-
 	# 鼠标悬停时的微光光圈
 	if is_hovered:
-		draw_arc(Vector2.ZERO, 20.0, 0, TAU, 24, Color(1.0, 0.88, 0.4, 0.4), 2.0)
+		draw_arc(Vector2.ZERO, 20.0, 0, TAU, 24, Color(0.15, 0.14, 0.13, 0.35), 1.5)
 
 	# 应用弹性受击变换
 	draw_set_transform(Vector2.ZERO, anim_rotation, anim_scale)

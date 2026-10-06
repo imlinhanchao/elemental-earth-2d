@@ -45,6 +45,10 @@ var target_zoom: Vector2 = Vector2.ONE
 # 六边形世界边界范围 (-20 到 20 圈)
 const WORLD_HEX_RADIUS: int = 18
 
+# hex -> ResourceNode 索引：替代每个节点各自监听全局信号 / 每帧轮询
+var resource_nodes: Dictionary = {}
+var _hovered_node: Node2D = null
+
 func _ready() -> void:
 	add_to_group("world")
 	terrain_layer.world = self
@@ -55,6 +59,14 @@ func _ready() -> void:
 	tile_context_menu.harvest_requested.connect(_on_context_menu_harvest)
 
 	GameState.structure_built.connect(_on_structure_built)
+	GameState.tile_depleted.connect(func(hex):
+		var n = resource_nodes.get(hex)
+		if is_instance_valid(n): n.harvest_complete()
+	)
+	GameState.tile_respawned.connect(func(hex):
+		var n = resource_nodes.get(hex)
+		if is_instance_valid(n): n.on_respawned()
+	)
 	_generate_hex_world()
 	
 	hud.build_structure_requested.connect(_on_build_structure_requested)
@@ -259,6 +271,7 @@ func _spawn_resource_at_hex(q: int, r: int, item_key: String) -> void:
 	var minable = GameState.sim.is_resource_minable(item_key)
 	node.visible = in_terr and not depleted and minable
 	entities.add_child(node)
+	resource_nodes[Vector2i(q, r)] = node
 
 func _on_context_menu_harvest(hex: Vector2i, item_key: String, count: int) -> void:
 	var world_p = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
@@ -296,20 +309,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			# 直接应用缩放，消除弹性与顿挫
 			camera.zoom = (camera.zoom * 1.15).clamp(Vector2(0.5, 0.5), Vector2(2.5, 2.5))
 			target_zoom = camera.zoom
-			var new_lod = 1 if camera.zoom.x >= 0.85 else 0
-			if terrain_layer and terrain_layer.current_lod != new_lod:
-				terrain_layer.current_lod = new_lod
-			if terrain_layer:
-				terrain_layer.queue_redraw()
+			_update_terrain_lod()
 		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN and event.pressed:
 			# 直接应用缩放，消除弹性与顿挫
 			camera.zoom = (camera.zoom * 0.85).clamp(Vector2(0.5, 0.5), Vector2(2.5, 2.5))
 			target_zoom = camera.zoom
-			var new_lod = 1 if camera.zoom.x >= 0.85 else 0
-			if terrain_layer and terrain_layer.current_lod != new_lod:
-				terrain_layer.current_lod = new_lod
-			if terrain_layer:
-				terrain_layer.queue_redraw()
+			_update_terrain_lod()
 		elif event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 			if is_placing_structure:
 				confirm_placement(hovered_hex)
@@ -318,9 +323,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	
 	elif event is InputEventMouseMotion:
 		if is_dragging_camera:
-			camera.position = drag_start_cam_pos - (event.position - drag_start_mouse) / camera.zoom
-			if terrain_layer:
-				terrain_layer.queue_redraw()
+			camera.position = _clamp_camera(drag_start_cam_pos - (event.position - drag_start_mouse) / camera.zoom)
 		
 		# 转换鼠标世界坐标到六边形网格坐标
 		var mpos = camera.get_global_mouse_position()
@@ -328,8 +331,23 @@ func _unhandled_input(event: InputEvent) -> void:
 		if hex != hovered_hex:
 			hovered_hex = hex
 			overlay_layer.queue_redraw()
+			if is_instance_valid(_hovered_node): _hovered_node.set_hovered(false)
+			_hovered_node = resource_nodes.get(hex)
+			if is_instance_valid(_hovered_node) and _hovered_node.visible: _hovered_node.set_hovered(true)
 			if hud and generated_hexes.has(hovered_hex):
 				hud.update_current_biome(generated_hexes[hovered_hex])
+
+# 地形只在 LOD 阈值被跨越时重绘一次；镜头移动/缩放本身不触发重绘
+func _update_terrain_lod() -> void:
+	var new_lod = 1 if camera.zoom.x >= 0.85 else 0
+	if terrain_layer and terrain_layer.current_lod != new_lod:
+		terrain_layer.current_lod = new_lod
+		terrain_layer.queue_redraw()
+
+# 镜头可达范围限制在地形预绘制区域内 (见 terrain_layer.DRAW_HEX_RADIUS)
+const CAMERA_LIMIT: float = 1500.0
+func _clamp_camera(pos: Vector2) -> Vector2:
+	return pos.clamp(Vector2(-CAMERA_LIMIT, -CAMERA_LIMIT), Vector2(CAMERA_LIMIT, CAMERA_LIMIT))
 
 func _handle_tile_click(hex: Vector2i) -> void:
 	if not GameState.is_hex_in_territory(hex.x, hex.y):
@@ -363,9 +381,7 @@ func _process(delta: float) -> void:
 	# WASD / 方向键平滑移动摄像机
 	var dir = Input.get_vector("move_left", "move_right", "move_up", "move_down")
 	if dir != Vector2.ZERO:
-		camera.position += dir * (camera_speed / camera.zoom.x) * delta
-		if terrain_layer:
-			terrain_layer.queue_redraw()
+		camera.position = _clamp_camera(camera.position + dir * (camera_speed / camera.zoom.x) * delta)
 	
 	# 自动存档周期计时
 	var interval = float(SettingsManager.get_setting("auto_save_interval", 45.0))

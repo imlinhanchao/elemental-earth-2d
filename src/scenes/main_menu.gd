@@ -144,21 +144,7 @@ func _init_particles() -> void:
 func _setup_logo() -> void:
 	if not logo_icon:
 		return
-	var tex: Texture2D = null
-	if ResourceLoader.exists("res://assets/icons/game_logo.png"):
-		tex = load("res://assets/icons/game_logo.png")
-	elif FileAccess.file_exists("res://assets/icons/game_logo.png"):
-		var img = Image.load_from_file("res://assets/icons/game_logo.png")
-		if img:
-			tex = ImageTexture.create_from_image(img)
-	if not tex and FileAccess.file_exists("res://assets/icons/game_logo.svg"):
-		var f = FileAccess.open("res://assets/icons/game_logo.svg", FileAccess.READ)
-		if f:
-			var svg_text = f.get_as_text()
-			f.close()
-			var img = Image.new()
-			if img.load_svg_from_string(svg_text, 3.0) == OK:
-				tex = ImageTexture.create_from_image(img)
+	var tex: Texture2D = ItemIconManager.load_texture("res://assets/icons/game_logo.png")
 	if tex:
 		logo_icon.texture = tex
 		logo_icon.custom_minimum_size = Vector2(52, 52)

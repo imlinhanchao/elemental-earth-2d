@@ -307,11 +307,16 @@ func _populate_resources_for_new_era(_era_order: int) -> void:
 				if spawn != "":
 					world_resources[coord] = spawn
 
+var _territory_cache_era: int = -1
+var _territory_cache_radius: int = 5
+
 func get_current_territory_radius() -> int:
-	var era_def = DataDB.get_era(current_era)
-	if era_def.has("territory_radius"):
-		return int(era_def["territory_radius"])
-	return 5 + current_era * 3
+	# 按时代缓存，避免每次地块判定都线性扫描 eras 表 (地形重绘时调用上万次)
+	if _territory_cache_era != current_era:
+		var era_def = DataDB.get_era(current_era)
+		_territory_cache_radius = int(era_def["territory_radius"]) if era_def.has("territory_radius") else 5 + current_era * 3
+		_territory_cache_era = current_era
+	return _territory_cache_radius
 
 func is_hex_in_territory(q: int, r: int) -> bool:
 	var dist = (abs(q) + abs(q + r) + abs(r)) / 2

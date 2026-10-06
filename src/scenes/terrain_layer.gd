@@ -14,6 +14,10 @@ const HEX_EDGE_DIRS: Array[Vector2i] = [
 	Vector2i(1, -1)   # edge 5: vertex 5 -> 0 (Northeast)
 ]
 
+# 六边形绘制半径：地图 (18 圈) 外再铺 8 圈未解锁图纸格；更远处只画廉价的测绘网格线
+const DRAW_HEX_RADIUS: int = 26
+const GRID_EXTENT: float = 4200.0
+
 var world: Node2D = null
 var current_lod: int = 1 # 0: 远景简略 (zoom < 0.85), 1: 近景精细 (zoom >= 0.85)
 
@@ -23,34 +27,15 @@ func _draw() -> void:
 		
 	var generated_hexes = world.generated_hexes
 	
-	# 1. 计算视口在世界坐标系下的包围盒，确保整个屏幕完全铺满六边形
-	var cam = world.camera if world else null
-	var center_pos = cam.get_screen_center_position() if cam else Vector2.ZERO
-	var vp_size = get_viewport_rect().size if get_viewport() else Vector2(1920, 1080)
-	var cam_zoom = cam.zoom if (cam and cam.zoom.x > 0.01) else Vector2.ONE
-	var half_w = (vp_size.x / cam_zoom.x) * 0.5
-	var half_h = (vp_size.y / cam_zoom.y) * 0.5
+	# 1. 绘制固定范围 (与镜头无关)：仅在世界生成 / 时代跃迁 / LOD 切换 / 读档时重绘，
+	#    镜头平移与缩放只移动 Camera2D，复用 CanvasItem 已缓存的绘制指令，不再逐帧重建。
+	_draw_blueprint_grid(-GRID_EXTENT, GRID_EXTENT, -GRID_EXTENT, GRID_EXTENT)
 	
-	var min_x = center_pos.x - half_w
-	var max_x = center_pos.x + half_w
-	var min_y = center_pos.y - half_h
-	var max_y = center_pos.y + half_h
-		
-	# 绘制测绘图纸网格 (动态全屏覆盖)
-	_draw_blueprint_grid(min_x - 300.0, max_x + 300.0, min_y - 300.0, max_y + 300.0)
-	
-	# 2. 遍历整个屏幕可见范围内的所有六边形 (q, r)，实现 100% 铺满全屏
-	var pad = HexWorldGenerator.HEX_RADIUS * 2.5
-	var r_min = int(floor((min_y - pad) / (HexWorldGenerator.HEX_RADIUS * 1.5)))
-	var r_max = int(ceil((max_y + pad) / (HexWorldGenerator.HEX_RADIUS * 1.5)))
-	var col_w = HexWorldGenerator.HEX_RADIUS * sqrt(3.0)
-	var sqrt3_half = HexWorldGenerator.HEX_RADIUS * (sqrt(3.0) / 2.0)
-	
-	for r in range(r_min, r_max + 1):
-		var r_shift = sqrt3_half * float(r)
-		var q_min = int(floor((min_x - pad - r_shift) / col_w))
-		var q_max = int(ceil((max_x + pad - r_shift) / col_w))
-		for q in range(q_min, q_max + 1):
+	# 2. 遍历固定半径内的全部六边形 (地图 + 外围未解锁图纸区)
+	for r in range(-DRAW_HEX_RADIUS, DRAW_HEX_RADIUS + 1):
+		var q_lo = max(-DRAW_HEX_RADIUS, -r - DRAW_HEX_RADIUS)
+		var q_hi = min(DRAW_HEX_RADIUS, -r + DRAW_HEX_RADIUS)
+		for q in range(q_lo, q_hi + 1):
 			var coord = Vector2i(q, r)
 			var center = HexWorldGenerator.hex_to_pixel(q, r)
 			var in_territory = GameState.is_hex_in_territory(q, r)
