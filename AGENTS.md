@@ -800,6 +800,13 @@
 - **死代码清理**：删除未被引用的 `main.gd/tscn`、`player.gd/tscn` 与无入口的 `ToolCraftModal`；截图场景从 `world.gd` 移至 `tools/screenshot_scenarios.gd`，输出路径改为项目相对路径；
 - **测试**：`test_save_v3` 增加储量、已耗时长、循环次数校验；`test_progression` 增加酒精灯升温与作业精确完成校验。
 
+
+### 2.41 修复「开启新程」仍载入旧进度 (2026-10-06)
+
+- **根因**：`world.gd._ready()` 在没有 `pending_load_slot` 时，只要检测到「背包为空 + 石器时代 + 未发现元素 + 磁盘有存档」就自动载入最新存档。新游戏刚重置时正好满足这些条件，于是又被读回旧档；
+- **修复**：删除这段猜测式自动读档。只有主菜单「继续游戏」「载入档案」显式设置 `SaveManager.pending_load_slot` 时才读档，「开启新程」与「新手教程」始终从全新世界开始；
+- 旧存档文件不会被删除，但首次自动保存会覆盖 `auto` 槽位。
+
 ---
 
 ## 4. 全局键盘与鼠标操作控制总览 (Global Controls & Hotkeys)
