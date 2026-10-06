@@ -222,7 +222,7 @@ func show_placement_mode(structure_name: String) -> void:
 		sbox.corner_radius_top_right = 8
 		sbox.corner_radius_bottom_left = 8
 		sbox.corner_radius_bottom_right = 8
-		sbox.shadow_color = Color(0, 0, 0, 0.45)
+		sbox.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
 		sbox.shadow_size = 6
 		placement_bar.add_theme_stylebox_override("panel", sbox)
 		
@@ -674,7 +674,7 @@ func _apply_scheme3_styling() -> void:
 		btn_menu.add_theme_stylebox_override("disabled", empty_box)
 		
 		var menu_hover = StyleBoxFlat.new()
-		menu_hover.bg_color = Color(0.15, 0.14, 0.13, 0.08)
+		menu_hover.bg_color = Color(0.92, 0.89, 0.84, 0.08)
 		menu_hover.corner_radius_top_left = 6
 		menu_hover.corner_radius_top_right = 6
 		menu_hover.corner_radius_bottom_left = 6
@@ -682,7 +682,7 @@ func _apply_scheme3_styling() -> void:
 		btn_menu.add_theme_stylebox_override("hover", menu_hover)
 		
 		var menu_pressed = StyleBoxFlat.new()
-		menu_pressed.bg_color = Color(0.15, 0.14, 0.13, 0.16)
+		menu_pressed.bg_color = Color(0.92, 0.89, 0.84, 0.16)
 		menu_pressed.corner_radius_top_left = 6
 		menu_pressed.corner_radius_top_right = 6
 		menu_pressed.corner_radius_bottom_left = 6
@@ -716,7 +716,7 @@ func _apply_scheme3_styling() -> void:
 	for btn in tab_buttons:
 		if btn:
 			var btn_norm = StyleBoxFlat.new()
-			btn_norm.bg_color = Color(0, 0, 0, 0.0)
+			btn_norm.bg_color = Color(0.92, 0.89, 0.84, 0.00)
 			btn_norm.corner_radius_top_left = 12
 			btn_norm.corner_radius_top_right = 12
 			btn_norm.corner_radius_bottom_left = 12
@@ -1316,7 +1316,7 @@ func show_toast(msg: String, col: Color = Color.WHITE) -> void:
 	sbox.content_margin_top = 6
 	sbox.content_margin_right = 16
 	sbox.content_margin_bottom = 6
-	sbox.shadow_color = Color(0, 0, 0, 0.45)
+	sbox.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
 	sbox.shadow_size = 8
 	toast_panel.add_theme_stylebox_override("panel", sbox)
 

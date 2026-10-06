@@ -18,7 +18,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.65)
+color = Color(0.20, 0.17, 0.13, 0.35)
 
 [node name="CenterPanel" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(980, 600)
@@ -109,7 +109,7 @@ layout_mode = 2
 
 [node name="SensorTitle" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox/SensorHeader"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.6, 0.3, 1)
+theme_override_colors/font_color = Color(0.62, 0.44, 0.22, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "反应活性探测仪"
 
@@ -119,13 +119,13 @@ size_flags_horizontal = 3
 
 [node name="SensorStateBadge" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox/SensorHeader"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
+theme_override_colors/font_color = Color(0.37, 0.34, 0.30, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "[待命中]"
 
 [node name="SensorDetail" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.65, 0.7, 0.8, 1)
+theme_override_colors/font_color = Color(0.37, 0.34, 0.30, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "向烧瓶投入试剂以侦测潜在化学反应活性"
 
@@ -141,7 +141,7 @@ text = "点燃酒精灯"
 
 [node name="TempLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/Controls"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.6, 0.3, 1)
+theme_override_colors/font_color = Color(0.62, 0.44, 0.22, 1.00)
 theme_override_font_sizes/font_size = 13
 text = "烧瓶温度: 293 K (20 ℃)"
 
@@ -227,7 +227,7 @@ theme_override_constants/separation = 8
 
 [node name="CodexInfoLabel" type="Label" parent="CenterPanel/VBox/Body/HBox/RightView/ViewCodex"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
+theme_override_colors/font_color = Color(0.25, 0.50, 0.62, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "时代前沿科研猜想与已确证配方 · 点击原料可快捷投入烧瓶"
 

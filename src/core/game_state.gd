@@ -109,6 +109,9 @@ func _init() -> void:
 func _ready() -> void:
 	print("[GameState] 模拟层已就绪，当前时代: %s" % ERA_NAMES[current_era])
 	_setup_app_icon()
+	# 纸面主题合并进引擎默认主题：所有界面 (含 CanvasLayer 下动态创建的菜单、下拉弹出层)
+	# 都以同一套浅色样式为兜底，不再出现引擎默认的深灰按钮
+	ThemeDB.get_default_theme().merge_with(preload("res://src/ui/theme_styler.gd").create_scientific_theme())
 
 func _setup_app_icon() -> void:
 	if ResourceLoader.exists("res://icon.png"):

@@ -57,7 +57,7 @@ func _apply_styles() -> void:
 	tip_style.content_margin_top = 12
 	tip_style.content_margin_right = 14
 	tip_style.content_margin_bottom = 12
-	tip_style.shadow_color = Color(0.0, 0.0, 0.0, 0.65)
+	tip_style.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
 	tip_style.shadow_size = 14
 	tip_style.shadow_offset = Vector2(0, 4)
 	floating_tooltip.add_theme_stylebox_override("panel", tip_style)
@@ -201,8 +201,8 @@ func _create_occupied_slot(item_key: String, count: int) -> Control:
 	count_lbl.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
 	count_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	count_lbl.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	count_lbl.add_theme_color_override("font_color", Color(1.0, 1.0, 1.0, 1.0))
-	count_lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.95))
+	count_lbl.add_theme_color_override("font_color", Color(0.15, 0.14, 0.13, 1.00))
+	count_lbl.add_theme_color_override("font_shadow_color", Color(0.25, 0.20, 0.12, 0.22))
 	count_lbl.add_theme_constant_override("shadow_offset_x", 1)
 	count_lbl.add_theme_constant_override("shadow_offset_y", 1)
 	count_lbl.add_theme_font_size_override("font_size", 12)
@@ -226,8 +226,8 @@ func _create_empty_slot() -> Control:
 	slot_panel.mouse_filter = Control.MOUSE_FILTER_PASS
 	
 	var empty_style = StyleBoxFlat.new()
-	empty_style.bg_color = Color(0.12, 0.11, 0.10, 0.5)
-	empty_style.border_color = Color(0.16, 0.22, 0.30, 0.5)
+	empty_style.bg_color = Color(0.92, 0.89, 0.84, 0.50)
+	empty_style.border_color = Color(0.27, 0.42, 0.62, 0.50)
 	empty_style.border_width_left = 1
 	empty_style.border_width_top = 1
 	empty_style.border_width_right = 1
@@ -283,9 +283,11 @@ func _show_tooltip_for_item(item_key: String, data: Dictionary, count: int) -> v
 			var tag_panel = PanelContainer.new()
 			tag_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			var tag_style = StyleBoxFlat.new()
-			var col = t_info.get("color", Color(0.3, 0.7, 0.9))
-			tag_style.bg_color = Color(col.r * 0.15, col.g * 0.15, col.b * 0.15, 0.9)
-			tag_style.border_color = Color(col.r, col.g, col.b, 0.65)
+			# 标签色为亮色设计：纸面上文字/边框取加深色，底色取极浅同色相
+			var raw: Color = t_info.get("color", Color(0.3, 0.7, 0.9))
+			var col = Color.from_hsv(raw.h, maxf(raw.s, 0.55), 0.55)
+			tag_style.bg_color = Color.from_hsv(raw.h, 0.12, 0.96)
+			tag_style.border_color = Color(col.r, col.g, col.b, 0.6)
 			tag_style.border_width_left = 1
 			tag_style.border_width_top = 1
 			tag_style.border_width_right = 1

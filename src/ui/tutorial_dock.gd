@@ -25,7 +25,7 @@ signal tutorial_skipped
 const STAGES: Array[Dictionary] = [
 	{
 		"title": "初临大地 · 视野与地表拾取",
-		"desc": "在这片原始大地上，万物皆由化学元素筑就。\n• 按住 [color=#38bdf8][鼠标右键][/color] 拖拽地图平移视野\n• 滚动 [color=#38bdf8][滚轮][/color] 缩放视野范围\n• 用 [color=#38bdf8][鼠标左键][/color] 点击地表散落的【碎石】与【枯树枝】加入工作队列",
+		"desc": "在这片原始大地上，万物皆由化学元素筑就。\n• 按住 [color=#9C5A1E][鼠标右键][/color] 拖拽地图平移视野\n• 滚动 [color=#9C5A1E][滚轮][/color] 缩放视野范围\n• 用 [color=#9C5A1E][鼠标左键][/color] 点击地表散落的【碎石】与【枯树枝】加入工作队列",
 		"goals": [
 			{"id": "stone", "text": "拾取碎石", "target": 2},
 			{"id": "stick", "text": "拾取枯树枝", "target": 2}
@@ -41,14 +41,14 @@ const STAGES: Array[Dictionary] = [
 	},
 	{
 		"title": "工匠破雾 · 打造手斧与橡树现形",
-		"desc": "素材已齐备！正式迈向石器工匠时代：\n• 按键盘快捷键 [color=#38bdf8][T][/color] 呼出底部【制作栏】\n• 打造你的第一件工具【原始燧石手斧】\n• 制作完成后工具将自动装配——观察大地图：深林处的【大橡树】破除迷雾显现了！",
+		"desc": "素材已齐备！正式迈向石器工匠时代：\n• 按键盘快捷键 [color=#9C5A1E][T][/color] 呼出底部【制作栏】\n• 打造你的第一件工具【原始燧石手斧】\n• 制作完成后工具将自动装配——观察大地图：深林处的【大橡树】破除迷雾显现了！",
 		"goals": [
 			{"id": "axe", "text": "打造并装备原始燧石斧", "target": 1}
 		]
 	},
 	{
 		"title": "伐木拓荒 · 采伐原木与构筑营地",
-		"desc": "手斧赋予了你砍伐坚硬林木的生产力：\n• 点击显现的大橡树，采伐【原木】\n• 提示：右键单点地块可呼出【批次/无尽开采】菜单\n• 收集木材后，按快捷键 [color=#38bdf8][C][/color] 建造一座【原始篝火堆】！",
+		"desc": "手斧赋予了你砍伐坚硬林木的生产力：\n• 点击显现的大橡树，采伐【原木】\n• 提示：右键单点地块可呼出【批次/无尽开采】菜单\n• 收集木材后，按快捷键 [color=#9C5A1E][C][/color] 建造一座【原始篝火堆】！",
 		"goals": [
 			{"id": "wood", "text": "砍伐获取原木", "target": 4},
 			{"id": "structure", "text": "建造原始篝火堆或熔炉", "target": 1}
@@ -56,7 +56,7 @@ const STAGES: Array[Dictionary] = [
 	},
 	{
 		"title": "科学晨曦 · 科技星图与化学圣殿",
-		"desc": "火与工具点燃了人类理性的第一缕晨光：\n• 按键盘 [color=#38bdf8][K][/color] 查阅 40 项全景【科技星图】，研读前沿突破\n• 按键盘 [color=#38bdf8][L][/color] 进入【微观化学实验台】，探秘 118 种元素合成之道\n• 恭喜你掌握了生存与科研之法，广袤的元素宇宙已为你敞开！",
+		"desc": "火与工具点燃了人类理性的第一缕晨光：\n• 按键盘 [color=#9C5A1E][K][/color] 查阅 40 项全景【科技星图】，研读前沿突破\n• 按键盘 [color=#9C5A1E][L][/color] 进入【微观化学实验台】，探秘 118 种元素合成之道\n• 恭喜你掌握了生存与科研之法，广袤的元素宇宙已为你敞开！",
 		"goals": [
 			{"id": "complete", "text": "启程迈入自由沙盒", "target": 1}
 		]
@@ -103,13 +103,13 @@ func _apply_styles() -> void:
 	card_box.content_margin_top = 16
 	card_box.content_margin_right = 18
 	card_box.content_margin_bottom = 16
-	card_box.shadow_color = Color(0.0, 0.0, 0.0, 0.55)
+	card_box.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
 	card_box.shadow_size = 16
 	card_box.shadow_offset = Vector2(0, 4)
 	panel_container.add_theme_stylebox_override("panel", card_box)
 	
 	# 进度药丸徽章
-	var badge_box = ThemeStyler.create_pill_box(6, Color(0.12, 0.22, 0.35, 0.95), Color(0.25, 0.85, 0.55, 0.8))
+	var badge_box = ThemeStyler.create_pill_box(6, Color(0.80, 0.86, 0.93, 0.95), Color(0.18, 0.62, 0.40, 0.80))
 	badge_box.content_margin_left = 10
 	badge_box.content_margin_right = 10
 	badge_box.content_margin_top = 3
@@ -117,14 +117,14 @@ func _apply_styles() -> void:
 	step_badge.add_theme_stylebox_override("panel", badge_box)
 	
 	# 下一步按钮样式
-	var next_box = ThemeStyler.create_pill_box(8, Color(0.12, 0.45, 0.35, 0.95), Color(0.25, 0.95, 0.65, 0.9))
+	var next_box = ThemeStyler.create_pill_box(8, Color(0.80, 0.93, 0.89, 0.95), Color(0.16, 0.62, 0.42, 0.90))
 	next_box.content_margin_left = 14
 	next_box.content_margin_right = 14
 	next_box.content_margin_top = 6
 	next_box.content_margin_bottom = 6
 	btn_next.add_theme_stylebox_override("normal", next_box)
 	
-	var next_hover = ThemeStyler.create_pill_box(8, Color(0.16, 0.60, 0.45, 1.0), Color(0.40, 1.0, 0.75, 1.0))
+	var next_hover = ThemeStyler.create_pill_box(8, Color(0.80, 0.93, 0.89, 1.00), Color(0.25, 0.62, 0.47, 1.00))
 	next_hover.content_margin_left = 14
 	next_hover.content_margin_right = 14
 	next_hover.content_margin_top = 6
@@ -236,7 +236,7 @@ func _check_current_goals() -> void:
 		status_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS)
 	else:
 		status_lbl.text = "请根据上方指引在世界中执行操作"
-		status_lbl.add_theme_color_override("font_color", Color(0.48, 0.58, 0.72))
+		status_lbl.add_theme_color_override("font_color", Color(0.28, 0.42, 0.62))
 
 func _on_next_pressed() -> void:
 	if not stage_completed:

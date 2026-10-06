@@ -37,7 +37,7 @@ func _apply_styling() -> void:
 	box.corner_radius_top_right = 10
 	box.corner_radius_bottom_left = 10
 	box.corner_radius_bottom_right = 10
-	box.shadow_color = Color(0, 0, 0, 0.45)
+	box.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
 	box.shadow_size = 12
 	box.shadow_offset = Vector2(0, 4)
 	add_theme_stylebox_override("panel", box)

@@ -129,7 +129,7 @@ func _refresh_grid() -> void:
 			sym_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 			name_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 		else:
-			style.bg_color = Color(0.12, 0.11, 0.10, 0.5)
+			style.bg_color = Color(0.92, 0.89, 0.84, 0.50)
 			style.border_color = ThemeStyler.COLOR_BORDER
 			sym_lbl.text = "?"
 			name_lbl.text = "???"

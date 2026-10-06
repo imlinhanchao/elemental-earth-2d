@@ -42,7 +42,7 @@ layout_mode = 2
 
 [node name="BadgeLbl" type="Label" parent="PanelContainer/Margin/VBox/HeaderHBox/StepBadge"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.35, 0.95, 0.65, 1)
+theme_override_colors/font_color = Color(0.23, 0.62, 0.42, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "教学指引 · 1 / 5"
 
@@ -54,21 +54,21 @@ mouse_filter = 2
 [node name="BtnSkip" type="Button" parent="PanelContainer/Margin/VBox/HeaderHBox"]
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(0.55, 0.65, 0.78, 1)
-theme_override_colors/font_hover_color = Color(0.95, 0.45, 0.45, 1)
+theme_override_colors/font_color = Color(0.28, 0.43, 0.62, 1.00)
+theme_override_colors/font_hover_color = Color(0.62, 0.28, 0.28, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "跳过教程"
 flat = true
 
 [node name="TitleLabel" type="Label" parent="PanelContainer/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.98, 0.98, 1, 1)
+theme_override_colors/font_color = Color(0.15, 0.14, 0.13, 1.00)
 theme_override_font_sizes/font_size = 15
 text = "初临大地 · 视野与地表拾取"
 
 [node name="DescLabel" type="RichTextLabel" parent="PanelContainer/Margin/VBox"]
 layout_mode = 2
-theme_override_colors/default_color = Color(0.78, 0.84, 0.92, 1)
+theme_override_colors/default_color = Color(0.15, 0.14, 0.13, 1.00)
 theme_override_font_sizes/normal_font_size = 12
 bbcode_enabled = true
 text = "在这片原始大地上，万物皆由化学元素筑就。"
@@ -89,7 +89,7 @@ theme_override_constants/separation = 10
 [node name="StatusLbl" type="Label" parent="PanelContainer/Margin/VBox/FooterHBox"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_colors/font_color = Color(0.48, 0.58, 0.72, 1)
+theme_override_colors/font_color = Color(0.28, 0.42, 0.62, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "请根据上方指引在世界中执行操作"
 autowrap_mode = 2
@@ -98,6 +98,6 @@ autowrap_mode = 2
 custom_minimum_size = Vector2(88, 30)
 layout_mode = 2
 mouse_default_cursor_shape = 2
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_color = Color(0.15, 0.14, 0.13, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "下一步 ›"

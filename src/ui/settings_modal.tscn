@@ -19,7 +19,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 0.65)
+color = Color(0.20, 0.17, 0.13, 0.35)
 
 [node name="CenterPanel" type="PanelContainer" parent="."]
 custom_minimum_size = Vector2(760, 500)
@@ -205,7 +205,7 @@ text = "全屏显示模式 (Alt + Enter)"
 
 [node name="ResolutionInfo" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecDisplay"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.67, 0.59, 1)
+theme_override_colors/font_color = Color(0.37, 0.34, 0.30, 1.00)
 theme_override_font_sizes/font_size = 13
 text = "基准分辨率: 1920 × 1080 (16:9 点对点画布渲染，4K 自动等比缩放)"
 

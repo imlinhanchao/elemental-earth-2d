@@ -7,16 +7,16 @@ const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 
 # 元素族分类配色
 const CATEGORY_COLORS: Dictionary = {
-	"alkali-metal": Color(0.95, 0.35, 0.35),          # 碱金属
-	"alkaline-earth-metal": Color(0.95, 0.65, 0.25),  # 碱土金属
-	"transition-metal": Color(0.22, 0.74, 0.97),      # 过渡金属
-	"post-transition-metal": Color(0.35, 0.85, 0.65), # 后过渡金属
-	"metalloid": Color(0.65, 0.82, 0.35),             # 类金属
-	"nonmetal": Color(0.30, 0.88, 0.45),              # 反应性非金属
-	"halogen": Color(0.88, 0.45, 0.92),               # 卤素
-	"noble-gas": Color(0.68, 0.52, 0.98),             # 稀有气体
-	"lanthanide": Color(0.95, 0.48, 0.68),            # 镧系
-	"actinide": Color(0.92, 0.38, 0.52)               # 锕系
+	"alkali-metal": Color(0.75, 0.22, 0.22),          # 碱金属
+	"alkaline-earth-metal": Color(0.72, 0.45, 0.10),  # 碱土金属
+	"transition-metal": Color(0.12, 0.45, 0.68),      # 过渡金属
+	"post-transition-metal": Color(0.14, 0.52, 0.40), # 后过渡金属
+	"metalloid": Color(0.42, 0.52, 0.14),             # 类金属
+	"nonmetal": Color(0.18, 0.55, 0.26),              # 反应性非金属
+	"halogen": Color(0.60, 0.25, 0.65),               # 卤素
+	"noble-gas": Color(0.42, 0.30, 0.72),             # 稀有气体
+	"lanthanide": Color(0.72, 0.26, 0.45),            # 镧系
+	"actinide": Color(0.65, 0.20, 0.32)               # 锕系
 }
 
 const CATEGORY_NAMES: Dictionary = {
@@ -67,7 +67,7 @@ func _build_ui() -> void:
 	# 1. 全屏柔和暗色微光蒙版
 	backdrop = ColorRect.new()
 	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	backdrop.color = Color(0.06, 0.05, 0.04, 0.85)
+	backdrop.color = Color(0.20, 0.17, 0.13, 0.35)
 	add_child(backdrop)
 
 	# 2. 居中容器
@@ -91,7 +91,7 @@ func _build_ui() -> void:
 	card_style.corner_radius_top_right = 18
 	card_style.corner_radius_bottom_left = 18
 	card_style.corner_radius_bottom_right = 18
-	card_style.shadow_color = Color(0.0, 0.0, 0.0, 0.65)
+	card_style.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
 	card_style.shadow_size = 28
 	card_panel.add_theme_stylebox_override("panel", card_style)
 
@@ -113,7 +113,7 @@ func _build_ui() -> void:
 	var header_title = Label.new()
 	header_title.text = "重大科学突破"
 	header_title.add_theme_font_size_override("font_size", 12)
-	header_title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
+	header_title.add_theme_color_override("font_color", Color(0.58, 0.49, 0.17))
 	top_hbox.add_child(header_title)
 
 	var spacer_top = Control.new()
@@ -131,7 +131,7 @@ func _build_ui() -> void:
 	elem_box.custom_minimum_size = Vector2(0, 160)
 	var e_box_style = StyleBoxFlat.new()
 	e_box_style.bg_color = ThemeStyler.COLOR_CARD
-	e_box_style.border_color = Color(0.28, 0.40, 0.58, 0.5)
+	e_box_style.border_color = Color(0.30, 0.43, 0.62, 0.50)
 	e_box_style.border_width_left = 1
 	e_box_style.border_width_top = 1
 	e_box_style.border_width_right = 1
@@ -152,14 +152,14 @@ func _build_ui() -> void:
 	symbol_label.text = "Cu"
 	symbol_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	symbol_label.add_theme_font_size_override("font_size", 62)
-	symbol_label.add_theme_color_override("font_color", Color(0.22, 0.74, 0.97))
+	symbol_label.add_theme_color_override("font_color", Color(0.14, 0.47, 0.62))
 	elem_vbox.add_child(symbol_label)
 
 	name_label = Label.new()
 	name_label.text = "铜 · Copper"
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.add_theme_font_size_override("font_size", 20)
-	name_label.add_theme_color_override("font_color", Color(0.96, 0.98, 1.0))
+	name_label.add_theme_color_override("font_color", Color(0.15, 0.14, 0.13))
 	elem_vbox.add_child(name_label)
 
 	# 属性信息条
@@ -171,13 +171,13 @@ func _build_ui() -> void:
 	mass_label = Label.new()
 	mass_label.text = "原子量: 63.546"
 	mass_label.add_theme_font_size_override("font_size", 12)
-	mass_label.add_theme_color_override("font_color", Color(0.7, 0.8, 0.9))
+	mass_label.add_theme_color_override("font_color", Color(0.37, 0.34, 0.30))
 	meta_hbox.add_child(mass_label)
 
 	category_badge = Label.new()
 	category_badge.text = "[过渡金属]"
 	category_badge.add_theme_font_size_override("font_size", 12)
-	category_badge.add_theme_color_override("font_color", Color(0.38, 0.82, 1.0))
+	category_badge.add_theme_color_override("font_color", Color(0.24, 0.51, 0.62))
 	meta_hbox.add_child(category_badge)
 
 	position_label = Label.new()
@@ -190,8 +190,8 @@ func _build_ui() -> void:
 	var story_panel = PanelContainer.new()
 	story_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var s_style = StyleBoxFlat.new()
-	s_style.bg_color = Color(0.10, 0.09, 0.08, 0.7)
-	s_style.border_color = Color(0.18, 0.26, 0.38, 0.4)
+	s_style.bg_color = Color(0.92, 0.89, 0.84, 0.70)
+	s_style.border_color = Color(0.25, 0.40, 0.62, 0.40)
 	s_style.border_width_left = 1
 	s_style.border_width_top = 1
 	s_style.border_width_right = 1
@@ -215,7 +215,7 @@ func _build_ui() -> void:
 	story_label.fit_content = false
 	story_label.scroll_active = true
 	story_label.add_theme_font_size_override("normal_font_size", 12)
-	story_label.add_theme_color_override("default_color", Color(0.82, 0.88, 0.94))
+	story_label.add_theme_color_override("default_color", Color(0.15, 0.14, 0.13))
 	story_margin.add_child(story_label)
 
 	# 进度指示栏
@@ -283,7 +283,7 @@ func show_discovery(elem_num: int, item_key: String = "") -> void:
 	var col = int(elem.get("col", 1))
 	var story = str(elem.get("story", "人类在探索微观物质结构过程中，成功提纯并确证了此关键化学元素。"))
 
-	var cat_color = CATEGORY_COLORS.get(cat, Color(0.22, 0.74, 0.97))
+	var cat_color = CATEGORY_COLORS.get(cat, Color(0.12, 0.45, 0.68))
 	var cat_name = CATEGORY_NAMES.get(cat, cat.capitalize())
 
 	num_label.text = "NO. %d" % elem_num
@@ -298,7 +298,7 @@ func show_discovery(elem_num: int, item_key: String = "") -> void:
 	category_badge.add_theme_color_override("font_color", cat_color)
 	position_label.text = "周期 %d · 族 %d" % [row, col]
 
-	story_label.text = "[color=#A5B4FC][b]探索纪实：[/b][/color]\n" + story
+	story_label.text = "[color=#3D5A8A][b]探索纪实：[/b][/color]\n" + story
 
 	var total_disc = GameState.discovered_elements.size()
 	progress_label.text = "已点亮 %d / 118 种元素" % total_disc

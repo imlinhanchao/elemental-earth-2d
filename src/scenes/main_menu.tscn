@@ -56,7 +56,7 @@ theme_override_constants/separation = 2
 
 [node name="Title" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox/BrandRow/BrandTextVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.96, 0.93, 0.87, 1)
+theme_override_colors/font_color = Color(0.15, 0.14, 0.13, 1.00)
 theme_override_font_sizes/font_size = 46
 text = "元素纪元"
 
@@ -66,19 +66,19 @@ theme_override_constants/separation = 8
 
 [node name="SubTitle" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox/BrandRow/BrandTextVBox/SubTitleRow"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.85, 0.6, 0.3, 1)
+theme_override_colors/font_color = Color(0.62, 0.44, 0.22, 1.00)
 theme_override_font_sizes/font_size = 13
 text = "ELEMENTAL EARTH"
 
 [node name="Badge" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox/BrandRow/BrandTextVBox/SubTitleRow"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.51, 0.45, 1)
+theme_override_colors/font_color = Color(0.54, 0.50, 0.44, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "· 2D CHRONICLES"
 
 [node name="Desc" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.72, 0.67, 0.59, 1)
+theme_override_colors/font_color = Color(0.37, 0.34, 0.30, 1.00)
 theme_override_font_sizes/font_size = 13
 text = "微观化学实验 · 元素拓荒发现 · 宏观工业连续流"
 
@@ -123,7 +123,7 @@ layout_mode = 2
 
 [node name="FooterLabel" type="Label" parent="SafeMargin/LayoutHBox/MainPanel"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.5, 0.46, 0.41, 1)
+theme_override_colors/font_color = Color(0.54, 0.50, 0.44, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "v0.3.0 | 4K/1080P 自适应 | 基于 Vulkan Forward+ 现代图形架构"
 
@@ -159,25 +159,25 @@ theme_override_constants/separation = 6
 
 [node name="CardHeader" type="Label" parent="SafeMargin/LayoutHBox/RightPanel/ArchiveCard/CardMargin/CardVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.93, 0.7, 0.4, 1)
+theme_override_colors/font_color = Color(0.62, 0.47, 0.27, 1.00)
 theme_override_font_sizes/font_size = 14
 text = "【开拓档案快照】"
 
 [node name="CardBody" type="Label" parent="SafeMargin/LayoutHBox/RightPanel/ArchiveCard/CardMargin/CardVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.9, 0.86, 0.78, 1)
+theme_override_colors/font_color = Color(0.15, 0.14, 0.13, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "正在检测本地文明探索进度..."
 
 [node name="CardHint" type="Label" parent="SafeMargin/LayoutHBox/RightPanel/ArchiveCard/CardMargin/CardVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.42, 0.66, 0.42, 1)
+theme_override_colors/font_color = Color(0.28, 0.62, 0.28, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "按 [ENTER] 或点击【继续游戏】直接接入"
 
 [node name="KeyHintLabel" type="Label" parent="SafeMargin/LayoutHBox/RightPanel"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.55, 0.51, 0.45, 1)
+theme_override_colors/font_color = Color(0.54, 0.50, 0.44, 1.00)
 theme_override_font_sizes/font_size = 12
 text = "[↑/↓ / W/S] 导航切换   [ENTER] 确认执行   [ESC] 返回/退出"
 
@@ -243,10 +243,10 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_font_sizes/normal_font_size = 13
 bbcode_enabled = true
-text = "[color=#4C8DFF]【核心战略哲学】[/color]
+text = "[color=#9C5A1E]【核心战略哲学】[/color]
 玩家从原始石器时代起步，通过规划与时间调度开采地表碎石、原木、矿脉与盐湖汲水。
 
-[color=#4C8DFF]【基础操作与快捷键】[/color]
+[color=#9C5A1E]【基础操作与快捷键】[/color]
 • [b]鼠标左键[/b]：点击地表资源瓦片，将采矿/伐木/打水加入作业队列。
 • [b]鼠标右键/中键拖拽[/b]：自由平移大世界视野。
 • [b]鼠标滚轮[/b]：缩放宏观与微观视野 (0.5x ~ 2.5x)。
@@ -255,7 +255,7 @@ text = "[color=#4C8DFF]【核心战略哲学】[/color]
 • [b][P][/b]：展开 118 元素周期表图鉴。
 • [b][ESC][/b]：呼出系统暂停菜单。
 
-[color=#4C8DFF]【文明纪元演进】[/color]
+[color=#9C5A1E]【文明纪元演进】[/color]
 石器时代 (领地半径 5) → 炼金时代 (8) → 近代化学 (11) → 电化学 (14) → 稀土时代 (17) → 原子时代 (20)。"
 
 [node name="SaveLoadModal" parent="." instance=ExtResource("2_saveload")]
