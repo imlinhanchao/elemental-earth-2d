@@ -9,6 +9,9 @@ const MixtureBuffer = preload("res://src/core/mixture_buffer.gd")
 # 旧版存档中已更名的物品键
 const LEGACY_ITEM_KEYS: Dictionary = {"iron_ore": "hematite", "halite": "rock_salt"}
 
+# v4: 新增地块剩余储量；任务保存已耗时长与循环次数 (不再保存跨进程无效的 begin_time)
+const SAVE_VERSION: int = 4
+
 const SLOT_DEFINITIONS: Array[Dictionary] = [
 	{ "id": "auto", "name": "自动存档", "is_auto": true },
 	{ "id": "slot_1", "name": "手动档案 1", "is_auto": false },
@@ -145,7 +148,7 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 	var tasks_count: int = GameState.task_queue.size() + (1 if not GameState.active_task.is_empty() else 0)
 	
 	var save_dict: Dictionary = {
-		"version": 3,
+		"version": SAVE_VERSION,
 		"slot_id": slot_id,
 		"slot_name": def_name,
 		"timestamp": Time.get_unix_time_from_system(),
@@ -175,6 +178,7 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 			"active_task": _serialize_task(GameState.active_task),
 			"lab_vessel": _serialize_lab_vessel(GameState.lab_vessel),
 			"depleted_tiles": _serialize_depleted_tiles(GameState.depleted_tiles),
+			"tile_resources": _serialize_tile_resources(GameState.tile_resources),
 			"built_furnaces": _serialize_furnaces(GameState.built_furnaces),
 			"built_reactors": _serialize_reactors(GameState.built_reactors)
 		},
@@ -187,9 +191,9 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 		GameState.post_notice("存档写入失败！", Color.RED)
 		return false
 		
-	file.store_string(JSON.stringify(save_dict, "\t"))
+	file.store_string(JSON.stringify(save_dict))
 	file.close()
-	print("[SaveManager] 进度已成功保存至槽位 (v3): %s (%s)" % [slot_id, path])
+	print("[SaveManager] 进度已成功保存至槽位 (v%d): %s (%s)" % [SAVE_VERSION, slot_id, path])
 	if slot_id != "auto":
 		GameState.post_notice("进度已成功保存至【%s】！" % def_name, Color(0.3, 0.9, 0.5))
 	return true
@@ -251,15 +255,17 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
 	# v3 专属模拟层状态 (向下兼容 v2 旧档)
 	if version >= 3:
 		var q_data = gs_data.get("task_queue", [])
-		GameState.task_queue = _deserialize_tasks(q_data)
+		GameState.task_queue = _deserialize_tasks(q_data, version)
 		
 		var act_data = gs_data.get("active_task", {})
 		if act_data is Dictionary and not act_data.is_empty():
-			GameState.active_task = _deserialize_task(act_data)
+			GameState.active_task = _deserialize_task(act_data, version)
 		else:
 			GameState.active_task = {}
 			
 		GameState.depleted_tiles = _deserialize_depleted_tiles(gs_data.get("depleted_tiles", []))
+		if version >= 4:
+			_deserialize_tile_resources(gs_data.get("tile_resources", []))
 		_deserialize_lab_vessel(gs_data.get("lab_vessel", {}))
 		_deserialize_furnaces(gs_data.get("built_furnaces", []))
 		_deserialize_reactors(gs_data.get("built_reactors", []))
@@ -346,23 +352,30 @@ static func _serialize_task(t: Dictionary) -> Dictionary:
 		"world_pos_x": float(t.get("world_pos_x", 0.0)),
 		"world_pos_y": float(t.get("world_pos_y", 0.0)),
 		"time_required": float(t.get("time_required", t.get("total_time", 1.0))),
-		"begin_time": int(t.get("begin_time", 0))
+		"repeat_count": int(t.get("repeat_count", 1)),
+		"current_cycle": int(t.get("current_cycle", 1)),
+		# begin_time 是本次进程的 ticks_msec，跨进程无意义；只保存已进行的秒数
+		"elapsed": (Time.get_ticks_msec() - int(t["begin_time"])) / 1000.0 if int(t.get("begin_time", 0)) != 0 else 0.0
 	}
 
-static func _deserialize_tasks(tasks_array: Array) -> Array[Dictionary]:
+static func _deserialize_tasks(tasks_array: Array, version: int = SAVE_VERSION) -> Array[Dictionary]:
 	var list: Array[Dictionary] = []
 	for item in tasks_array:
 		if item is Dictionary:
-			list.append(_deserialize_task(item))
+			var t = _deserialize_task(item, version)
+			t["begin_time"] = 0 # 排队任务在开工时才计时
+			list.append(t)
 	return list
 
-static func _deserialize_task(item: Dictionary) -> Dictionary:
+static func _deserialize_task(item: Dictionary, version: int = SAVE_VERSION) -> Dictionary:
 	var now = Time.get_ticks_msec()
 	var time_req = float(item.get("time_required", item.get("total_time", 1.0)))
-	var b_time = int(item.get("begin_time", 0))
-	if b_time == 0 and item.has("elapsed_time"):
-		var el = float(item["elapsed_time"])
-		b_time = max(1, now - int(el * 1000.0))
+	# v4 保存 elapsed 秒数；v2 保存 elapsed_time；v3 的 begin_time 属于旧进程，按刚开工处理
+	var elapsed = float(item.get("elapsed", item.get("elapsed_time", 0.0)))
+	# begin_time 为 0 表示未开工，因此恢复值至少为 1；进程刚启动时可能为负数，仍然有效
+	var b_time = now - int(clampf(elapsed, 0.0, time_req) * 1000.0)
+	if b_time == 0:
+		b_time = 1
 
 	return {
 		"id": int(item.get("id", 0)),
@@ -376,6 +389,8 @@ static func _deserialize_task(item: Dictionary) -> Dictionary:
 		"world_pos_x": float(item.get("world_pos_x", 0.0)),
 		"world_pos_y": float(item.get("world_pos_y", 0.0)),
 		"time_required": time_req,
+		"repeat_count": int(item.get("repeat_count", 1)),
+		"current_cycle": int(item.get("current_cycle", 1)),
 		"begin_time": b_time
 	}
 
@@ -387,6 +402,7 @@ static func _serialize_lab_vessel(vessel: MixtureBuffer) -> Dictionary:
 		"applied_voltage": vessel.applied_voltage,
 		"container_type": vessel.container_type,
 		"reaction_timer": vessel.reaction_timer,
+		"burner_on": GameState.sim.lab_burner_on,
 		"components": vessel.components.duplicate()
 	}
 
@@ -398,10 +414,31 @@ static func _deserialize_lab_vessel(data: Dictionary) -> void:
 	GameState.lab_vessel.applied_voltage = float(data.get("applied_voltage", 0.0))
 	GameState.lab_vessel.container_type = str(data.get("container_type", "flask"))
 	GameState.lab_vessel.reaction_timer = float(data.get("reaction_timer", 0.0))
+	GameState.sim.lab_burner_on = bool(data.get("burner_on", false))
 	var comps = data.get("components", {})
 	if comps is Dictionary:
 		for k in comps.keys():
 			GameState.lab_vessel.components[k] = float(comps[k])
+
+# 地块剩余储量 (v4)：保存每个地块的实际剩余量，读档后资源不再回满
+static func _serialize_tile_resources(tiles: Dictionary) -> Array:
+	var list: Array = []
+	for h in tiles.keys():
+		list.append([int(h.x), int(h.y), tiles[h]])
+	return list
+
+static func _deserialize_tile_resources(data: Variant) -> void:
+	if not (data is Array) or data.is_empty():
+		return
+	var restored: Dictionary = {}
+	for item in data:
+		if item is Array and item.size() == 3 and item[2] is Dictionary:
+			var res: Dictionary = {}
+			for k in item[2].keys():
+				res[LEGACY_ITEM_KEYS.get(k, k)] = int(item[2][k])
+			restored[Vector2i(int(item[0]), int(item[1]))] = res
+	GameState.tile_resources.clear()
+	GameState.tile_resources.merge(restored)
 
 static func _serialize_depleted_tiles(tiles: Dictionary) -> Array[Dictionary]:
 	var list: Array[Dictionary] = []

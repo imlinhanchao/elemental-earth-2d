@@ -33,7 +33,8 @@ const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 @onready var log_label = $CenterPanel/VBox/Body/HBox/RightView/ViewMonitor/LogLabel
 
 var lab_vessel: MixtureBuffer
-var is_burner_on: bool = false
+var is_burner_on: bool:
+	get: return GameState.sim.lab_burner_on
 var bubble_phase: float = 0.0
 var solution_color: Color = Color(0.8, 0.9, 1.0, 0.2)
 var current_tab_index: int = 0 # 0: 实验台监控, 1: 配方灵感图鉴
@@ -121,6 +122,9 @@ func _on_reaction_occurred(rx_name: String, _prods: Array) -> void:
 
 func open() -> void:
 	visible = true
+	# 酒精灯状态保存在模拟层 (可能来自读档)，打开时同步按钮
+	btn_burner.set_pressed_no_signal(is_burner_on)
+	btn_burner.text = "熄灭酒精灯" if is_burner_on else "点燃酒精灯"
 	_refresh_ui()
 	btn_close.grab_focus()
 
@@ -150,19 +154,15 @@ func _process(delta: float) -> void:
 	if not visible:
 		return
 		
-	if is_burner_on:
-		lab_vessel.temperature = move_toward(lab_vessel.temperature, 950.0, 160.0 * delta)
-		bubble_phase += delta * 8.0
-	else:
-		lab_vessel.temperature = move_toward(lab_vessel.temperature, 293.15, 45.0 * delta)
-		bubble_phase += delta * 1.5
+	# 温度由模拟层 (Simulation.tick) 推进，这里只做显示
+	bubble_phase += delta * (8.0 if is_burner_on else 1.5)
 		
 	temp_label.text = "烧瓶温度: %d K (%d ℃)" % [int(lab_vessel.temperature), int(lab_vessel.temperature - 273.15)]
 	vessel_draw.queue_redraw()
 	_update_sensor_probe()
 
 func _on_burner_toggled(button_pressed: bool) -> void:
-	is_burner_on = button_pressed
+	GameState.sim.lab_burner_on = button_pressed
 	if is_burner_on:
 		btn_burner.text = "熄灭酒精灯"
 		_add_log("点燃实验室酒精喷灯，温度迅速升高...")

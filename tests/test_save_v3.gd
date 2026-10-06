@@ -54,7 +54,9 @@ func _ready() -> void:
 		"world_pos_x": 0.0,
 		"world_pos_y": 30.0,
 		"time_required": 2.0,
-		"begin_time": 50000
+		"repeat_count": 5,
+		"current_cycle": 2,
+		"begin_time": t_now - 1500 # 已进行 1.5s
 	}
 	
 	# 注入熔炉与反应塔
@@ -80,6 +82,12 @@ func _ready() -> void:
 	
 	# 注入采空格子
 	GameState.depleted_tiles[Vector2i(3, -2)] = 45.0
+
+	# v4：消耗某地块部分储量，验证读档后不会回满
+	var stock_hex: Vector2i = GameState.tile_resources.keys()[0]
+	var stock_key: String = GameState.tile_resources[stock_hex].keys()[0]
+	var stock_before: int = int(GameState.tile_resources[stock_hex][stock_key])
+	GameState.consume_tile_resource(stock_hex, stock_key, 7)
 	
 	# 2. 保存至测试槽位
 	var slot_id = "test_slot"
@@ -95,7 +103,7 @@ func _ready() -> void:
 	file.close()
 	
 	var json = JSON.parse_string(text)
-	assert(json.get("version") == 3, "存档版本必须为 3!")
+	assert(json.get("version") == SaveManager.SAVE_VERSION, "存档版本必须为当前版本!")
 	var gs = json.get("game_state", {})
 	assert(gs.get("task_queue", []).size() == 1, "任务队列序列化失败!")
 	assert(not gs.get("active_task", {}).is_empty(), "进行中任务序列化失败!")
@@ -128,7 +136,10 @@ func _ready() -> void:
 	assert(GameState.task_queue.size() == 1, "任务队列恢复错误!")
 	assert(GameState.task_queue[0]["hex_q"] == 2, "队列坐标恢复错误!")
 	assert(GameState.active_task.get("id") == 100, "进行中任务恢复错误!")
-	assert(GameState.active_task.get("begin_time") == 50000, "任务 begin_time 恢复错误!")
+	var restored_elapsed = (Time.get_ticks_msec() - int(GameState.active_task.get("begin_time", 0))) / 1000.0
+	assert(absf(restored_elapsed - 1.5) < 0.3, "进行中任务的已耗时长恢复错误! (%.2fs)" % restored_elapsed)
+	assert(int(GameState.active_task.get("repeat_count")) == 5 and int(GameState.active_task.get("current_cycle")) == 2, "任务循环次数恢复错误!")
+	assert(int(GameState.tile_resources[stock_hex].get(stock_key, 0)) == stock_before - 7, "地块剩余储量恢复错误 (读档后回满)!")
 	assert(GameState.built_furnaces.has(Vector2i(1, 1)), "熔炉坐标恢复错误!")
 	assert(GameState.built_furnaces[Vector2i(1, 1)]["burn_timer"] == 15.0, "熔炉燃烧时间恢复错误!")
 	assert(GameState.built_reactors.has(Vector2i(2, 2)), "反应塔坐标恢复错误!")

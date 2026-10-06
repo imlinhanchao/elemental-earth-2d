@@ -38,7 +38,7 @@ func _draw() -> void:
 		)
 		var total = float(GameState.active_task.get("time_required", GameState.active_task.get("total_time", 1.0)))
 		var begin_time = int(GameState.active_task.get("begin_time", 0))
-		var elapsed = (Time.get_ticks_msec() - begin_time) / 1000.0 if begin_time > 0 else float(GameState.active_task.get("elapsed_time", 0.0))
+		var elapsed = (Time.get_ticks_msec() - begin_time) / 1000.0 if begin_time != 0 else float(GameState.active_task.get("elapsed_time", 0.0))
 		var pct = clamp(elapsed / max(total, 0.001), 0.0, 1.0)
 		var ring_col = ThemeStyler.get_era_accent(GameState.current_era).darkened(0.15)
 		draw_arc(t_pos, 28.0, 0, TAU, 32, Color(0.15, 0.14, 0.13, 0.25), 4.0)

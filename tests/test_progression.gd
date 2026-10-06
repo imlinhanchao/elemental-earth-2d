@@ -83,6 +83,26 @@ func _initialize() -> void:
 	sim._on_solver_reaction_occurred("镭衰变产氡", ["radon"])
 	_check(sim.completed_milestones.has("first_transmutation"), "衰变反应完成元素嬗变里程碑")
 
+	# 8. 实验台酒精灯由模拟层推进温度
+	sim.lab_vessel.clear()
+	sim.lab_vessel.temperature = sim.ROOM_TEMP
+	sim.lab_burner_on = true
+	for i in range(30):
+		sim.tick(0.1)
+	_check(sim.lab_vessel.temperature > sim.ROOM_TEMP + 300.0, "点燃酒精灯 3 秒后烧瓶升温超过 300K")
+	sim.lab_burner_on = false
+
+	# 9. 作业按到期时间完成，而不是等到下一个整秒
+	sim.task_queue.clear()
+	sim.active_task = {
+		"id": 999, "hex_q": 0, "hex_r": 0, "target_key": "stone", "yield_amount": 1,
+		"repeat_count": 1, "current_cycle": 1, "time_required": 0.3,
+		"begin_time": Time.get_ticks_msec() - 400
+	}
+	sim._second_accumulator = 0.0
+	sim.tick(0.016)
+	_check(sim.active_task.is_empty(), "0.3s 作业在到期后的下一帧完成")
+
 	if _failed == 0:
 		print("🎉 进程死锁修复测试全部通过")
 		quit(0)

@@ -24,6 +24,8 @@
 | :--- | :--- | :--- |
 | **直接启动游戏** | `/Applications/Godot.app/Contents/MacOS/Godot --path /Users/hancel/Documents/project/elemental-earth-2d` | 窗口模式启动游玩 |
 | **无头实机截图测试** | `/Applications/Godot.app/Contents/MacOS/Godot --path /Users/hancel/Documents/project/elemental-earth-2d ++ --screenshot` | 启动并在1.2s后输出 `screenshot_current.png` 并安全退出 |
+| **运行测试** | `Godot --headless --path . -s res://tests/test_progression.gd`、`-s res://tests/test_chemistry.gd`、`res://tests/test_save_v3.tscn` | 三套测试均需通过 |
+| **进程可达性检查** | `Godot --headless --path . -s res://tools/dump_map_resources.gd \| grep MAPDUMP > /tmp/map.txt && python3 tools/check_progression.py /tmp/map.txt` | 修改 data/*.json 后必须运行 |
 | **Git 状态检查** | `git status` | 检查修改状态 |
 | **代码提交流程** | `git add . && git commit -m "..."` | 完成测试后必须提交 |
 
@@ -788,6 +790,15 @@
 - **数据驱动**：工具耗时改读 crafting.json 的 `work_time`；techs.json 新增 `era` 字段并由 `DataDB.get_tech_era` 直接读取；烧杯、试管、玻璃棒下调至近代化学时代；元素嬗变里程碑同时识别衰变与粒子轰击反应；
 - **交互修复**：科技树右键拖拽不再误关窗口（抬起且位移 < 6px 才关闭）；建造选址时 ESC/右键只由 world 处理；暂停菜单打开时屏蔽功能热键；删除 F / I 冗余热键；
 - **测试**：新增 `tests/test_progression.gd`（地图矿物、工具耗时、高炉炼铁、草木灰、器皿、嬗变里程碑），三套测试均通过。
+
+### 2.40 P1 架构收口（一）：存档 v4、精确计时与死代码清理 (2026-10-06)
+
+- **存档 v4**（`SaveManager.SAVE_VERSION = 4`）：新增 `tile_resources`（地块剩余储量，读档不再回满）；任务改存 `elapsed` 已耗秒数与 `repeat_count` / `current_cycle`，不再保存跨进程无效的 `begin_time`；实验台保存酒精灯状态；JSON 去掉缩进。v2 / v3 旧档仍可读取（v3 进行中任务按刚开工恢复）；
+- **任务精确完成**：`Simulation.tick` 每帧比较到期时间，作业在到期后的下一帧完成（原为最多延迟 1 秒的整秒检查），进度信号 10Hz；化学、熔炉、反应塔结算保持 1Hz；
+- **实验台温度移入模拟层**：`Simulation.lab_burner_on` 与升降温速率由模拟层推进，`lab_workbench_modal` 只读显示，关闭弹窗后烧瓶照常加热或冷却；
+- **接口收口**：画面层改用 `sim.has_ingredients()` / `sim.describe_ingredients()`，不再调用私有方法；删除只写 `world_resources`、不写储量也不生成节点的 `_populate_resources_for_new_era`（全图开局即已生成）；
+- **死代码清理**：删除未被引用的 `main.gd/tscn`、`player.gd/tscn` 与无入口的 `ToolCraftModal`；截图场景从 `world.gd` 移至 `tools/screenshot_scenarios.gd`，输出路径改为项目相对路径；
+- **测试**：`test_save_v3` 增加储量、已耗时长、循环次数校验；`test_progression` 增加酒精灯升温与作业精确完成校验。
 
 ---
 

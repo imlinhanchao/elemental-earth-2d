@@ -95,8 +95,9 @@ func _capture_screenshot_after_delay() -> void:
 	await get_tree().create_timer(1.2).timeout
 	var img = get_viewport().get_texture().get_image()
 	if img:
-		img.save_png("/Users/hancel/Documents/project/elemental-earth-2d/screenshot_main_menu.png")
-		print("[Screenshot] 主菜单截图成功生成: /Users/hancel/Documents/project/elemental-earth-2d/screenshot_main_menu.png")
+		var out_path = ProjectSettings.globalize_path("res://screenshot_main_menu.png")
+		img.save_png(out_path)
+		print("[Screenshot] 主菜单截图成功生成: %s" % out_path)
 	get_tree().quit(0)
 
 func _process(delta: float) -> void:

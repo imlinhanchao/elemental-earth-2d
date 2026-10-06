@@ -301,20 +301,6 @@ func advance_era(target_era: int) -> void:
 		current_era = target_era
 		era_advanced.emit(old, current_era, ERA_NAMES[current_era])
 		post_notice("【伟大跨越】文明迈入新纪元：%s！" % ERA_NAMES[current_era], Color(1.0, 0.88, 0.3))
-		_populate_resources_for_new_era(target_era)
-
-func _populate_resources_for_new_era(_era_order: int) -> void:
-	var new_radius = get_current_territory_radius()
-	for q in range(-new_radius, new_radius + 1):
-		var r1 = max(-new_radius, -q - new_radius)
-		var r2 = min(new_radius, -q + new_radius)
-		for r in range(r1, r2 + 1):
-			var coord = Vector2i(q, r)
-			if not world_resources.has(coord) and world_biomes.has(coord):
-				var biome = world_biomes[coord]
-				var spawn = hex_gen.determine_resource_spawn(q, r, biome)
-				if spawn != "":
-					world_resources[coord] = spawn
 
 # 背包中持有的可用器皿 (配方 required_container 中出现过的物品键)
 func _get_owned_containers() -> Array:
@@ -347,35 +333,51 @@ func get_hex_resource(hex: Vector2i) -> String:
 
 # --- 时间步进 (一秒时间戳钟) ---
 
+# 实验台酒精灯：由模拟层推进温度，UI 只读显示
+var lab_burner_on: bool = false
+const LAB_BURNER_MAX_TEMP: float = 950.0
+const LAB_HEAT_RATE: float = 160.0   # K/s
+const LAB_COOL_RATE: float = 45.0    # K/s
+const ROOM_TEMP: float = 293.15
+
+var _progress_accumulator: float = 0.0
+
 func tick(delta: float) -> void:
 	playtime_seconds += delta
-	
+
+	# 1. 作业按到期时间精确完成 (每帧一次整数比较，开销可忽略)
+	if not active_task.is_empty():
+		var elapsed = (Time.get_ticks_msec() - int(active_task.get("begin_time", 0))) / 1000.0
+		var time_req = float(active_task.get("time_required", 1.0))
+		if elapsed >= time_req:
+			_complete_active_task()
+		else:
+			_progress_accumulator += delta
+			if _progress_accumulator >= 0.1:
+				_progress_accumulator = 0.0
+				task_progress_updated.emit(active_task, clampf(elapsed / time_req, 0.0, 1.0), time_req - elapsed)
+
+	# 2. 实验台温度
+	if lab_vessel:
+		if lab_burner_on:
+			lab_vessel.temperature = move_toward(lab_vessel.temperature, LAB_BURNER_MAX_TEMP, LAB_HEAT_RATE * delta)
+		else:
+			lab_vessel.temperature = move_toward(lab_vessel.temperature, ROOM_TEMP, LAB_COOL_RATE * delta)
+
+	# 3. 化学 / 熔炉 / 反应塔结算保持 1Hz
 	_second_accumulator += delta
 	if _second_accumulator >= 1.0:
 		_second_accumulator -= 1.0
 		_on_second_tick()
 
 func _on_second_tick() -> void:
-	var now = Time.get_ticks_msec()
-	
-	# 1. 任务完成结算 (到点才完成，按毫秒时间戳)
-	if not active_task.is_empty():
-		var begin_time: int = int(active_task.get("begin_time", 0))
-		var time_req: float = float(active_task.get("time_required", 1.0))
-		var elapsed = (now - begin_time) / 1000.0
-		var pct = clamp(elapsed / time_req, 0.0, 1.0)
-		var rem = max(0.0, time_req - elapsed)
-		task_progress_updated.emit(active_task, pct, rem)
-		if elapsed >= time_req:
-			_complete_active_task()
-			
-	# 2. 实验台溶液结算 (共用一秒节拍)
+	# 1. 实验台溶液结算 (共用一秒节拍)
 	var owned_containers = _get_owned_containers()
 	if lab_vessel and lab_vessel.total_moles() > 0:
 		lab_vessel.available_containers = owned_containers
 		solver.solve(lab_vessel, 1.0)
 		
-	# 3. 熔炉溶液结算 (共用一秒节拍)
+	# 2. 熔炉溶液结算 (共用一秒节拍)
 	for hex in built_furnaces.keys():
 		var f = built_furnaces[hex]
 		var buf = f["buffer"]
@@ -403,7 +405,7 @@ func _on_second_tick() -> void:
 							var iname = DataDB.get_item(p_key).get("name", p_key)
 							post_notice("熔炉炼制完成！成功收获 %s x%d，已收入背包！" % [iname, p_int], Color(0.9, 0.65, 0.2))
 
-	# 4. 工业反应塔结算 (共用一秒节拍)
+	# 3. 工业反应塔结算 (共用一秒节拍)
 	for hex in built_reactors.keys():
 		var r = built_reactors[hex]
 		var bp_id = r.get("blueprint_id", "")
@@ -770,6 +772,12 @@ func _complete_active_task() -> void:
 		
 	task_queue_changed.emit()
 
+func has_ingredients(req_items: Array) -> bool:
+	return _has_all_ingredients(req_items)
+
+func describe_ingredients(req_items: Array) -> String:
+	return _get_ingredients_desc(req_items)
+
 func get_active_task_hex() -> Vector2i:
 	if active_task.is_empty():
 		return Vector2i(9999, 9999)
@@ -1041,7 +1049,8 @@ func reset_to_new_game() -> void:
 		inventory.item_changed.emit("", 0)
 	if lab_vessel != null:
 		lab_vessel.clear()
-		lab_vessel.temperature = 293.15
+		lab_vessel.temperature = ROOM_TEMP
+	lab_burner_on = false
 	playtime_seconds = 0.0
 	init_world_map(12345, WORLD_HEX_RADIUS)
 	era_advanced.emit(0, 0, ERA_NAMES[0])

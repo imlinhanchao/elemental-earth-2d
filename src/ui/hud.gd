@@ -77,7 +77,6 @@ var current_tab: CategoryTab = CategoryTab.NONE
 # 模态弹窗系统
 @onready var periodic_modal = $PeriodicTableModal
 @onready var lab_modal = $LabWorkbenchModal
-@onready var tool_modal = $ToolCraftModal
 @onready var tech_modal = $TechTreeModal
 @onready var era_modal = $EraTransitionModal
 @onready var save_load_modal = $SaveLoadModal
@@ -97,7 +96,6 @@ func _ready() -> void:
 	$Margin.theme = sc_theme
 	periodic_modal.theme = sc_theme
 	lab_modal.theme = sc_theme
-	tool_modal.theme = sc_theme
 	tech_modal.theme = sc_theme
 	era_modal.theme = sc_theme
 	save_load_modal.theme = sc_theme
@@ -980,13 +978,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				_close_all_modals()
 
 func _has_any_modal_open() -> bool:
-	return periodic_modal.visible or lab_modal.visible or tool_modal.visible or tech_modal.visible or furnace_panel.visible or save_load_modal.visible or settings_modal.visible or pause_menu.visible or inventory_modal.visible
+	return periodic_modal.visible or lab_modal.visible or tech_modal.visible or furnace_panel.visible or save_load_modal.visible or settings_modal.visible or pause_menu.visible or inventory_modal.visible
 
 func _close_all_modals() -> void:
 	var closed_any = false
 	if periodic_modal.visible: periodic_modal.visible = false; closed_any = true
 	if lab_modal.visible: lab_modal.visible = false; closed_any = true
-	if tool_modal.visible: tool_modal.visible = false; closed_any = true
 	if tech_modal.visible: tech_modal.visible = false; closed_any = true
 	if inventory_modal.visible: inventory_modal.close(); closed_any = true
 	if furnace_panel.visible: furnace_panel.visible = false; closed_any = true

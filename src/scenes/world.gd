@@ -112,141 +112,11 @@ func _ready() -> void:
 	else:
 		GameState.post_notice("[开局引导] 鼠标点击地表【碎石】、【枯树枝】加入工作队列！点击盐湖打水！右键拖拽视野！", Color(1.0, 0.88, 0.4))
 	
-	# 如果携带 --screenshot 参数，则在指定延时后截取对应画面并退出
-	var all_args = OS.get_cmdline_user_args() + OS.get_cmdline_args()
-	print("[Screenshot Debug] all_args = ", all_args)
-	for arg in all_args:
+	# 开发截图：携带 --screenshot[-场景名] 参数时运行 tools/screenshot_scenarios.gd
+	for arg in OS.get_cmdline_user_args() + OS.get_cmdline_args():
 		if arg.contains("screenshot"):
-			_capture_screenshot_after_delay(arg)
+			load("res://tools/screenshot_scenarios.gd").run(self, arg)
 			break
-
-func _capture_screenshot_after_delay(arg_name: String) -> void:
-	await get_tree().create_timer(1.2).timeout
-	if hud.era_modal.visible:
-		hud.era_modal.visible = false
-		
-	if arg_name == "--screenshot-inv":
-		GameState.inventory.add_item("bark", 15)
-		hud.inventory_modal.open()
-		await get_tree().create_timer(0.2).timeout
-		get_viewport().warp_mouse(Vector2(480, 320))
-		var item_data = DataDB.get_item("bark")
-		hud.inventory_modal._show_tooltip_for_item("bark", item_data, 15)
-	elif arg_name == "--screenshot-milestone":
-		GameState.current_era = 0
-		GameState.discovered_elements = [6]
-		GameState.completed_milestones = []
-		hud._update_era_label()
-		await get_tree().create_timer(0.1).timeout
-		GameState.complete_milestone("craft_stone_pickaxe")
-		if hud.element_discovery_modal:
-			hud.element_discovery_modal.close()
-		hud.era_modal.show_current_era_status()
-		await get_tree().create_timer(0.4).timeout
-		camera.position = Vector2.ZERO
-		camera.zoom = Vector2(1.0, 1.0)
-		target_zoom = Vector2(1.0, 1.0)
-		camera.reset_smoothing()
-	elif arg_name == "--screenshot-element-discovery":
-		GameState.unlock_element(29, "copper")
-		await get_tree().create_timer(0.4).timeout
-		camera.position = Vector2.ZERO
-		camera.zoom = Vector2(1.0, 1.0)
-		target_zoom = Vector2(1.0, 1.0)
-		camera.reset_smoothing()
-	elif arg_name == "--screenshot-craft":
-		hud._toggle_category(hud.CategoryTab.CRAFT)
-	elif arg_name == "--screenshot-lab":
-		GameState.inventory.add_item("wood", 5)
-		hud.lab_modal.open()
-		hud.lab_modal.add_reagent("wood", 1.0)
-	elif arg_name == "--screenshot-codex":
-		hud.lab_modal.open()
-		hud.lab_modal._switch_tab(1)
-	elif arg_name == "--screenshot-tutorial":
-		GameState.start_tutorial()
-		hud.tutorial_dock.visible = true
-		camera.position = Vector2.ZERO
-		camera.zoom = Vector2(1.0, 1.0)
-		target_zoom = Vector2(1.0, 1.0)
-		camera.reset_smoothing()
-		terrain_layer.queue_redraw()
-	elif arg_name == "--screenshot-campfire":
-		GameState.inventory.add_item("wood", 10)
-		GameState.inventory.add_item("stone", 10)
-		GameState.build_structure("fire_pit", Vector2i(0, 0))
-		camera.position = Vector2.ZERO
-		camera.zoom = Vector2(1.5, 1.5)
-		target_zoom = Vector2(1.5, 1.5)
-		camera.reset_smoothing()
-		terrain_layer.queue_redraw()
-	elif arg_name == "--screenshot-placement":
-		GameState.inventory.add_item("wood", 10)
-		GameState.inventory.add_item("stone", 10)
-		enter_placement_mode("fire_pit")
-		hovered_hex = Vector2i(1, 0)
-		camera.position = Vector2.ZERO
-		camera.zoom = Vector2(1.3, 1.3)
-		target_zoom = Vector2(1.3, 1.3)
-		camera.reset_smoothing()
-		terrain_layer.queue_redraw()
-		overlay_layer.queue_redraw()
-	elif arg_name == "--screenshot-task-complete":
-		for h in GameState.world_resources.keys():
-			if GameState.is_hex_in_territory(h.x, h.y) and GameState.world_resources[h] == "stone":
-				GameState.queue_hex_harvest(h, "stone", 1, Vector2.ZERO)
-				break
-		# 等待 1.6 秒确保 1.0 秒的任务真实完成并从队列移除
-		await get_tree().create_timer(1.6).timeout
-		camera.position = Vector2.ZERO
-		camera.zoom = Vector2(1.3, 1.3)
-		target_zoom = Vector2(1.3, 1.3)
-		camera.reset_smoothing()
-		terrain_layer.queue_redraw()
-		overlay_layer.queue_redraw()
-	elif arg_name == "--screenshot-hud":
-		camera.position = Vector2.ZERO
-		camera.zoom = Vector2(1.0, 1.0)
-		target_zoom = Vector2(1.0, 1.0)
-		camera.reset_smoothing()
-		terrain_layer.queue_redraw()
-	elif arg_name == "--screenshot-era-modal":
-		hud.era_modal.show_current_era_status()
-	elif arg_name == "--screenshot-context-menu":
-		var test_hex = Vector2i(1, 0)
-		var test_screen_pos = Vector2(850, 420)
-		var res_list = [
-			{"key": "wood", "name": "原木", "amount": 120},
-			{"key": "stick", "name": "枯树枝", "amount": 30}
-		]
-		tile_context_menu.open_at(test_screen_pos, test_hex, res_list)
-	elif arg_name == "--screenshot-context-menu-count":
-		var test_hex = Vector2i(1, 0)
-		var test_screen_pos = Vector2(850, 420)
-		var res_info = {"key": "wood", "name": "原木", "amount": 120}
-		tile_context_menu.open_at(test_screen_pos, test_hex, [res_info])
-	elif arg_name == "--screenshot-repeat-task":
-		for h in GameState.world_resources.keys():
-			if GameState.is_hex_in_territory(h.x, h.y) and GameState.world_resources[h] == "wood":
-				GameState.queue_hex_harvest(h, "wood", 20, Vector2.ZERO)
-				GameState.queue_hex_harvest(h, "wood", 10, Vector2.ZERO)
-				break
-		for h in GameState.world_resources.keys():
-			if GameState.is_hex_in_territory(h.x, h.y) and GameState.world_resources[h] in ["stone", "flint"]:
-				GameState.queue_hex_harvest(h, GameState.world_resources[h], -1, Vector2.ZERO)
-				break
-	elif arg_name == "--screenshot-hud-queue":
-		GameState.queue_hex_forage(Vector2i(0, 0), "生机原野", 1, Vector2.ZERO)
-		GameState.queue_hex_forage(Vector2i(1, 0), "生机原野", 1, Vector2.ZERO)
-	else:
-		hud.tech_modal.open()
-		
-	await get_tree().create_timer(0.6).timeout
-	var img = get_viewport().get_texture().get_image()
-	if img:
-		img.save_png("/Users/hancel/Documents/project/elemental-earth-2d/screenshot_current.png")
-		print("[Screenshot] 实机渲染截图成功生成: /Users/hancel/Documents/project/elemental-earth-2d/screenshot_current.png")
-	get_tree().quit(0)
 
 func _generate_hex_world() -> void:
 	hex_gen = GameState.sim.hex_gen
@@ -461,8 +331,8 @@ func _on_build_structure_requested(structure_key: String) -> void:
 		GameState.post_notice("未知建筑类型: %s" % structure_key, Color.RED)
 		return
 	var req_items = recipe.get("required_items", [])
-	if not GameState.sim._has_all_ingredients(req_items):
-		GameState.post_notice("建造原料不足！需要: %s" % GameState.sim._get_ingredients_desc(req_items), Color.RED)
+	if not GameState.sim.has_ingredients(req_items):
+		GameState.post_notice("建造原料不足！需要: %s" % GameState.sim.describe_ingredients(req_items), Color.RED)
 		return
 		
 	# 启动地图自由交互放置模式

@@ -1,9 +1,8 @@
-[gd_scene load_steps=33 format=3 uid="uid://ci8v43187140w"]
+[gd_scene load_steps=32 format=3 uid="uid://ci8v43187140w"]
 
 [ext_resource type="Script" path="res://src/ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" uid="uid://ci8v42187654x" path="res://src/ui/periodic_table_modal.tscn" id="2_modal"]
 [ext_resource type="PackedScene" uid="uid://ci8v43187890a" path="res://src/ui/lab_workbench_modal.tscn" id="3_lab"]
-[ext_resource type="PackedScene" uid="uid://ci8v43187890b" path="res://src/ui/tool_craft_modal.tscn" id="4_tool"]
 [ext_resource type="PackedScene" uid="uid://ci8v43187890c" path="res://src/ui/era_transition_modal.tscn" id="5_era"]
 [ext_resource type="PackedScene" uid="uid://ci8v43187890d" path="res://src/ui/save_load_modal.tscn" id="6_saveload"]
 [ext_resource type="PackedScene" uid="uid://ci8v43187890e" path="res://src/ui/settings_modal.tscn" id="7_settings"]
@@ -501,9 +500,6 @@ text = "0"
 visible = false
 
 [node name="LabWorkbenchModal" parent="." instance=ExtResource("3_lab")]
-visible = false
-
-[node name="ToolCraftModal" parent="." instance=ExtResource("4_tool")]
 visible = false
 
 [node name="TechTreeModal" parent="." instance=ExtResource("9_tech_modal")]
