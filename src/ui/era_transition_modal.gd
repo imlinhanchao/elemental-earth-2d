@@ -189,11 +189,23 @@ func show_current_era_status() -> void:
 	var cur_era = GameState.current_era
 	_render_era_view(cur_era, false)
 
+var pending_era_celebration: int = -1
+
 # 时代升级庆典触发
 func _on_era_advanced(old_era: int, new_era: int, _era_name: String) -> void:
 	if new_era <= old_era or new_era == 0:
 		return
+	var hud = get_parent()
+	if hud and "element_discovery_modal" in hud and hud.element_discovery_modal and hud.element_discovery_modal.visible:
+		pending_era_celebration = new_era
+		return
 	_render_era_view(new_era, true)
+
+func on_element_discovery_closed() -> void:
+	if pending_era_celebration > 0:
+		var target_era = pending_era_celebration
+		pending_era_celebration = -1
+		_render_era_view(target_era, true)
 
 func _render_era_view(era_order: int, is_celebration: bool) -> void:
 	var era_def = DataDB.get_era(era_order)

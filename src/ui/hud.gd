@@ -12,6 +12,7 @@ signal reset_requested
 
 const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 const ItemIconManager = preload("res://src/ui/item_icon_manager.gd")
+const ElementDiscoveryModal = preload("res://src/ui/element_discovery_modal.gd")
 
 enum CategoryTab { NONE, LAB, TECH, CRAFT, BUILD, PRODUCTION, INVENTORY }
 var current_tab: CategoryTab = CategoryTab.NONE
@@ -85,6 +86,7 @@ var current_tab: CategoryTab = CategoryTab.NONE
 @onready var inventory_modal = $InventoryModal
 @onready var tutorial_dock = $TutorialDock
 
+var element_discovery_modal: ElementDiscoveryModal = null
 var current_nearby_furnace: Node2D = null
 
 func get_item_icon(key: String) -> Texture2D:
@@ -104,6 +106,15 @@ func _ready() -> void:
 	inventory_modal.theme = sc_theme
 	tutorial_dock.theme = sc_theme
 	tutorial_dock.visible = GameState.is_tutorial_active
+	
+	element_discovery_modal = ElementDiscoveryModal.new()
+	element_discovery_modal.theme = sc_theme
+	add_child(element_discovery_modal)
+	element_discovery_modal.open_periodic_table_requested.connect(func(): periodic_modal.open())
+	element_discovery_modal.modal_closed.connect(func():
+		if era_modal and era_modal.has_method("on_element_discovery_closed"):
+			era_modal.on_element_discovery_closed()
+	)
 	
 	GameState.notification_posted.connect(_on_notification_posted)
 	GameState.element_discovered.connect(_on_element_discovered)
@@ -1208,8 +1219,15 @@ func _on_era_advanced(_old: int, _new: int, _name: String) -> void:
 func _on_item_changed(_key: String, _count: int) -> void:
 	_update_inventory_ui()
 
-func _on_element_discovered(_num: int, _key: String) -> void:
-	pass
+func _on_element_discovered(num: int, key: String) -> void:
+	if element_discovery_modal:
+		element_discovery_modal.show_discovery(num, key)
+	var elem = DataDB.get_element(num)
+	var sym = elem.get("symbol", "?")
+	var cname = elem.get("name", key)
+	show_toast("✨ 元素周期表突破: 成功点亮第 %d 号元素【%s (%s)】！" % [num, cname, sym], Color(0.22, 0.74, 0.97))
+
+var toast_container: VBoxContainer = null
 
 func _on_notification_posted(msg: String, col: Color) -> void:
 	# 检查是否为存档成功或失败通知
@@ -1219,6 +1237,82 @@ func _on_notification_posted(msg: String, col: Color) -> void:
 	else:
 		if save_dot:
 			save_dot.tooltip_text = msg
+	show_toast(msg, col)
+
+func show_toast(msg: String, col: Color = Color.WHITE) -> void:
+	if not toast_container:
+		var toast_wrapper = Control.new()
+		toast_wrapper.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		toast_wrapper.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+		toast_wrapper.offset_top = 70
+		toast_wrapper.offset_bottom = 280
+		add_child(toast_wrapper)
+		
+		var center = CenterContainer.new()
+		center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		toast_wrapper.add_child(center)
+		
+		toast_container = VBoxContainer.new()
+		toast_container.custom_minimum_size = Vector2(460, 0)
+		toast_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		toast_container.alignment = BoxContainer.ALIGNMENT_CENTER
+		toast_container.add_theme_constant_override("separation", 6)
+		center.add_child(toast_container)
+
+	# 最多同时展示 4 条 toast，多余的平滑移除最老的一条
+	if toast_container.get_child_count() >= 4:
+		var oldest = toast_container.get_child(0)
+		oldest.queue_free()
+
+	var toast_panel = PanelContainer.new()
+	toast_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	
+	var sbox = StyleBoxFlat.new()
+	sbox.bg_color = Color(0.06, 0.09, 0.15, 0.94)
+	sbox.border_color = col
+	sbox.border_width_left = 3
+	sbox.border_width_top = 1
+	sbox.border_width_right = 1
+	sbox.border_width_bottom = 1
+	sbox.corner_radius_top_left = 6
+	sbox.corner_radius_top_right = 6
+	sbox.corner_radius_bottom_left = 6
+	sbox.corner_radius_bottom_right = 6
+	sbox.content_margin_left = 14
+	sbox.content_margin_top = 6
+	sbox.content_margin_right = 16
+	sbox.content_margin_bottom = 6
+	sbox.shadow_color = Color(0, 0, 0, 0.45)
+	sbox.shadow_size = 8
+	toast_panel.add_theme_stylebox_override("panel", sbox)
+
+	var hbox = HBoxContainer.new()
+	hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	hbox.add_theme_constant_override("separation", 8)
+	toast_panel.add_child(hbox)
+
+	var dot = ColorRect.new()
+	dot.custom_minimum_size = Vector2(6, 6)
+	dot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	dot.color = col
+	hbox.add_child(dot)
+
+	var lbl = Label.new()
+	lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	lbl.text = msg
+	lbl.add_theme_font_size_override("font_size", 13)
+	lbl.add_theme_color_override("font_color", Color(0.95, 0.97, 1.0))
+	hbox.add_child(lbl)
+
+	toast_container.add_child(toast_panel)
+	toast_panel.modulate.a = 0.0
+
+	var tw = create_tween()
+	tw.tween_property(toast_panel, "modulate:a", 1.0, 0.2)
+	tw.tween_interval(3.2)
+	tw.tween_property(toast_panel, "modulate:a", 0.0, 0.35)
+	tw.tween_callback(toast_panel.queue_free)
 
 func show_furnace_ui(furnace: Node2D) -> void:
 	current_nearby_furnace = furnace
