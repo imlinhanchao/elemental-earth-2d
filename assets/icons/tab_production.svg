@@ -1,9 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <!-- Planetary gears and loop -->
-  <circle cx="26" cy="36" r="12" fill="none" stroke="#38BDF8" stroke-width="2.5"/>
-  <circle cx="26" cy="36" r="4" fill="#38BDF8"/>
-  <circle cx="42" cy="24" r="9" fill="none" stroke="#F59E0B" stroke-width="2.5"/>
-  <circle cx="42" cy="24" r="3" fill="#F59E0B"/>
-  <!-- Circulation arrow -->
-  <path d="M12 28 A20 20 0 0 1 48 12" fill="none" stroke="#64748B" stroke-width="2" stroke-dasharray="3 3"/>
-</svg>

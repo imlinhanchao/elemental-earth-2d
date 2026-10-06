@@ -1,15 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <!-- Central node -->
-  <circle cx="32" cy="32" r="6" fill="#38BDF8" stroke="#0284C7" stroke-width="2"/>
-  <!-- Orbiting constellation nodes -->
-  <circle cx="16" cy="18" r="4" fill="#0284C7" stroke="#38BDF8" stroke-width="1.5"/>
-  <circle cx="48" cy="18" r="4" fill="#0284C7" stroke="#38BDF8" stroke-width="1.5"/>
-  <circle cx="16" cy="46" r="4" fill="#0284C7" stroke="#38BDF8" stroke-width="1.5"/>
-  <circle cx="48" cy="46" r="4" fill="#0284C7" stroke="#38BDF8" stroke-width="1.5"/>
-  <!-- Clean interconnecting data lines -->
-  <line x1="32" y1="32" x2="16" y2="18" stroke="#38BDF8" stroke-width="2"/>
-  <line x1="32" y1="32" x2="48" y2="18" stroke="#38BDF8" stroke-width="2"/>
-  <line x1="32" y1="32" x2="16" y2="46" stroke="#38BDF8" stroke-width="2"/>
-  <line x1="32" y1="32" x2="48" y2="46" stroke="#38BDF8" stroke-width="2"/>
-  <circle cx="32" cy="32" r="2" fill="#FFFFFF"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="#3A352F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="32" cy="14" r="5"/>
+<circle cx="16" cy="48" r="5"/>
+<circle cx="48" cy="48" r="5"/>
+<path d="M29 19l-10 24M35 19l10 24M21 48h22"/>
+<circle cx="32" cy="14" r="5" fill="#B0692A" stroke="#B0692A"/>
 </svg>

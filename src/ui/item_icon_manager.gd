@@ -71,7 +71,11 @@ static func _resolve_icon(key: String) -> Texture2D:
 	if BASE_ICONS.has(key):
 		return BASE_ICONS[key]
 
-	# 3. 智能启发式分类匹配 (词根降级)
+	# 3. 科技：统一使用科技图标 (科技树卡片按科技 key 取图标)
+	if DataDB.techs.has(key):
+		return load("res://assets/icons/tech.svg")
+
+	# 4. 词根匹配：工具、金属、建材等已有专属图标的大类
 	var k_lower = key.to_lower()
 	if k_lower.contains("pickaxe") or k_lower.contains("hammer") or k_lower.contains("chisel"):
 		return BASE_ICONS["stone_pickaxe"]
@@ -91,5 +95,24 @@ static func _resolve_icon(key: String) -> Texture2D:
 		return BASE_ICONS["stone"]
 	elif k_lower.contains("wood") or k_lower.contains("tree"):
 		return BASE_ICONS["wood"]
-		
+
+	# 5. 按 items.json 的物品分类选用分类图标，避免所有未知物品都显示成矿石
+	var cat_icon = CATEGORY_ICONS.get(str(DataDB.get_item(key).get("category", "")), "")
+	if cat_icon != "" and ResourceLoader.exists(cat_icon):
+		return load(cat_icon)
 	return BASE_ICONS["res_ore"]
+
+const CATEGORY_ICONS: Dictionary = {
+	"容器": "res://assets/icons/cat_container.svg",
+	"工具": "res://assets/icons/cat_tool.svg",
+	"材料": "res://assets/icons/cat_material.svg",
+	"化工": "res://assets/icons/cat_material.svg",
+	"液体": "res://assets/icons/cat_liquid.svg",
+	"气体": "res://assets/icons/cat_gas.svg",
+	"装置": "res://assets/icons/cat_device.svg",
+	"火源": "res://assets/icons/cat_fire.svg",
+	"燃料": "res://assets/icons/cat_fire.svg",
+	"元素": "res://assets/icons/cat_element.svg",
+	"奇观": "res://assets/icons/cat_wonder.svg",
+	"矿石": "res://assets/icons/res_ore.svg",
+}

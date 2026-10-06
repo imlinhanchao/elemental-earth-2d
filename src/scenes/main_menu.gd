@@ -222,13 +222,13 @@ func _setup_era_timeline() -> void:
 			era_timeline.add_child(arrow)
 
 func _setup_buttons() -> void:
-	_configure_menu_btn(btn_continue, "继续游戏", "CONTINUE", "res://assets/icons/save.svg", "ENTER")
-	_configure_menu_btn(btn_new_game, "新游戏", "NEW GAME", "res://assets/icons/tab_craft.svg", "N")
-	_configure_menu_btn(btn_tutorial, "新手教程", "TUTORIAL", "res://assets/icons/tab_experiment.svg", "U")
+	_configure_menu_btn(btn_continue, "继续游戏", "CONTINUE", "res://assets/icons/ui_play.svg", "ENTER")
+	_configure_menu_btn(btn_new_game, "新游戏", "NEW GAME", "res://assets/icons/ui_new.svg", "N")
+	_configure_menu_btn(btn_tutorial, "新手教程", "TUTORIAL", "res://assets/icons/ui_tutorial.svg", "U")
 	_configure_menu_btn(btn_load_game, "载入游戏", "LOAD", "res://assets/icons/load.svg", "L")
 	_configure_menu_btn(btn_settings, "设置", "SETTINGS", "res://assets/icons/settings.svg", "O")
-	_configure_menu_btn(btn_guide, "操作指南", "GUIDE", "res://assets/icons/periodic_table.svg", "H")
-	_configure_menu_btn(btn_quit, "退出游戏", "QUIT", "res://assets/icons/tab_production.svg", "ESC")
+	_configure_menu_btn(btn_guide, "操作指南", "GUIDE", "res://assets/icons/ui_guide.svg", "H")
+	_configure_menu_btn(btn_quit, "退出游戏", "QUIT", "res://assets/icons/ui_quit.svg", "ESC")
 
 func _configure_menu_btn(btn: Button, title: String, en_title: String, icon_res: String, key_hint: String) -> void:
 	btn.text = ""

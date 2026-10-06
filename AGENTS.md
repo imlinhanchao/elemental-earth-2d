@@ -878,6 +878,16 @@
 - **修复**：`SaveManager` 在 `game_state.tutorial` 中写入 `{active, step}`，读档时由 `_restore_tutorial` 恢复，并发出 `tutorial_state_changed` / `tutorial_step_changed`，教程面板与地图标记随之恢复。没有该字段的旧档按「不在教程中」处理（字段为新增可选项，存档版本仍为 v4）；
 - **测试**：`test_save_v3` 校验教程进度的保存与恢复，以及旧档不会误进入教程；`test_tutorial` 模拟「第 4 步存档 → 重置 → 新 world 读档」，校验面板、步骤与地图标记恢复。去掉修复时这 4 项均失败。
 
+### 2.50 界面图标重绘：适配纸面、补齐缺失、消除 logo 锯齿 (2026-10-06)
+
+- **问题**：菜单、底栏、主菜单图标原为深色主题设计（白色 / 亮青描边），在纸面上几乎看不见；主菜单「新手教程」引用的 `tab_experiment.svg` 不存在；「继续游戏」用存档图标、「退出」用齿轮图标，含义对不上；顶栏时代勋标的图标被按钮宽度挤掉；logo 位图缩小显示时没有 mipmaps，边缘有锯齿；
+- **统一画法**：界面图标改为墨色 `#3A352F` 线稿加一处铜色 `#B0692A` 重点，64×64 画布，4px 圆头描边，不使用 `<text>` 与渐变。重绘 `menu`、`load`、`save`、`settings`、`lab`、`tech`、`periodic_table`、`tab_lab/tech/craft/build/inventory`；
+- **主菜单专属图标**：`ui_play`（继续）、`ui_new`（新游戏）、`ui_tutorial`（指南针）、`ui_guide`（书本）、`ui_quit`（出门箭头），删除不再使用的 `tab_production.svg`；
+- **分类兜底图标**：`ItemIconManager` 找不到专属图标时，按 items.json 的 `category` 选用 `cat_container / tool / material / liquid / gas / device / fire / element / wonder`，科技统一用 `tech`。原先 358 / 480 个物品都落到同一个矿石图标。新增篝火堆图标 `bldg_fire_pit`；
+- **时代勋标**：按「文字 + 图标 + 内边距」显式计算按钮宽度，`expand_icon` 图标不再被挤掉；
+- **logo**：`game_logo.png` 导入开启 mipmaps，34px / 52px 显示时边缘平滑；
+- 所有新图标导入为 `svg/scale=3.0` + mipmaps。
+
 ---
 
 ## 4. 全局键盘与鼠标操作控制总览 (Global Controls & Hotkeys)

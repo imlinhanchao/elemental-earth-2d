@@ -1,7 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <!-- Element cell tile -->
-  <rect x="10" y="10" width="44" height="44" rx="4" fill="#0F172A" stroke="#38BDF8" stroke-width="2"/>
-  <text x="16" y="24" font-family="system-ui, sans-serif" font-weight="bold" font-size="9" fill="#94A3B8">1</text>
-  <text x="32" y="38" font-family="system-ui, sans-serif" font-weight="900" font-size="16" fill="#38BDF8" text-anchor="middle">H</text>
-  <text x="32" y="48" font-family="system-ui, sans-serif" font-weight="normal" font-size="7" fill="#E2E8F0" text-anchor="middle">1.008</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none" stroke="#3A352F" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+<rect x="10" y="10" width="44" height="44" rx="4"/>
+<path d="M10 26h44M26 26v28" />
+<rect x="15" y="15" width="6" height="6" fill="#B0692A" stroke="none"/>
 </svg>

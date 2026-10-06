@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dj1gjfumgpg82"
-path="res://.godot/imported/game_logo.png-2848fdf3b2fa5b56bb2c6d3d1e4256b8.ctex"
+uid="uid://cwhah4eeo5vou"
+path="res://.godot/imported/bldg_fire_pit.svg-6fc25f8f49553ab620181339cab04be2.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/icons/game_logo.png"
-dest_files=["res://.godot/imported/game_logo.png-2848fdf3b2fa5b56bb2c6d3d1e4256b8.ctex"]
+source_file="res://assets/icons/bldg_fire_pit.svg"
+dest_files=["res://.godot/imported/bldg_fire_pit.svg-6fc25f8f49553ab620181339cab04be2.ctex"]
 
 [params]
 
@@ -32,3 +32,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=3.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

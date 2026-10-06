@@ -1136,7 +1136,13 @@ func _update_era_label() -> void:
 	if era_tex:
 		era_badge_btn.icon = era_tex
 		era_badge_btn.expand_icon = true
-		era_badge_btn.custom_minimum_size = Vector2(0, 30)
+	# expand_icon 的图标不计入按钮最小宽度，按钮只按文字宽度排版会把图标挤没；
+	# 这里按「文字 + 图标 + 间距 + 左右内边距」显式给出宽度
+	var font = era_badge_btn.get_theme_font("font")
+	var fsize = era_badge_btn.get_theme_font_size("font_size")
+	var text_w = font.get_string_size(era_badge_btn.text, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize).x if font else 80.0
+	var icon_w = 20.0 if era_tex else 0.0
+	era_badge_btn.custom_minimum_size = Vector2(ceil(text_w + icon_w + 6.0 + 28.0), 30)
 		
 	var tooltip_lines: Array[String] = [
 		"%s" % era_name,
