@@ -1,6 +1,8 @@
 # resource_node.gd
 # 严丝合缝对齐六边形网格的纯手绘级像素矿脉与植被图元
-extends Area2D
+extends Node2D
+
+const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 
 @export var item_key: String = "malachite"
 @export var item_name: String = "孔雀石矿床"
@@ -13,23 +15,16 @@ var is_hovered: bool = false
 var anim_scale: Vector2 = Vector2.ONE
 var anim_rotation: float = 0.0
 
-@onready var label = $NameLabel
-
-# 纯表现节点：不跑 _process、不连全局信号、不参与物理拾取。
+# 纯表现节点：不跑 _process、不连全局信号、没有碰撞体和 Label 子节点 (地图上约 1000 个，实例化成本要低)。
 # 悬停 / 采空 / 重生均由 world.gd 通过 hex 索引直接调用下列方法驱动；作业进度环由 overlay_layer 统一绘制。
 func _ready() -> void:
 	current_health = max_health
-	input_pickable = false
-	if label:
-		label.text = item_name
-		label.visible = false
 	queue_redraw()
 
 func set_hovered(v: bool) -> void:
 	if is_hovered == v:
 		return
 	is_hovered = v
-	if label: label.visible = v
 	queue_redraw()
 
 func on_respawned() -> void:
@@ -56,9 +51,13 @@ func _set_anim_t(t: float) -> void:
 	queue_redraw()
 
 func _draw() -> void:
-	# 鼠标悬停时的微光光圈
+	# 鼠标悬停时的微光光圈与名称 (墨色字 + 纸白描边，仅悬停时绘制)
 	if is_hovered:
 		draw_arc(Vector2.ZERO, 20.0, 0, TAU, 24, Color(0.15, 0.14, 0.13, 0.35), 1.5)
+		var font = ThemeStyler.get_font_sans()
+		var pos = Vector2(-60, 40)
+		draw_string_outline(font, pos, item_name, HORIZONTAL_ALIGNMENT_CENTER, 120, 12, 4, Color(0.96, 0.94, 0.90, 0.9))
+		draw_string(font, pos, item_name, HORIZONTAL_ALIGNMENT_CENTER, 120, 12, Color(0.15, 0.14, 0.13, 1))
 
 	# 应用弹性受击变换
 	draw_set_transform(Vector2.ZERO, anim_rotation, anim_scale)

@@ -41,11 +41,20 @@ func _ready() -> void:
 		building_type = GameState.built_furnaces[hex_coord].get("type", building_type)
 	queue_redraw()
 
+var _last_label_temp: int = -1
+var _was_burning: bool = true
+
 func _process(_delta: float) -> void:
-	if label_status:
+	var t = int(buffer.temperature)
+	if label_status and t != _last_label_temp:
+		_last_label_temp = t
 		var b_name = DataDB.get_building_recipe(building_type).get("name", "熔炉")
-		label_status.text = "%s\n%d K (%d ℃)\n[点击打开]" % [b_name, int(buffer.temperature), int(buffer.temperature - 273.15)]
-	queue_redraw()
+		label_status.text = "%s\n%d K (%d ℃)\n[点击打开]" % [b_name, t, t - 273]
+	# 火焰动画只在燃烧时逐帧重绘；熄火后补画一帧静态图
+	var burning = is_active_fire
+	if burning or _was_burning:
+		queue_redraw()
+	_was_burning = burning
 
 func _draw() -> void:
 	if building_type == "fire_pit":

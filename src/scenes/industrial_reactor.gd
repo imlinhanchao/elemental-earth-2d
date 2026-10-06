@@ -69,17 +69,24 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 		else:
 			GameState.post_notice("暂无可用蓝图！请在实验台 (L) 完成小试后点击'工艺固化'导出芯片！", Color.YELLOW)
 
+var _last_status: String = ""
+
+func _set_status(txt: String) -> void:
+	if txt != _last_status:
+		_last_status = txt
+		status_label.text = txt
+
 func _update_ui() -> void:
 	if status_label:
 		if installed_blueprint == null:
-			status_label.text = "工业连续反应塔\n[未装载蓝图芯片]\n点击插入蓝图"
+			_set_status("工业连续反应塔\n[未装载蓝图芯片]\n点击插入蓝图")
 		else:
 			var rem_time = max(0.0, installed_blueprint.duration_seconds - cycle_progress)
-			status_label.text = "反应塔: %s\n运转周期: %.1fs\n已量产: %d" % [
+			_set_status("反应塔: %s\n运转周期: %.1fs\n已量产: %d" % [
 				installed_blueprint.display_name,
 				rem_time,
 				total_produced_count
-			]
+			])
 
 func _draw() -> void:
 	# 绘制工业重型塔楼基座 (金属质感)

@@ -25,6 +25,7 @@
 | **直接启动游戏** | `/Applications/Godot.app/Contents/MacOS/Godot --path /Users/hancel/Documents/project/elemental-earth-2d` | 窗口模式启动游玩 |
 | **无头实机截图测试** | `/Applications/Godot.app/Contents/MacOS/Godot --path /Users/hancel/Documents/project/elemental-earth-2d ++ --screenshot` | 启动并在1.2s后输出 `screenshot_current.png` 并安全退出 |
 | **运行测试** | `Godot --headless --path . -s res://tests/test_progression.gd`、`-s res://tests/test_chemistry.gd`、`res://tests/test_save_v3.tscn` | 三套测试均需通过 |
+| **性能剖析** | `Godot --path . -s res://tools/profile_load.gd \| grep PROF` | 输出加载、帧时间、存读档与重绘耗时 |
 | **进程可达性检查** | `Godot --headless --path . -s res://tools/dump_map_resources.gd \| grep MAPDUMP > /tmp/map.txt && python3 tools/check_progression.py /tmp/map.txt` | 修改 data/*.json 后必须运行 |
 | **Git 状态检查** | `git status` | 检查修改状态 |
 | **代码提交流程** | `git add . && git commit -m "..."` | 完成测试后必须提交 |
@@ -806,6 +807,17 @@
 - **根因**：`world.gd._ready()` 在没有 `pending_load_slot` 时，只要检测到「背包为空 + 石器时代 + 未发现元素 + 磁盘有存档」就自动载入最新存档。新游戏刚重置时正好满足这些条件，于是又被读回旧档；
 - **修复**：删除这段猜测式自动读档。只有主菜单「继续游戏」「载入档案」显式设置 `SaveManager.pending_load_slot` 时才读档，「开启新程」与「新手教程」始终从全新世界开始；
 - 旧存档文件不会被删除，但首次自动保存会覆盖 `auto` 槽位。
+
+### 2.42 P2 卡顿治理（一）：实测驱动的加载与重绘优化 (2026-10-06)
+
+- **测量工具**：`tools/profile_load.gd` 输出世界场景加载、`_ready`、首帧、稳态帧、存读档、抽屉重建与地形重绘耗时（有窗口运行更接近真实）；
+- **地形批量提交**：`terrain_layer` 把所有填充三角形合并为一次 `canvas_item_add_triangle_array`，线段按颜色/线宽分桶后用 `draw_multiline` 提交。地形重绘从约 91ms 降到约 30ms，其中脚本耗时从 57ms 降到 12ms。时代跃迁与读档时的明显顿挫随之减轻；
+- **地图符号独立成层**：草丛、林地、晕滃线与顶点点画移到 `terrain_detail_layer.gd` 子画布。缩放跨越 LOD 阈值时只切换 `visible`，不再重绘。内容变化时统一调用 `terrain_layer.refresh()`；
+- **资源节点瘦身**：`resource_node` 改为 `Node2D`，去掉碰撞体和 `Label` 子节点，名称在悬停时用 `draw_string` 绘制。1000 个节点的实例化从约 107ms 降到 14ms，世界 `_ready` 从约 207ms 降到 80ms；
+- **弹窗延迟构建**：周期表的 118 格与科技树的 40 张卡片改为首次打开时才构建；
+- **后台预载世界**：主菜单显示时用 `ResourceLoader.load_threaded_request` 预载 `world.tscn`（含 HUD 与全部弹窗，同步加载约 200ms），点击进入时直接 `change_scene_to_packed`；
+- **降频刷新**：抽屉打开时，同一帧内的多次物品变化合并为一次重建（`call_deferred`）；熔炉面板 4Hz 刷新，物料显示为「名称 数量」，不再打印原始字典；熔炉只在燃烧时逐帧重绘，地表标签只在温度变化时更新；反应塔标签只在内容变化时写入；教程目标检测改为 4Hz；
+- 此前截图时出现的 `remove_child` 引擎报错随 Area2D 资源节点一并消失。
 
 ---
 

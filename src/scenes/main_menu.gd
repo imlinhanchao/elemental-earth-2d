@@ -74,6 +74,8 @@ func _ready() -> void:
 	_play_entrance_animation()
 	
 	save_load_modal.slot_selected.connect(_on_slot_selected_from_modal)
+	# 玩家看主菜单时在后台线程预载世界场景 (含 HUD 与全部弹窗)，点击进入时无需同步读盘
+	ResourceLoader.load_threaded_request(WORLD_SCENE)
 	
 	# 默认聚焦
 	if btn_continue.visible:
@@ -88,8 +90,25 @@ func _ready() -> void:
 			_capture_screenshot_after_delay()
 			return
 		elif arg.contains("screenshot"):
-			get_tree().change_scene_to_file("res://src/scenes/world.tscn")
+			_enter_world()
 			return
+
+const WORLD_SCENE := "res://src/scenes/world.tscn"
+var _entering_world: bool = false
+
+func _enter_world() -> void:
+	if _entering_world:
+		return
+	_entering_world = true
+	set_process_input(false)
+	# 预载尚未完成时逐帧等待 (通常在主菜单停留期间已完成)
+	while ResourceLoader.load_threaded_get_status(WORLD_SCENE) == ResourceLoader.THREAD_LOAD_IN_PROGRESS:
+		await get_tree().process_frame
+	var packed = ResourceLoader.load_threaded_get(WORLD_SCENE)
+	if packed is PackedScene:
+		get_tree().change_scene_to_packed(packed)
+	else:
+		get_tree().change_scene_to_file(WORLD_SCENE)
 
 func _capture_screenshot_after_delay() -> void:
 	await get_tree().create_timer(1.2).timeout
@@ -634,7 +653,7 @@ func _on_continue_pressed() -> void:
 		latest_slot = "auto"
 		
 	SaveManager.pending_load_slot = latest_slot
-	get_tree().change_scene_to_file("res://src/scenes/world.tscn")
+	_enter_world()
 
 func _on_new_game_pressed() -> void:
 	var latest_slot = SaveManager.get_latest_save_slot()
@@ -645,7 +664,7 @@ func _on_new_game_pressed() -> void:
 			SaveManager.pending_load_slot = ""
 			if not SettingsManager.is_tutorial_completed():
 				GameState.start_tutorial()
-			get_tree().change_scene_to_file("res://src/scenes/world.tscn")
+			_enter_world()
 		confirm_dialog.visible = true
 		btn_confirm_ok.grab_focus()
 	else:
@@ -653,7 +672,7 @@ func _on_new_game_pressed() -> void:
 		SaveManager.pending_load_slot = ""
 		if not SettingsManager.is_tutorial_completed():
 			GameState.start_tutorial()
-		get_tree().change_scene_to_file("res://src/scenes/world.tscn")
+		_enter_world()
 
 func _on_tutorial_pressed() -> void:
 	var latest_slot = SaveManager.get_latest_save_slot()
@@ -663,21 +682,21 @@ func _on_tutorial_pressed() -> void:
 			GameState.reset_to_new_game()
 			SaveManager.pending_load_slot = ""
 			GameState.start_tutorial()
-			get_tree().change_scene_to_file("res://src/scenes/world.tscn")
+			_enter_world()
 		confirm_dialog.visible = true
 		btn_confirm_ok.grab_focus()
 	else:
 		GameState.reset_to_new_game()
 		SaveManager.pending_load_slot = ""
 		GameState.start_tutorial()
-		get_tree().change_scene_to_file("res://src/scenes/world.tscn")
+		_enter_world()
 
 func _on_load_game_pressed() -> void:
 	save_load_modal.open(SaveLoadModal.Mode.LOAD)
 
 func _on_slot_selected_from_modal(slot_id: String, _mode: int) -> void:
 	SaveManager.pending_load_slot = slot_id
-	get_tree().change_scene_to_file("res://src/scenes/world.tscn")
+	_enter_world()
 
 func _on_quit_pressed() -> void:
 	confirm_text.text = "确认退出《元素纪元》并返回桌面吗？"

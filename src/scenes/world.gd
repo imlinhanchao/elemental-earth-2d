@@ -92,7 +92,7 @@ func _ready() -> void:
 	
 	GameState.era_advanced.connect(func(_old, _new, era_name):
 		apply_depleted_tiles_to_nodes()
-		terrain_layer.queue_redraw()
+		terrain_layer.refresh()
 		overlay_layer.queue_redraw()
 		GameState.post_notice("【领地疆域扩展】随着迈向【%s】，文明疆域拓展至半径 %d 格！" % [era_name, GameState.get_current_territory_radius()], Color(1.0, 0.85, 0.2))
 		SaveManager.save_to_slot("auto", self)
@@ -119,7 +119,7 @@ func _generate_hex_world() -> void:
 	for coord in GameState.world_resources.keys():
 		var item_key = GameState.world_resources[coord]
 		_spawn_resource_at_hex(coord.x, coord.y, item_key)
-	terrain_layer.queue_redraw()
+	terrain_layer.refresh()
 	overlay_layer.queue_redraw()
 
 func _spawn_resource_at_hex(q: int, r: int, item_key: String) -> void:
@@ -202,12 +202,11 @@ func _unhandled_input(event: InputEvent) -> void:
 			if hud and generated_hexes.has(hovered_hex):
 				hud.update_current_biome(generated_hexes[hovered_hex])
 
-# 地形只在 LOD 阈值被跨越时重绘一次；镜头移动/缩放本身不触发重绘
+# LOD 只切换地图符号层的可见性；镜头移动/缩放本身不触发重绘
 func _update_terrain_lod() -> void:
 	var new_lod = 1 if camera.zoom.x >= 0.85 else 0
 	if terrain_layer and terrain_layer.current_lod != new_lod:
-		terrain_layer.current_lod = new_lod
-		terrain_layer.queue_redraw()
+		terrain_layer.set_lod(new_lod)
 
 # 镜头可达范围限制在地形预绘制区域内 (见 terrain_layer.DRAW_HEX_RADIUS)
 const CAMERA_LIMIT: float = 1500.0
@@ -445,7 +444,7 @@ func deserialize_world_state(data: Dictionary) -> void:
 
 	# 将已采空的格子状态覆盖到地表资源节点上
 	apply_depleted_tiles_to_nodes()
-	terrain_layer.queue_redraw()
+	terrain_layer.refresh()
 	overlay_layer.queue_redraw()
 
 func apply_depleted_tiles_to_nodes() -> void:
@@ -469,5 +468,5 @@ func reset_world_state() -> void:
 	target_zoom = Vector2.ONE
 	camera.zoom = Vector2.ONE
 	apply_depleted_tiles_to_nodes()
-	terrain_layer.queue_redraw()
+	terrain_layer.refresh()
 	overlay_layer.queue_redraw()

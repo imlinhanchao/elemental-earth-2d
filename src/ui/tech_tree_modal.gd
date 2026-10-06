@@ -89,13 +89,19 @@ func _ready() -> void:
 	canvas.gui_input.connect(_on_scroll_gui_input)
 	
 	GameState.tech_researched.connect(func(_k):
-		_refresh_all()
+		if _built: _refresh_all()
 	)
-	
+
+# 科技卡片与连线在第一次打开时才构建，避免进入游戏时一次性生成 40 张卡片
+var _built: bool = false
+
+func _ensure_built() -> void:
+	if _built:
+		return
+	_built = true
 	_compute_topological_tiers()
 	_setup_era_jump_buttons()
 	_build_tech_tree_graph()
-	_refresh_all()
 
 func _compute_topological_tiers() -> void:
 	tech_tiers.clear()
@@ -455,6 +461,7 @@ func _on_scroll_gui_input(event: InputEvent) -> void:
 		scroll.scroll_vertical = int(drag_start_scroll.y - delta_mouse.y)
 
 func open() -> void:
+	_ensure_built()
 	visible = true
 	_refresh_all()
 	btn_close.grab_focus()
@@ -462,6 +469,7 @@ func open() -> void:
 func toggle() -> void:
 	visible = not visible
 	if visible:
+		_ensure_built()
 		_refresh_all()
 		btn_close.grab_focus()
 

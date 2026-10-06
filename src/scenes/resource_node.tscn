@@ -1,27 +1,7 @@
-[gd_scene load_steps=3 format=3 uid="uid://ci8w7g06x26h5"]
+[gd_scene load_steps=2 format=3 uid="uid://ci8w7g06x26h5"]
 
 [ext_resource type="Script" path="res://src/scenes/resource_node.gd" id="1_node"]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_c8a7b"]
-radius = 32.0
-
-[node name="ResourceNode" type="Area2D"]
+[node name="ResourceNode" type="Node2D"]
 y_sort_enabled = true
-collision_layer = 2
-collision_mask = 1
 script = ExtResource("1_node")
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_c8a7b")
-
-[node name="NameLabel" type="Label" parent="."]
-offset_left = -60.0
-offset_top = 22.0
-offset_right = 60.0
-offset_bottom = 48.0
-theme_override_colors/font_color = Color(0.15, 0.14, 0.13, 1)
-theme_override_colors/font_outline_color = Color(0.96, 0.94, 0.90, 0.9)
-theme_override_constants/outline_size = 4
-theme_override_font_sizes/font_size = 12
-text = "矿脉"
-horizontal_alignment = 1

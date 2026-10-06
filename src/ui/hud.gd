@@ -992,15 +992,33 @@ func _close_all_modals() -> void:
 	if not closed_any:
 		pause_menu.toggle()
 
-func _process(_delta: float) -> void:
+var _furnace_info_timer: float = 0.0
+
+func _process(delta: float) -> void:
 	if current_nearby_furnace != null and furnace_panel.visible:
+		_furnace_info_timer -= delta
+		if _furnace_info_timer > 0.0:
+			return
+		_furnace_info_timer = 0.25
 		var buf = current_nearby_furnace.buffer
 		furnace_info.text = "温度: %d K (%d ℃)\n状态: %s\n物料: %s" % [
 			int(buf.temperature),
 			int(buf.temperature - 273.15),
 			("燃烧中" if current_nearby_furnace.is_active_fire else "未生火"),
-			(str(buf.components) if buf.components.size() > 0 else "空")
+			_describe_components(buf.components)
 		]
+
+# 熔炉物料以「名称 数量」列出，而不是直接打印字典
+func _describe_components(components: Dictionary) -> String:
+	if components.is_empty():
+		return "空"
+	var parts: Array[String] = []
+	for k in components.keys():
+		var amt = float(components[k])
+		if amt < 0.01:
+			continue
+		parts.append("%s %.1f" % [DataDB.get_item(k).get("name", k), amt])
+	return "空" if parts.is_empty() else "、".join(parts)
 
 func _setup_save_dot() -> void:
 	if save_dot:
@@ -1135,8 +1153,16 @@ func _update_inventory_ui() -> void:
 	# 悬停在行囊上显示全量资源
 	_update_inventory_tooltip()
 	
-	# 如果当前抽屉打开，实时刷新抽屉内容
-	if action_drawer.visible:
+	# 如果当前抽屉打开，刷新抽屉内容 (同一帧内多次物品变化合并为一次重建)
+	if action_drawer.visible and not _drawer_refresh_pending:
+		_drawer_refresh_pending = true
+		_refresh_drawer_deferred.call_deferred()
+
+var _drawer_refresh_pending: bool = false
+
+func _refresh_drawer_deferred() -> void:
+	_drawer_refresh_pending = false
+	if action_drawer.visible and current_tab != CategoryTab.NONE:
 		_populate_drawer(current_tab)
 
 func _update_inventory_tooltip() -> void:

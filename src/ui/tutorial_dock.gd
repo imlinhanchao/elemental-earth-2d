@@ -80,11 +80,16 @@ func _ready() -> void:
 		visible = active
 	)
 
+var _goal_timer: float = 0.0
+
 func _process(delta: float) -> void:
 	if not visible:
 		return
 	
-	_check_current_goals()
+	_goal_timer -= delta
+	if _goal_timer <= 0.0:
+		_goal_timer = 0.25
+		_check_current_goals()
 	
 	if stage_completed and is_instance_valid(btn_next):
 		pulse_time += delta * 4.0

@@ -53,7 +53,7 @@ static func run(w: Node2D, arg_name: String) -> void:
 		w.camera.zoom = Vector2(1.0, 1.0)
 		w.target_zoom = Vector2(1.0, 1.0)
 		w.camera.reset_smoothing()
-		w.terrain_layer.queue_redraw()
+		w.terrain_layer.refresh()
 	elif arg_name == "--screenshot-campfire":
 		GameState.inventory.add_item("wood", 10)
 		GameState.inventory.add_item("stone", 10)
@@ -62,7 +62,7 @@ static func run(w: Node2D, arg_name: String) -> void:
 		w.camera.zoom = Vector2(1.5, 1.5)
 		w.target_zoom = Vector2(1.5, 1.5)
 		w.camera.reset_smoothing()
-		w.terrain_layer.queue_redraw()
+		w.terrain_layer.refresh()
 	elif arg_name == "--screenshot-placement":
 		GameState.inventory.add_item("wood", 10)
 		GameState.inventory.add_item("stone", 10)
@@ -72,7 +72,7 @@ static func run(w: Node2D, arg_name: String) -> void:
 		w.camera.zoom = Vector2(1.3, 1.3)
 		w.target_zoom = Vector2(1.3, 1.3)
 		w.camera.reset_smoothing()
-		w.terrain_layer.queue_redraw()
+		w.terrain_layer.refresh()
 		w.overlay_layer.queue_redraw()
 	elif arg_name == "--screenshot-task-complete":
 		for h in GameState.world_resources.keys():
@@ -85,14 +85,14 @@ static func run(w: Node2D, arg_name: String) -> void:
 		w.camera.zoom = Vector2(1.3, 1.3)
 		w.target_zoom = Vector2(1.3, 1.3)
 		w.camera.reset_smoothing()
-		w.terrain_layer.queue_redraw()
+		w.terrain_layer.refresh()
 		w.overlay_layer.queue_redraw()
 	elif arg_name == "--screenshot-hud":
 		w.camera.position = Vector2.ZERO
 		w.camera.zoom = Vector2(1.0, 1.0)
 		w.target_zoom = Vector2(1.0, 1.0)
 		w.camera.reset_smoothing()
-		w.terrain_layer.queue_redraw()
+		w.terrain_layer.refresh()
 	elif arg_name == "--screenshot-era-modal":
 		w.hud.era_modal.show_current_era_status()
 	elif arg_name == "--screenshot-context-menu":

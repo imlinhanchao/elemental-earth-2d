@@ -16,10 +16,17 @@ func _ready() -> void:
 	p_box.content_margin_bottom = 16
 	$CenterPanel.add_theme_stylebox_override("panel", p_box)
 	btn_close.pressed.connect(func(): visible = false)
-	GameState.element_discovered.connect(func(_num, _key): _refresh_grid())
-	_build_grid()
+	GameState.element_discovered.connect(func(_num, _key):
+		if _built: _refresh_grid()
+	)
+
+# 118 个元素格在第一次打开时才创建，避免进入游戏时一次性构建
+var _built: bool = false
 
 func open() -> void:
+	if not _built:
+		_built = true
+		_build_grid()
 	visible = true
 	_refresh_grid()
 	btn_close.grab_focus()
