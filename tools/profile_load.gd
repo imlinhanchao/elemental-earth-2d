@@ -44,10 +44,11 @@ func _initialize() -> void:
 	SM.delete_slot("prof_slot")
 	var hud = w.get_node_or_null("HUD")
 	if hud and hud.has_method("_populate_drawer"):
-		for tab in range(6):
-			t = Time.get_ticks_usec()
-			hud._populate_drawer(tab)
-			print("PROF drawer_", tab, " ", _ms(t))
+		for pass_i in range(2):
+			for tab in range(1, 7):
+				t = Time.get_ticks_usec()
+				hud._populate_drawer(tab)
+				print("PROF drawer_%s_%d %s" % ["first" if pass_i == 0 else "again", tab, _ms(t)])
 	var tl = w.get_node_or_null("TerrainLayer")
 	if tl:
 		t = Time.get_ticks_usec()

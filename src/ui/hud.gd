@@ -255,9 +255,16 @@ func hide_placement_mode() -> void:
 		placement_bar.visible = false
 
 func _populate_drawer(tab: CategoryTab) -> void:
-	for child in drawer_grid.get_children():
-		child.queue_free()
-		
+	for n in _drawer_extras:
+		if is_instance_valid(n): n.queue_free()
+	_drawer_extras.clear()
+	_card_used = 0
+	_fill_drawer(tab)
+	# 本次没有用到的池中卡片隐藏
+	for i in range(_card_used, _card_pool.size()):
+		_card_pool[i].visible = false
+
+func _fill_drawer(tab: CategoryTab) -> void:
 	match tab:
 		CategoryTab.LAB:
 			drawer_title.text = "【实验】微观化学反应与元素圣殿"
@@ -291,7 +298,6 @@ func _add_lab_subitems() -> void:
 		_close_drawer()
 		lab_modal.open()
 	)
-	drawer_grid.add_child(card_lab)
 	
 	var disc_count = GameState.discovered_elements.size()
 	var card_pt = _create_action_card(
@@ -305,7 +311,6 @@ func _add_lab_subitems() -> void:
 		_close_drawer()
 		periodic_modal.open()
 	)
-	drawer_grid.add_child(card_pt)
 
 # --- 2. 科技分类细项 ---
 func _add_tech_subitems() -> void:
@@ -321,7 +326,6 @@ func _add_tech_subitems() -> void:
 		_close_drawer()
 		tech_modal.open()
 	)
-	drawer_grid.add_child(card_all)
 	
 	for tech in DataDB.techs.values():
 		var t_key = str(tech.get("key", ""))
@@ -380,7 +384,6 @@ func _add_tech_subitems() -> void:
 				if GameState.research_tech(t_key):
 					_populate_drawer(CategoryTab.TECH)
 			)
-		drawer_grid.add_child(card)
 
 # --- 3. 制作分类细项 ---
 func _add_craft_subitems() -> void:
@@ -444,7 +447,6 @@ func _add_craft_subitems() -> void:
 				if GameState.craft_tool(recipe_key):
 					_populate_drawer(CategoryTab.CRAFT)
 			)
-		drawer_grid.add_child(card)
 
 # --- 4. 建造分类细项 ---
 func _add_build_subitems() -> void:
@@ -510,7 +512,6 @@ func _add_build_subitems() -> void:
 				_on_build_structure_pressed(b_key)
 				_close_drawer()
 			)
-		drawer_grid.add_child(card)
 
 # --- 4. 生产分类细项 ---
 func _add_production_subitems() -> void:
@@ -529,7 +530,6 @@ func _add_production_subitems() -> void:
 			_on_btn_add_fuel_pressed()
 			_populate_drawer(CategoryTab.PRODUCTION)
 		)
-	drawer_grid.add_child(fuel_card)
 	
 	# 2. 孔雀石冶炼铜
 	var mala_cnt = GameState.inventory.get_count("malachite")
@@ -546,7 +546,6 @@ func _add_production_subitems() -> void:
 			_on_btn_add_malachite_pressed()
 			_populate_drawer(CategoryTab.PRODUCTION)
 		)
-	drawer_grid.add_child(copper_card)
 	
 	# 3. 赤铁矿冶炼铁
 	var hematite_cnt = GameState.inventory.get_count("hematite")
@@ -563,7 +562,6 @@ func _add_production_subitems() -> void:
 			_on_btn_add_hematite_pressed()
 			_populate_drawer(CategoryTab.PRODUCTION)
 		)
-	drawer_grid.add_child(iron_card)
 	
 	# 4. 工业反应塔蓝图自动化
 	var bp_count = GameState.unlocked_blueprints.size()
@@ -574,7 +572,6 @@ func _add_production_subitems() -> void:
 		"蓝图库",
 		true
 	)
-	drawer_grid.add_child(bp_card)
 
 # --- 5. 行囊分类细项 ---
 func _add_inventory_subitems() -> void:
@@ -582,7 +579,7 @@ func _add_inventory_subitems() -> void:
 		var empty_label = Label.new()
 		empty_label.text = "当前行囊空空如也，请前往大世界开采采集资源。"
 		empty_label.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
-		drawer_grid.add_child(empty_label)
+		_add_drawer_extra(empty_label)
 		return
 		
 	for k in GameState.inventory.items.keys():
@@ -601,7 +598,6 @@ func _add_inventory_subitems() -> void:
 			"x%d" % count,
 			true
 		)
-		drawer_grid.add_child(card)
 
 # 界面样式初始化 (地质测绘图 × 实验手稿：纸面 HUD + 暖墨弹窗)
 func _apply_scheme3_styling() -> void:
@@ -832,42 +828,37 @@ func _apply_scheme3_styling() -> void:
 	furnace_panel.add_theme_stylebox_override("panel", f_box)
 
 # 通用制作/操作卡片创建函数
-func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, badge_text: String, is_enabled: bool) -> Button:
+# 抽屉卡片对象池：卡片节点只在首次需要时创建，之后每次刷新只改文字、图标与状态，
+# 不再整组 queue_free + 重建 (制作抽屉 54 张卡片原需约 25ms)
+var _card_pool: Array[Button] = []
+var _card_used: int = 0
+var _drawer_extras: Array[Node] = []
+var _card_styles: Dictionary = {}
+
+func _card_style(kind: String) -> StyleBoxFlat:
+	if not _card_styles.has(kind):
+		var box: StyleBoxFlat
+		match kind:
+			"hover": box = ThemeStyler.create_card_box(8, ThemeStyler.COLOR_CARD_HOVER, ThemeStyler.COLOR_BORDER_FOCUS)
+			"pressed": box = ThemeStyler.create_card_box(8, ThemeStyler.COLOR_BG_SOLID, ThemeStyler.COLOR_ACCENT)
+			_: box = ThemeStyler.create_card_box(8, ThemeStyler.COLOR_CARD, ThemeStyler.COLOR_BORDER)
+		box.content_margin_left = 12
+		box.content_margin_top = 10
+		box.content_margin_right = 12
+		box.content_margin_bottom = 10
+		_card_styles[kind] = box
+	return _card_styles[kind]
+
+func _new_pool_card() -> Button:
 	var btn = Button.new()
 	btn.custom_minimum_size = Vector2(210, 110)
 	btn.size_flags_vertical = 3
-	btn.tooltip_text = "%s\n%s" % [title, subtitle]
+	btn.add_theme_stylebox_override("normal", _card_style("normal"))
+	btn.add_theme_stylebox_override("hover", _card_style("hover"))
+	btn.add_theme_stylebox_override("pressed", _card_style("pressed"))
+	btn.add_theme_stylebox_override("focus", _card_style("hover"))
+	btn.add_theme_stylebox_override("disabled", _card_style("normal"))
 	
-	var card_norm = ThemeStyler.create_card_box(8, ThemeStyler.COLOR_CARD, ThemeStyler.COLOR_BORDER)
-	card_norm.content_margin_left = 12
-	card_norm.content_margin_top = 10
-	card_norm.content_margin_right = 12
-	card_norm.content_margin_bottom = 10
-	
-	var card_hover = ThemeStyler.create_card_box(8, ThemeStyler.COLOR_CARD_HOVER, ThemeStyler.COLOR_BORDER_FOCUS)
-	card_hover.content_margin_left = 12
-	card_hover.content_margin_top = 10
-	card_hover.content_margin_right = 12
-	card_hover.content_margin_bottom = 10
-	
-	var card_press = ThemeStyler.create_card_box(8, ThemeStyler.COLOR_BG_SOLID, ThemeStyler.COLOR_ACCENT)
-	card_press.content_margin_left = 12
-	card_press.content_margin_top = 10
-	card_press.content_margin_right = 12
-	card_press.content_margin_bottom = 10
-	
-	btn.add_theme_stylebox_override("normal", card_norm)
-	btn.add_theme_stylebox_override("hover", card_hover)
-	btn.add_theme_stylebox_override("pressed", card_press)
-	btn.add_theme_stylebox_override("focus", card_hover)
-	
-	# 半透明禁用状态处理
-	if not is_enabled:
-		btn.disabled = true
-		btn.modulate = Color(1.0, 1.0, 1.0, 0.45)
-	else:
-		btn.modulate = Color(1.0, 1.0, 1.0, 1.0)
-		
 	var margin = MarginContainer.new()
 	margin.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	margin.anchors_preset = Control.PRESET_FULL_RECT
@@ -892,7 +883,6 @@ func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, b
 	var icon_rect = TextureRect.new()
 	icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	icon_rect.custom_minimum_size = Vector2(36, 36)
-	icon_rect.texture = icon_tex
 	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	top_hbox.add_child(icon_rect)
@@ -904,30 +894,60 @@ func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, b
 	
 	var lbl_title = Label.new()
 	lbl_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lbl_title.text = title
 	lbl_title.add_theme_font_size_override("font_size", 13)
 	lbl_title.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 	title_vbox.add_child(lbl_title)
 	
 	var lbl_badge = Label.new()
 	lbl_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lbl_badge.text = badge_text
 	lbl_badge.add_theme_font_size_override("font_size", 12)
-	if is_enabled:
-		lbl_badge.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
-	else:
-		lbl_badge.add_theme_color_override("font_color", ThemeStyler.COLOR_DANGER)
 	title_vbox.add_child(lbl_badge)
 	
 	var lbl_sub = Label.new()
 	lbl_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lbl_sub.text = subtitle
 	lbl_sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lbl_sub.add_theme_font_size_override("font_size", 12)
 	lbl_sub.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 	vbox.add_child(lbl_sub)
 	
+	btn.set_meta("icon", icon_rect)
+	btn.set_meta("title", lbl_title)
+	btn.set_meta("badge", lbl_badge)
+	btn.set_meta("sub", lbl_sub)
+	drawer_grid.add_child(btn)
 	return btn
+
+# 取一张池中卡片并填充内容 (卡片已挂在 drawer_grid 下)；调用方只需 card.pressed.connect(...)
+func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, badge_text: String, is_enabled: bool) -> Button:
+	var btn: Button
+	if _card_used < _card_pool.size():
+		btn = _card_pool[_card_used]
+		# 上一次刷新挂上的点击回调全部断开
+		for c in btn.pressed.get_connections():
+			btn.pressed.disconnect(c["callable"])
+	else:
+		btn = _new_pool_card()
+		_card_pool.append(btn)
+	_card_used += 1
+	
+	btn.visible = true
+	btn.tooltip_text = "%s\n%s" % [title, subtitle]
+	btn.disabled = not is_enabled
+	btn.modulate = Color(1.0, 1.0, 1.0, 1.0 if is_enabled else 0.45)
+	(btn.get_meta("icon") as TextureRect).texture = icon_tex
+	(btn.get_meta("title") as Label).text = title
+	var lbl_badge: Label = btn.get_meta("badge")
+	lbl_badge.text = badge_text
+	lbl_badge.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT if is_enabled else ThemeStyler.COLOR_DANGER)
+	(btn.get_meta("sub") as Label).text = subtitle
+	# 按本次调用顺序排列
+	drawer_grid.move_child(btn, _card_used - 1)
+	return btn
+
+# 抽屉中的非卡片节点 (如空背包提示) 记录下来，下次刷新时释放
+func _add_drawer_extra(node: Node) -> void:
+	_drawer_extras.append(node)
+	drawer_grid.add_child(node)
 
 func _is_world_placing() -> bool:
 	var w = get_parent()
