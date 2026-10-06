@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="resin_body" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FBBF24"/>
+      <stop offset="60%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    <radialGradient id="resin_highlight" cx="35%" cy="35%" r="60%">
+      <stop offset="0%" stop-color="#FEF3C7" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#F59E0B" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#B45309" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <!-- Amber teardrop resin droplet -->
+  <path d="M32 10 C32 10, 48 28, 48 40 C48 49, 41 56, 32 56 C23 56, 16 49, 16 40 C16 28, 32 10, 32 10 Z" 
+        fill="url(#resin_body)" stroke="#78350F" stroke-width="2"/>
+  <!-- Translucent glow -->
+  <path d="M32 10 C32 10, 48 28, 48 40 C48 49, 41 56, 32 56 C23 56, 16 49, 16 40 C16 28, 32 10, 32 10 Z" 
+        fill="url(#resin_highlight)"/>
+  <!-- Specular glint -->
+  <ellipse cx="26" cy="34" rx="4" ry="7" transform="rotate(-25 26 34)" fill="#FFFFFF" opacity="0.75"/>
+  <circle cx="36" cy="45" r="2.5" fill="#FEF3C7" opacity="0.6"/>
+</svg>

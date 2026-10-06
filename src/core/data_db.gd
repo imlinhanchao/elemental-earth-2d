@@ -250,6 +250,8 @@ static func get_item_chemical_tags(item_key: String) -> Array[Dictionary]:
 	elif item_key in ["wood", "stick", "bark", "branch"]:
 		tags.append({"text": "🌿 可干馏热解", "color": Color(0.40, 0.85, 0.35)})
 		tags.append({"text": "🪵 燃烧供热", "color": Color(0.85, 0.70, 0.25)})
+		if item_key == "bark":
+			tags.append({"text": "🧵 富含植物纤维", "color": Color(0.82, 0.68, 0.45)})
 		
 	# 2. 矿石与可冶炼物类
 	if item_key == "malachite":

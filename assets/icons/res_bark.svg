@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <linearGradient id="bark_outer" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#9A3412"/>
+      <stop offset="50%" stop-color="#7C2D12"/>
+      <stop offset="100%" stop-color="#431407"/>
+    </linearGradient>
+    <linearGradient id="bark_inner" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D97706"/>
+      <stop offset="100%" stop-color="#92400E"/>
+    </linearGradient>
+  </defs>
+  <!-- Curving bark peel strip -->
+  <path d="M14 18 C22 12, 38 10, 48 14 C44 26, 40 42, 46 52 C36 56, 20 54, 12 48 C18 38, 16 28, 14 18 Z" 
+        fill="url(#bark_outer)" stroke="#270A02" stroke-width="2" stroke-linejoin="round"/>
+  <!-- Exposed inner fiber curve -->
+  <path d="M14 18 C18 22, 22 36, 18 46 C24 48, 32 46, 36 42 C32 32, 30 20, 24 16 C20 16, 16 17, 14 18 Z" 
+        fill="url(#bark_inner)" opacity="0.85"/>
+  <!-- Longitudinal fibrous grain lines -->
+  <path d="M22 18 Q26 32 23 44" stroke="#FDE68A" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.7"/>
+  <path d="M30 16 Q34 30 31 46" stroke="#451A03" stroke-width="2" stroke-linecap="round" fill="none"/>
+  <path d="M38 18 Q40 32 39 48" stroke="#D97706" stroke-width="1.8" stroke-linecap="round" fill="none"/>
+  <path d="M42 22 Q45 34 43 46" stroke="#FEF3C7" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.6"/>
+</svg>

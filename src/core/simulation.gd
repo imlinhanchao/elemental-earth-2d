@@ -689,12 +689,22 @@ func _complete_active_task() -> void:
 	var rep = int(finished_task.get("repeat_count", 1))
 	var cur_cycle = int(finished_task.get("current_cycle", 1))
 	
-	# 1. 产物收入背包
+	# 1. 产物收入背包及伴生物掉落
 	inventory.add_item(t_key, amount)
 	if t_key == "water" and randf() < 0.25:
 		inventory.add_item("halite", 1)
 	elif t_key == "stone" and randf() < 0.15:
 		inventory.add_item("flint", 1)
+	elif t_key == "wood":
+		if randf() < 0.50:
+			inventory.add_item("bark", randi_range(1, 2))
+		if randf() < 0.15:
+			inventory.add_item("resin", 1)
+	elif t_key == "stick":
+		if randf() < 0.45:
+			inventory.add_item("bark", 1)
+		if randf() < 0.08:
+			inventory.add_item("resin", 1)
 		
 	# 2. 扣减地块真实资源储量 (取完了就没了)
 	var rem_res = consume_tile_resource(hex, t_key, 1)
