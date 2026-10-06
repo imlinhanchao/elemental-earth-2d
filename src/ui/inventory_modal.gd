@@ -27,6 +27,7 @@ const BASE_SLOTS_COUNT: int = 80 # 8 行 × 10 列基础槽位
 var hovered_slot_data: Dictionary = {}
 
 func _ready() -> void:
+	ModalStack.track(self)
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
@@ -102,10 +103,7 @@ func toggle() -> void:
 		open()
 
 func _input(event: InputEvent) -> void:
-	if not visible:
-		if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_B:
-			open()
-			get_viewport().set_input_as_handled()
+	if not visible or not ModalStack.is_top(self):
 		return
 		
 	if event is InputEventKey and event.pressed and not event.echo:

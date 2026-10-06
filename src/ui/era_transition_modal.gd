@@ -53,6 +53,7 @@ const ERA_TAGS: Dictionary = {
 @onready var btn_continue = $Center/Panel/Margin/MainVBox/FooterHBox/BtnContinue
 
 func _ready() -> void:
+	ModalStack.track(self)
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	_apply_visual_styling()
@@ -63,7 +64,7 @@ func _ready() -> void:
 	GameState.milestone_completed.connect(_on_milestone_completed)
 
 func _input(event: InputEvent) -> void:
-	if not visible:
+	if not visible or not ModalStack.is_top(self):
 		return
 		
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:

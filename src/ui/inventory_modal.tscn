@@ -73,9 +73,10 @@ layout_mode = 2
 text = "规整排序"
 
 [node name="BtnClose" type="Button" parent="CenterPanel/VBox/Header"]
-custom_minimum_size = Vector2(32, 28)
+custom_minimum_size = Vector2(84, 28)
 layout_mode = 2
-text = "✕"
+theme_override_font_sizes/font_size = 12
+text = "关闭 [ESC]"
 
 [node name="HSeparator" type="HSeparator" parent="CenterPanel/VBox"]
 layout_mode = 2

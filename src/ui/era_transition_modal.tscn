@@ -65,13 +65,13 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="BtnClose" type="Button" parent="Center/Panel/Margin/MainVBox/HeaderHBox"]
-custom_minimum_size = Vector2(68, 26)
+custom_minimum_size = Vector2(84, 28)
 layout_mode = 2
 size_flags_vertical = 4
 focus_mode = 0
 mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 12
-text = "✕ [ESC]"
+text = "关闭 [ESC]"
 
 [node name="HSeparator" type="HSeparator" parent="Center/Panel/Margin/MainVBox"]
 layout_mode = 2

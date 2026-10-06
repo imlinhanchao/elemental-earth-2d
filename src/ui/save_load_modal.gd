@@ -29,6 +29,7 @@ var world_ref: Node2D = null
 var pending_action: Callable
 
 func _ready() -> void:
+	ModalStack.track(self)
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	btn_close.pressed.connect(close)
@@ -56,7 +57,7 @@ func close() -> void:
 	modal_closed.emit()
 
 func _input(event: InputEvent) -> void:
-	if not visible:
+	if not visible or not ModalStack.is_top(self):
 		return
 		
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:

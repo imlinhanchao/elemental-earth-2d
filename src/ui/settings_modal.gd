@@ -36,6 +36,7 @@ const SettingsManager = preload("res://src/core/settings_manager.gd")
 @onready var btn_default = $CenterPanel/VBox/Footer/HBox/BtnDefault
 
 func _ready() -> void:
+	ModalStack.track(self)
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	
@@ -63,7 +64,7 @@ func close() -> void:
 	modal_closed.emit()
 
 func _input(event: InputEvent) -> void:
-	if not visible:
+	if not visible or not ModalStack.is_top(self):
 		return
 		
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:

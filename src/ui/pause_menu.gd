@@ -26,6 +26,7 @@ signal quit_game_requested
 var pending_action: Callable
 
 func _ready() -> void:
+	ModalStack.track(self)
 	visible = false
 	confirm_dialog.visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -72,7 +73,7 @@ func close() -> void:
 	resume_requested.emit()
 
 func _input(event: InputEvent) -> void:
-	if not visible:
+	if not visible or not ModalStack.is_top(self):
 		return
 		
 	# 右键返回或取消

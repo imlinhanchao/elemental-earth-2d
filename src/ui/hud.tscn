@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://ci8v43187140w"]
+[gd_scene load_steps=31 format=3 uid="uid://ci8v43187140w"]
 
 [ext_resource type="Script" path="res://src/ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" uid="uid://ci8v42187654x" path="res://src/ui/periodic_table_modal.tscn" id="2_modal"]
@@ -16,7 +16,6 @@
 [ext_resource type="Texture2D" uid="uid://bhk83na1mtgka" path="res://assets/icons/tab_lab.svg" id="12_tab_lab"]
 [ext_resource type="Texture2D" uid="uid://36v8rrl6bsid" path="res://assets/icons/tab_craft.svg" id="13_tab_craft"]
 [ext_resource type="Texture2D" uid="uid://dfyvlugcyhvci" path="res://assets/icons/tab_build.svg" id="14_tab_build"]
-[ext_resource type="Texture2D" uid="uid://uawt2smqj58x" path="res://assets/icons/tab_production.svg" id="15_tab_prod"]
 [ext_resource type="Texture2D" uid="uid://dhxtes2pi6vkm" path="res://assets/icons/tab_inventory.svg" id="16_tab_inv"]
 [ext_resource type="Texture2D" uid="uid://btd43sgegv6lf" path="res://assets/icons/res_wood.svg" id="20_wood"]
 [ext_resource type="Texture2D" uid="uid://bbce8nfxhxx2d" path="res://assets/icons/res_stick.svg" id="21_stick"]
@@ -399,7 +398,7 @@ size_flags_horizontal = 3
 [node name="BtnCloseDrawer" type="Button" parent="Margin/MainVBox/BottomArea/ActionDrawer/Margin/VBox/Header"]
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
-tooltip_text = "收起分类面板 [ESC]"
+tooltip_text = "收起 [ESC]"
 theme_override_font_sizes/font_size = 12
 text = "✕"
 
@@ -436,7 +435,7 @@ theme_override_constants/separation = 10
 [node name="BtnTabLab" type="Button" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
 custom_minimum_size = Vector2(105, 34)
 layout_mode = 2
-tooltip_text = "实验分类 [L] - 烧瓶微观反应与元素图谱"
+tooltip_text = "打开微观化学实验台 [L]"
 theme_override_font_sizes/font_size = 12
 icon = ExtResource("12_tab_lab")
 expand_icon = true
@@ -445,7 +444,7 @@ text = "实验 [L]"
 [node name="BtnTabTech" type="Button" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
 custom_minimum_size = Vector2(105, 34)
 layout_mode = 2
-tooltip_text = "科技分类 [K] - 研发各时代前沿科学技术"
+tooltip_text = "打开科技树 [K]"
 theme_override_font_sizes/font_size = 12
 icon = ExtResource("17_tab_tech")
 expand_icon = true
@@ -454,7 +453,7 @@ text = "科技 [K]"
 [node name="BtnTabCraft" type="Button" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
 custom_minimum_size = Vector2(105, 34)
 layout_mode = 2
-tooltip_text = "制作分类 [T] - 装备、斧具与地质镐锻造"
+tooltip_text = "制作工具与器皿 [T]"
 theme_override_font_sizes/font_size = 12
 icon = ExtResource("13_tab_craft")
 expand_icon = true
@@ -463,20 +462,11 @@ text = "制作 [T]"
 [node name="BtnTabBuild" type="Button" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
 custom_minimum_size = Vector2(105, 34)
 layout_mode = 2
-tooltip_text = "建造分类 [C] - 陶土熔炉与反应塔巨构工程"
+tooltip_text = "建造篝火、熔炉与反应塔 [C]"
 theme_override_font_sizes/font_size = 12
 icon = ExtResource("14_tab_build")
 expand_icon = true
 text = "建造 [C]"
-
-[node name="BtnTabProduction" type="Button" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
-custom_minimum_size = Vector2(105, 34)
-layout_mode = 2
-tooltip_text = "生产分类 [R] - 高炉投料熔炼与工业自动化蓝图"
-theme_override_font_sizes/font_size = 12
-icon = ExtResource("15_tab_prod")
-expand_icon = true
-text = "生产 [R]"
 
 [node name="VSep" type="VSeparator" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
 layout_mode = 2
@@ -484,7 +474,7 @@ layout_mode = 2
 [node name="BtnTabInventory" type="Button" parent="Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox"]
 custom_minimum_size = Vector2(105, 34)
 layout_mode = 2
-tooltip_text = "行囊物资 [B] - 查看全部已收集材料储备"
+tooltip_text = "打开行囊 [B]"
 theme_override_font_sizes/font_size = 12
 icon = ExtResource("16_tab_inv")
 expand_icon = true

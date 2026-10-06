@@ -14,7 +14,7 @@ const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 const ItemIconManager = preload("res://src/ui/item_icon_manager.gd")
 const ElementDiscoveryModal = preload("res://src/ui/element_discovery_modal.gd")
 
-enum CategoryTab { NONE, LAB, TECH, CRAFT, BUILD, PRODUCTION, INVENTORY }
+enum CategoryTab { NONE, LAB, TECH, CRAFT, BUILD, INVENTORY }
 var current_tab: CategoryTab = CategoryTab.NONE
 
 # 顶部导航与状态条
@@ -70,7 +70,6 @@ var current_tab: CategoryTab = CategoryTab.NONE
 @onready var btn_tab_tech = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/BtnTabTech
 @onready var btn_tab_craft = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/BtnTabCraft
 @onready var btn_tab_build = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/BtnTabBuild
-@onready var btn_tab_production = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/BtnTabProduction
 @onready var btn_tab_inventory = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/BtnTabInventory
 @onready var queue_badge = $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel/Margin/DockHBox/QueueBadge
 
@@ -152,7 +151,6 @@ func _ready() -> void:
 	btn_tab_tech.pressed.connect(func(): _toggle_category(CategoryTab.TECH))
 	btn_tab_craft.pressed.connect(func(): _toggle_category(CategoryTab.CRAFT))
 	btn_tab_build.pressed.connect(func(): _toggle_category(CategoryTab.BUILD))
-	btn_tab_production.pressed.connect(func(): _toggle_category(CategoryTab.PRODUCTION))
 	btn_tab_inventory.pressed.connect(func(): _toggle_category(CategoryTab.INVENTORY))
 	btn_close_drawer.pressed.connect(_close_drawer)
 	
@@ -182,6 +180,11 @@ func _on_era_badge_pressed() -> void:
 		era_modal.show_current_era_status()
 
 func _toggle_category(tab: CategoryTab) -> void:
+	# 实验、科技、行囊是完整弹窗，直接打开；制作、建造是底部抽屉
+	if tab == CategoryTab.LAB:
+		_close_drawer()
+		lab_modal.toggle()
+		return
 	if tab == CategoryTab.TECH:
 		_close_drawer()
 		tech_modal.toggle()
@@ -266,9 +269,6 @@ func _populate_drawer(tab: CategoryTab) -> void:
 
 func _fill_drawer(tab: CategoryTab) -> void:
 	match tab:
-		CategoryTab.LAB:
-			drawer_title.text = "【实验】微观化学反应与元素圣殿"
-			_add_lab_subitems()
 		CategoryTab.TECH:
 			drawer_title.text = "【科技】人类文明科学与技术突破演进"
 			_add_tech_subitems()
@@ -278,39 +278,9 @@ func _fill_drawer(tab: CategoryTab) -> void:
 		CategoryTab.BUILD:
 			drawer_title.text = "【建造】基础设施与工业巨构施工"
 			_add_build_subitems()
-		CategoryTab.PRODUCTION:
-			drawer_title.text = "【生产】高炉冶炼与工业自动化调度"
-			_add_production_subitems()
 		CategoryTab.INVENTORY:
 			drawer_title.text = "【行囊】当前全量物资与化学试剂储备"
 			_add_inventory_subitems()
-
-# --- 1. 实验分类细项 ---
-func _add_lab_subitems() -> void:
-	var card_lab = _create_action_card(
-		"微观实验工作台",
-		"调配烧瓶物料、加热干馏与导出蓝图 [L]",
-		get_item_icon("lab"),
-		"可用",
-		true
-	)
-	card_lab.pressed.connect(func():
-		_close_drawer()
-		lab_modal.open()
-	)
-	
-	var disc_count = GameState.discovered_elements.size()
-	var card_pt = _create_action_card(
-		"118 元素周期表",
-		"探索宇宙物质本源 (已点亮 %d/118) [P]" % disc_count,
-		get_item_icon("periodic_table"),
-		"谱系",
-		true
-	)
-	card_pt.pressed.connect(func():
-		_close_drawer()
-		periodic_modal.open()
-	)
 
 # --- 2. 科技分类细项 ---
 func _add_tech_subitems() -> void:
@@ -513,66 +483,6 @@ func _add_build_subitems() -> void:
 				_close_drawer()
 			)
 
-# --- 4. 生产分类细项 ---
-func _add_production_subitems() -> void:
-	# 1. 木炭投掷生火
-	var charcoal_cnt = GameState.inventory.get_count("charcoal")
-	var can_fuel = charcoal_cnt >= 1 and current_nearby_furnace != null
-	var fuel_card = _create_action_card(
-		"熔炉加料生火",
-		"消耗木炭 x1 维持炉膛高温 (存量: %d)" % charcoal_cnt,
-		get_item_icon("fuel_fire"),
-		("可投料" if can_fuel else ("无就近熔炉" if current_nearby_furnace == null else "缺少木炭")),
-		can_fuel
-	)
-	if can_fuel:
-		fuel_card.pressed.connect(func():
-			_on_btn_add_fuel_pressed()
-			_populate_drawer(CategoryTab.PRODUCTION)
-		)
-	
-	# 2. 孔雀石冶炼铜
-	var mala_cnt = GameState.inventory.get_count("malachite")
-	var can_smelt_copper = mala_cnt >= 1 and current_nearby_furnace != null
-	var copper_card = _create_action_card(
-		"孔雀石冶铜",
-		"投入孔雀石 x1 冶炼金属铜 (存量: %d)" % mala_cnt,
-		get_item_icon("malachite"),
-		("可投入" if can_smelt_copper else ("无就近熔炉" if current_nearby_furnace == null else "缺少孔雀石")),
-		can_smelt_copper
-	)
-	if can_smelt_copper:
-		copper_card.pressed.connect(func():
-			_on_btn_add_malachite_pressed()
-			_populate_drawer(CategoryTab.PRODUCTION)
-		)
-	
-	# 3. 赤铁矿冶炼铁
-	var hematite_cnt = GameState.inventory.get_count("hematite")
-	var can_smelt_iron = hematite_cnt >= 1 and current_nearby_furnace != null
-	var iron_card = _create_action_card(
-		"赤铁矿冶铁",
-		"投入赤铁矿 x1 冶炼金属铁 (存量: %d)" % hematite_cnt,
-		get_item_icon("hematite"),
-		("可投入" if can_smelt_iron else ("无就近熔炉" if current_nearby_furnace == null else "缺少赤铁矿")),
-		can_smelt_iron
-	)
-	if can_smelt_iron:
-		iron_card.pressed.connect(func():
-			_on_btn_add_hematite_pressed()
-			_populate_drawer(CategoryTab.PRODUCTION)
-		)
-	
-	# 4. 工业反应塔蓝图自动化
-	var bp_count = GameState.unlocked_blueprints.size()
-	var bp_card = _create_action_card(
-		"反应塔自动化调度",
-		"已解锁 %d 项工艺流转芯片蓝图" % bp_count,
-		get_item_icon("blueprint"),
-		"蓝图库",
-		true
-	)
-
 # --- 5. 行囊分类细项 ---
 func _add_inventory_subitems() -> void:
 	if GameState.inventory.items.is_empty():
@@ -708,7 +618,7 @@ func _apply_scheme3_styling() -> void:
 	
 	# 底栏按钮悬停与激活态 (高对比冷灰极简深色文字与图标)
 	var dock_accent = ThemeStyler.get_era_accent(GameState.current_era)
-	var tab_buttons = [btn_tab_lab, btn_tab_tech, btn_tab_craft, btn_tab_build, btn_tab_production, btn_tab_inventory]
+	var tab_buttons = [btn_tab_lab, btn_tab_tech, btn_tab_craft, btn_tab_build, btn_tab_inventory]
 	for btn in tab_buttons:
 		if btn:
 			var btn_norm = StyleBoxFlat.new()
@@ -954,63 +864,52 @@ func _is_world_placing() -> bool:
 	return w != null and "is_placing_structure" in w and w.is_placing_structure
 
 func _unhandled_input(event: InputEvent) -> void:
-	# 输入层级：建造选址 > 抽屉 > 弹窗 > 暂停菜单。选址模式下 ESC / 右键由 world 处理
+	# 输入层级 (由上到下，每次只处理一层)：
+	#   建造选址 (world 处理) > 弹窗栈最上层 (弹窗自身 _input 处理) > 抽屉 / 熔炉面板 > 暂停菜单
+	# 有弹窗打开时功能热键一律不响应，避免在弹窗上方再叠一个弹窗
 	if _is_world_placing():
 		return
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-		if action_drawer.visible:
-			_close_drawer()
+	var right_click = event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed
+	var key = event is InputEventKey and event.pressed and not event.echo
+	if not right_click and not key:
+		return
+	if right_click or (key and event.keycode == KEY_ESCAPE):
+		if ModalStack.close_top() or _close_side_panels():
 			get_viewport().set_input_as_handled()
-			return
-		if _has_any_modal_open():
-			_close_all_modals()
+		elif key:
+			pause_menu.open()
 			get_viewport().set_input_as_handled()
-			return
-		
-	if event is InputEventKey and event.pressed and not event.echo:
-		# 暂停菜单打开时只响应 ESC
-		if pause_menu.visible and event.keycode != KEY_ESCAPE:
-			return
-		if event.keycode == KEY_L:
-			_toggle_category(CategoryTab.LAB)
-		elif event.keycode == KEY_K:
-			tech_modal.toggle()
-		elif event.keycode == KEY_T:
-			_toggle_category(CategoryTab.CRAFT)
-		elif event.keycode == KEY_C:
-			_toggle_category(CategoryTab.BUILD)
-		elif event.keycode == KEY_R:
-			_toggle_category(CategoryTab.PRODUCTION)
-		elif event.keycode == KEY_B:
-			_toggle_category(CategoryTab.INVENTORY)
-		elif event.keycode == KEY_P:
-			periodic_modal.toggle()
-		elif event.keycode == KEY_F5:
-			save_load_modal.open(0, get_parent())
-		elif event.keycode == KEY_F9:
-			save_load_modal.open(1, get_parent())
-		elif event.keycode == KEY_O:
-			settings_modal.open()
-		elif event.keycode == KEY_ESCAPE:
-			if action_drawer.visible:
-				_close_drawer()
-			else:
-				_close_all_modals()
+		return
+	if not ModalStack.is_empty():
+		return
+	var handled = true
+	match event.keycode:
+		KEY_L: _toggle_category(CategoryTab.LAB)
+		KEY_K: _toggle_category(CategoryTab.TECH)
+		KEY_T: _toggle_category(CategoryTab.CRAFT)
+		KEY_C: _toggle_category(CategoryTab.BUILD)
+		KEY_B: _toggle_category(CategoryTab.INVENTORY)
+		KEY_P: periodic_modal.open()
+		KEY_F5: save_load_modal.open(0, get_parent())
+		KEY_F9: save_load_modal.open(1, get_parent())
+		KEY_O: settings_modal.open()
+		_: handled = false
+	if handled:
+		get_viewport().set_input_as_handled()
+
+# 关闭底部抽屉与熔炉面板 (非模态的侧边面板)；有面板被关闭时返回 true
+func _close_side_panels() -> bool:
+	var closed = false
+	if action_drawer.visible:
+		_close_drawer()
+		closed = true
+	if furnace_panel.visible:
+		hide_furnace_ui()
+		closed = true
+	return closed
 
 func _has_any_modal_open() -> bool:
-	return periodic_modal.visible or lab_modal.visible or tech_modal.visible or furnace_panel.visible or save_load_modal.visible or settings_modal.visible or pause_menu.visible or inventory_modal.visible
-
-func _close_all_modals() -> void:
-	var closed_any = false
-	if periodic_modal.visible: periodic_modal.visible = false; closed_any = true
-	if lab_modal.visible: lab_modal.visible = false; closed_any = true
-	if tech_modal.visible: tech_modal.visible = false; closed_any = true
-	if inventory_modal.visible: inventory_modal.close(); closed_any = true
-	if furnace_panel.visible: furnace_panel.visible = false; closed_any = true
-	if save_load_modal.visible: save_load_modal.close(); closed_any = true
-	if settings_modal.visible: settings_modal.close(); closed_any = true
-	if not closed_any:
-		pause_menu.toggle()
+	return not ModalStack.is_empty() or furnace_panel.visible
 
 var _furnace_info_timer: float = 0.0
 

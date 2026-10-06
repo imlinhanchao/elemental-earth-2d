@@ -60,6 +60,7 @@ func _init() -> void:
 	z_index = 100
 
 func _ready() -> void:
+	ModalStack.track(self)
 	set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_build_ui()
 
@@ -254,14 +255,14 @@ func _build_ui() -> void:
 	main_vbox.add_child(btn_hbox)
 
 	btn_view_pt = Button.new()
-	btn_view_pt.text = "查阅元素周期表 [P]"
+	btn_view_pt.text = "查看周期表 [P]"
 	btn_view_pt.custom_minimum_size = Vector2(170, 38)
 	btn_view_pt.add_theme_font_size_override("font_size", 13)
 	btn_view_pt.pressed.connect(_on_view_pt_pressed)
 	btn_hbox.add_child(btn_view_pt)
 
 	btn_confirm = Button.new()
-	btn_confirm.text = "✔ 收录入科学图谱 [空格/ESC]"
+	btn_confirm.text = "收录 [空格]"
 	btn_confirm.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	btn_confirm.custom_minimum_size = Vector2(0, 38)
 	btn_confirm.add_theme_font_size_override("font_size", 13)
@@ -328,7 +329,7 @@ func _on_view_pt_pressed() -> void:
 	open_periodic_table_requested.emit()
 
 func _input(event: InputEvent) -> void:
-	if not visible:
+	if not visible or not ModalStack.is_top(self):
 		return
 	if event is InputEventKey and event.pressed:
 		if event.keycode == KEY_ESCAPE or event.keycode == KEY_SPACE or event.keycode == KEY_ENTER:

@@ -7,6 +7,7 @@ extends Control
 @onready var btn_close = $CenterPanel/VBox/Header/HBox/BtnClose
 
 func _ready() -> void:
+	ModalStack.track(self)
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	var p_box = ThemeStyler.create_card_box(12, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER)
@@ -41,7 +42,7 @@ func toggle() -> void:
 		open()
 
 func _input(event: InputEvent) -> void:
-	if not visible:
+	if not visible or not ModalStack.is_top(self):
 		return
 		
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
