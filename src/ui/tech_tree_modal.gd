@@ -1,11 +1,12 @@
 # tech_tree_modal.gd
-# 缺氧 (Oxygen Not Included) 风格紧凑型科技树节点星图
-# 紧凑高雅节点卡片 (190x74)、自由画布拖拽平移、平滑三次贝塞尔光晕连线、快捷梯队跳跃
+# 科技树：卡片位置由 tech_tree_layout.gd 按前置关系自动分层排布 (减少连线交叉、跨列连线走卡片间空隙)。
+# 卡片右上角用时代色标出所属时代；悬停卡片时高亮它的前置与后续连线，其余连线淡出。
 extends Control
 
 const ThemeStyler = preload("res://src/ui/theme_styler.gd")
 const DataDB = preload("res://src/core/data_db.gd")
 const ItemIconManager = preload("res://src/ui/item_icon_manager.gd")
+const TechTreeLayout = preload("res://src/ui/tech_tree_layout.gd")
 
 @onready var btn_close = $CenterPanel/VBox/Header/HBox/BtnClose
 @onready var btn_reset_view = $CenterPanel/VBox/Header/HBox/BtnResetView
@@ -18,48 +19,12 @@ const ItemIconManager = preload("res://src/ui/item_icon_manager.gd")
 @onready var headers_layer = $CenterPanel/VBox/Body/Scroll/CanvasContainer/HeadersLayer
 @onready var nodes_layer = $CenterPanel/VBox/Body/Scroll/CanvasContainer/NodesLayer
 
-# 9 大梯队紧凑名称
-const TIER_TITLES: Array[String] = [
-	"T1 初始石器",
-	"T2 筑石耐火",
-	"T3 古典建筑",
-	"T4 合金机械",
-	"T5 物理革新",
-	"T6 工业连续流",
-	"T7 现代能源",
-	"T8 前沿宇航",
-	"T9 星际推进"
-]
-
-# 紧凑型几何规格 (相比原先大幅压缩 50% 体积，使全局视野一览无余)
-const CARD_WIDTH: float = 190.0
-const CARD_HEIGHT: float = 74.0
-const TIER_START_X: float = 40.0
-const TIER_X_SPACING: float = 250.0
-const ROW_START_Y: float = 55.0
-const ROW_Y_SPACING: float = 95.0
-
-# 科技专属领域行轨道映射表 (精心调优，实现零空间碰撞且流向顺畅)
-const TRACK_MAP: Dictionary = {
-	"stone_tool_crafting": 0, "stone_masonry": 0, "rammed_earth_technology": 0, "roman_architecture": 1, "steel_construction": 0,
-	"wood_processing": 2, "bark_processing": 3, "sifting_technology": 2, "tenon_mortise_tech": 2,
-	"pottery": 4, "refractory_materials": 3, "bronze_tool_crafting": 4,
-	"high_temp_furnace": 3, "mold_making": 5, "iron_tool_crafting": 4,
-	"brass_tool_crafting": 4, "manganese_alloy_smithing": 3,
-	"titanium_alloy_smithing": 3, "chrome_alloy_smithing": 3,
-	"fire_starting": 6, "explosives": 6, "high_explosive_tech": 6, "detonation_tech": 5,
-	"gas_collection": 5, "glassworking": 4, "high_pressure_tech": 2,
-	"advanced_chemical_equipment": 2, "crystallization_tech": 1, "production_tech": 4,
-	"gas_liquefaction": 2,
-	"electrochemistry": 5, "nickel_cadmium_battery_tech": 5, "lithium_battery_tech": 6,
-	"solar_cell_manufacturing": 4,
-	"precision_machinery": 1, "nuclear_physics": 0,
-	"nuclear_reactor_tech": 0, "particle_accelerator_tech": 1, "magnesium_aluminum_alloying": 3,
-	"jet_propulsion_tech": 2
-}
+const CARD_WIDTH: float = TechTreeLayout.CARD_W
+const CARD_HEIGHT: float = TechTreeLayout.CARD_H
 
 var tech_positions: Dictionary = {} # key -> Vector2
-var tech_tiers: Dictionary = {}    # key -> int (tier 0..8)
+var tech_routes: Dictionary = {}   # "子|父" -> 跨列连线途经点
+var _hover_key: String = ""       # 鼠标悬停的科技，用于高亮相关连线
 var tech_card_nodes: Dictionary = {} # key -> PanelContainer
 
 # 画布鼠标拖拽平移状态
@@ -100,99 +65,47 @@ func _ensure_built() -> void:
 	if _built:
 		return
 	_built = true
-	_compute_topological_tiers()
+	_compute_layout()
 	_setup_era_jump_buttons()
 	_build_tech_tree_graph()
 
-func _compute_topological_tiers() -> void:
-	tech_tiers.clear()
-	tech_positions.clear()
-	
-	var techs = DataDB.techs
-	for k in techs.keys():
-		var tier = _calc_tech_tier(k, techs)
-		tech_tiers[k] = tier
-		var row = int(TRACK_MAP.get(k, 0))
-		var pos = Vector2(TIER_START_X + tier * TIER_X_SPACING, ROW_START_Y + row * ROW_Y_SPACING)
-		tech_positions[k] = pos
+func _compute_layout() -> void:
+	var layout = TechTreeLayout.compute(DataDB.techs)
+	tech_positions = layout["positions"]
+	tech_routes = layout["routes"]
+	canvas.custom_minimum_size = layout["size"]
 
-func _calc_tech_tier(key: String, tech_dict: Dictionary, visited: Dictionary = {}) -> int:
-	if not tech_dict.has(key):
-		return 0
-	if visited.has(key):
-		return 0
-	visited[key] = true
-	var tech = tech_dict[key]
-	var reqs = tech.get("required_techs", tech.get("prerequisites", []))
-	if reqs.is_empty():
-		return 0
-	var max_d = 0
-	for r in reqs:
-		var d = _calc_tech_tier(r, tech_dict, visited.duplicate())
-		if d > max_d:
-			max_d = d
-	return max_d + 1
-
+# 时代跳转：滚动到该时代最靠左的科技
 func _setup_era_jump_buttons() -> void:
 	for child in era_filter_container.get_children():
 		child.queue_free()
-		
-	var jump_data = [
-		{"name": "初始石器", "tier": 0},
-		{"name": "筑石前置", "tier": 1},
-		{"name": "古典建筑", "tier": 2},
-		{"name": "合金机械", "tier": 3},
-		{"name": "物理革新", "tier": 4},
-		{"name": "工业连续流", "tier": 5},
-		{"name": "现代能源", "tier": 6},
-		{"name": "前沿宇航", "tier": 7},
-		{"name": "星际推进", "tier": 8}
-	]
-	
-	for item in jump_data:
+	var era_x := {}
+	for k in tech_positions.keys():
+		var era = DataDB.get_tech_era(k)
+		era_x[era] = min(float(era_x.get(era, INF)), tech_positions[k].x)
+	var eras = era_x.keys()
+	eras.sort()
+	for era in eras:
 		var btn = Button.new()
-		btn.text = item["name"]
+		btn.text = GameState.ERA_NAMES[era] if era < GameState.ERA_NAMES.size() else "时代 %d" % era
 		btn.custom_minimum_size = Vector2(88, 26)
-		btn.add_theme_font_size_override("font_size", 12)
-		var t_idx = int(item["tier"])
+		btn.add_theme_font_size_override("font_size", ThemeStyler.FONT_CAPTION)
+		btn.add_theme_color_override("font_color", ThemeStyler.get_era_accent(era))
+		var target_x = max(0, int(era_x[era] - 24))
 		btn.pressed.connect(func():
-			var target_x = max(0, int(TIER_START_X + t_idx * TIER_X_SPACING - 30))
 			var tween = create_tween()
 			tween.tween_property(scroll, "scroll_horizontal", target_x, 0.35).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		)
 		era_filter_container.add_child(btn)
 
 func _build_tech_tree_graph() -> void:
-	# 1. 构建列标题指示牌 (HeadersLayer)
 	for child in headers_layer.get_children():
 		child.queue_free()
 	for child in nodes_layer.get_children():
 		child.queue_free()
 	tech_card_nodes.clear()
 	
-	for tier in range(TIER_TITLES.size()):
-		var header_panel = PanelContainer.new()
-		header_panel.custom_minimum_size = Vector2(CARD_WIDTH, 24)
-		
-		var h_style = StyleBoxFlat.new()
-		h_style.bg_color = ThemeStyler.adapt(Color(0.80, 0.86, 0.93, 0.85))
-		h_style.border_color = ThemeStyler.adapt(Color(0.22, 0.40, 0.62, 0.80))
-		h_style.border_width_bottom = 2
-		h_style.corner_radius_top_left = 3
-		h_style.corner_radius_top_right = 3
-		header_panel.add_theme_stylebox_override("panel", h_style)
-		
-		var lbl = Label.new()
-		lbl.text = TIER_TITLES[tier]
-		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		lbl.add_theme_font_size_override("font_size", 12)
-		lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
-		header_panel.add_child(lbl)
-		headers_layer.add_child(header_panel)
-		header_panel.position = Vector2(TIER_START_X + tier * TIER_X_SPACING, 15)
-		
-	# 2. 生成 40 项紧凑科技卡片节点
+	# 生成科技卡片节点
 	for tech in DataDB.techs.values():
 		var k = str(tech.get("key", ""))
 		if not tech_positions.has(k):
@@ -205,7 +118,7 @@ func _build_tech_tree_graph() -> void:
 func _create_oni_tech_card(tech: Dictionary) -> PanelContainer:
 	var tech_key = str(tech.get("key", ""))
 	var tech_name = str(tech.get("name", tech_key))
-	var t_tier = int(tech_tiers.get(tech_key, 0))
+	var t_era = DataDB.get_tech_era(tech_key)
 	
 	var card = PanelContainer.new()
 	card.custom_minimum_size = Vector2(CARD_WIDTH, CARD_HEIGHT)
@@ -235,11 +148,12 @@ func _create_oni_tech_card(tech: Dictionary) -> PanelContainer:
 	title_lbl.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.15, 0.14, 0.13)))
 	top_hbox.add_child(title_lbl)
 	
-	var tier_badge = Label.new()
-	tier_badge.text = "T%d" % (t_tier + 1)
-	tier_badge.add_theme_font_size_override("font_size", 12)
-	tier_badge.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.25, 0.46, 0.62)))
-	top_hbox.add_child(tier_badge)
+	var era_badge = Label.new()
+	var era_name = GameState.ERA_NAMES[t_era] if t_era < GameState.ERA_NAMES.size() else ""
+	era_badge.text = era_name.trim_suffix("时代")
+	era_badge.add_theme_font_size_override("font_size", ThemeStyler.FONT_CAPTION)
+	era_badge.add_theme_color_override("font_color", ThemeStyler.get_era_accent(t_era))
+	top_hbox.add_child(era_badge)
 	
 	# 中间行: 消耗材料/前置/状态提示
 	var cost_label = Label.new()
@@ -384,55 +298,91 @@ func _on_tech_card_action(tech_key: String, _tech: Dictionary) -> void:
 	if GameState.research_tech(tech_key):
 		_refresh_all()
 
-# 缺氧连线绘制系统: 从前置节点右侧针脚平滑弯曲连接至后继节点左侧针脚
+# 悬停检测按卡片矩形判断 (卡片内的按钮会让 mouse_exited 提前触发)
+func _process(_delta: float) -> void:
+	if not visible or not _built:
+		return
+	var m = canvas.get_local_mouse_position()
+	var key := ""
+	if scroll.get_global_rect().has_point(get_global_mouse_position()):
+		for k in tech_positions.keys():
+			if Rect2(tech_positions[k], Vector2(CARD_WIDTH, CARD_HEIGHT)).has_point(m):
+				key = k
+				break
+	_set_hover(key)
+
+func _set_hover(key: String) -> void:
+	if _hover_key == key:
+		return
+	_hover_key = key
+	lines_layer.queue_redraw()
+
+# 连线：从前置卡片右侧中点到后续卡片左侧中点。跨多列时经过布局算出的途经点，
+# 在列中的直线段穿过卡片之间的空隙，列间用三次贝塞尔平滑过渡。
 func _draw_connecting_lines(canvas_ctrl: Control) -> void:
-	for child_key in DataDB.techs.keys():
-		if not tech_positions.has(child_key):
-			continue
-		var tech = DataDB.techs[child_key]
-		var req_techs = tech.get("required_techs", tech.get("prerequisites", []))
-		var c_pos = tech_positions[child_key]
-		var is_child_done = GameState.researched_techs.has(child_key)
-		
-		var pin_in = c_pos + Vector2(0, CARD_HEIGHT * 0.5)
-		
-		for parent_key in req_techs:
-			if not tech_positions.has(parent_key):
+	var col_done = ThemeStyler.COLOR_SUCCESS
+	var col_ready = ThemeStyler.COLOR_ACCENT
+	var col_locked = ThemeStyler.adapt(Color(0.54, 0.50, 0.44, 0.45))
+	var hovering = _hover_key != ""
+	# 先画普通连线，再画高亮连线，保证高亮的在上层
+	for pass_idx in range(2):
+		for child_key in DataDB.techs.keys():
+			if not tech_positions.has(child_key):
 				continue
-			var p_pos = tech_positions[parent_key]
-			var is_parent_done = GameState.researched_techs.has(parent_key)
-			var pin_out = p_pos + Vector2(CARD_WIDTH, CARD_HEIGHT * 0.5)
-			
-			# 生成三次贝塞尔平滑 S 曲线采样点
-			var points = PackedVector2Array()
-			var steps = 20
-			var dx = pin_in.x - pin_out.x
-			var p0 = pin_out
-			var p1 = pin_out + Vector2(dx * 0.5, 0)
-			var p2 = pin_in - Vector2(dx * 0.5, 0)
-			var p3 = pin_in
-			
-			for s in range(steps + 1):
-				var t = float(s) / float(steps)
-				var u = 1.0 - t
-				var pt = (u * u * u) * p0 + (3.0 * u * u * t) * p1 + (3.0 * u * t * t) * p2 + (t * t * t) * p3
-				points.append(pt)
-				
-			if is_child_done and is_parent_done:
-				# 双方均已完成: 璀璨电青色能量光晕
-				canvas_ctrl.draw_polyline(points, ThemeStyler.adapt(Color(0.25, 0.50, 0.27, 0.22)), 4.5)
-				canvas_ctrl.draw_polyline(points, ThemeStyler.COLOR_SUCCESS, 1.8)
-				canvas_ctrl.draw_circle(pin_out, 2.5, ThemeStyler.COLOR_SUCCESS)
-				canvas_ctrl.draw_circle(pin_in, 2.5, ThemeStyler.COLOR_SUCCESS)
-			elif is_parent_done:
-				# 前置已满足可研发: 金色脉动能量流
-				canvas_ctrl.draw_polyline(points, ThemeStyler.adapt(Color(0.69, 0.41, 0.16, 0.20)), 3.5)
-				canvas_ctrl.draw_polyline(points, ThemeStyler.adapt(Color(0.69, 0.41, 0.16, 0.90)), 1.5)
-				canvas_ctrl.draw_circle(pin_out, 2.0, ThemeStyler.adapt(Color(0.69, 0.41, 0.16)))
-				canvas_ctrl.draw_circle(pin_in, 2.0, ThemeStyler.adapt(Color(0.69, 0.41, 0.16)))
-			else:
-				# 未解锁路径: 幽暗隐秘灰色虚线
-				canvas_ctrl.draw_polyline(points, ThemeStyler.adapt(Color(0.54, 0.50, 0.44, 0.45)), 1.2)
+			var tech = DataDB.techs[child_key]
+			var is_child_done = GameState.researched_techs.has(child_key)
+			var pin_in = tech_positions[child_key] + Vector2(0, CARD_HEIGHT * 0.5)
+			for parent_key in tech.get("required_techs", []):
+				if not tech_positions.has(parent_key):
+					continue
+				var related = hovering and (child_key == _hover_key or parent_key == _hover_key)
+				if (pass_idx == 1) != related:
+					continue
+				var is_parent_done = GameState.researched_techs.has(parent_key)
+				var pin_out = tech_positions[parent_key] + Vector2(CARD_WIDTH, CARD_HEIGHT * 0.5)
+				var pts = _route_points(pin_out, tech_routes.get("%s|%s" % [child_key, parent_key], PackedVector2Array()), pin_in)
+				var col: Color
+				var width: float
+				if is_child_done and is_parent_done:
+					col = col_done; width = 2.0
+				elif is_parent_done:
+					col = col_ready; width = 2.0
+				else:
+					col = col_locked; width = 1.2
+				if related:
+					width += 1.5
+					if col == col_locked:
+						col = ThemeStyler.COLOR_TEXT_SECONDARY
+				elif hovering:
+					col.a *= 0.25
+				canvas_ctrl.draw_polyline(pts, col, width, true)
+				if related or is_parent_done:
+					canvas_ctrl.draw_circle(pin_out, width + 0.5, col)
+					canvas_ctrl.draw_circle(pin_in, width + 0.5, col)
+
+# 把「针脚 → 途经点对 → 针脚」连成折线：途经点对之间是水平直线，其余段用贝塞尔曲线
+func _route_points(start: Vector2, via: PackedVector2Array, end: Vector2) -> PackedVector2Array:
+	var anchors = PackedVector2Array([start])
+	anchors.append_array(via)
+	anchors.append(end)
+	var pts = PackedVector2Array()
+	for i in range(anchors.size() - 1):
+		var a = anchors[i]
+		var b = anchors[i + 1]
+		if i % 2 == 1:
+			# 列内的水平直线段
+			if pts.is_empty(): pts.append(a)
+			pts.append(b)
+			continue
+		var dx = (b.x - a.x) * 0.5
+		var steps = 16
+		for s in range(steps + 1):
+			if s == 0 and not pts.is_empty():
+				continue
+			var t = float(s) / steps
+			var u = 1.0 - t
+			pts.append(u * u * u * a + 3.0 * u * u * t * (a + Vector2(dx, 0)) + 3.0 * u * t * t * (b - Vector2(dx, 0)) + t * t * t * b)
+	return pts
 
 # 画布自由平移交互
 func _on_scroll_gui_input(event: InputEvent) -> void:

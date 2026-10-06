@@ -103,6 +103,30 @@ func _initialize() -> void:
 	sim.tick(0.016)
 	_check(sim.active_task.is_empty(), "0.3s 作业在到期后的下一帧完成")
 
+	# 10. 科技树布局：卡片不重叠、连线从左到右、跨列连线的途经点不压在卡片上
+	var Layout = load("res://src/ui/tech_tree_layout.gd")
+	var lay = Layout.compute(DataDB.techs)
+	var rects := {}
+	for k in lay.positions.keys():
+		rects[k] = Rect2(lay.positions[k], Vector2(Layout.CARD_W, Layout.CARD_H))
+	var overlap := 0
+	var ks = rects.keys()
+	for i in ks.size():
+		for j in range(i + 1, ks.size()):
+			if rects[ks[i]].intersects(rects[ks[j]]): overlap += 1
+	_check(rects.size() == DataDB.techs.size() and overlap == 0, "科技树 %d 张卡片互不重叠" % rects.size())
+	var backward := 0
+	var through := 0
+	for k in DataDB.techs.keys():
+		for p in DataDB.techs[k].get("required_techs", []):
+			if lay.layers[p] >= lay.layers[k]: backward += 1
+			for pt in lay.routes.get("%s|%s" % [k, p], PackedVector2Array()):
+				for r in rects.values():
+					if r.grow(-1.0).has_point(pt + Vector2(1, 0)): through += 1
+	_check(backward == 0, "所有前置连线都从左列指向右列")
+	_check(through == 0, "跨列连线不穿过卡片")
+	_check(int(lay.crossings) <= 40, "连线交叉数 %d 不超过 40" % lay.crossings)
+
 	if _failed == 0:
 		print("🎉 进程死锁修复测试全部通过")
 		quit(0)
