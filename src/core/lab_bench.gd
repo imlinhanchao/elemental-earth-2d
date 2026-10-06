@@ -28,12 +28,13 @@ const STICK_FUEL := {"burn_time": 10.0, "max_temp": 873.0}
 
 enum Group { NORMAL, FIRE, POWER }
 
-signal reacted(formula_key: String, products: Array)
+signal reacted(formula_key: String, products: Array, lost: Array)
 
 var sim # Simulation (不写类型，避免循环引用)
 var vessel: MixtureBuffer
 
 var operation: String = ""
+var chain_ops: Array = []       # 已勾选的追加操作 (集气、冷凝)
 var fire_lit: bool = false
 var fuel_queue: Array = []      # 已投入、尚未开始燃烧的燃料
 var cur_fuel: String = ""       # 正在燃烧的燃料
@@ -53,6 +54,7 @@ func _init(p_sim, p_vessel: MixtureBuffer) -> void:
 
 func reset() -> void:
 	operation = ""
+	chain_ops.clear()
 	fire_lit = false
 	fuel_queue.clear()
 	cur_fuel = ""
@@ -64,6 +66,7 @@ func reset() -> void:
 	seen_items.clear()
 	produced.clear()
 	vessel.operations = []
+	vessel.chain_ops = []
 	vessel.applied_voltage = 0.0
 
 # ---------------------------------------------------------------- 操作
@@ -82,7 +85,7 @@ static func listed_operations() -> Array:
 		used[ChemistrySolver.formula_operation(f)] = true
 	var ops: Array = []
 	for op in DataDB.labs.values():
-		if used.has(op["key"]) and not op.get("is_chain", false):
+		if used.has(op["key"]) and not op.get("is_chain", false) and not ChemistrySolver.CHAIN_OPS.has(op["key"]):
 			ops.append(op)
 	# 按组稳定排序 (数据表内顺序保持不变)
 	var sorted: Array = []
@@ -91,6 +94,18 @@ static func listed_operations() -> Array:
 			if op_group(op) == g:
 				sorted.append(op)
 	return sorted
+
+# 追加操作 (可与主操作同时进行)：集气、冷凝
+static func listed_chain_operations() -> Array:
+	var ops: Array = []
+	for k in ChemistrySolver.CHAIN_OPS:
+		var op = DataDB.get_lab_op(k)
+		if not op.is_empty():
+			ops.append(op)
+	return ops
+
+static func unlock_era(key: String) -> int:
+	return int(DataDB.get_lab_op(key).get("unlock_era", 0))
 
 # 炉体内能完成的操作：加热类 (鼓风高炉另可吹炼)
 static func furnace_operations(furnace_type: String) -> Array:
@@ -108,6 +123,10 @@ func op_lock_reason(key: String) -> String:
 	var op = DataDB.get_lab_op(key)
 	if op.is_empty():
 		return "未知操作"
+	var era = unlock_era(key)
+	if era > sim.current_era:
+		var names = sim.ERA_NAMES
+		return "%s解锁" % (names[era] if era < names.size() else "后续时代")
 	for t in op.get("required_techs", []):
 		if not sim.researched_techs.has(t):
 			return "需要研发%s" % DataDB.get_tech(t).get("name", t)
@@ -122,7 +141,8 @@ func op_lock_reason(key: String) -> String:
 				heatable = true
 			if sim.inventory.get_count(k) > 0:
 				owned = true
-		if not heatable and not owned:
+		# 追加操作的器皿 (集气瓶、冷凝用陶罐) 必须持有；主操作的可加热器皿交给配方判断
+		if (not heatable or ChemistrySolver.CHAIN_OPS.has(key)) and not owned:
 			return "需要%s" % DataDB.get_item(alts[0]).get("name", alts[0])
 	return ""
 
@@ -135,6 +155,22 @@ func set_operation(key: String) -> bool:
 	vessel.reaction_timer = 0.0
 	if fire_lit and not needs_fire():
 		fire_lit = false
+	return true
+
+func toggle_chain(key: String) -> bool:
+	if chain_ops.has(key):
+		chain_ops.erase(key)
+	else:
+		var reason = op_lock_reason(key)
+		if reason != "":
+			sim.post_notice("无法%s：%s" % [DataDB.get_lab_op(key).get("name", key), reason], Color(1.0, 0.45, 0.35))
+			return false
+		# 两种集气方式只能选一种
+		for g in ChemistrySolver.GAS_CHAIN_OPS:
+			if g != key and ChemistrySolver.GAS_CHAIN_OPS.has(key):
+				chain_ops.erase(g)
+		chain_ops.append(key)
+	vessel.chain_ops = chain_ops.duplicate()
 	return true
 
 func needs_fire() -> bool:
@@ -279,7 +315,7 @@ func on_reaction(result: Dictionary) -> void:
 	var f_key = str(result.get("formula_key", ""))
 	for p in result.get("products", []):
 		produced[p] = true
-	reacted.emit(f_key, result.get("products", []))
+	reacted.emit(f_key, result.get("products", []), result.get("lost", []))
 	if f_key == "":
 		return
 	var f = DataDB.get_formula(f_key)
@@ -444,6 +480,10 @@ func prepare_from_fragment(f_key: String) -> Array:
 			missing.append(op_lock_reason(op))
 		else:
 			set_operation(op)
+	# 手稿里写到要集气或冷凝的，能做就顺手勾上
+	for c in chain_needed(f):
+		if not chain_ops.has(c) and op_lock_reason(c) == "":
+			toggle_chain(c)
 	for req in f.get("required_items", []):
 		var need = int(ceil(float(req.get("quantity", 1.0))))
 		var alts: Array = req["key"] if req["key"] is Array else [req["key"]]
@@ -464,13 +504,26 @@ func prepare_from_fragment(f_key: String) -> Array:
 			missing.append("%s ×%d" % [nm, need])
 	return missing
 
+# 配方中需要追加操作才能收集的产物对应的追加操作 (气体默认用排空气集气)
+static func chain_needed(f: Dictionary) -> Array:
+	var out: Array = []
+	for p in f.get("products", []):
+		var need = str(p.get("required_chain_operation", ""))
+		if need == "" and DataDB.get_item(str(p.get("key", ""))).get("type", []).has("gas"):
+			need = "gas_collecting_air"
+		if need in ChemistrySolver.CHAIN_OPS and not out.has(need):
+			if out.has("gas_collecting") and need == "gas_collecting_air":
+				continue
+			out.append(need)
+	return out
+
 # ---------------------------------------------------------------- 侦测卡
 
 # 当前烧瓶的状态说明。只有持有手稿的配方才会指出具体缺什么，避免直接给出答案。
 # 返回 {"state": empty|reacting|blocked|unknown|partial|inert, "text": String, "progress": float}
 func diagnose() -> Dictionary:
 	if vessel.components.is_empty():
-		return {"state": "empty", "text": "从下方选择试剂放入烧瓶"}
+		return {"state": "empty", "text": "从右侧行囊选择试剂放入烧瓶"}
 	if vessel.active_formula != "":
 		var f = DataDB.get_formula(vessel.active_formula)
 		var t = max(1.0, float(f.get("time_required", 1.0)))
@@ -541,6 +594,7 @@ func _req_present(req: Dictionary) -> bool:
 func serialize() -> Dictionary:
 	return {
 		"operation": operation,
+		"chain_ops": chain_ops.duplicate(),
 		"fire_lit": fire_lit,
 		"fuel_queue": fuel_queue.duplicate(),
 		"cur_fuel": cur_fuel,
@@ -558,6 +612,8 @@ func deserialize(d: Dictionary) -> void:
 	reset()
 	operation = str(d.get("operation", ""))
 	vessel.operations = [operation] if operation != "" else []
+	chain_ops = Array(d.get("chain_ops", []))
+	vessel.chain_ops = chain_ops.duplicate()
 	fire_lit = bool(d.get("fire_lit", false))
 	fuel_queue = Array(d.get("fuel_queue", []))
 	cur_fuel = str(d.get("cur_fuel", ""))

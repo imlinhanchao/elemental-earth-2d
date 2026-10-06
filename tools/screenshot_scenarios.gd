@@ -43,10 +43,13 @@ static func run(w: Node2D, arg_name: String) -> void:
 	elif arg_name == "--screenshot-lab":
 		# 焙烧孔雀石：放入木炭点火，侦测卡提示温度 (先登记碳，避免弹出元素发现弹窗)
 		GameState.sim.discovered_elements.append(6)
-		for k in ["wood", "charcoal", "malachite", "flint", "stone", "stick"]:
+		GameState.sim.current_era = 2
+		GameState.sim.researched_techs.append("gas_collection")
+		for k in ["wood", "charcoal", "malachite", "flint", "stone", "stick", "gas_bottle", "clay_pot"]:
 			GameState.inventory.add_item(k, 5)
 		GameState.lab.fragments.append("copper_smelting")
 		GameState.lab.set_operation("roasting")
+		GameState.lab.toggle_chain("gas_collecting_air")
 		w.hud.lab_modal.open()
 		w.hud.lab_modal.add_reagent("malachite", 1.0)
 		w.hud.lab_modal.add_reagent("charcoal", 1.0)

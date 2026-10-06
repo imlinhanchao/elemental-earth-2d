@@ -16,7 +16,9 @@
       }
     ],
     "required_techs": [],
-    "default_min_temp": 673.0
+    "default_min_temp": 673.0,
+    "unlock_era": 0,
+    "icon": "op_dry_distill"
   },
   {
     "key": "roasting",
@@ -36,14 +38,18 @@
         "use": 0.01
       }
     ],
-    "default_min_temp": 973.0
+    "default_min_temp": 973.0,
+    "unlock_era": 1,
+    "icon": "op_roast"
   },
   {
     "name": "搅拌",
     "key": "stirring",
     "description": "将物体混合在一起，以促进化学反应或物理变化。",
     "time_required": 10,
-    "requires_burning": false
+    "requires_burning": false,
+    "unlock_era": 0,
+    "icon": "op_stir"
   },
   {
     "key": "condensation",
@@ -60,14 +66,19 @@
         "quantity": 1,
         "use": 0.1
       }
-    ]
+    ],
+    "is_chain": true,
+    "unlock_era": 1,
+    "icon": "op_condense"
   },
   {
     "name": "过滤",
     "key": "filtering",
     "description": "将混合物通过过滤器分离成不同的组分。",
     "time_required": 10,
-    "requires_burning": false
+    "requires_burning": false,
+    "unlock_era": 4,
+    "icon": "op_filter"
   },
   {
     "name": "蒸馏",
@@ -75,21 +86,27 @@
     "description": "将混合物加热到沸点，收集蒸汽并冷凝成液体，以分离不同的组分。",
     "time_required": 30,
     "requires_burning": true,
-    "default_min_temp": 393.0
+    "default_min_temp": 393.0,
+    "unlock_era": 1,
+    "icon": "op_distill"
   },
   {
     "name": "压榨",
     "key": "pressing",
     "description": "对物体施加压力，以促进化学反应或物理变化。",
     "time_required": 15,
-    "requires_burning": false
+    "requires_burning": false,
+    "unlock_era": 0,
+    "icon": "op_grind"
   },
   {
     "name": "碾磨",
     "key": "grinding",
     "description": "将物体碾磨成粉末，以促进化学反应或物理变化。",
     "time_required": 20,
-    "requires_burning": false
+    "requires_burning": false,
+    "unlock_era": 1,
+    "icon": "op_grind"
   },
   {
     "key": "gas_collecting",
@@ -112,7 +129,9 @@
       "gas_collection"
     ],
     "is_chain": true,
-    "milestone": "collect_gas"
+    "milestone": "collect_gas",
+    "unlock_era": 2,
+    "icon": "op_gas"
   },
   {
     "name": "过筛",
@@ -130,7 +149,9 @@
       "sifting_technology"
     ],
     "requires_burning": false,
-    "is_chain": false
+    "is_chain": false,
+    "unlock_era": 2,
+    "icon": "op_sift"
   },
   {
     "name": "吹炼",
@@ -145,14 +166,18 @@
       }
     ],
     "requires_burning": true,
-    "default_min_temp": 1473.0
+    "default_min_temp": 1473.0,
+    "unlock_era": 1,
+    "icon": "op_blow"
   },
   {
     "name": "溶解",
     "key": "dissolving",
     "description": "将物体溶解在液体中，以促进化学反应或物理变化。",
     "time_required": 15,
-    "requires_burning": false
+    "requires_burning": false,
+    "unlock_era": 1,
+    "icon": "op_dissolve"
   },
   {
     "name": "电解",
@@ -166,7 +191,9 @@
     "requires_electricity": true,
     "is_chain": false,
     "milestone": "first_electrolysis",
-    "default_min_voltage": 2.0
+    "default_min_voltage": 2.0,
+    "unlock_era": 3,
+    "icon": "op_electro"
   },
   {
     "key": "gas_collecting_air",
@@ -184,7 +211,9 @@
       "gas_collection"
     ],
     "requires_burning": false,
-    "is_chain": true
+    "is_chain": true,
+    "unlock_era": 2,
+    "icon": "op_gas"
   },
   {
     "key": "evaporation",
@@ -204,7 +233,9 @@
         "use": 0.05
       }
     ],
-    "default_min_temp": 373.0
+    "default_min_temp": 373.0,
+    "unlock_era": 0,
+    "icon": "op_evaporate"
   },
   {
     "name": "熔融电解",
@@ -227,7 +258,9 @@
     "requires_burning": true,
     "requires_electricity": true,
     "default_min_temp": 1073.0,
-    "default_min_voltage": 4.0
+    "default_min_voltage": 4.0,
+    "unlock_era": 3,
+    "icon": "op_molten"
   },
   {
     "name": "加热",
@@ -236,7 +269,9 @@
     "time_required": 10,
     "requires_burning": true,
     "is_chain": false,
-    "default_min_temp": 423.0
+    "default_min_temp": 423.0,
+    "unlock_era": 0,
+    "icon": "op_heat"
   },
   {
     "name": "玻璃蒸馏",
@@ -260,7 +295,9 @@
     ],
     "requires_burning": true,
     "is_chain": false,
-    "default_min_temp": 393.0
+    "default_min_temp": 393.0,
+    "unlock_era": 2,
+    "icon": "op_distill"
   },
   {
     "key": "fractional_distillation",
@@ -283,7 +320,9 @@
     "required_techs": [
       "advanced_chemical_equipment"
     ],
-    "default_min_temp": 423.0
+    "default_min_temp": 423.0,
+    "unlock_era": 4,
+    "icon": "op_distill"
   },
   {
     "key": "fractional_crystallization",
@@ -305,7 +344,9 @@
     ],
     "required_techs": [
       "crystallization_tech"
-    ]
+    ],
+    "unlock_era": 2,
+    "icon": "op_crystal"
   },
   {
     "name": "高压反应",
@@ -323,7 +364,9 @@
       "high_pressure_tech"
     ],
     "requires_burning": true,
-    "default_min_temp": 573.0
+    "default_min_temp": 573.0,
+    "unlock_era": 2,
+    "icon": "op_pressure"
   },
   {
     "key": "precipitation",
@@ -337,7 +380,9 @@
         "use": 0.02
       }
     ],
-    "requires_burning": false
+    "requires_burning": false,
+    "unlock_era": 1,
+    "icon": "op_precip"
   },
   {
     "key": "neutron_irradiation",
@@ -355,7 +400,9 @@
     "required_techs": [
       "nuclear_reactor_tech"
     ],
-    "milestone": "first_transmutation"
+    "milestone": "first_transmutation",
+    "unlock_era": 5,
+    "icon": "op_nuclear"
   },
   {
     "key": "aging",
@@ -364,7 +411,9 @@
     "time_required": 300,
     "milestone": "first_transmutation",
     "requires_burning": false,
-    "required_techs": []
+    "required_techs": [],
+    "unlock_era": 5,
+    "icon": "op_aging"
   },
   {
     "key": "particle_acceleration",
@@ -382,6 +431,8 @@
     "required_techs": [
       "particle_accelerator_tech"
     ],
-    "milestone": "first_transmutation"
+    "milestone": "first_transmutation",
+    "unlock_era": 5,
+    "icon": "op_accel"
   }
 ]

@@ -32,6 +32,10 @@ def keys(req):
     return k if isinstance(k, list) else [k]
 
 
+# 追加操作：集气收集气体，冷凝收集蒸气 (ChemistrySolver.CHAIN_OPS)
+CHAIN_OPS = ("gas_collecting", "gas_collecting_air", "condensation")
+
+
 def parse_gd_dict(src, name):
     # 支持单行与多行两种 GDScript 字典常量写法
     m = re.search(r"const %s[^{]*\{(.*?)\}" % name, src, re.S)
@@ -80,11 +84,14 @@ def main(map_path):
         op = labs.get(op_key)
         if op is None:
             return op_key == ""
+        if int(op.get("unlock_era", 0)) > E:
+            return False
         if not all(t in researched for t in op.get("required_techs", [])):
             return False
         for req in op.get("required_item", []):
             alts = keys(req)
-            if any(isinstance(items.get(k, {}).get("attrs"), dict) and items[k]["attrs"].get("can_heat") for k in alts):
+            chain = op_key in CHAIN_OPS
+            if not chain and any(isinstance(items.get(k, {}).get("attrs"), dict) and items[k]["attrs"].get("can_heat") for k in alts):
                 continue
             if not any(k in have for k in alts):
                 return False
@@ -153,7 +160,16 @@ def main(map_path):
                     continue
                 if items_ok(f.get("required_items", [])):
                     for p in f.get("products", []):
-                        if p["key"] not in have:
+                        # 与 ChemistrySolver.product_collected 一致；炉体敞口，不收集气体
+                        need = p.get("required_chain_operation") or ""
+                        is_gas = "gas" in items.get(p["key"], {}).get("type", [])
+                        if need in CHAIN_OPS:
+                            ok_p = in_lab and op_ok(need, researched, have)
+                        elif need == "" and is_gas:
+                            ok_p = in_lab and (op_ok("gas_collecting", researched, have) or op_ok("gas_collecting_air", researched, have))
+                        else:
+                            ok_p = True
+                        if ok_p and p["key"] not in have:
                             have.add(p["key"]); changed = True
 
         def milestone_ok(m):

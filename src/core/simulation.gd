@@ -393,6 +393,7 @@ func _on_second_tick() -> void:
 		if buf.total_moles() > 0:
 			buf.available_containers = owned_containers
 			buf.operations = LabBench.furnace_operations(f.get("type", "furnace"))
+			buf.chain_ops = [] # 炉体敞口，气体逸散
 			var res = solver.solve(buf, 1.0)
 			if res["occurred"]:
 				buf.consume_substance("carbon_dioxide", 999.0)

@@ -71,6 +71,7 @@ func _initialize() -> void:
 
 	# 6. 背包中持有的器皿可满足配方容器要求 (筛子 → 筛分硅砂)
 	sim.lab_vessel.clear()
+	sim.current_era = 2
 	sim.researched_techs.append("sifting_technology")
 	sim.inventory.add_item("sieve", 1)
 	sim.lab.set_operation("sifting")
@@ -132,7 +133,11 @@ func _initialize() -> void:
 	for i in range(1200):
 		sim.tick(0.1)
 	_check(not lab.fire_lit and sim.lab_vessel.temperature < 400.0, "燃料烧完后熄火并冷却")
+	# 操作按时代解锁
+	sim.current_era = 1
+	_check(lab.op_lock_reason("electrolysis").contains("电化学时代"), "电解在电化学时代解锁 (%s)" % lab.op_lock_reason("electrolysis"))
 	# 电解：没有电池不反应，接入伏打电池后电解水
+	sim.current_era = 3
 	sim.researched_techs.append("electrochemistry")
 	_check(lab.set_operation("electrolysis"), "研发电化学后可以电解")
 	sim.lab_vessel.clear()
@@ -143,7 +148,22 @@ func _initialize() -> void:
 	_check(lab.connect_power("battery"), "接入伏打电池")
 	for i in range(30):
 		sim.tick(0.1)
-	_check(sim.lab_vessel.has_substance("oxygen"), "通电后电解水产氧")
+	_check(not sim.lab_vessel.has_substance("oxygen") and not sim.lab_vessel.has_substance("water"), "不集气时电解产生的氢气、氧气逸散")
+	# 追加操作：排水集气需要集气技术、集气瓶和水
+	_check(not lab.toggle_chain("gas_collecting"), "没有集气技术不能集气")
+	sim.researched_techs.append("gas_collection")
+	sim.inventory.add_item("gas_bottle", 1)
+	sim.inventory.add_item("water", 1)
+	_check(lab.toggle_chain("gas_collecting"), "研发集气技术并持有集气瓶后可勾选排水集气")
+	_check(lab.toggle_chain("gas_collecting_air") and lab.chain_ops == ["gas_collecting_air"], "两种集气方式只保留一种")
+	sim.lab_vessel.add_substance("water", 2.0)
+	lab.power_left = 0.0
+	sim.inventory.add_item("battery", 1)
+	lab.connect_power("battery")
+	for i in range(30):
+		sim.tick(0.1)
+	_check(sim.lab_vessel.has_substance("oxygen") and sim.lab_vessel.has_substance("hydrogen"), "勾选集气后收集到氢气和氧气")
+	lab.toggle_chain("gas_collecting_air")
 	sim.lab_vessel.clear()
 	# 手稿：研发科技得到相关手稿
 	var before = lab.fragments.size()

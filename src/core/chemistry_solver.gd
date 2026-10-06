@@ -81,6 +81,23 @@ static func formula_min_voltage(formula: Dictionary) -> float:
 		return v
 	return float(DataDB.get_lab_op(formula_operation(formula)).get("default_min_voltage", 0.0))
 
+# 能被追加操作收集的产物：集气 (排水 / 排空气) 收集气体，冷凝收集蒸气
+const CHAIN_OPS := ["gas_collecting", "gas_collecting_air", "condensation"]
+const GAS_CHAIN_OPS := ["gas_collecting", "gas_collecting_air"]
+
+static func product_collected(p: Dictionary, chain_ops: Array) -> bool:
+	if chain_ops.has("*"):
+		return true
+	var need = str(p.get("required_chain_operation", ""))
+	if need in CHAIN_OPS:
+		return chain_ops.has(need)
+	if need == "" and DataDB.get_item(str(p.get("key", ""))).get("type", []).has("gas"):
+		for g in GAS_CHAIN_OPS:
+			if chain_ops.has(g):
+				return true
+		return false
+	return true # 其余写在 required_chain_operation 的操作 (加热、溶解等) 视为主操作的一部分
+
 func _calculate_formula_priority(formula: Dictionary) -> float:
 	var score = 0.0
 	var min_temp = formula_min_temp(formula)
@@ -105,8 +122,9 @@ func _matches_conditions(buffer: MixtureBuffer, formula: Dictionary) -> bool:
 		return false
 
 	# 2. 操作匹配：选错操作 (如该焙烧却在搅拌) 不反应
+	# 少数配方以集气为主操作 (如一氧化氮氧化)，勾选该追加操作即可
 	var op = formula_operation(formula)
-	if op != "" and not buffer.operations.has("*") and not buffer.operations.has(op):
+	if op != "" and not buffer.operations.has("*") and not buffer.operations.has(op) and not buffer.chain_ops.has(op):
 		return false
 
 	# 3. 温度阈值检查
@@ -195,15 +213,21 @@ func _execute_formula(buffer: MixtureBuffer, formula: Dictionary, results: Dicti
 		elif k is String:
 			buffer.consume_substance(k, q_needed)
 			
-	# 2. 生成产物进 buffer
+	# 2. 生成产物进 buffer；没有对应追加操作时，气体逸散、需冷凝的产物随蒸气流失
 	var prod_list = formula.get("products", [])
 	var prod_keys: Array = []
+	var lost: Array = []
 	for p in prod_list:
 		var p_key = p.get("key", "")
 		var p_qty = float(p.get("quantity", p.get("multiple", 1.0)))
-		if p_key != "":
-			buffer.add_substance(p_key, p_qty)
-			prod_keys.append(p_key)
+		if p_key == "":
+			continue
+		if not product_collected(p, buffer.chain_ops):
+			lost.append(p_key)
+			continue
+		buffer.add_substance(p_key, p_qty)
+		prod_keys.append(p_key)
+	results["lost"] = lost
 			
 	var f_name = formula.get("name", formula.get("key", "未知反应"))
 	results["occurred"] = true

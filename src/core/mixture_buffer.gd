@@ -18,6 +18,8 @@ var reaction_timer: float = 0.0
 # 当前允许的实验操作 (labs.json 的 key)。配方的 required_actions 必须在其中才会反应。
 # ["*"] 表示不限 (测试与旧逻辑)；实验台为玩家选中的一项；炉体为炉内能做的加热类操作。
 var operations: Array = ["*"]
+# 追加操作 (集气、冷凝)：决定气体与需冷凝的产物能否收集。["*"] 表示全部收集 (测试)，[] 表示不收集
+var chain_ops: Array = ["*"]
 # 正在进行的配方 key (求解器写入，供界面显示反应进度)
 var active_formula: String = ""
 
@@ -58,4 +60,5 @@ func duplicate_buffer() -> RefCounted:
 	copy.volume = volume
 	copy.applied_voltage = applied_voltage
 	copy.operations = operations.duplicate()
+	copy.chain_ops = chain_ops.duplicate()
 	return copy
