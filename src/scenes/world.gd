@@ -233,7 +233,7 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 	var img = get_viewport().get_texture().get_image()
 	if img:
 		img.save_png("/Users/hancel/Documents/project/elemental-earth-2d/screenshot_current.png")
-		print("✅ [Screenshot] 实机渲染截图成功生成: /Users/hancel/Documents/project/elemental-earth-2d/screenshot_current.png")
+		print("[Screenshot] 实机渲染截图成功生成: /Users/hancel/Documents/project/elemental-earth-2d/screenshot_current.png")
 	get_tree().quit(0)
 
 func _generate_hex_world() -> void:
@@ -401,7 +401,7 @@ func enter_placement_mode(structure_key: String) -> void:
 	var recipe = DataDB.get_building_recipe(structure_key)
 	var b_name = recipe.get("name", structure_key)
 	hud.show_placement_mode(b_name)
-	GameState.post_notice("🔨 建造选址: 请在领地空闲地块点击安放【%s】(右键或ESC取消)" % b_name, Color(0.3, 0.9, 0.6))
+	GameState.post_notice("建造选址: 请在领地空闲地块点击安放【%s】(右键或ESC取消)" % b_name, Color(0.3, 0.9, 0.6))
 	overlay_layer.queue_redraw()
 
 func cancel_placement_mode() -> void:
@@ -416,7 +416,7 @@ func cancel_placement_mode() -> void:
 func confirm_placement(hex: Vector2i) -> void:
 	var check = get_build_validity(hex)
 	if not check.get("valid", false):
-		GameState.post_notice("❌ 无法在此建造: %s" % check.get("reason", "无效地块"), Color(1.0, 0.4, 0.4))
+		GameState.post_notice("无法在此建造: %s" % check.get("reason", "无效地块"), Color(1.0, 0.4, 0.4))
 		return
 	var key = placing_structure_key
 	is_placing_structure = false

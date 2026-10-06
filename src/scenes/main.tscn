@@ -41,7 +41,7 @@ theme_override_constants/separation = 15
 [node name="Title" type="Label" parent="HBox/LeftPanel"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
-text = "⚗️ 元素纪元 2D - 实验工坊原型"
+text = "元素纪元 2D - 实验工坊原型"
 
 [node name="ActionButtons" type="HBoxContainer" parent="HBox/LeftPanel"]
 layout_mode = 2

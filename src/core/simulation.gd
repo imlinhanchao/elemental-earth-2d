@@ -376,7 +376,7 @@ func _on_second_tick() -> void:
 						if p_int > 0:
 							inventory.add_item(p_key, p_int)
 							var iname = DataDB.get_item(p_key).get("name", p_key)
-							post_notice("✨ 熔炉炼制完成！成功收获 %s x%d，已收入背包！" % [iname, p_int], Color(0.9, 0.65, 0.2))
+							post_notice("熔炉炼制完成！成功收获 %s x%d，已收入背包！" % [iname, p_int], Color(0.9, 0.65, 0.2))
 
 	# 4. 工业反应塔结算 (共用一秒节拍)
 	for hex in built_reactors.keys():
@@ -748,12 +748,12 @@ func get_active_task_hex() -> Vector2i:
 func craft_tool(recipe_key: String) -> bool:
 	var recipe = DataDB.get_crafting_recipe(recipe_key)
 	if recipe.is_empty():
-		post_notice("❌ 未知制造配方: %s" % recipe_key, Color.RED)
+		post_notice("未知制造配方: %s" % recipe_key, Color.RED)
 		return false
 		
 	var req_items = recipe.get("required_items", [])
 	if not _has_all_ingredients(req_items):
-		post_notice("❌ 原料不足！制作【%s】失败" % recipe.get("name", recipe_key), Color.RED)
+		post_notice("原料不足！制作【%s】失败" % recipe.get("name", recipe_key), Color.RED)
 		return false
 		
 	_consume_all_ingredients(req_items)
@@ -862,10 +862,10 @@ func research_tech(tech_key: String) -> bool:
 		return false
 	var tech = DataDB.get_tech(tech_key)
 	if tech.is_empty():
-		post_notice("❌ 未知科技: %s" % tech_key, Color.RED)
+		post_notice("未知科技: %s" % tech_key, Color.RED)
 		return false
 	if not can_research_tech(tech_key):
-		post_notice("❌ 无法研发【%s】：前置科技未完成或材料不足！" % tech.get("name", tech_key), Color.RED)
+		post_notice("无法研发【%s】：前置科技未完成或材料不足！" % tech.get("name", tech_key), Color.RED)
 		return false
 		
 	var req_items = tech.get("required_items", [])
@@ -886,7 +886,7 @@ func research_tech(tech_key: String) -> bool:
 	elif tech_key == "advanced_chemical_equipment":
 		complete_milestone("unlock_advanced_chem_tools")
 		
-	post_notice("💡 科技突破！成功研发【%s】！" % tech.get("name", tech_key), Color(0.3, 0.9, 0.5))
+	post_notice("科技突破！成功研发【%s】！" % tech.get("name", tech_key), Color(0.3, 0.9, 0.5))
 	_check_era_advancement()
 	return true
 
@@ -911,7 +911,7 @@ func furnace_add_ore(hex: Vector2i, key: String, amount: int = 1) -> bool:
 	if inventory.remove_item(key, amount):
 		f["buffer"].add_substance(key, float(amount))
 		var iname = DataDB.get_item(key).get("name", key)
-		post_notice("📥 投入原料: %s x%d 到炉膛中" % [iname, amount], Color.CYAN)
+		post_notice("投入原料: %s x%d 到炉膛中" % [iname, amount], Color.CYAN)
 		return true
 	else:
 		post_notice("背包中没有足够的原料！", Color.RED)
@@ -924,7 +924,7 @@ func reactor_install_blueprint(hex: Vector2i, bp_id: String) -> bool:
 		return false
 	built_reactors[hex]["blueprint_id"] = bp_id
 	built_reactors[hex]["cycle_progress"] = 0.0
-	post_notice("📥 已向工业反应塔插装芯片: 【%s】" % unlocked_blueprints[bp_id].display_name, Color.CYAN)
+	post_notice("已向工业反应塔插装芯片: 【%s】" % unlocked_blueprints[bp_id].display_name, Color.CYAN)
 	return true
 
 func _has_all_ingredients(req_items: Array) -> bool:

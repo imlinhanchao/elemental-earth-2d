@@ -73,7 +73,7 @@ text = "ELEMENTAL EARTH"
 [node name="Badge" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox/BrandRow/BrandTextVBox/SubTitleRow"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.55, 0.51, 0.45, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 text = "· 2D CHRONICLES"
 
 [node name="Desc" type="Label" parent="SafeMargin/LayoutHBox/MainPanel/TitleBox"]
@@ -172,7 +172,7 @@ text = "正在检测本地文明探索进度..."
 [node name="CardHint" type="Label" parent="SafeMargin/LayoutHBox/RightPanel/ArchiveCard/CardMargin/CardVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.42, 0.66, 0.42, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 text = "按 [ENTER] 或点击【继续游戏】直接接入"
 
 [node name="KeyHintLabel" type="Label" parent="SafeMargin/LayoutHBox/RightPanel"]

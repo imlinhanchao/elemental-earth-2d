@@ -146,7 +146,7 @@ func _setup_era_jump_buttons() -> void:
 		var btn = Button.new()
 		btn.text = item["name"]
 		btn.custom_minimum_size = Vector2(88, 26)
-		btn.add_theme_font_size_override("font_size", 11)
+		btn.add_theme_font_size_override("font_size", 12)
 		var t_idx = int(item["tier"])
 		btn.pressed.connect(func():
 			var target_x = max(0, int(TIER_START_X + t_idx * TIER_X_SPACING - 30))
@@ -179,7 +179,7 @@ func _build_tech_tree_graph() -> void:
 		lbl.text = TIER_TITLES[tier]
 		lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 		lbl.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		lbl.add_theme_font_size_override("font_size", 11)
+		lbl.add_theme_font_size_override("font_size", 12)
 		lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
 		header_panel.add_child(lbl)
 		headers_layer.add_child(header_panel)
@@ -230,7 +230,7 @@ func _create_oni_tech_card(tech: Dictionary) -> PanelContainer:
 	
 	var tier_badge = Label.new()
 	tier_badge.text = "T%d" % (t_tier + 1)
-	tier_badge.add_theme_font_size_override("font_size", 10)
+	tier_badge.add_theme_font_size_override("font_size", 12)
 	tier_badge.add_theme_color_override("font_color", Color(0.4, 0.75, 1.0))
 	top_hbox.add_child(tier_badge)
 	
@@ -238,14 +238,14 @@ func _create_oni_tech_card(tech: Dictionary) -> PanelContainer:
 	var cost_label = Label.new()
 	cost_label.name = "CostLabel"
 	cost_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	cost_label.add_theme_font_size_override("font_size", 10)
+	cost_label.add_theme_font_size_override("font_size", 12)
 	vbox.add_child(cost_label)
 	
 	# 底部行: 研发操作按钮
 	var btn_action = Button.new()
 	btn_action.name = "BtnAction"
 	btn_action.custom_minimum_size = Vector2(0, 22)
-	btn_action.add_theme_font_size_override("font_size", 10)
+	btn_action.add_theme_font_size_override("font_size", 12)
 	vbox.add_child(btn_action)
 	
 	btn_action.pressed.connect(func():

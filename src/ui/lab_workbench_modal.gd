@@ -248,7 +248,7 @@ func _update_sensor_probe() -> void:
 		
 	var comp_keys = lab_vessel.components.keys()
 	if comp_keys.is_empty():
-		_set_sensor_ui("❄️ 待命中", "烧瓶洁净放空中，请从下方快捷投入试剂以启动化学侦测", ThemeStyler.COLOR_TEXT_SECONDARY, Color(0.25, 0.23, 0.20, 0.5))
+		_set_sensor_ui("待命中", "烧瓶洁净放空中，请从下方快捷投入试剂以启动化学侦测", ThemeStyler.COLOR_TEXT_SECONDARY, Color(0.25, 0.23, 0.20, 0.5))
 		return
 		
 	var best_match_formula: Dictionary = {}
@@ -297,13 +297,13 @@ func _update_sensor_probe() -> void:
 		if temp_needed > 0.0 and cur_temp < temp_needed:
 			var target_c = int(temp_needed - 273.15)
 			var cur_c = int(cur_temp - 273.15)
-			_set_sensor_ui("⚠️ 潜在活性 (温度不足)", "【%s】原料齐备！但温度不足，请点燃喷灯加热至 %d ℃ 以上 (当前 %d ℃)" % [f_name, target_c, cur_c], Color(1.0, 0.78, 0.25), Color(0.4, 0.3, 0.08, 0.8))
+			_set_sensor_ui("潜在活性 (温度不足)", "【%s】原料齐备！但温度不足，请点燃喷灯加热至 %d ℃ 以上 (当前 %d ℃)" % [f_name, target_c, cur_c], Color(1.0, 0.78, 0.25), Color(0.4, 0.3, 0.08, 0.8))
 		else:
-			_set_sensor_ui("⚡ 反应进行中！", "【%s】微观分子剧烈转化与重构中，产物正在生成析出..." % f_name, Color(0.25, 0.95, 0.65), Color(0.08, 0.4, 0.2, 0.8))
+			_set_sensor_ui("反应进行中！", "【%s】微观分子剧烈转化与重构中，产物正在生成析出..." % f_name, Color(0.25, 0.95, 0.65), Color(0.08, 0.4, 0.2, 0.8))
 	elif has_partial_match:
-		_set_sensor_ui("🔍 微弱化学亲和力", "投入的试剂为某已知未知反应的部分原料，尚需尝试添加还原剂、矿石或水相溶剂", Color(0.35, 0.80, 1.0), Color(0.10, 0.25, 0.45, 0.7))
+		_set_sensor_ui("微弱化学亲和力", "投入的试剂为某已知未知反应的部分原料，尚需尝试添加还原剂、矿石或水相溶剂", Color(0.35, 0.80, 1.0), Color(0.10, 0.25, 0.45, 0.7))
 	else:
-		_set_sensor_ui("❄️ 惰性混合体系", "当前混合试剂在当前工艺下未侦测到任何已知化学反应迹象", Color(0.60, 0.65, 0.72), Color(0.12, 0.16, 0.22, 0.7))
+		_set_sensor_ui("惰性混合体系", "当前混合试剂在当前工艺下未侦测到任何已知化学反应迹象", Color(0.60, 0.65, 0.72), Color(0.12, 0.16, 0.22, 0.7))
 
 func _set_sensor_ui(badge_text: String, detail_text: String, accent_color: Color, bg_color: Color) -> void:
 	sensor_badge.text = "[%s]" % badge_text
@@ -366,7 +366,7 @@ func _refresh_codex_view() -> void:
 		# 标题行
 		var title_row = HBoxContainer.new()
 		var lbl_title = Label.new()
-		lbl_title.text = ( "✓ " if is_proven else "🔬 [猜想] " ) + clue_data.get("title", f_key)
+		lbl_title.text = ( "✓ " if is_proven else "[猜想] " ) + clue_data.get("title", f_key)
 		lbl_title.add_theme_font_size_override("font_size", 13)
 		lbl_title.add_theme_color_override("font_color", Color(0.3, 0.9, 0.6) if is_proven else Color(0.4, 0.85, 1.0))
 		lbl_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -374,7 +374,7 @@ func _refresh_codex_view() -> void:
 		
 		var lbl_tag = Label.new()
 		lbl_tag.text = "[已确证工艺]" if is_proven else "[探索猜想中]"
-		lbl_tag.add_theme_font_size_override("font_size", 10)
+		lbl_tag.add_theme_font_size_override("font_size", 12)
 		lbl_tag.add_theme_color_override("font_color", Color(0.3, 0.9, 0.6) if is_proven else Color(0.95, 0.75, 0.3))
 		title_row.add_child(lbl_tag)
 		vbox.add_child(title_row)
@@ -383,7 +383,7 @@ func _refresh_codex_view() -> void:
 		var lbl_clue = Label.new()
 		lbl_clue.text = clue_data.get("clue", "")
 		lbl_clue.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		lbl_clue.add_theme_font_size_override("font_size", 11)
+		lbl_clue.add_theme_font_size_override("font_size", 12)
 		lbl_clue.add_theme_color_override("font_color", Color(0.75, 0.80, 0.88))
 		vbox.add_child(lbl_clue)
 		
@@ -392,20 +392,20 @@ func _refresh_codex_view() -> void:
 		cond_row.add_theme_constant_override("separation", 12)
 		
 		var lbl_mat = Label.new()
-		lbl_mat.text = "🧪 所需原料: " + clue_data.get("materials_hint", "未知")
-		lbl_mat.add_theme_font_size_override("font_size", 11)
+		lbl_mat.text = "所需原料: " + clue_data.get("materials_hint", "未知")
+		lbl_mat.add_theme_font_size_override("font_size", 12)
 		lbl_mat.add_theme_color_override("font_color", Color(0.9, 0.85, 0.4))
 		cond_row.add_child(lbl_mat)
 		
 		var lbl_temp = Label.new()
-		lbl_temp.text = "🌡️ " + clue_data.get("temp_hint", "")
-		lbl_temp.add_theme_font_size_override("font_size", 11)
+		lbl_temp.text = "" + clue_data.get("temp_hint", "")
+		lbl_temp.add_theme_font_size_override("font_size", 12)
 		lbl_temp.add_theme_color_override("font_color", Color(0.95, 0.45, 0.35))
 		cond_row.add_child(lbl_temp)
 		
 		var lbl_field = Label.new()
-		lbl_field.text = "🗺️ " + clue_data.get("field_hint", "")
-		lbl_field.add_theme_font_size_override("font_size", 11)
+		lbl_field.text = "" + clue_data.get("field_hint", "")
+		lbl_field.add_theme_font_size_override("font_size", 12)
 		lbl_field.add_theme_color_override("font_color", Color(0.35, 0.75, 0.95))
 		cond_row.add_child(lbl_field)
 		vbox.add_child(cond_row)
@@ -415,7 +415,7 @@ func _refresh_codex_view() -> void:
 			var btn_fill = Button.new()
 			btn_fill.text = "尝试投入此配方原料至烧瓶"
 			btn_fill.custom_minimum_size = Vector2(0, 26)
-			btn_fill.add_theme_font_size_override("font_size", 11)
+			btn_fill.add_theme_font_size_override("font_size", 12)
 			btn_fill.pressed.connect(func():
 				var reqs = f_data.get("required_items", [])
 				var filled = 0

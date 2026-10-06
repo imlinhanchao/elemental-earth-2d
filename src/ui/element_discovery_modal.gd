@@ -111,7 +111,7 @@ func _build_ui() -> void:
 	main_vbox.add_child(top_hbox)
 
 	var header_title = Label.new()
-	header_title.text = "✨ 文 明 重 大 科 学 突 破"
+	header_title.text = "重大科学突破"
 	header_title.add_theme_font_size_override("font_size", 12)
 	header_title.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
 	top_hbox.add_child(header_title)
@@ -228,7 +228,7 @@ func _build_ui() -> void:
 
 	var prog_title = Label.new()
 	prog_title.text = "元素周期表总览进度"
-	prog_title.add_theme_font_size_override("font_size", 11)
+	prog_title.add_theme_font_size_override("font_size", 12)
 	prog_title.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 	prog_head.add_child(prog_title)
 
@@ -238,7 +238,7 @@ func _build_ui() -> void:
 
 	progress_label = Label.new()
 	progress_label.text = "已点亮 1 / 118"
-	progress_label.add_theme_font_size_override("font_size", 11)
+	progress_label.add_theme_font_size_override("font_size", 12)
 	progress_label.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 	prog_head.add_child(progress_label)
 
@@ -254,7 +254,7 @@ func _build_ui() -> void:
 	main_vbox.add_child(btn_hbox)
 
 	btn_view_pt = Button.new()
-	btn_view_pt.text = "📖 查阅元素周期表 [P]"
+	btn_view_pt.text = "查阅元素周期表 [P]"
 	btn_view_pt.custom_minimum_size = Vector2(170, 38)
 	btn_view_pt.add_theme_font_size_override("font_size", 13)
 	btn_view_pt.pressed.connect(_on_view_pt_pressed)

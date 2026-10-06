@@ -43,7 +43,7 @@ layout_mode = 2
 [node name="BadgeLbl" type="Label" parent="PanelContainer/Margin/VBox/HeaderHBox/StepBadge"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.35, 0.95, 0.65, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 text = "教学指引 · 1 / 5"
 
 [node name="Spacer" type="Control" parent="PanelContainer/Margin/VBox/HeaderHBox"]
@@ -56,7 +56,7 @@ layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(0.55, 0.65, 0.78, 1)
 theme_override_colors/font_hover_color = Color(0.95, 0.45, 0.45, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 text = "跳过教程"
 flat = true
 
@@ -90,7 +90,7 @@ theme_override_constants/separation = 10
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_colors/font_color = Color(0.48, 0.58, 0.72, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 text = "请根据上方指引在世界中执行操作"
 autowrap_mode = 2
 

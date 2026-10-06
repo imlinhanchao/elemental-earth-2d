@@ -111,7 +111,7 @@ layout_mode = 2
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.6, 0.3, 1)
 theme_override_font_sizes/font_size = 12
-text = "⚡ 反应活性探测仪"
+text = "反应活性探测仪"
 
 [node name="SensorSpacer" type="Control" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox/SensorHeader"]
 layout_mode = 2
@@ -120,13 +120,13 @@ size_flags_horizontal = 3
 [node name="SensorStateBadge" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox/SensorHeader"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.75, 0.85, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 text = "[待命中]"
 
 [node name="SensorDetail" type="Label" parent="CenterPanel/VBox/Body/HBox/LeftView/SensorCard/SensorMargin/SensorVBox"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.7, 0.8, 1)
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 text = "向烧瓶投入试剂以侦测潜在化学反应活性"
 
 [node name="Controls" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/LeftView"]
@@ -175,12 +175,12 @@ theme_override_constants/separation = 8
 [node name="BtnTabMonitor" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/TabSwitchHBox"]
 custom_minimum_size = Vector2(130, 30)
 layout_mode = 2
-text = "🧪 实验台监控"
+text = "实验台监控"
 
 [node name="BtnTabCodex" type="Button" parent="CenterPanel/VBox/Body/HBox/RightView/TabSwitchHBox"]
 custom_minimum_size = Vector2(140, 30)
 layout_mode = 2
-text = "📖 配方灵感图鉴"
+text = "配方灵感图鉴"
 
 [node name="Spacer" type="Control" parent="CenterPanel/VBox/Body/HBox/RightView/TabSwitchHBox"]
 layout_mode = 2

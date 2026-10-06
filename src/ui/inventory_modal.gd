@@ -303,7 +303,7 @@ func _show_tooltip_for_item(item_key: String, data: Dictionary, count: int) -> v
 			var tag_lbl = Label.new()
 			tag_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			tag_lbl.text = t_info.get("text", "")
-			tag_lbl.add_theme_font_size_override("font_size", 10)
+			tag_lbl.add_theme_font_size_override("font_size", 12)
 			tag_lbl.add_theme_color_override("font_color", col)
 			tag_panel.add_child(tag_lbl)
 			tags_box.add_child(tag_panel)
@@ -314,7 +314,7 @@ func _show_tooltip_for_item(item_key: String, data: Dictionary, count: int) -> v
 	if attrs.has("durability"):
 		extra_attrs.append("耐久: %d" % int(attrs["durability"]))
 	if data.get("is_discovery", false):
-		extra_attrs.append("✨重大发现")
+		extra_attrs.append("重大发现")
 		
 	tip_attr.text = " · ".join(extra_attrs)
 	

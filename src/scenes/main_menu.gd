@@ -96,7 +96,7 @@ func _capture_screenshot_after_delay() -> void:
 	var img = get_viewport().get_texture().get_image()
 	if img:
 		img.save_png("/Users/hancel/Documents/project/elemental-earth-2d/screenshot_main_menu.png")
-		print("✅ [Screenshot] 主菜单截图成功生成: /Users/hancel/Documents/project/elemental-earth-2d/screenshot_main_menu.png")
+		print("[Screenshot] 主菜单截图成功生成: /Users/hancel/Documents/project/elemental-earth-2d/screenshot_main_menu.png")
 	get_tree().quit(0)
 
 func _process(delta: float) -> void:
@@ -202,7 +202,7 @@ func _setup_era_timeline() -> void:
 		
 		var chip_lbl = Label.new()
 		chip_lbl.text = e["name"]
-		chip_lbl.add_theme_font_size_override("font_size", 10)
+		chip_lbl.add_theme_font_size_override("font_size", 12)
 		chip_lbl.add_theme_color_override("font_color", e["col"])
 		chip_hbox.add_child(chip_lbl)
 		
@@ -211,7 +211,7 @@ func _setup_era_timeline() -> void:
 		if i < eras.size() - 1:
 			var arrow = Label.new()
 			arrow.text = "›"
-			arrow.add_theme_font_size_override("font_size", 11)
+			arrow.add_theme_font_size_override("font_size", 12)
 			arrow.add_theme_color_override("font_color", Color(0.45, 0.41, 0.36))
 			era_timeline.add_child(arrow)
 
@@ -284,7 +284,7 @@ func _configure_menu_btn(btn: Button, title: String, en_title: String, icon_res:
 	var en_lbl = Label.new()
 	en_lbl.name = "EnLbl"
 	en_lbl.text = en_title
-	en_lbl.add_theme_font_size_override("font_size", 10)
+	en_lbl.add_theme_font_size_override("font_size", 12)
 	en_lbl.add_theme_color_override("font_color", Color(0.55, 0.51, 0.45))
 	en_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	text_vbox.add_child(en_lbl)
@@ -310,7 +310,7 @@ func _configure_menu_btn(btn: Button, title: String, en_title: String, icon_res:
 	var key_lbl = Label.new()
 	key_lbl.name = "KeyLbl"
 	key_lbl.text = key_hint
-	key_lbl.add_theme_font_size_override("font_size", 11)
+	key_lbl.add_theme_font_size_override("font_size", 12)
 	key_lbl.add_theme_color_override("font_color", Color(0.68, 0.63, 0.56))
 	key_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	badge_panel.add_child(key_lbl)
@@ -388,13 +388,13 @@ func _setup_archive_card() -> void:
 		var ptime = meta.get("playtime_formatted", "00:00")
 		var dtime = meta.get("datetime", "")
 		body_lbl.text = "当前时代：%s\n累计探索时长：%s   保存时间：%s" % [era_name, ptime, dtime]
-		hint_lbl.text = "⚡ 按 [ENTER] 或点击【继续游戏】无缝接入世界"
+		hint_lbl.text = "按 [ENTER] 或点击【继续游戏】无缝接入世界"
 		hint_lbl.add_theme_color_override("font_color", Color(0.2, 0.85, 0.55))
 	else:
 		header_lbl.text = "【初临序章 · 元素宏图】"
 		header_lbl.add_theme_color_override("font_color", Color(0.95, 0.75, 0.35))
 		body_lbl.text = "万物皆由 118 种元素筑就。\n拾取地表碎石与燧石，点亮属于人类文明的科学之火。"
-		hint_lbl.text = "✨ 按 [N] 开启全新的拓荒征程"
+		hint_lbl.text = "按 [N] 开启全新的拓荒征程"
 		hint_lbl.add_theme_color_override("font_color", Color(0.93, 0.70, 0.40))
 
 func _play_entrance_animation() -> void:

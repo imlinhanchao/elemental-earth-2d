@@ -262,7 +262,7 @@ func complete_tutorial() -> void:
 	SettingsManager.set_tutorial_completed(true)
 	tutorial_state_changed.emit(false)
 	tutorial_completed.emit()
-	post_notice("🎉 恭喜完成【文明拓荒教程】！现在尽情谱写你的文明进化史册吧！", Color(0.2, 0.9, 0.5))
+	post_notice("恭喜完成【文明拓荒教程】！现在尽情谱写你的文明进化史册吧！", Color(0.2, 0.9, 0.5))
 
 func skip_tutorial() -> void:
 	is_tutorial_active = false

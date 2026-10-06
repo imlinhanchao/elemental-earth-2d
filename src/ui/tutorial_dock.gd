@@ -158,9 +158,9 @@ func _load_stage(stage_idx: int) -> void:
 		
 		var icon_lbl = Label.new()
 		icon_lbl.name = "Icon"
-		icon_lbl.text = "☐"
+		icon_lbl.text = "○"
 		icon_lbl.add_theme_font_size_override("font_size", 14)
-		icon_lbl.add_theme_color_override("font_color", Color(0.5, 0.6, 0.75))
+		icon_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_MUTED)
 		hbox.add_child(icon_lbl)
 		
 		var text_lbl = Label.new()
@@ -180,7 +180,7 @@ func _load_stage(stage_idx: int) -> void:
 		})
 		
 	if current_stage_idx == STAGES.size() - 1:
-		btn_next.text = "完成教学 🎉"
+		btn_next.text = "完成教学"
 	else:
 		btn_next.text = "下一步 ›"
 		
@@ -219,16 +219,16 @@ func _check_current_goals() -> void:
 		if not met:
 			all_met = false
 			
-		item["icon_lbl"].text = "☑" if met else "☐"
-		item["icon_lbl"].add_theme_color_override("font_color", Color(0.25, 0.95, 0.55) if met else Color(0.45, 0.55, 0.68))
+		item["icon_lbl"].text = "✓" if met else "○"
+		item["icon_lbl"].add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS if met else ThemeStyler.COLOR_TEXT_MUTED)
 		item["text_lbl"].text = "%s (%d / %d)" % [item["text"], min(current, target), target]
 		item["text_lbl"].add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS if met else ThemeStyler.COLOR_TEXT_PRIMARY)
 		
 	stage_completed = all_met
 	btn_next.disabled = not stage_completed
 	if stage_completed:
-		status_lbl.text = "⚡ 阶段目标已达成！点击进入下一步"
-		status_lbl.add_theme_color_override("font_color", Color(0.25, 0.95, 0.55))
+		status_lbl.text = "阶段目标已达成！点击进入下一步"
+		status_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_SUCCESS)
 	else:
 		status_lbl.text = "请根据上方指引在世界中执行操作"
 		status_lbl.add_theme_color_override("font_color", Color(0.48, 0.58, 0.72))

@@ -110,7 +110,7 @@ func _show_count_selection(res_info: Dictionary) -> void:
 	
 	var desc_label = Label.new()
 	desc_label.text = "选择作业循环次数:"
-	desc_label.add_theme_font_size_override("font_size", 11)
+	desc_label.add_theme_font_size_override("font_size", 12)
 	desc_label.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 	content_box.add_child(desc_label)
 	
@@ -123,7 +123,7 @@ func _show_count_selection(res_info: Dictionary) -> void:
 		var btn = Button.new()
 		btn.custom_minimum_size = Vector2(58, 28)
 		btn.text = "%d 次" % c
-		btn.add_theme_font_size_override("font_size", 11)
+		btn.add_theme_font_size_override("font_size", 12)
 		var this_count = c
 		btn.pressed.connect(func():
 			_dispatch_harvest(this_count)

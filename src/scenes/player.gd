@@ -39,7 +39,7 @@ func _physics_process(delta: float) -> void:
 		var iname = target.get("item_name")
 		if iname != last_target_name:
 			last_target_name = iname
-			GameState.post_notice("💡 接近了【%s】，按 [空格] 或 [J] 采集！" % iname, Color(1.0, 0.9, 0.4))
+			GameState.post_notice("接近了【%s】，按 [空格] 或 [J] 采集！" % iname, Color(1.0, 0.9, 0.4))
 	elif target == null and last_target_name != "":
 		last_target_name = ""
 

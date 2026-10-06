@@ -926,7 +926,7 @@ func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, b
 	var lbl_badge = Label.new()
 	lbl_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lbl_badge.text = badge_text
-	lbl_badge.add_theme_font_size_override("font_size", 11)
+	lbl_badge.add_theme_font_size_override("font_size", 12)
 	if is_enabled:
 		lbl_badge.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 	else:
@@ -937,7 +937,7 @@ func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, b
 	lbl_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	lbl_sub.text = subtitle
 	lbl_sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	lbl_sub.add_theme_font_size_override("font_size", 11)
+	lbl_sub.add_theme_font_size_override("font_size", 12)
 	lbl_sub.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 	vbox.add_child(lbl_sub)
 	
@@ -1093,7 +1093,7 @@ func _update_task_queue_ui() -> void:
 		else:
 			chip.text = "#%d %s (%.1fs) ✕" % [i + 1, q_task.get("title", "工作"), q_task.get("time_required", 1.0)]
 		chip.custom_minimum_size = Vector2(0, 24)
-		chip.add_theme_font_size_override("font_size", 11)
+		chip.add_theme_font_size_override("font_size", 12)
 		chip.tooltip_text = "点击从队列中撤销此工作"
 		chip.pressed.connect(func(): GameState.cancel_task(task_id))
 		task_queue_list.add_child(chip)

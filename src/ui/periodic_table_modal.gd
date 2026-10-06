@@ -66,7 +66,7 @@ func _build_grid() -> void:
 		var num_lbl = Label.new()
 		num_lbl.text = "#%d" % i
 		num_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		num_lbl.add_theme_font_size_override("font_size", 10)
+		num_lbl.add_theme_font_size_override("font_size", 12)
 		num_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 		
 		var sym_lbl = Label.new()
@@ -77,7 +77,7 @@ func _build_grid() -> void:
 		var name_lbl = Label.new()
 		name_lbl.text = cname
 		name_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		name_lbl.add_theme_font_size_override("font_size", 10)
+		name_lbl.add_theme_font_size_override("font_size", 12)
 		
 		vbox.add_child(num_lbl)
 		vbox.add_child(sym_lbl)

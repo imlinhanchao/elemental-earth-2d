@@ -84,14 +84,14 @@ func _on_btn_clear_pressed() -> void:
 	_update_ui()
 
 func _on_reaction_occurred(rx_name: String, products: Array) -> void:
-	_log("⚡ 发生化学反应: %s -> 生成产物: %s" % [rx_name, str(products)])
+	_log("发生化学反应: %s -> 生成产物: %s" % [rx_name, str(products)])
 
 func _on_element_discovered(elem_num: int, item_key: String) -> void:
 	if not discovered_elements.has(elem_num):
 		discovered_elements.append(elem_num)
 		discovered_elements.sort()
 		var elem = DataDB.get_element(elem_num)
-		_log("🌟 【重大发现】成功提纯点亮第 %d 号元素: %s (%s)！" % [elem_num, elem.get("name", item_key), elem.get("symbol", "")])
+		_log("【重大发现】成功提纯点亮第 %d 号元素: %s (%s)！" % [elem_num, elem.get("name", item_key), elem.get("symbol", "")])
 		_update_ui()
 
 func _log(msg: String) -> void:

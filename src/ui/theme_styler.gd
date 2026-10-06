@@ -51,25 +51,36 @@ static func get_era_accent(era: int) -> Color:
 	return ERA_ACCENTS[clampi(era, 0, ERA_ACCENTS.size() - 1)]
 
 # 字体：Noto Sans SC 正文 + JetBrains Mono 数值
+# 注意：两者均为可变字体，Noto Sans SC 的 wght 轴默认值为 100 (Thin)，
+# 必须通过 FontVariation 显式指定字重，否则全局文字会以极细字重渲染而显得发虚。
 const FONT_SANS_PATH = "res://assets/fonts/NotoSansSC.ttf"
 const FONT_MONO_PATH = "res://assets/fonts/JetBrainsMono.ttf"
-static var _font_sans: Font = null
-static var _font_mono: Font = null
+const WGHT_TAG = 2003265652 # OpenType 'wght' 轴标签
+static var _font_cache: Dictionary = {}
+
+static func _make_variation(path: String, weight: int, fallback: Font = null) -> Font:
+	var key = "%s#%d" % [path, weight]
+	if _font_cache.has(key):
+		return _font_cache[key]
+	if not ResourceLoader.exists(path):
+		return null
+	var fv = FontVariation.new()
+	fv.base_font = load(path)
+	fv.variation_opentype = {WGHT_TAG: weight}
+	if fallback:
+		fv.fallbacks = [fallback]
+	_font_cache[key] = fv
+	return fv
 
 static func get_font_sans() -> Font:
-	if _font_sans == null and ResourceLoader.exists(FONT_SANS_PATH):
-		_font_sans = load(FONT_SANS_PATH)
-	return _font_sans
+	return _make_variation(FONT_SANS_PATH, 400)
+
+static func get_font_sans_bold() -> Font:
+	return _make_variation(FONT_SANS_PATH, 700)
 
 static func get_font_mono() -> Font:
-	if _font_mono == null and ResourceLoader.exists(FONT_MONO_PATH):
-		var base: Font = load(FONT_MONO_PATH)
-		# 数值字体缺字时回退到中文正文字体
-		var sans = get_font_sans()
-		if base and sans:
-			base.fallbacks = [sans]
-		_font_mono = base
-	return _font_mono
+	# 数值字体缺字时回退到中文正文字体
+	return _make_variation(FONT_MONO_PATH, 500, get_font_sans())
 
 static func create_scientific_theme() -> Theme:
 	var theme = Theme.new()
@@ -188,6 +199,10 @@ static func create_scientific_theme() -> Theme:
 	if sans:
 		theme.default_font = sans
 	theme.default_font_size = 14
+	# 按钮文字使用中粗字重，提升可点击元素辨识度
+	var bold = get_font_sans_bold()
+	if bold:
+		theme.set_font("font", "Button", bold)
 
 	# 7. 浮动提示 (TooltipPanel)
 	var tip_box = create_card_box(6, COLOR_BG_SOLID, COLOR_BORDER)

@@ -181,7 +181,7 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 	var file = FileAccess.open(path, FileAccess.WRITE)
 	if not file:
 		print("[SaveManager] 写入槽位失败: %s" % path)
-		GameState.post_notice("❌ 存档写入失败！", Color.RED)
+		GameState.post_notice("存档写入失败！", Color.RED)
 		return false
 		
 	file.store_string(JSON.stringify(save_dict, "\t"))

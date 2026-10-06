@@ -58,7 +58,7 @@ stretch_mode = 5
 [node name="HeaderTitle" type="Label" parent="Center/Panel/Margin/MainVBox/HeaderHBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
-text = "✦ 文 明 纪 元 史 册 · EPOCH ARCHIVE ✦"
+text = "文明纪元史册"
 
 [node name="HeaderSpacer" type="Control" parent="Center/Panel/Margin/MainVBox/HeaderHBox"]
 layout_mode = 2
@@ -70,8 +70,8 @@ layout_mode = 2
 size_flags_vertical = 4
 focus_mode = 0
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 11
-text = "✕ ESC"
+theme_override_font_sizes/font_size = 12
+text = "✕ [ESC]"
 
 [node name="HSeparator" type="HSeparator" parent="Center/Panel/Margin/MainVBox"]
 layout_mode = 2
@@ -111,7 +111,7 @@ theme_override_constants/separation = 4
 
 [node name="EraOrderTag" type="Label" parent="Center/Panel/Margin/MainVBox/HeroPanel/HeroMargin/HeroHBox/HeroVBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 text = "第 I 纪元 · 原始物质改造"
 
 [node name="EraNameLabel" type="Label" parent="Center/Panel/Margin/MainVBox/HeroPanel/HeroMargin/HeroHBox/HeroVBox"]
@@ -141,8 +141,8 @@ theme_override_constants/margin_bottom = 4
 
 [node name="TerritoryLabel" type="Label" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/TerritoryBadge/Margin"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
-text = "🗺️ 领地半径: 5 瓦片 (91 格)"
+theme_override_font_sizes/font_size = 12
+text = "领地半径: 5 瓦片 (91 格)"
 
 [node name="ElementsBadge" type="PanelContainer" parent="Center/Panel/Margin/MainVBox/TelemetryHBox"]
 layout_mode = 2
@@ -156,8 +156,8 @@ theme_override_constants/margin_bottom = 4
 
 [node name="ElementsLabel" type="Label" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ElementsBadge/Margin"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
-text = "🔬 点亮元素: 0 / 118 种"
+theme_override_font_sizes/font_size = 12
+text = "点亮元素: 0 / 118 种"
 
 [node name="ProgressVBox" type="VBoxContainer" parent="Center/Panel/Margin/MainVBox/TelemetryHBox"]
 layout_mode = 2
@@ -170,7 +170,7 @@ layout_mode = 2
 
 [node name="ProgressTitle" type="Label" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ProgressVBox/ProgressHeaderHBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 text = "时代跃迁达成度"
 
 [node name="Spacer" type="Control" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ProgressVBox/ProgressHeaderHBox"]
@@ -179,7 +179,7 @@ size_flags_horizontal = 3
 
 [node name="ProgressPercent" type="Label" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ProgressVBox/ProgressHeaderHBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 text = "0% (0/2)"
 
 [node name="ProgressBar" type="ProgressBar" parent="Center/Panel/Margin/MainVBox/TelemetryHBox/ProgressVBox"]
@@ -214,7 +214,7 @@ theme_override_constants/separation = 12
 [node name="TipLabel" type="Label" parent="Center/Panel/Margin/MainVBox/FooterHBox"]
 layout_mode = 2
 size_flags_vertical = 4
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 12
 text = "按 [ESC]、[空格] 或 [回车] 键随时返回大世界"
 
 [node name="FooterSpacer" type="Control" parent="Center/Panel/Margin/MainVBox/FooterHBox"]

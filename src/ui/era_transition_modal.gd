@@ -222,11 +222,11 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 	
 	# 1. 顶栏标题与标识
 	if is_celebration:
-		header_title.text = "✦ 文 明 纪 元 升 维 跃 迁 ✦"
+		header_title.text = "文明纪元跃迁"
 		header_title.add_theme_color_override("font_color", Color(1.0, 0.88, 0.35))
 		btn_continue.text = "迈向新纪元 [ENTER]"
 	else:
-		header_title.text = "✦ 文 明 纪 元 史 册 · EPOCH ARCHIVE ✦"
+		header_title.text = "文明纪元史册"
 		header_title.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 		btn_continue.text = "返回大世界 [ESC]"
 	
@@ -263,8 +263,8 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 	# 4. 核心宏观指标
 	var terr_radius = GameState.get_current_territory_radius()
 	var terr_count = (3 * terr_radius * (terr_radius + 1) + 1)
-	territory_label.text = "🗺️ 领地半径: %d 瓦片 (%d 格已拓荒)" % [terr_radius, terr_count]
-	elements_label.text = "🔬 点亮元素: %d / 118 种" % GameState.discovered_elements.size()
+	territory_label.text = "领地半径: %d 瓦片 (%d 格已拓荒)" % [terr_radius, terr_count]
+	elements_label.text = "点亮元素: %d / 118 种" % GameState.discovered_elements.size()
 	
 	# 5. 里程碑完成度计算
 	var total_ms = milestones.size()
@@ -397,7 +397,7 @@ func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Co
 	var tag = Label.new()
 	tag.text = "[已确证达成]" if is_done else "[待科研攻关]"
 	tag.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	tag.add_theme_font_size_override("font_size", 10)
+	tag.add_theme_font_size_override("font_size", 12)
 	tag.add_theme_color_override("font_color", Color(0.30, 0.95, 0.65) if is_done else accent)
 	hbox.add_child(tag)
 	
@@ -422,15 +422,15 @@ func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Co
 		guide_panel.add_child(g_vbox)
 		
 		var lbl_guide = Label.new()
-		lbl_guide.text = "💡 攻关指引：" + str(g_info.get("guide", ""))
+		lbl_guide.text = "攻关指引：" + str(g_info.get("guide", ""))
 		lbl_guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		lbl_guide.add_theme_font_size_override("font_size", 11)
+		lbl_guide.add_theme_font_size_override("font_size", 12)
 		lbl_guide.add_theme_color_override("font_color", Color(0.40, 0.90, 0.65) if is_done else Color(0.95, 0.80, 0.45))
 		g_vbox.add_child(lbl_guide)
 		
 		var lbl_meta = Label.new()
-		lbl_meta.text = "🗺️ 建议探索：%s   ·   ⚙️ 关键途径：%s" % [g_info.get("field", ""), g_info.get("route", "")]
-		lbl_meta.add_theme_font_size_override("font_size", 10)
+		lbl_meta.text = "建议探索：%s   ·   关键途径：%s" % [g_info.get("field", ""), g_info.get("route", "")]
+		lbl_meta.add_theme_font_size_override("font_size", 12)
 		lbl_meta.add_theme_color_override("font_color", Color(0.40, 0.75, 0.95))
 		g_vbox.add_child(lbl_meta)
 		
