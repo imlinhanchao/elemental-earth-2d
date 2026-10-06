@@ -29,10 +29,10 @@ func _init() -> void:
 	print(" -> 室温 (293K) 反应检测: ", "无反应发生 (符合预期)" if not res_room["occurred"] else "异常反应!")
 	assert(not res_room["occurred"], "室温不应自发反应!")
 
-	# 加热到 950K (约 677℃)
-	crucible.temperature = 950.0
+	# 加热到 1150K (约 877℃，木炭火焰可达)
+	crucible.temperature = 1150.0
 	var res_hot = solver.solve(crucible, 1.0)
-	print(" -> 高温 (950K) 反应检测: ", res_hot["reactions"])
+	print(" -> 高温 (1150K) 反应检测: ", res_hot["reactions"])
 	print(" -> 当前坩埚内产物: ", crucible.components)
 	
 	assert(crucible.has_substance("copper"), "未能成功制备单质铜!")

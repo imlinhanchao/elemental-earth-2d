@@ -46,6 +46,8 @@ var solver: ChemistrySolver:
 
 var lab_vessel: MixtureBuffer:
 	get: return sim.lab_vessel
+var lab:
+	get: return sim.lab
 
 var discovered_elements: Array[int]:
 	get: return sim.discovered_elements

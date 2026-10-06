@@ -15,9 +15,8 @@
         "use": 0.1
       }
     ],
-    "required_techs": [
-      "pottery"
-    ]
+    "required_techs": [],
+    "default_min_temp": 673.0
   },
   {
     "key": "roasting",
@@ -36,7 +35,8 @@
         "quantity": 1,
         "use": 0.01
       }
-    ]
+    ],
+    "default_min_temp": 973.0
   },
   {
     "name": "搅拌",
@@ -74,7 +74,8 @@
     "key": "distillation",
     "description": "将混合物加热到沸点，收集蒸汽并冷凝成液体，以分离不同的组分。",
     "time_required": 30,
-    "requires_burning": true
+    "requires_burning": true,
+    "default_min_temp": 393.0
   },
   {
     "name": "压榨",
@@ -143,7 +144,8 @@
         "use": 0.01
       }
     ],
-    "requires_burning": true
+    "requires_burning": true,
+    "default_min_temp": 1473.0
   },
   {
     "name": "溶解",
@@ -163,7 +165,8 @@
     "requires_burning": false,
     "requires_electricity": true,
     "is_chain": false,
-    "milestone": "first_electrolysis"
+    "milestone": "first_electrolysis",
+    "default_min_voltage": 2.0
   },
   {
     "key": "gas_collecting_air",
@@ -200,7 +203,8 @@
         "quantity": 1,
         "use": 0.05
       }
-    ]
+    ],
+    "default_min_temp": 373.0
   },
   {
     "name": "熔融电解",
@@ -221,7 +225,9 @@
       "electrochemistry"
     ],
     "requires_burning": true,
-    "requires_electricity": true
+    "requires_electricity": true,
+    "default_min_temp": 1073.0,
+    "default_min_voltage": 4.0
   },
   {
     "name": "加热",
@@ -229,7 +235,8 @@
     "description": "使用热源对物质进行加热，使其温度升高，可能引发分解、熔化或促进反应。",
     "time_required": 10,
     "requires_burning": true,
-    "is_chain": false
+    "is_chain": false,
+    "default_min_temp": 423.0
   },
   {
     "name": "玻璃蒸馏",
@@ -252,7 +259,8 @@
       "glassworking"
     ],
     "requires_burning": true,
-    "is_chain": false
+    "is_chain": false,
+    "default_min_temp": 393.0
   },
   {
     "key": "fractional_distillation",
@@ -274,7 +282,8 @@
     ],
     "required_techs": [
       "advanced_chemical_equipment"
-    ]
+    ],
+    "default_min_temp": 423.0
   },
   {
     "key": "fractional_crystallization",
@@ -313,7 +322,8 @@
     "required_techs": [
       "high_pressure_tech"
     ],
-    "requires_burning": true
+    "requires_burning": true,
+    "default_min_temp": 573.0
   },
   {
     "key": "precipitation",
@@ -354,9 +364,7 @@
     "time_required": 300,
     "milestone": "first_transmutation",
     "requires_burning": false,
-    "required_techs": [
-      "nuclear_physics"
-    ]
+    "required_techs": []
   },
   {
     "key": "particle_acceleration",

@@ -9,6 +9,7 @@ const ChemistrySolver = preload("res://src/core/chemistry_solver.gd")
 const ProcessBlueprint = preload("res://src/core/process_blueprint.gd")
 const MixtureBuffer = preload("res://src/core/mixture_buffer.gd")
 const HexWorldGenerator = preload("res://src/core/hex_world_generator.gd")
+const LabBench = preload("res://src/core/lab_bench.gd")
 
 signal element_discovered(element_number: int, item_key: String)
 signal notification_posted(text: String, color: Color)
@@ -33,6 +34,7 @@ const MAX_QUEUE_SIZE: int = 8
 var inventory: PlayerInventory
 var solver: ChemistrySolver
 var lab_vessel: MixtureBuffer
+var lab: LabBench # 实验台：操作、点火、电源、手稿
 
 var discovered_elements: Array[int] = []
 var unlocked_blueprints: Dictionary = {} # id -> ProcessBlueprint
@@ -87,6 +89,7 @@ func _init() -> void:
 	lab_vessel = MixtureBuffer.new()
 	lab_vessel.container_type = "flask"
 	lab_vessel.temperature = 293.15
+	lab = LabBench.new(self, lab_vessel)
 	
 	solver.element_discovered.connect(_on_solver_element_discovered)
 	solver.reaction_occurred.connect(_on_solver_reaction_occurred)
@@ -201,6 +204,8 @@ func _on_solver_reaction_occurred(rx_name: String, prods: Array) -> void:
 			break
 
 func _on_inventory_item_changed(key: String, count: int) -> void:
+	if count > 0 and key != "" and lab:
+		lab.note_item(key)
 	if count > 0 and key != "":
 		var elem_num = DataDB.is_pure_element(key)
 		if elem_num > 0:
@@ -248,11 +253,12 @@ func unlock_element(elem_num: int, item_key: String) -> void:
 		element_discovered.emit(elem_num, item_key)
 		_check_era_advancement()
 
-func unlock_blueprint(bp: ProcessBlueprint) -> void:
+func unlock_blueprint(bp: ProcessBlueprint, quiet: bool = false) -> void:
 	if not unlocked_blueprints.has(bp.id):
 		unlocked_blueprints[bp.id] = bp
 		blueprint_unlocked.emit(bp)
-		post_notice("已导出工艺蓝图：%s。可装入反应塔连续生产" % bp.display_name, Color.CYAN)
+		if not quiet:
+			post_notice("已导出工艺蓝图：%s。可装入反应塔连续生产" % bp.display_name, Color.CYAN)
 		_check_era_advancement()
 
 func equip_tool(slot: String, tool_key: String) -> void:
@@ -333,11 +339,6 @@ func get_hex_resource(hex: Vector2i) -> String:
 
 # --- 时间步进 (一秒时间戳钟) ---
 
-# 实验台酒精灯：由模拟层推进温度，UI 只读显示
-var lab_burner_on: bool = false
-const LAB_BURNER_MAX_TEMP: float = 950.0
-const LAB_HEAT_RATE: float = 160.0   # K/s
-const LAB_COOL_RATE: float = 45.0    # K/s
 const ROOM_TEMP: float = 293.15
 
 var _progress_accumulator: float = 0.0
@@ -357,12 +358,9 @@ func tick(delta: float) -> void:
 				_progress_accumulator = 0.0
 				task_progress_updated.emit(active_task, clampf(elapsed / time_req, 0.0, 1.0), time_req - elapsed)
 
-	# 2. 实验台温度
-	if lab_vessel:
-		if lab_burner_on:
-			lab_vessel.temperature = move_toward(lab_vessel.temperature, LAB_BURNER_MAX_TEMP, LAB_HEAT_RATE * delta)
-		else:
-			lab_vessel.temperature = move_toward(lab_vessel.temperature, ROOM_TEMP, LAB_COOL_RATE * delta)
+	# 2. 实验台燃料、温度与电源
+	if lab:
+		lab.tick(delta)
 
 	# 3. 化学 / 熔炉 / 反应塔结算保持 1Hz
 	_second_accumulator += delta
@@ -375,7 +373,9 @@ func _on_second_tick() -> void:
 	var owned_containers = _get_owned_containers()
 	if lab_vessel and lab_vessel.total_moles() > 0:
 		lab_vessel.available_containers = owned_containers
-		solver.solve(lab_vessel, 1.0)
+		var lab_res = solver.solve(lab_vessel, 1.0)
+		if lab_res["occurred"]:
+			lab.on_reaction(lab_res)
 		
 	# 2. 熔炉溶液结算 (共用一秒节拍)
 	for hex in built_furnaces.keys():
@@ -392,6 +392,7 @@ func _on_second_tick() -> void:
 			
 		if buf.total_moles() > 0:
 			buf.available_containers = owned_containers
+			buf.operations = LabBench.furnace_operations(f.get("type", "furnace"))
 			var res = solver.solve(buf, 1.0)
 			if res["occurred"]:
 				buf.consume_substance("carbon_dioxide", 999.0)
@@ -740,6 +741,8 @@ func _complete_active_task() -> void:
 		if randf() < 0.08:
 			inventory.add_item("resin", 1)
 		
+	lab.on_harvest() # 采集时偶尔捡到手稿
+
 	# 2. 扣减地块真实资源储量 (取完了就没了)
 	var rem_res = consume_tile_resource(hex, t_key, 1)
 	
@@ -830,7 +833,7 @@ func craft_tool(recipe_key: String) -> bool:
 const FURNACE_TYPES: Array[String] = ["fire_pit", "furnace", "blast_furnace"]
 const IMPLEMENTED_STRUCTURES: Array[String] = ["fire_pit", "furnace", "blast_furnace", "industrial_reactor"]
 # 各类炉体的最高炉温 (K)
-const FURNACE_MAX_TEMP: Dictionary = {"fire_pit": 1100.0, "furnace": 1100.0, "blast_furnace": 1500.0}
+const FURNACE_MAX_TEMP: Dictionary = {"fire_pit": 900.0, "furnace": 1100.0, "blast_furnace": 1500.0}
 
 func build_structure(structure_key: String, hex: Vector2i) -> bool:
 	if not is_hex_in_territory(hex.x, hex.y):
@@ -919,6 +922,7 @@ func research_tech(tech_key: String) -> bool:
 	
 	researched_techs.append(tech_key)
 	tech_researched.emit(tech_key)
+	lab.on_tech(tech_key)
 	
 	var m_stone = tech.get("milestone")
 	if m_stone != null and str(m_stone) != "":
@@ -1081,7 +1085,8 @@ func reset_to_new_game() -> void:
 	if lab_vessel != null:
 		lab_vessel.clear()
 		lab_vessel.temperature = ROOM_TEMP
-	lab_burner_on = false
+	if lab:
+		lab.reset()
 	playtime_seconds = 0.0
 	init_world_map(12345, WORLD_HEX_RADIUS)
 	era_advanced.emit(0, 0, ERA_NAMES[0])

@@ -19,14 +19,22 @@ func solve(buffer: MixtureBuffer, delta_time: float) -> Dictionary:
 	
 	if buffer.total_moles() <= 0.0:
 		buffer.reaction_timer = 0.0
+		buffer.active_formula = ""
 		return results
 		
 	# 遍历配方表进行查表匹配 (优先匹配带温度/电压限制的特定反应)
 	var matched_formula: Dictionary = _find_matching_formula(buffer)
 	if matched_formula.is_empty():
 		buffer.reaction_timer = 0.0
+		buffer.active_formula = ""
 		_check_element_discoveries(buffer, results)
 		return results
+	# 换了配方 (投料或条件变化) 就重新计时
+	var f_key = str(matched_formula.get("key", ""))
+	if buffer.active_formula != f_key:
+		buffer.active_formula = f_key
+		buffer.reaction_timer = 0.0
+	results["formula_key"] = f_key
 		
 	var time_req = max(1.0, float(matched_formula.get("time_required", 1.0)))
 	buffer.reaction_timer += delta_time
@@ -54,10 +62,29 @@ func _find_matching_formula(buffer: MixtureBuffer) -> Dictionary:
 				
 	return best_formula
 
+# 配方所需操作 (labs.json 的 key)，没有写则为空
+static func formula_operation(formula: Dictionary) -> String:
+	var ra = formula.get("required_actions")
+	return str(ra.get("key", "")) if ra is Dictionary else ""
+
+# 最低温度 (K)：配方自己写了就用配方的，否则用所需操作的默认值 (如焙烧 973K)
+static func formula_min_temp(formula: Dictionary) -> float:
+	var t = float(formula.get("min_temp", formula.get("min_temperature", 0.0)))
+	if t > 0.0:
+		return t
+	return float(DataDB.get_lab_op(formula_operation(formula)).get("default_min_temp", 0.0))
+
+# 最低电压 (V)：同上
+static func formula_min_voltage(formula: Dictionary) -> float:
+	var v = float(formula.get("min_voltage", 0.0))
+	if v > 0.0:
+		return v
+	return float(DataDB.get_lab_op(formula_operation(formula)).get("default_min_voltage", 0.0))
+
 func _calculate_formula_priority(formula: Dictionary) -> float:
 	var score = 0.0
-	var min_temp = float(formula.get("min_temp", formula.get("min_temperature", 0.0)))
-	var min_volt = float(formula.get("min_voltage", 0.0))
+	var min_temp = formula_min_temp(formula)
+	var min_volt = formula_min_voltage(formula)
 	
 	# 有温度或电压条件的配方优先级远高于常温常压配方，防止被无门槛配方提前抢占
 	if min_temp > 0.0:
@@ -77,17 +104,22 @@ func _matches_conditions(buffer: MixtureBuffer, formula: Dictionary) -> bool:
 	if not _matches_container(buffer, formula):
 		return false
 
-	# 2. 温度阈值检查
-	var min_temp = float(formula.get("min_temp", formula.get("min_temperature", 0.0)))
+	# 2. 操作匹配：选错操作 (如该焙烧却在搅拌) 不反应
+	var op = formula_operation(formula)
+	if op != "" and not buffer.operations.has("*") and not buffer.operations.has(op):
+		return false
+
+	# 3. 温度阈值检查
+	var min_temp = formula_min_temp(formula)
 	if min_temp > 0.0 and buffer.temperature < min_temp:
 		return false
 		
-	# 3. 电压阈值检查
-	var min_volt = float(formula.get("min_voltage", 0.0))
+	# 4. 电压阈值检查
+	var min_volt = formula_min_voltage(formula)
 	if min_volt > 0.0 and buffer.applied_voltage < min_volt:
 		return false
 		
-	# 4. 反应原料检查
+	# 5. 反应原料检查
 	var req_items = formula.get("required_items", [])
 	if req_items.is_empty():
 		return false

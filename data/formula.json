@@ -31,7 +31,12 @@
         "multiple": 0.5
       }
     ],
-    "required_era": "stone"
+    "required_era": "stone",
+    "required_actions": {
+      "key": "dry_distillation",
+      "min": 1
+    },
+    "fragment_description": "把#wood#放进密闭的陶罐里$dry_distillation$，木头不会烧成灰，而是变成乌黑的#charcoal#。"
   },
   {
     "name": "制作粘土",
@@ -65,7 +70,7 @@
     "key": "copper_smelting",
     "name": "木炭冶炼孔雀石制备单质铜",
     "description": "孔雀石与木炭高温碳热还原分解出金属铜单质与二氧化碳。",
-    "min_temp": 750.0,
+    "min_temp": 1100.0,
     "time_required": 1.0,
     "required_container": [
       "furnace",
@@ -99,13 +104,18 @@
         "multiple": 0.5
       }
     ],
-    "required_era": "alchemy"
+    "required_era": "alchemy",
+    "required_actions": {
+      "key": "roasting",
+      "min": 1
+    },
+    "fragment_description": "把绿色的#malachite#与#charcoal#一起$roasting$，火要比烧木头更旺，炉底会流出赤红的#copper#。"
   },
   {
     "key": "iron_smelting",
     "name": "高炉碳热还原炼铁",
     "description": "赤铁矿/铁矿石与木炭在高温下反应生成单质铁与二氧化碳。",
-    "min_temp": 800.0,
+    "min_temp": 1300.0,
     "time_required": 1.0,
     "required_container": [
       "furnace",
@@ -143,7 +153,12 @@
         "multiple": 1.5
       }
     ],
-    "required_era": "alchemy"
+    "required_era": "alchemy",
+    "required_actions": {
+      "key": "roasting",
+      "min": 1
+    },
+    "fragment_description": "#hematite#比孔雀石难炼得多。和大量#charcoal#一起$roasting$，要用比炼铜更猛的火，才能得到灰黑的#iron#。"
   },
   {
     "key": "calcite_decomposition",
@@ -179,7 +194,12 @@
         "multiple": 1.0
       }
     ],
-    "required_era": "alchemy"
+    "required_era": "alchemy",
+    "required_actions": {
+      "key": "roasting",
+      "min": 1
+    },
+    "fragment_description": "把#limestone#放进窑里$roasting$，石头会变轻、变白，成为#quicklime#，同时放出#carbon_dioxide#。"
   },
   {
     "name": "制作碱水",
@@ -1637,7 +1657,12 @@
         "multiple": 0.5
       }
     ],
-    "required_era": "electrochem"
+    "required_era": "electrochem",
+    "required_actions": {
+      "key": "electrolysis",
+      "min": 1
+    },
+    "fragment_description": "把电极插进#water#里$electrolysis$，两极会冒出气泡：一边是#hydrogen#，一边是#oxygen#。"
   },
   {
     "key": "electrolysis_brine",
@@ -10643,7 +10668,12 @@
         "multiple": 1.0
       }
     ],
-    "required_era": "alchemy"
+    "required_era": "alchemy",
+    "required_actions": {
+      "key": "roasting",
+      "min": 1
+    },
+    "fragment_description": "#clay#里掺些#sand#，$roasting$到极高温度，就能烧成耐火的#fire_brick#。"
   },
   {
     "key": "alkali_evaporation",
@@ -10676,6 +10706,11 @@
         "multiple": 1.0
       }
     ],
-    "required_era": "alchemy"
+    "required_era": "alchemy",
+    "required_actions": {
+      "key": "evaporation",
+      "min": 1
+    },
+    "fragment_description": "把#alkaline_solution#慢慢$evaporation$，锅底会留下白色的#sodium_carbonate#。"
   }
 ]

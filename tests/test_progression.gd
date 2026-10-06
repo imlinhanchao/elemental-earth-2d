@@ -71,7 +71,9 @@ func _initialize() -> void:
 
 	# 6. 背包中持有的器皿可满足配方容器要求 (筛子 → 筛分硅砂)
 	sim.lab_vessel.clear()
+	sim.researched_techs.append("sifting_technology")
 	sim.inventory.add_item("sieve", 1)
+	sim.lab.set_operation("sifting")
 	sim.lab_vessel.add_substance("sand", 5.0)
 	# 配方有 time_required，按其秒数推进一秒节拍
 	var sift_secs = int(ceil(float(DataDB.get_formula("sift_silica_sand").get("time_required", 1.0))))
@@ -83,14 +85,73 @@ func _initialize() -> void:
 	sim._on_solver_reaction_occurred("镭衰变产氡", ["radon"])
 	_check(sim.completed_milestones.has("first_transmutation"), "衰变反应完成元素嬗变里程碑")
 
-	# 8. 实验台酒精灯由模拟层推进温度
+	# 8. 实验台：操作决定反应，点火消耗燃料，燃料决定温度
+	var lab = sim.lab
+	var ash_start = sim.inventory.get_count("wood_ash")
 	sim.lab_vessel.clear()
 	sim.lab_vessel.temperature = sim.ROOM_TEMP
-	sim.lab_burner_on = true
+	lab.set_operation("stirring")
+	sim.lab_vessel.add_substance("malachite", 2.0)
+	sim.lab_vessel.add_substance("charcoal", 2.0)
+	sim.lab_vessel.temperature = 1200.0
+	sim._on_second_tick()
+	_check(not sim.lab_vessel.has_substance("copper"), "搅拌时即使高温也不炼铜 (操作不对)")
+	sim.lab_vessel.temperature = sim.ROOM_TEMP
+	_check(lab.set_operation("roasting"), "可以切换到焙烧")
+	_check(not lab.ignite(), "没有燃料不能点火")
+	sim.inventory.add_item("wood", 3)
+	_check(lab.add_fuel("wood"), "投入原木作燃料")
+	sim.inventory.remove_item("flint", sim.inventory.get_count("flint"))
+	sim.inventory.remove_item("fire_seed", sim.inventory.get_count("fire_seed"))
+	_check(not lab.ignite(), "没有火种或燧石不能点火")
+	sim.inventory.add_item("flint", 1)
+	_check(lab.ignite() and sim.inventory.get_count("flint") == 0, "用燧石点火，燧石消耗 1 块")
+	for i in range(100):
+		sim.tick(0.1)
+	_check(sim.lab_vessel.temperature > 900.0 and sim.lab_vessel.temperature <= 974.0, "原木火焰升温到约 700 ℃ 为止 (%.0f K)" % sim.lab_vessel.temperature)
+	_check(not sim.lab_vessel.has_substance("copper"), "原木火焰温度不够炼铜")
+	var diag = lab.diagnose()
+	_check(diag["state"] == "unknown", "没有手稿时侦测卡不透露配方 (%s)" % diag["state"])
+	lab.fragments.append("copper_smelting")
+	diag = lab.diagnose()
+	_check(diag["state"] == "blocked" and diag["text"].contains("加热到"), "有手稿时提示温度不够")
+	sim.inventory.add_item("charcoal", 2)
+	lab.add_fuel("charcoal")
+	for i in range(400):
+		sim.tick(0.1)
+		if sim.lab_vessel.has_substance("copper"): break
+	_check(sim.lab_vessel.has_substance("copper"), "原木烧完换木炭后炼出铜")
+	_check(lab.proven.has("copper_smelting") and sim.unlocked_blueprints.has("copper_smelting"), "第一次做成即确证并生成蓝图")
+	_check(sim.inventory.get_count("wood_ash") > ash_start, "原木燃尽留下草木灰")
+	var got = lab.retrieve_all()
+	_check(got.get("copper", 0) >= 1 and sim.lab_vessel.components.is_empty(), "取回产物：铜 ×%d" % got.get("copper", 0))
+	sim.lab_vessel.add_substance("stone", 3.0)
+	sim.inventory.remove_item("stone", sim.inventory.get_count("stone"))
+	lab.retrieve_all()
+	_check(sim.inventory.get_count("stone") == 3, "没反应的原料原样退回")
+	for i in range(1200):
+		sim.tick(0.1)
+	_check(not lab.fire_lit and sim.lab_vessel.temperature < 400.0, "燃料烧完后熄火并冷却")
+	# 电解：没有电池不反应，接入伏打电池后电解水
+	sim.researched_techs.append("electrochemistry")
+	_check(lab.set_operation("electrolysis"), "研发电化学后可以电解")
+	sim.lab_vessel.clear()
+	sim.lab_vessel.add_substance("water", 2.0)
+	sim._on_second_tick()
+	_check(not sim.lab_vessel.has_substance("oxygen"), "未通电不电解")
+	sim.inventory.add_item("battery", 1)
+	_check(lab.connect_power("battery"), "接入伏打电池")
 	for i in range(30):
 		sim.tick(0.1)
-	_check(sim.lab_vessel.temperature > sim.ROOM_TEMP + 300.0, "点燃酒精灯 3 秒后烧瓶升温超过 300K")
-	sim.lab_burner_on = false
+	_check(sim.lab_vessel.has_substance("oxygen"), "通电后电解水产氧")
+	sim.lab_vessel.clear()
+	# 手稿：研发科技得到相关手稿
+	var before = lab.fragments.size()
+	lab.seen_items["clay"] = true
+	lab.on_tech("pottery")
+	_check(lab.fragments.size() == before + 1, "研发陶器制作后获得一份相关手稿")
+	var txt = lab.fragment_text("charcoal_production", "#000", "#111", "#999")
+	_check(txt.contains("木") and not txt.contains("#wood#"), "手稿正文替换物品与操作名")
 
 	# 9. 作业按到期时间完成，而不是等到下一个整秒
 	sim.task_queue.clear()

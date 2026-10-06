@@ -41,10 +41,22 @@ static func run(w: Node2D, arg_name: String) -> void:
 	elif arg_name == "--screenshot-craft":
 		w.hud._toggle_category(w.hud.CategoryTab.CRAFT)
 	elif arg_name == "--screenshot-lab":
-		GameState.inventory.add_item("wood", 5)
+		# 焙烧孔雀石：放入木炭点火，侦测卡提示温度 (先登记碳，避免弹出元素发现弹窗)
+		GameState.sim.discovered_elements.append(6)
+		for k in ["wood", "charcoal", "malachite", "flint", "stone", "stick"]:
+			GameState.inventory.add_item(k, 5)
+		GameState.lab.fragments.append("copper_smelting")
+		GameState.lab.set_operation("roasting")
 		w.hud.lab_modal.open()
-		w.hud.lab_modal.add_reagent("wood", 1.0)
+		w.hud.lab_modal.add_reagent("malachite", 1.0)
+		w.hud.lab_modal.add_reagent("charcoal", 1.0)
+		GameState.lab.add_fuel("charcoal")
+		GameState.lab.ignite()
+		w.hud.lab_modal._refresh_all()
 	elif arg_name == "--screenshot-codex":
+		GameState.lab.seen_items["wood"] = true
+		GameState.lab.fragments.append("copper_smelting")
+		GameState.lab.fragments.append("iron_smelting")
 		w.hud.lab_modal.open()
 		w.hud.lab_modal._switch_tab(1)
 	elif arg_name == "--screenshot-tutorial-craft":

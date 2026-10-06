@@ -15,6 +15,11 @@ var container_type: String = "flask"
 # 额外可用器皿：玩家背包中持有的筛子/坩埚/烧杯等，由模拟层每秒同步
 var available_containers: Array = []
 var reaction_timer: float = 0.0
+# 当前允许的实验操作 (labs.json 的 key)。配方的 required_actions 必须在其中才会反应。
+# ["*"] 表示不限 (测试与旧逻辑)；实验台为玩家选中的一项；炉体为炉内能做的加热类操作。
+var operations: Array = ["*"]
+# 正在进行的配方 key (求解器写入，供界面显示反应进度)
+var active_formula: String = ""
 
 func add_substance(key: String, moles: float) -> void:
 	if moles <= 0.0:
@@ -52,4 +57,5 @@ func duplicate_buffer() -> RefCounted:
 	copy.pressure = pressure
 	copy.volume = volume
 	copy.applied_voltage = applied_voltage
+	copy.operations = operations.duplicate()
 	return copy

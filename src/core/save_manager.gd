@@ -285,6 +285,7 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null, quiet: bo
 		if GameState.lab_vessel:
 			GameState.lab_vessel.clear()
 			GameState.lab_vessel.temperature = 293.15
+			GameState.lab.deserialize({})
 			
 	GameState.task_queue_changed.emit()
 	
@@ -425,8 +426,9 @@ static func _serialize_lab_vessel(vessel: MixtureBuffer) -> Dictionary:
 		"applied_voltage": vessel.applied_voltage,
 		"container_type": vessel.container_type,
 		"reaction_timer": vessel.reaction_timer,
-		"burner_on": GameState.sim.lab_burner_on,
-		"components": vessel.components.duplicate()
+		"active_formula": vessel.active_formula,
+		"components": vessel.components.duplicate(),
+		"bench": GameState.lab.serialize()
 	}
 
 static func _deserialize_lab_vessel(data: Dictionary) -> void:
@@ -437,7 +439,9 @@ static func _deserialize_lab_vessel(data: Dictionary) -> void:
 	GameState.lab_vessel.applied_voltage = float(data.get("applied_voltage", 0.0))
 	GameState.lab_vessel.container_type = str(data.get("container_type", "flask"))
 	GameState.lab_vessel.reaction_timer = float(data.get("reaction_timer", 0.0))
-	GameState.sim.lab_burner_on = bool(data.get("burner_on", false))
+	GameState.lab_vessel.active_formula = str(data.get("active_formula", ""))
+	# 实验台操作、燃料、手稿 (旧档没有，按初始状态补齐)
+	GameState.lab.deserialize(data.get("bench", {}))
 	var comps = data.get("components", {})
 	if comps is Dictionary:
 		for k in comps.keys():

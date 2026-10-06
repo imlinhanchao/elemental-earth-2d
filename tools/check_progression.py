@@ -51,7 +51,44 @@ def main(map_path):
 
     formulas, crafting, buildings = load("formula"), load("crafting"), load("buildings")
     techs, eras = load("techs"), load("eras")
-    lab_max_temp = 950.0  # 实验台酒精灯上限 (lab_workbench_modal.gd)
+    labs = {a["key"]: a for a in load("labs")}
+    items = {i["key"]: i for i in load("items")}
+
+    # 与 ChemistrySolver.formula_min_temp / formula_min_voltage 一致：配方没写就用操作默认值
+    def op_of(f):
+        return (f.get("required_actions") or {}).get("key", "")
+
+    def min_temp(f):
+        return f.get("min_temp") or labs.get(op_of(f), {}).get("default_min_temp", 0)
+
+    def min_volt(f):
+        return f.get("min_voltage") or labs.get(op_of(f), {}).get("default_min_voltage", 0)
+
+    def lab_flame(have):
+        # 实验台火焰温度取决于最好的燃料 (lab_bench.gd)，枯树枝 873K，持有风箱再加 200K
+        t = [873.0] + [float(items[k]["attrs"]["max_temp"]) for k in have
+                       if k in items and isinstance(items[k].get("attrs"), dict) and "max_temp" in items[k]["attrs"]]
+        return max(t) + (200.0 if "bellows" in have else 0.0)
+
+    def battery_volt(have):
+        v = [float(items[k]["attrs"].get("voltage", 0)) for k in have
+             if k in items and "battery" in items[k].get("type", []) and isinstance(items[k].get("attrs"), dict)]
+        return max(v) if v else 0.0
+
+    def op_ok(op_key, researched, have):
+        # 与 LabBench.op_lock_reason 一致：科技 + 不可加热的必备工具
+        op = labs.get(op_key)
+        if op is None:
+            return op_key == ""
+        if not all(t in researched for t in op.get("required_techs", [])):
+            return False
+        for req in op.get("required_item", []):
+            alts = keys(req)
+            if any(isinstance(items.get(k, {}).get("attrs"), dict) and items[k]["attrs"].get("can_heat") for k in alts):
+                continue
+            if not any(k in have for k in alts):
+                return False
+        return True
 
     have, built, researched = set(), set(), set()
     ok = True
@@ -94,16 +131,25 @@ def main(map_path):
             if "blast_furnace" in built:
                 containers |= {"furnace", "kiln", "crucible"}
             containers |= {"clay_pot", "beaker", "cell"}  # 实验烧瓶别名
-            max_temp = max([lab_max_temp] + [furnace_temp.get(b, 0.0) for b in built])
-            voltage = "battery" in have
+            lab_t = lab_flame(have)
+            furnace_t = max([0.0] + [furnace_temp.get(b, 0.0) for b in built])
+            voltage = battery_volt(have)
+            fire_ops = {k for k, a in labs.items() if a.get("requires_burning")}
             for f in formulas:
+                op = op_of(f)
+                # 炉体能做加热类操作，实验台需满足操作的科技 / 工具门槛
+                in_lab = op_ok(op, researched, have)
+                in_furnace = op in fire_ops and bool(built & set(furnace_temp)) and (op != "blowing" or "blast_furnace" in built)
+                if not in_lab and not in_furnace:
+                    continue
+                max_temp = max(lab_t if in_lab else 0.0, furnace_t if in_furnace else 0.0)
                 rc = f.get("required_container")
                 rcs = [] if rc in (None, "") else (rc if isinstance(rc, list) else [rc])
                 if rcs and not any(c in containers for c in rcs):
                     continue
-                if (f.get("min_temp") or 0) > max_temp:
+                if min_temp(f) > max_temp:
                     continue
-                if (f.get("min_voltage") or 0) > 0 and not voltage:
+                if min_volt(f) > voltage:
                     continue
                 if items_ok(f.get("required_items", [])):
                     for p in f.get("products", []):

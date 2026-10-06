@@ -41,7 +41,8 @@
       "fuel"
     ],
     "attrs": {
-      "burn_time": 30
+      "burn_time": 30,
+      "max_temp": 973.0
     }
   },
   {
@@ -113,7 +114,8 @@
     ],
     "elemental": 6,
     "attrs": {
-      "burn_time": 60
+      "burn_time": 60,
+      "max_temp": 1273.0
     }
   },
   {
@@ -236,7 +238,8 @@
       "fuel"
     ],
     "attrs": {
-      "burn_time": 30
+      "burn_time": 30,
+      "max_temp": 1273.0
     }
   },
   {
@@ -339,7 +342,8 @@
     ],
     "elemental": 6,
     "attrs": {
-      "burn_time": 90
+      "burn_time": 90,
+      "max_temp": 1573.0
     }
   },
   {
@@ -353,7 +357,8 @@
     ],
     "elemental": 6,
     "attrs": {
-      "burn_time": 60
+      "burn_time": 60,
+      "max_temp": 1373.0
     }
   },
   {
@@ -1123,7 +1128,11 @@
       "battery"
     ],
     "durable": 1,
-    "milestone": "craft_battery"
+    "milestone": "craft_battery",
+    "attrs": {
+      "voltage": 4.0,
+      "power_time": 60
+    }
   },
   {
     "name": "岩盐",
@@ -1972,7 +1981,11 @@
       "tool",
       "battery"
     ],
-    "durable": 100
+    "durable": 100,
+    "attrs": {
+      "voltage": 12.0,
+      "power_time": 240
+    }
   },
   {
     "name": "碳酸锂",
@@ -4200,7 +4213,11 @@
       "tool",
       "battery"
     ],
-    "durable": 50
+    "durable": 50,
+    "attrs": {
+      "voltage": 6.0,
+      "power_time": 120
+    }
   },
   {
     "key": "pottery_mold",
@@ -4801,7 +4818,8 @@
       "fuel"
     ],
     "attrs": {
-      "burn_time": 30
+      "burn_time": 30,
+      "max_temp": 1473.0
     }
   }
 ]

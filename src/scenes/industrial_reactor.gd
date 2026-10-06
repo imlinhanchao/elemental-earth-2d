@@ -67,7 +67,7 @@ func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> vo
 			var bp = GameState.unlocked_blueprints[keys[0]]
 			install_blueprint(bp)
 		else:
-			GameState.post_notice("还没有蓝图。先在实验台 [L] 完成反应，再点「导出工艺蓝图」", Color.YELLOW)
+			GameState.post_notice("还没有蓝图。先在实验台 [L] 做成一个配方，会自动生成蓝图", Color.YELLOW)
 
 var _last_status: String = ""
 
