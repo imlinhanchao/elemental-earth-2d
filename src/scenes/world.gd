@@ -446,15 +446,17 @@ func deserialize_world_state(data: Dictionary) -> void:
 	terrain_layer.refresh()
 	overlay_layer.queue_redraw()
 
+# 按领地、采空状态与工具 / 时代门槛刷新地表资源节点的可见性。
+# 只遍历 resource_nodes 索引：熔炉、反应塔也挂在 Entities 下，不能被这里隐藏。
 func apply_depleted_tiles_to_nodes() -> void:
-	for node in entities.get_children():
-		if node is Area2D and "hex_coord" in node:
-			var in_terr = GameState.is_hex_in_territory(node.hex_coord.x, node.hex_coord.y)
-			var depleted = GameState.depleted_tiles.has(node.hex_coord)
-			var minable = true
-			if "item_key" in node and not str(node.item_key).is_empty():
-				minable = GameState.sim.is_resource_minable(node.item_key)
-			node.visible = in_terr and not depleted and minable
+	for hex in resource_nodes.keys():
+		var node = resource_nodes[hex]
+		if not is_instance_valid(node):
+			continue
+		var in_terr = GameState.is_hex_in_territory(hex.x, hex.y)
+		var depleted = GameState.depleted_tiles.has(hex)
+		var minable = GameState.sim.is_resource_minable(node.item_key)
+		node.visible = in_terr and not depleted and minable
 
 func reset_world_state() -> void:
 	for f in built_furnaces:

@@ -51,6 +51,14 @@ func _ready() -> void:
 	await _wait(1.5)
 	_check(GameState.tutorial_step == 3, "装备斧头后进入第 4 步")
 	_check(int(GameState.tile_resources.get(GameState.tutorial_marker_hex, {}).get("wood", 0)) > 0, "第 4 步标记指向树木 (装备斧头后才可见)")
+	var tree_node = w.resource_nodes.get(GameState.tutorial_marker_hex)
+	_check(tree_node != null and tree_node.visible, "装备斧头后，标记地块上的树木节点在地图上可见")
+	var hidden_trees = 0
+	for h in w.resource_nodes.keys():
+		var n = w.resource_nodes[h]
+		if n.item_key == "wood" and GameState.is_hex_in_territory(h.x, h.y) and not n.visible:
+			hidden_trees += 1
+	_check(hidden_trees == 0, "领地内所有树木在装备斧头后都显示出来 (隐藏 %d 棵)" % hidden_trees)
 
 	inv.add_item("wood", 4)
 	await _wait(1.5)
