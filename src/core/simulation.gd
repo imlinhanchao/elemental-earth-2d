@@ -781,6 +781,10 @@ func build_structure(structure_key: String, hex: Vector2i) -> bool:
 		post_notice("无法在此建造：超出当前文明领地边界！", Color(1.0, 0.4, 0.4))
 		return false
 		
+	if built_furnaces.has(hex) or built_reactors.has(hex):
+		post_notice("无法在此建造：该地块已有建筑设施！", Color(1.0, 0.4, 0.4))
+		return false
+		
 	var recipe = DataDB.get_building_recipe(structure_key)
 	if recipe.is_empty():
 		post_notice("未知建筑类型: %s" % structure_key, Color.RED)
@@ -792,6 +796,7 @@ func build_structure(structure_key: String, hex: Vector2i) -> bool:
 		return false
 		
 	_consume_all_ingredients(req_items)
+	depleted_tiles[hex] = true
 	
 	if structure_key == "furnace" or structure_key == "fire_pit":
 		var f_buf = MixtureBuffer.new()

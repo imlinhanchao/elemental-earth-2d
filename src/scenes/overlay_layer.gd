@@ -11,8 +11,11 @@ func _draw() -> void:
 	if not world:
 		return
 		
-	# 1. 绘制鼠标当前悬停的六边形高亮框
-	if world.generated_hexes.has(world.hovered_hex):
+	# 1. 建造选址模式 (最高视觉优先级: 半透明多边形、建筑虚影与可放置指示)
+	if "is_placing_structure" in world and world.is_placing_structure and world.generated_hexes.has(world.hovered_hex):
+		_draw_placement_preview(world.hovered_hex)
+	elif world.generated_hexes.has(world.hovered_hex):
+		# 普通模式下的鼠标悬停高亮框
 		var h_center = HexWorldGenerator.hex_to_pixel(world.hovered_hex.x, world.hovered_hex.y)
 		var h_points = PackedVector2Array()
 		for i in range(6):
@@ -45,3 +48,75 @@ func _draw() -> void:
 		)
 		draw_circle(q_pos, 16.0, Color(0.1, 0.2, 0.3, 0.3))
 		draw_arc(q_pos, 20.0, 0, TAU, 24, Color(0.8, 0.8, 0.3, 0.5), 2.0)
+
+func _draw_placement_preview(hex: Vector2i) -> void:
+	var check = world.get_build_validity(hex) if world.has_method("get_build_validity") else {"valid": true, "reason": ""}
+	var is_valid: bool = check.get("valid", false)
+	var reason: String = check.get("reason", "")
+	var h_center = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
+	
+	# 六边形多边形顶点
+	var h_points = PackedVector2Array()
+	for i in range(6):
+		var angle = deg_to_rad(60.0 * i - 30.0)
+		var pt = h_center + Vector2(cos(angle), sin(angle)) * HexWorldGenerator.HEX_RADIUS
+		h_points.append(pt)
+	
+	var poly_outline = h_points.duplicate()
+	poly_outline.append(h_points[0])
+	
+	var font = ThemeDB.fallback_font
+	
+	if is_valid:
+		# 翡翠绿发光填充与边框
+		draw_colored_polygon(h_points, Color(0.15, 0.85, 0.45, 0.28))
+		draw_polyline(poly_outline, Color(0.25, 1.0, 0.55, 0.95), 3.5)
+		
+		# 虚影建筑预览
+		var p_key = world.placing_structure_key if "placing_structure_key" in world else "fire_pit"
+		match p_key:
+			"fire_pit":
+				_draw_ghost_fire_pit(h_center)
+			"furnace":
+				_draw_ghost_furnace(h_center)
+			"industrial_reactor":
+				_draw_ghost_reactor(h_center)
+			_:
+				_draw_ghost_fire_pit(h_center)
+		
+		# 提示文字
+		if font:
+			draw_string(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), "✔ 点击左键安放", HORIZONTAL_ALIGNMENT_CENTER, -1, 13, Color(0.35, 1.0, 0.55))
+	else:
+		# 红色警示填充与边框
+		draw_colored_polygon(h_points, Color(0.85, 0.15, 0.15, 0.25))
+		draw_polyline(poly_outline, Color(1.0, 0.3, 0.3, 0.90), 3.0)
+		
+		if font:
+			draw_string(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), "✖ " + reason, HORIZONTAL_ALIGNMENT_CENTER, -1, 12, Color(1.0, 0.4, 0.4))
+
+func _draw_ghost_fire_pit(pos: Vector2) -> void:
+	# 8 块半透明小河卵石环
+	var stone_count = 8
+	var ring_r = 16.0
+	for i in range(stone_count):
+		var angle = (TAU / stone_count) * i
+		var stone_pos = pos + Vector2(cos(angle) * ring_r, sin(angle) * ring_r * 0.72)
+		draw_circle(stone_pos, 4.2, Color(0.75, 0.8, 0.85, 0.65))
+		draw_arc(stone_pos, 4.2, 0, TAU, 12, Color(0.9, 0.95, 1.0, 0.7), 1.0)
+	# 交叉烧焦柴木虚影
+	draw_line(pos + Vector2(-10, -5), pos + Vector2(10, 5), Color(0.65, 0.42, 0.22, 0.75), 3.5)
+	draw_line(pos + Vector2(-9, 5), pos + Vector2(9, -5), Color(0.55, 0.35, 0.18, 0.75), 3.0)
+	# 温暖火苗发光虚影
+	draw_circle(pos + Vector2(0, -2), 7.0, Color(1.0, 0.65, 0.15, 0.8))
+	draw_circle(pos + Vector2(0, -4), 4.0, Color(1.0, 0.92, 0.35, 0.9))
+
+func _draw_ghost_furnace(pos: Vector2) -> void:
+	draw_rect(Rect2(pos.x - 12, pos.y - 10, 24, 20), Color(0.85, 0.45, 0.25, 0.7))
+	draw_rect(Rect2(pos.x - 6, pos.y - 18, 12, 8), Color(0.70, 0.35, 0.20, 0.7))
+	draw_circle(pos + Vector2(0, 3), 6.0, Color(1.0, 0.6, 0.1, 0.85))
+
+func _draw_ghost_reactor(pos: Vector2) -> void:
+	draw_rect(Rect2(pos.x - 14, pos.y - 16, 28, 30), Color(0.2, 0.6, 0.9, 0.65))
+	draw_rect(Rect2(pos.x - 10, pos.y - 24, 20, 8), Color(0.3, 0.7, 1.0, 0.75))
+	draw_circle(pos + Vector2(0, 0), 7.0, Color(0.2, 0.9, 1.0, 0.85))

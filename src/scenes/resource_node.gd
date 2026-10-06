@@ -12,6 +12,7 @@ var current_health: int
 var is_hovered: bool = false
 var anim_scale: Vector2 = Vector2.ONE
 var anim_rotation: float = 0.0
+var _is_working: bool = false
 
 @onready var label = $NameLabel
 
@@ -22,13 +23,30 @@ func _ready() -> void:
 	
 	GameState.tile_depleted.connect(_on_tile_depleted)
 	GameState.tile_respawned.connect(_on_tile_respawned)
+	GameState.task_completed.connect(_on_task_finished)
+	GameState.task_cancelled.connect(_on_task_finished)
+	GameState.task_queue_changed.connect(_on_task_queue_changed)
 	
 	if label:
 		label.text = item_name
 		label.visible = false
 	queue_redraw()
 
+func _on_task_finished(_t: Dictionary) -> void:
+	if _is_working:
+		_is_working = false
+		queue_redraw()
+
+func _on_task_queue_changed() -> void:
+	var active_hex = GameState.get_active_task_hex()
+	if _is_working and (active_hex != hex_coord or active_hex == Vector2i(9999, 9999)):
+		_is_working = false
+		queue_redraw()
+
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
+	var world_node = get_tree().get_first_node_in_group("world")
+	if world_node and "is_placing_structure" in world_node and world_node.is_placing_structure:
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		get_viewport().set_input_as_handled()
 		request_mine_task()
@@ -78,9 +96,14 @@ func _process(_delta: float) -> void:
 	else:
 		modulate = Color.WHITE
 
-	# 若当前节点正是正在开工的目标，则持续重绘显示工作环
+	# 若当前节点正是正在开工的目标，持续重绘显示工作环；开工结束时立即触发单次重绘擦除绿圈
 	var active_hex = GameState.get_active_task_hex()
-	if active_hex == hex_coord and active_hex != Vector2i(9999, 9999):
+	var is_active = (active_hex == hex_coord and active_hex != Vector2i(9999, 9999))
+	if is_active:
+		_is_working = true
+		queue_redraw()
+	elif _is_working:
+		_is_working = false
 		queue_redraw()
 	elif anim_scale != Vector2.ONE or anim_rotation != 0.0:
 		queue_redraw()

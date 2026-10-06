@@ -28,6 +28,10 @@ var right_click_down_pos: Vector2 = Vector2.ZERO
 var built_furnaces: Array[Node2D] = []
 var built_reactors: Array[Node2D] = []
 
+# 设施建造选址模式交互状态
+var is_placing_structure: bool = false
+var placing_structure_key: String = ""
+
 # 自动存档计时器
 var auto_save_timer: float = 0.0
 
@@ -42,6 +46,7 @@ var target_zoom: Vector2 = Vector2.ONE
 const WORLD_HEX_RADIUS: int = 18
 
 func _ready() -> void:
+	add_to_group("world")
 	terrain_layer.world = self
 	overlay_layer.world = self
 	
@@ -55,6 +60,7 @@ func _ready() -> void:
 	hud.build_structure_requested.connect(_on_build_structure_requested)
 	hud.build_furnace_requested.connect(func(): _on_build_structure_requested("furnace"))
 	hud.build_reactor_requested.connect(func(): _on_build_structure_requested("industrial_reactor"))
+	hud.cancel_placement_requested.connect(cancel_placement_mode)
 	
 	hud.save_requested.connect(func(): SaveManager.save_to_slot("slot_1", self))
 	hud.load_requested.connect(func(): SaveManager.load_from_slot("slot_1", self))
@@ -137,6 +143,30 @@ func _capture_screenshot_after_delay(arg_name: String) -> void:
 		target_zoom = Vector2(1.5, 1.5)
 		camera.reset_smoothing()
 		terrain_layer.queue_redraw()
+	elif arg_name == "--screenshot-placement":
+		GameState.inventory.add_item("wood", 10)
+		GameState.inventory.add_item("stone", 10)
+		enter_placement_mode("fire_pit")
+		hovered_hex = Vector2i(1, 0)
+		camera.position = Vector2.ZERO
+		camera.zoom = Vector2(1.3, 1.3)
+		target_zoom = Vector2(1.3, 1.3)
+		camera.reset_smoothing()
+		terrain_layer.queue_redraw()
+		overlay_layer.queue_redraw()
+	elif arg_name == "--screenshot-task-complete":
+		for h in GameState.world_resources.keys():
+			if GameState.is_hex_in_territory(h.x, h.y) and GameState.world_resources[h] == "stone":
+				GameState.queue_hex_harvest(h, "stone", 1, Vector2.ZERO)
+				break
+		# 等待 1.6 秒确保 1.0 秒的任务真实完成并从队列移除
+		await get_tree().create_timer(1.6).timeout
+		camera.position = Vector2.ZERO
+		camera.zoom = Vector2(1.3, 1.3)
+		target_zoom = Vector2(1.3, 1.3)
+		camera.reset_smoothing()
+		terrain_layer.queue_redraw()
+		overlay_layer.queue_redraw()
 	elif arg_name == "--screenshot-hud":
 		camera.position = Vector2.ZERO
 		camera.zoom = Vector2(1.0, 1.0)
@@ -210,7 +240,14 @@ func _on_context_menu_harvest(hex: Vector2i, item_key: String, count: int) -> vo
 	GameState.queue_hex_harvest(hex, item_key, count, world_p)
 
 func _unhandled_input(event: InputEvent) -> void:
-	# 鼠标右键或中键拖拽地图；右键单点呼出开采次数菜单
+	# ESC 按键取消建造选址模式
+	if event is InputEventKey and event.pressed:
+		if event.keycode == KEY_ESCAPE and is_placing_structure:
+			cancel_placement_mode()
+			get_viewport().set_input_as_handled()
+			return
+
+	# 鼠标右键或中键拖拽地图；右键单点呼出开采次数菜单或取消建造
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_RIGHT:
 			if event.pressed:
@@ -220,9 +257,12 @@ func _unhandled_input(event: InputEvent) -> void:
 				right_click_down_pos = event.position
 			else:
 				is_dragging_camera = false
-				# 若右键按下与抬起位移小于 6px，判定为单点右键，呼出开采菜单
+				# 若右键按下与抬起位移小于 6px，判定为单点右键
 				if (event.position - right_click_down_pos).length() < 6.0:
-					_handle_tile_right_click(hovered_hex, event.position)
+					if is_placing_structure:
+						cancel_placement_mode()
+					else:
+						_handle_tile_right_click(hovered_hex, event.position)
 		elif event.button_index == MOUSE_BUTTON_MIDDLE:
 			is_dragging_camera = event.pressed
 			drag_start_mouse = event.position
@@ -246,7 +286,10 @@ func _unhandled_input(event: InputEvent) -> void:
 			if terrain_layer:
 				terrain_layer.queue_redraw()
 		elif event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			_handle_tile_click(hovered_hex)
+			if is_placing_structure:
+				confirm_placement(hovered_hex)
+			else:
+				_handle_tile_click(hovered_hex)
 	
 	elif event is InputEventMouseMotion:
 		if is_dragging_camera:
@@ -313,10 +356,53 @@ func _bind_furnace_events(f_node: Node2D) -> void:
 			hud.show_furnace_ui(furnace_inst)
 		)
 
+func get_build_validity(hex: Vector2i) -> Dictionary:
+	if not generated_hexes.has(hex):
+		return {"valid": false, "reason": "未探索未知区域"}
+	if not GameState.is_hex_in_territory(hex.x, hex.y):
+		return {"valid": false, "reason": "超出文明领地边界"}
+	if GameState.built_furnaces.has(hex) or GameState.built_reactors.has(hex):
+		return {"valid": false, "reason": "地块已被设施占用"}
+	if generated_hexes.get(hex) == HexWorldGenerator.BiomeType.SALT_LAKE:
+		return {"valid": false, "reason": "无法在盐湖水域中建造"}
+	return {"valid": true, "reason": "可安放设施"}
+
+func is_valid_build_hex(hex: Vector2i) -> bool:
+	return get_build_validity(hex).get("valid", false)
+
+func enter_placement_mode(structure_key: String) -> void:
+	is_placing_structure = true
+	placing_structure_key = structure_key
+	var recipe = DataDB.get_building_recipe(structure_key)
+	var b_name = recipe.get("name", structure_key)
+	hud.show_placement_mode(b_name)
+	GameState.post_notice("🔨 建造选址: 请在领地空闲地块点击安放【%s】(右键或ESC取消)" % b_name, Color(0.3, 0.9, 0.6))
+	overlay_layer.queue_redraw()
+
+func cancel_placement_mode() -> void:
+	if not is_placing_structure:
+		return
+	is_placing_structure = false
+	placing_structure_key = ""
+	hud.hide_placement_mode()
+	overlay_layer.queue_redraw()
+	GameState.post_notice("已取消建造", Color(0.8, 0.8, 0.8))
+
+func confirm_placement(hex: Vector2i) -> void:
+	var check = get_build_validity(hex)
+	if not check.get("valid", false):
+		GameState.post_notice("❌ 无法在此建造: %s" % check.get("reason", "无效地块"), Color(1.0, 0.4, 0.4))
+		return
+	var key = placing_structure_key
+	is_placing_structure = false
+	placing_structure_key = ""
+	hud.hide_placement_mode()
+	overlay_layer.queue_redraw()
+	GameState.build_structure(key, hex)
+
 func _find_valid_build_hex(preferred_hex: Vector2i) -> Vector2i:
-	if GameState.is_hex_in_territory(preferred_hex.x, preferred_hex.y):
-		if not GameState.built_furnaces.has(preferred_hex) and not GameState.built_reactors.has(preferred_hex):
-			return preferred_hex
+	if is_valid_build_hex(preferred_hex):
+		return preferred_hex
 			
 	# 从中心向外螺旋搜索最近的未被建筑占用的领地内地块
 	var radius = GameState.get_current_territory_radius()
@@ -324,15 +410,22 @@ func _find_valid_build_hex(preferred_hex: Vector2i) -> Vector2i:
 		for q in range(-r, r + 1):
 			for s in range(-r, r + 1):
 				var h = Vector2i(q, s)
-				if GameState.is_hex_in_territory(h.x, h.y):
-					if not GameState.built_furnaces.has(h) and not GameState.built_reactors.has(h):
-						return h
+				if is_valid_build_hex(h):
+					return h
 	return Vector2i.ZERO
 
 func _on_build_structure_requested(structure_key: String) -> void:
-	var preferred = hovered_hex if generated_hexes.has(hovered_hex) else HexWorldGenerator.pixel_to_hex(camera.position)
-	var target_hex = _find_valid_build_hex(preferred)
-	GameState.build_structure(structure_key, target_hex)
+	var recipe = DataDB.get_building_recipe(structure_key)
+	if recipe.is_empty():
+		GameState.post_notice("未知建筑类型: %s" % structure_key, Color.RED)
+		return
+	var req_items = recipe.get("required_items", [])
+	if not GameState.sim._has_all_ingredients(req_items):
+		GameState.post_notice("建造原料不足！需要: %s" % GameState.sim._get_ingredients_desc(req_items), Color.RED)
+		return
+		
+	# 启动地图自由交互放置模式
+	enter_placement_mode(structure_key)
 
 func _on_build_furnace_requested() -> void:
 	_on_build_structure_requested("furnace")
@@ -350,6 +443,11 @@ func _on_structure_built(structure_key: String, hex: Vector2i) -> void:
 		entities.add_child(new_f)
 		built_furnaces.append(new_f)
 		_bind_furnace_events(new_f)
+		# 隐匿该地块上的自然资源，避免与建筑视觉穿模
+		for child in entities.get_children():
+			if "hex_coord" in child and child.hex_coord == hex and "item_key" in child:
+				child.visible = false
+		GameState.depleted_tiles[hex] = true
 		SaveManager.save_to_slot("auto", self)
 	elif structure_key == "industrial_reactor":
 		var new_r = IndustrialReactorScene.instantiate()
@@ -357,6 +455,10 @@ func _on_structure_built(structure_key: String, hex: Vector2i) -> void:
 		new_r.position = spawn_pos
 		entities.add_child(new_r)
 		built_reactors.append(new_r)
+		for child in entities.get_children():
+			if "hex_coord" in child and child.hex_coord == hex and "item_key" in child:
+				child.visible = false
+		GameState.depleted_tiles[hex] = true
 		SaveManager.save_to_slot("auto", self)
 
 # --- 存档序列化与反序列化接口 ---

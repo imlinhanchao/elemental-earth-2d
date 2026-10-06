@@ -5,6 +5,7 @@ extends CanvasLayer
 signal build_furnace_requested
 signal build_reactor_requested
 signal build_structure_requested(structure_key: String)
+signal cancel_placement_requested
 signal save_requested
 signal load_requested
 signal reset_requested
@@ -190,6 +191,58 @@ func _toggle_category(tab: CategoryTab) -> void:
 func _close_drawer() -> void:
 	current_tab = CategoryTab.NONE
 	action_drawer.visible = false
+
+var placement_bar: PanelContainer = null
+var placement_label: Label = null
+var btn_cancel_placement: Button = null
+
+func show_placement_mode(structure_name: String) -> void:
+	_close_drawer()
+	if not placement_bar:
+		placement_bar = PanelContainer.new()
+		placement_bar.custom_minimum_size = Vector2(460, 42)
+		var sbox = StyleBoxFlat.new()
+		sbox.bg_color = Color(0.08, 0.14, 0.18, 0.94)
+		sbox.border_color = Color(0.2, 0.9, 0.5, 0.85)
+		sbox.border_width_left = 2
+		sbox.border_width_right = 2
+		sbox.border_width_top = 2
+		sbox.border_width_bottom = 2
+		sbox.corner_radius_top_left = 8
+		sbox.corner_radius_top_right = 8
+		sbox.corner_radius_bottom_left = 8
+		sbox.corner_radius_bottom_right = 8
+		sbox.shadow_color = Color(0, 0, 0, 0.45)
+		sbox.shadow_size = 6
+		placement_bar.add_theme_stylebox_override("panel", sbox)
+		
+		var hbox = HBoxContainer.new()
+		hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		hbox.add_theme_constant_override("separation", 16)
+		placement_bar.add_child(hbox)
+		
+		placement_label = Label.new()
+		placement_label.add_theme_font_size_override("font_size", 13)
+		placement_label.add_theme_color_override("font_color", Color(0.92, 1.0, 0.95))
+		hbox.add_child(placement_label)
+		
+		btn_cancel_placement = Button.new()
+		btn_cancel_placement.text = "✕ 取消建造 [ESC]"
+		btn_cancel_placement.custom_minimum_size = Vector2(120, 28)
+		btn_cancel_placement.add_theme_font_size_override("font_size", 12)
+		btn_cancel_placement.pressed.connect(func(): cancel_placement_requested.emit())
+		hbox.add_child(btn_cancel_placement)
+		
+		var bottom_area = $Margin/MainVBox/BottomArea
+		bottom_area.add_child(placement_bar)
+		bottom_area.move_child(placement_bar, bottom_area.get_child_count() - 2)
+	
+	placement_label.text = "🔨 建造选址: 点击领地空闲地块安放【%s】(右键或ESC取消)" % structure_name
+	placement_bar.visible = true
+
+func hide_placement_mode() -> void:
+	if placement_bar:
+		placement_bar.visible = false
 
 func _populate_drawer(tab: CategoryTab) -> void:
 	for child in drawer_grid.get_children():

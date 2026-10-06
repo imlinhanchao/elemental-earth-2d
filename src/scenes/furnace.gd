@@ -92,6 +92,9 @@ func _draw_furnace() -> void:
 		draw_circle(Vector2.ZERO, fire_r * 0.6, Color(1.0, 0.85, 0.2, 1.0)) # 白炽金内焰
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
+	var world_node = get_tree().get_first_node_in_group("world")
+	if world_node and "is_placing_structure" in world_node and world_node.is_placing_structure:
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		get_viewport().set_input_as_handled()
 		open_workbench_requested.emit(self)

@@ -57,6 +57,9 @@ func install_blueprint(bp: ProcessBlueprint) -> void:
 	_update_ui()
 
 func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
+	var world_node = get_tree().get_first_node_in_group("world")
+	if world_node and "is_placing_structure" in world_node and world_node.is_placing_structure:
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		get_viewport().set_input_as_handled()
 		if GameState.unlocked_blueprints.size() > 0:
