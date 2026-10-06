@@ -53,11 +53,11 @@ func _set_anim_t(t: float) -> void:
 func _draw() -> void:
 	# 鼠标悬停时的微光光圈与名称 (墨色字 + 纸白描边，仅悬停时绘制)
 	if is_hovered:
-		draw_arc(Vector2.ZERO, 20.0, 0, TAU, 24, Color(0.15, 0.14, 0.13, 0.35), 1.5)
+		draw_arc(Vector2.ZERO, 20.0, 0, TAU, 24, Color(ThemeStyler.COLOR_TEXT_PRIMARY, 0.35), 1.5)
 		var font = ThemeStyler.get_font_sans()
 		var pos = Vector2(-60, 40)
-		draw_string_outline(font, pos, item_name, HORIZONTAL_ALIGNMENT_CENTER, 120, 12, 4, Color(0.96, 0.94, 0.90, 0.9))
-		draw_string(font, pos, item_name, HORIZONTAL_ALIGNMENT_CENTER, 120, 12, Color(0.15, 0.14, 0.13, 1))
+		draw_string_outline(font, pos, item_name, HORIZONTAL_ALIGNMENT_CENTER, 120, 12, 4, Color(ThemeStyler.COLOR_BG_SOLID, 0.9))
+		draw_string(font, pos, item_name, HORIZONTAL_ALIGNMENT_CENTER, 120, 12, ThemeStyler.COLOR_TEXT_PRIMARY)
 
 	# 应用弹性受击变换
 	draw_set_transform(Vector2.ZERO, anim_rotation, anim_scale)

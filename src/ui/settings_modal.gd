@@ -27,6 +27,8 @@ const SettingsManager = preload("res://src/core/settings_manager.gd")
 
 # 显示与游戏控件
 @onready var check_fullscreen = $CenterPanel/VBox/Body/HBox/RightContent/SecDisplay/CheckFullscreen
+@onready var opt_theme = $CenterPanel/VBox/Body/HBox/RightContent/SecDisplay/ThemeBox/OptTheme
+const THEME_MODES: Array[String] = ["light", "dark", "system"]
 @onready var opt_autosave = $CenterPanel/VBox/Body/HBox/RightContent/SecGame/AutoSaveBox/OptAutoSave
 @onready var slider_cam_speed = $CenterPanel/VBox/Body/HBox/RightContent/SecGame/CamSpeedBox/HSlider
 @onready var label_cam_speed_val = $CenterPanel/VBox/Body/HBox/RightContent/SecGame/CamSpeedBox/ValLabel
@@ -92,6 +94,10 @@ func _switch_tab(index: int) -> void:
 	tab_game.modulate = accent if index == 2 else def_col
 
 func _setup_options() -> void:
+	opt_theme.clear()
+	opt_theme.add_item("浅色（纸面）", 0)
+	opt_theme.add_item("深色（暖墨）", 1)
+	opt_theme.add_item("跟随系统", 2)
 	opt_autosave.clear()
 	opt_autosave.add_item("每 30 秒自动保存", 0)
 	opt_autosave.set_item_metadata(0, 30.0)
@@ -134,6 +140,7 @@ func _refresh_ui_from_settings() -> void:
 	label_sfx_val.text = "%d%%" % int(s_vol * 100)
 	
 	check_fullscreen.button_pressed = is_fs
+	opt_theme.selected = max(THEME_MODES.find(str(SettingsManager.get_setting("theme_mode", "light"))), 0)
 	
 	slider_cam_speed.value = c_spd
 	label_cam_speed_val.text = "%.1fx" % c_spd
@@ -157,11 +164,14 @@ func _on_apply_pressed() -> void:
 	
 	SettingsManager.save_settings()
 	close()
+	# 主题最后应用：切换明暗会重新加载当前场景 (大世界中进度会先暂存再读回)
+	GameState.switch_theme(THEME_MODES[opt_theme.selected])
 
 func _on_default_pressed() -> void:
 	slider_master.value = 1.0
 	slider_bgm.value = 0.8
 	slider_sfx.value = 1.0
 	check_fullscreen.button_pressed = false
+	opt_theme.selected = 0
 	opt_autosave.selected = 1
 	slider_cam_speed.value = 1.0

@@ -198,6 +198,20 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 16
 
+[node name="ThemeBox" type="HBoxContainer" parent="CenterPanel/VBox/Body/HBox/RightContent/SecDisplay"]
+custom_minimum_size = Vector2(0, 36)
+layout_mode = 2
+
+[node name="Lbl" type="Label" parent="CenterPanel/VBox/Body/HBox/RightContent/SecDisplay/ThemeBox"]
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "主题"
+
+[node name="OptTheme" type="OptionButton" parent="CenterPanel/VBox/Body/HBox/RightContent/SecDisplay/ThemeBox"]
+custom_minimum_size = Vector2(220, 36)
+layout_mode = 2
+
 [node name="CheckFullscreen" type="CheckBox" parent="CenterPanel/VBox/Body/HBox/RightContent/SecDisplay"]
 custom_minimum_size = Vector2(0, 36)
 layout_mode = 2

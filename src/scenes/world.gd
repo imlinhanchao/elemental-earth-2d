@@ -101,7 +101,9 @@ func _ready() -> void:
 	if SaveManager.pending_load_slot != "":
 		var target = SaveManager.pending_load_slot
 		SaveManager.pending_load_slot = ""
-		SaveManager.load_from_slot(target, self)
+		SaveManager.load_from_slot(target, self, target == GameState.THEME_RELOAD_SLOT)
+		if target == GameState.THEME_RELOAD_SLOT:
+			SaveManager.delete_slot(target)
 		hud._update_era_label()
 	elif not GameState.is_tutorial_active:
 		GameState.post_notice("点击碎石、枯树枝开始采集，点击盐湖打水，右键拖拽移动视野", Color(1.0, 0.88, 0.4))

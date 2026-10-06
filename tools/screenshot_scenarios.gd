@@ -4,6 +4,7 @@
 extends RefCounted
 
 static func run(w: Node2D, arg_name: String) -> void:
+	load("res://src/core/save_manager.gd").suppress_auto_save = true # 截图场景不写玩家的自动存档
 	await w.get_tree().create_timer(1.2).timeout
 	if w.hud.era_modal.visible:
 		w.hud.era_modal.visible = false

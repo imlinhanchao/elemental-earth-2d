@@ -80,7 +80,7 @@ func _apply_visual_styling() -> void:
 	# 1. 核心大面板深空微光卡片
 	var main_box = StyleBoxFlat.new()
 	main_box.bg_color = ThemeStyler.COLOR_BG
-	main_box.border_color = Color(0.16, 0.40, 0.62, 0.80)
+	main_box.border_color = ThemeStyler.adapt(Color(0.16, 0.40, 0.62, 0.80))
 	main_box.border_width_left = 1
 	main_box.border_width_top = 1
 	main_box.border_width_right = 1
@@ -89,14 +89,14 @@ func _apply_visual_styling() -> void:
 	main_box.corner_radius_top_right = 20
 	main_box.corner_radius_bottom_left = 20
 	main_box.corner_radius_bottom_right = 20
-	main_box.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
+	main_box.shadow_color = ThemeStyler.adapt(Color(0.25, 0.20, 0.12, 0.22))
 	main_box.shadow_size = 24
 	panel.add_theme_stylebox_override("panel", main_box)
 	
 	# 2. Hero 展区深冷玻璃卡
 	var hero_box = StyleBoxFlat.new()
 	hero_box.bg_color = ThemeStyler.COLOR_CARD
-	hero_box.border_color = Color(0.21, 0.40, 0.62, 0.50)
+	hero_box.border_color = ThemeStyler.adapt(Color(0.21, 0.40, 0.62, 0.50))
 	hero_box.border_width_left = 1
 	hero_box.border_width_top = 1
 	hero_box.border_width_right = 1
@@ -109,8 +109,8 @@ func _apply_visual_styling() -> void:
 	
 	# 3. 关闭按钮极简胶囊
 	var close_box = StyleBoxFlat.new()
-	close_box.bg_color = Color(0.80, 0.84, 0.93, 0.60)
-	close_box.border_color = Color(0.31, 0.44, 0.62, 0.50)
+	close_box.bg_color = ThemeStyler.adapt(Color(0.80, 0.84, 0.93, 0.60))
+	close_box.border_color = ThemeStyler.adapt(Color(0.31, 0.44, 0.62, 0.50))
 	close_box.border_width_left = 1
 	close_box.border_width_top = 1
 	close_box.border_width_right = 1
@@ -120,12 +120,12 @@ func _apply_visual_styling() -> void:
 	close_box.corner_radius_bottom_left = 13
 	close_box.corner_radius_bottom_right = 13
 	btn_close.add_theme_stylebox_override("normal", close_box)
-	btn_close.add_theme_color_override("font_color", Color(0.28, 0.44, 0.62))
+	btn_close.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.28, 0.44, 0.62)))
 	
 	# 4. 指标胶囊外观
 	var kpi_box = StyleBoxFlat.new()
-	kpi_box.bg_color = Color(0.92, 0.89, 0.84, 0.70)
-	kpi_box.border_color = Color(0.19, 0.38, 0.62, 0.45)
+	kpi_box.bg_color = ThemeStyler.adapt(Color(0.92, 0.89, 0.84, 0.70))
+	kpi_box.border_color = ThemeStyler.adapt(Color(0.19, 0.38, 0.62, 0.45))
 	kpi_box.border_width_left = 1
 	kpi_box.border_width_top = 1
 	kpi_box.border_width_right = 1
@@ -213,7 +213,7 @@ func _render_era_view(era_order: int, is_celebration: bool) -> void:
 	# 1. 顶栏标题与标识
 	if is_celebration:
 		header_title.text = "进入新时代"
-		header_title.add_theme_color_override("font_color", Color(0.58, 0.51, 0.20))
+		header_title.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.58, 0.51, 0.20)))
 		btn_continue.text = "继续 [ENTER]"
 	else:
 		header_title.text = "时代进度"
@@ -336,11 +336,11 @@ func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Co
 	var p = PanelContainer.new()
 	var box = StyleBoxFlat.new()
 	if is_done:
-		box.bg_color = Color(0.83, 0.93, 0.80, 0.85) # 达成后柔和苔绿
-		box.border_color = Color(0.14, 0.62, 0.43, 0.80)
+		box.bg_color = ThemeStyler.adapt(Color(0.83, 0.93, 0.80, 0.85)) # 达成后柔和苔绿
+		box.border_color = ThemeStyler.adapt(Color(0.14, 0.62, 0.43, 0.80))
 	else:
 		box.bg_color = ThemeStyler.COLOR_CARD # 进行中暖墨
-		box.border_color = Color(0.23, 0.41, 0.62, 0.60)
+		box.border_color = ThemeStyler.adapt(Color(0.23, 0.41, 0.62, 0.60))
 	box.border_width_left = 1
 	box.border_width_top = 1
 	box.border_width_right = 1
@@ -388,7 +388,7 @@ func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Co
 	tag.text = "已完成" if is_done else "未完成"
 	tag.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	tag.add_theme_font_size_override("font_size", 12)
-	tag.add_theme_color_override("font_color", Color(0.20, 0.62, 0.42) if is_done else accent)
+	tag.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.20, 0.62, 0.42)) if is_done else accent)
 	hbox.add_child(tag)
 	
 	# 方案 4: 注入科研攻关详细指引卡片
@@ -396,7 +396,7 @@ func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Co
 		var g_info = MILESTONE_GUIDES[key]
 		var guide_panel = PanelContainer.new()
 		var g_style = StyleBoxFlat.new()
-		g_style.bg_color = Color(0.92, 0.89, 0.84, 0.70)
+		g_style.bg_color = ThemeStyler.adapt(Color(0.92, 0.89, 0.84, 0.70))
 		g_style.border_color = Color(accent.r * 0.4, accent.g * 0.4, accent.b * 0.4, 0.5)
 		g_style.border_width_left = 2
 		g_style.corner_radius_top_left = 4
@@ -415,13 +415,13 @@ func _create_milestone_card(key: String, desc: String, is_done: bool, accent: Co
 		lbl_guide.text = "怎么做：" + str(g_info.get("guide", ""))
 		lbl_guide.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		lbl_guide.add_theme_font_size_override("font_size", 12)
-		lbl_guide.add_theme_color_override("font_color", Color(0.28, 0.62, 0.45) if is_done else Color(0.62, 0.52, 0.28))
+		lbl_guide.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.28, 0.62, 0.45)) if is_done else ThemeStyler.adapt(Color(0.62, 0.52, 0.28)))
 		g_vbox.add_child(lbl_guide)
 		
 		var lbl_meta = Label.new()
 		lbl_meta.text = "去哪里：%s　·　入口：%s" % [g_info.get("field", ""), g_info.get("route", "")]
 		lbl_meta.add_theme_font_size_override("font_size", 12)
-		lbl_meta.add_theme_color_override("font_color", Color(0.26, 0.49, 0.62))
+		lbl_meta.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.26, 0.49, 0.62)))
 		g_vbox.add_child(lbl_meta)
 		
 		card_vbox.add_child(guide_panel)

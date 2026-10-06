@@ -111,9 +111,53 @@ func _init() -> void:
 func _ready() -> void:
 	print("[GameState] 模拟层已就绪，当前时代: %s" % ERA_NAMES[current_era])
 	_setup_app_icon()
-	# 纸面主题合并进引擎默认主题：所有界面 (含 CanvasLayer 下动态创建的菜单、下拉弹出层)
-	# 都以同一套浅色样式为兜底，不再出现引擎默认的深灰按钮
-	ThemeDB.get_default_theme().merge_with(preload("res://src/ui/theme_styler.gd").create_scientific_theme())
+	var dark = ThemeStyler.resolve_dark(str(SettingsManager.get_setting("theme_mode", "light")))
+	var args = OS.get_cmdline_user_args() + OS.get_cmdline_args()
+	if args.has("--theme-dark"): dark = true
+	elif args.has("--theme-light"): dark = false
+	_apply_theme(dark)
+	# 场景文件里写死的文字颜色 / 遮罩 / 图标，在节点进入场景树时按当前主题换算
+	get_tree().node_added.connect(_on_node_added)
+	# 启动场景 (主菜单) 在本节点 _ready 之前就已进入场景树，补做一次换算
+	for c in get_tree().root.get_children():
+		if c != self:
+			_adapt_subtree(c)
+
+# 写入配色令牌，并把界面主题合并进引擎默认主题：所有界面 (含 CanvasLayer 下动态创建的菜单、
+# 下拉弹出层) 都以同一套样式为兜底，不再出现引擎默认的深灰按钮
+func _apply_theme(dark: bool) -> void:
+	ThemeStyler.apply_mode(dark)
+	ThemeDB.get_default_theme().merge_with(ThemeStyler.create_scientific_theme())
+	RenderingServer.set_default_clear_color(ThemeStyler.COLOR_CLEAR)
+
+func _adapt_subtree(n: Node) -> void:
+	_on_node_added(n)
+	for c in n.get_children():
+		_adapt_subtree(c)
+
+func _on_node_added(n: Node) -> void:
+	# 只处理场景文件实例化出来的节点 (owner 非空或本身是场景根)；
+	# 代码动态创建的节点已直接使用主题令牌，不能再换算一次
+	if ThemeStyler.is_dark and (n.owner != null or n.scene_file_path != ""):
+		ThemeStyler.adapt_scene_node(n)
+
+# 切换浅色 / 深色 / 跟随系统。配色写在各界面的 _ready 里，切换后重新加载当前场景生效；
+# 在大世界中切换时先存入临时存档再读回，进度、镜头与教程状态都保持不变
+const THEME_RELOAD_SLOT := "_theme_reload"
+
+func switch_theme(mode: String) -> void:
+	SettingsManager.set_setting("theme_mode", mode)
+	var dark = ThemeStyler.resolve_dark(mode)
+	if dark == ThemeStyler.is_dark:
+		return
+	_apply_theme(dark)
+	var tree = get_tree()
+	tree.paused = false
+	var scene = tree.current_scene
+	if scene and scene.has_method("serialize_world_state"):
+		SaveManager.save_to_slot(THEME_RELOAD_SLOT, scene)
+		SaveManager.pending_load_slot = THEME_RELOAD_SLOT
+	tree.reload_current_scene()
 
 func _setup_app_icon() -> void:
 	if ResourceLoader.exists("res://icon.png"):

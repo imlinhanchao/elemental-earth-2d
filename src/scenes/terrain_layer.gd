@@ -88,8 +88,8 @@ func _draw() -> void:
 	#    镜头平移与缩放只移动 Camera2D，复用 CanvasItem 已缓存的绘制指令，不再逐帧重建。
 	_draw_blueprint_grid(-GRID_EXTENT, GRID_EXTENT, -GRID_EXTENT, GRID_EXTENT)
 
-	var unexplored_fill = Color(0.95, 0.93, 0.89, 0.85)
-	var unexplored_line = Color(0.55, 0.50, 0.43, 0.30)
+	var unexplored_fill = ThemeStyler.adapt(Color(0.95, 0.93, 0.89, 0.85))
+	var unexplored_line = ThemeStyler.adapt(Color(0.55, 0.50, 0.43, 0.30))
 
 	# 2. 遍历固定半径内的全部六边形 (地图 + 外围未解锁图纸区)，只收集几何
 	for r in range(-DRAW_HEX_RADIUS, DRAW_HEX_RADIUS + 1):
@@ -126,7 +126,7 @@ func _draw() -> void:
 	# 4. 绘制领地最外圈边界 (仅描最外圈，颜色随时代强调色)
 	var border_col: Color = ThemeStyler.get_era_accent(GameState.current_era)
 	var halo = PackedVector2Array()
-	var dash_col = border_col.darkened(0.25)
+	var dash_col = ThemeStyler.deepen(border_col, 0.25)
 	for coord in generated_hexes.keys():
 		if GameState.is_hex_in_territory(coord.x, coord.y):
 			var pts = _hex_corners(HexWorldGenerator.hex_to_pixel(coord.x, coord.y), HexWorldGenerator.HEX_RADIUS)
@@ -188,8 +188,8 @@ func _draw_natural_biome_transition(p1: Vector2, p2: Vector2, my_biome: HexWorld
 	var inward = (center - (p1 + p2) * 0.5).normalized()
 	# 盐湖岸线：水域一侧深蓝细岸线 + 内侧浅色复线
 	if my_biome == HexWorldGenerator.BiomeType.SALT_LAKE:
-		_add_line(p1 + inward * 1.0, p2 + inward * 1.0, Color(0.22, 0.38, 0.48, 0.65), 1.3)
-		_add_line(p1 + inward * 4.0, p2 + inward * 4.0, Color(0.30, 0.48, 0.58, 0.25), 1.0)
+		_add_line(p1 + inward * 1.0, p2 + inward * 1.0, ThemeStyler.adapt(Color(0.22, 0.38, 0.48, 0.65)), 1.3)
+		_add_line(p1 + inward * 4.0, p2 + inward * 4.0, ThemeStyler.adapt(Color(0.30, 0.48, 0.58, 0.25)), 1.0)
 		return
 	if n_biome == HexWorldGenerator.BiomeType.SALT_LAKE:
 		return
@@ -197,15 +197,15 @@ func _draw_natural_biome_transition(p1: Vector2, p2: Vector2, my_biome: HexWorld
 	if my_biome == HexWorldGenerator.BiomeType.VOLCANO:
 		for k in range(3):
 			var pt = p1.lerp(p2, 0.25 + 0.25 * float(k)) + inward * 2.0
-			_add_line(pt, pt + inward * 4.0, Color(0.40, 0.22, 0.15, 0.40), 1.0)
+			_add_line(pt, pt + inward * 4.0, ThemeStyler.adapt(Color(0.40, 0.22, 0.15, 0.40)), 1.0)
 		return
 	# 林缘：森林一侧浅墨细线
 	if my_biome == HexWorldGenerator.BiomeType.DEEP_FOREST:
-		_add_line(p1 + inward * 1.5, p2 + inward * 1.5, Color(0.22, 0.32, 0.22, 0.30), 1.0)
+		_add_line(p1 + inward * 1.5, p2 + inward * 1.5, ThemeStyler.adapt(Color(0.22, 0.32, 0.22, 0.30)), 1.0)
 
 # 绘制测绘图纸经纬网格 (根据视口坐标范围动态平铺)
 func _draw_blueprint_grid(start_x: float, end_x: float, start_y: float, end_y: float) -> void:
-	var grid_color = Color(0.55, 0.50, 0.43, 0.14)
+	var grid_color = ThemeStyler.adapt(Color(0.55, 0.50, 0.43, 0.14))
 	var step = 96.0
 	var segs = PackedVector2Array()
 	var cur_x = floor(start_x / step) * step

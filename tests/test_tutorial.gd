@@ -22,6 +22,7 @@ func _ready() -> void:
 	print("\n[新手教程测试]")
 	# 教程完成会写入玩家设置，测试结束后恢复原值
 	var had_completed = SettingsManager.is_tutorial_completed()
+	load("res://src/core/save_manager.gd").suppress_auto_save = true
 	# 建造篝火会触发自动保存，测试前备份玩家的 auto 存档，结束后还原
 	var auto_path = "user://save_auto.json"
 	var auto_backup = FileAccess.get_file_as_bytes(auto_path) if FileAccess.file_exists(auto_path) else PackedByteArray()

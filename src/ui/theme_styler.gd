@@ -1,62 +1,215 @@
 # theme_styler.gd
 # 美术方向：「地质测绘图 × 实验手稿」(Survey Map & Lab Notebook)
-# 全局统一浅色纸面：大世界测绘图、HUD、模态弹窗、主菜单都使用米白纸 + 墨色文字，
-# 避免玩家在浅色地图与深色弹窗之间反复切换明暗。强调色随文明时代演进 (get_era_accent)。
+# 全局只有一种明度：浅色模式下大世界、HUD、弹窗、主菜单都是米白纸 + 墨色文字；
+# 深色模式下统一为暖墨底 + 纸白文字 (地图一起变暗)。强调色随文明时代演进 (get_era_accent)。
 class_name ThemeStyler
 extends RefCounted
 
-# 纸面底色 (模态弹窗与浮层)
-const COLOR_BG = Color(0.957, 0.937, 0.898, 0.98)       # #F4EFE5 米白纸
-const COLOR_BG_SOLID = Color(0.976, 0.961, 0.929, 1.0)  # #F9F5ED 提示框 / 输入底
-const COLOR_CARD = Color(0.922, 0.894, 0.839, 0.95)     # #EBE4D6 二级卡片 (稍深纸)
-const COLOR_CARD_HOVER = Color(0.886, 0.851, 0.780, 1.0) # #E2D9C7
+# 主题模式：浅色 (纸面) / 深色 (暖墨)。所有颜色令牌都是可切换的静态变量，
+# 由 apply_mode() 在启动时按设置写入；切换主题后重新加载当前场景生效 (GameState.switch_theme)。
+static var is_dark: bool = false
 
-# 细线框 (铅笔线)
-const COLOR_BORDER = Color(0.76, 0.71, 0.64, 0.9)       # #C2B5A3
-const COLOR_BORDER_HOVER = Color(0.60, 0.55, 0.48, 0.95)
-const COLOR_BORDER_FOCUS = Color(0.69, 0.41, 0.16, 0.95) # #B0692A 铜色焦点
-
-# 文字层级 (纸面上)
-const COLOR_TEXT_PRIMARY = Color(0.15, 0.14, 0.13, 1.0)   # #262421 墨色
-const COLOR_TEXT_SECONDARY = Color(0.37, 0.34, 0.30, 1.0) # #5E574C
-const COLOR_TEXT_MUTED = Color(0.54, 0.50, 0.44, 1.0)     # #8A7F70
-const COLOR_TEXT_ON_ACCENT = Color(0.99, 0.97, 0.93, 1.0) # 强调色实底按钮上的文字
-
-# 功能色 (已加深，保证在纸面上的文字对比度)
-const COLOR_ACCENT = Color(0.69, 0.41, 0.16, 1.0)        # #B0692A 铜赭
-const COLOR_ACCENT_HOVER = Color(0.78, 0.49, 0.22, 1.0)
-const COLOR_ACCENT_PRESSED = Color(0.56, 0.32, 0.12, 1.0)
-const COLOR_WARNING = Color(0.69, 0.49, 0.06, 1.0)       # #B07D10 赭黄
-const COLOR_SUCCESS = Color(0.25, 0.50, 0.27, 1.0)       # #408045 苔绿
-const COLOR_DANGER = Color(0.70, 0.23, 0.18, 1.0)        # #B33B2E 朱砂
-const COLOR_INFO = Color(0.20, 0.40, 0.58, 1.0)          # #336694 靛蓝
-
-# 功能色浅底 (状态卡片背景)
-const TINT_SUCCESS = Color(0.86, 0.91, 0.84, 1.0)
-const TINT_WARNING = Color(0.96, 0.91, 0.78, 1.0)
-const TINT_DANGER = Color(0.96, 0.86, 0.83, 1.0)
-const TINT_INFO = Color(0.85, 0.90, 0.94, 1.0)
-
-# 浮层阴影与遮罩 (暖墨，低不透明度)
-const COLOR_SHADOW = Color(0.25, 0.20, 0.12, 0.20)
-const COLOR_BACKDROP = Color(0.20, 0.17, 0.13, 0.35)
-
-# 纸面 (HUD 顶栏/底栏 · 浅色表面)
-const PAPER_BG = Color(0.957, 0.937, 0.898, 0.97)        # #F4EFE5 米白纸
-const PAPER_BG_HOVER = Color(0.918, 0.890, 0.835, 1.0)
-const PAPER_BORDER = Color(0.72, 0.67, 0.59, 0.9)        # #B8AB96 铅笔线
-const PAPER_INK = Color(0.15, 0.14, 0.13, 1.0)           # #262421 墨色正文
-const PAPER_INK_SOFT = Color(0.40, 0.37, 0.33, 1.0)      # #665E54 次级墨色
-
+# 底色 (模态弹窗与浮层)
+static var COLOR_BG: Color
+static var COLOR_BG_SOLID: Color
+static var COLOR_CARD: Color
+static var COLOR_CARD_HOVER: Color
+# 细线框
+static var COLOR_BORDER: Color
+static var COLOR_BORDER_HOVER: Color
+static var COLOR_BORDER_FOCUS: Color
+# 文字层级
+static var COLOR_TEXT_PRIMARY: Color
+static var COLOR_TEXT_SECONDARY: Color
+static var COLOR_TEXT_MUTED: Color
+static var COLOR_TEXT_ON_ACCENT: Color
+# 功能色
+static var COLOR_ACCENT: Color
+static var COLOR_ACCENT_HOVER: Color
+static var COLOR_ACCENT_PRESSED: Color
+static var COLOR_WARNING: Color
+static var COLOR_SUCCESS: Color
+static var COLOR_DANGER: Color
+static var COLOR_INFO: Color
+# 功能色浅底 / 深底 (状态卡片背景)
+static var TINT_SUCCESS: Color
+static var TINT_WARNING: Color
+static var TINT_DANGER: Color
+static var TINT_INFO: Color
+# 浮层阴影与遮罩
+static var COLOR_SHADOW: Color
+static var COLOR_BACKDROP: Color
+# HUD 顶栏 / 底栏表面
+static var PAPER_BG: Color
+static var PAPER_BG_HOVER: Color
+static var PAPER_BORDER: Color
+static var PAPER_INK: Color
+static var PAPER_INK_SOFT: Color
+# 大世界清屏色
+static var COLOR_CLEAR: Color
 # 时代强调色：石器赭石 → 炼金铜褐 → 近代墨绿 → 电化学钴蓝 → 稀土紫 → 原子切伦科夫蓝
-const ERA_ACCENTS: Array[Color] = [
-	Color(0.80, 0.52, 0.25), # 0 石器 · 赭石 #CC8540
-	Color(0.72, 0.42, 0.24), # 1 炼金 · 铜褐 #B86B3D
-	Color(0.20, 0.55, 0.45), # 2 近代化学 · 墨绿 #338C73
-	Color(0.20, 0.42, 0.75), # 3 电化学 · 钴蓝 #336BBF
-	Color(0.55, 0.36, 0.75), # 4 稀土 · 紫晶 #8C5CBF
-	Color(0.10, 0.56, 0.74), # 5 原子 · 切伦科夫蓝 #1A8FBD (加深以适配纸面)
-]
+static var ERA_ACCENTS: Array[Color] = []
+
+const LIGHT: Dictionary = {
+	"COLOR_BG": Color(0.957, 0.937, 0.898, 0.98),        # #F4EFE5 米白纸
+	"COLOR_BG_SOLID": Color(0.976, 0.961, 0.929, 1.0),   # #F9F5ED
+	"COLOR_CARD": Color(0.922, 0.894, 0.839, 0.95),      # #EBE4D6
+	"COLOR_CARD_HOVER": Color(0.886, 0.851, 0.780, 1.0), # #E2D9C7
+	"COLOR_BORDER": Color(0.76, 0.71, 0.64, 0.9),        # #C2B5A3 铅笔线
+	"COLOR_BORDER_HOVER": Color(0.60, 0.55, 0.48, 0.95),
+	"COLOR_BORDER_FOCUS": Color(0.69, 0.41, 0.16, 0.95), # #B0692A 铜色焦点
+	"COLOR_TEXT_PRIMARY": Color(0.15, 0.14, 0.13, 1.0),  # #262421 墨色
+	"COLOR_TEXT_SECONDARY": Color(0.37, 0.34, 0.30, 1.0),
+	"COLOR_TEXT_MUTED": Color(0.54, 0.50, 0.44, 1.0),
+	"COLOR_TEXT_ON_ACCENT": Color(0.99, 0.97, 0.93, 1.0),
+	"COLOR_ACCENT": Color(0.69, 0.41, 0.16, 1.0),        # #B0692A 铜赭
+	"COLOR_ACCENT_HOVER": Color(0.78, 0.49, 0.22, 1.0),
+	"COLOR_ACCENT_PRESSED": Color(0.56, 0.32, 0.12, 1.0),
+	"COLOR_WARNING": Color(0.69, 0.49, 0.06, 1.0),
+	"COLOR_SUCCESS": Color(0.25, 0.50, 0.27, 1.0),
+	"COLOR_DANGER": Color(0.70, 0.23, 0.18, 1.0),
+	"COLOR_INFO": Color(0.20, 0.40, 0.58, 1.0),
+	"TINT_SUCCESS": Color(0.86, 0.91, 0.84, 1.0),
+	"TINT_WARNING": Color(0.96, 0.91, 0.78, 1.0),
+	"TINT_DANGER": Color(0.96, 0.86, 0.83, 1.0),
+	"TINT_INFO": Color(0.85, 0.90, 0.94, 1.0),
+	"COLOR_SHADOW": Color(0.25, 0.20, 0.12, 0.20),
+	"COLOR_BACKDROP": Color(0.20, 0.17, 0.13, 0.35),
+	"PAPER_BG": Color(0.957, 0.937, 0.898, 0.97),
+	"PAPER_BG_HOVER": Color(0.918, 0.890, 0.835, 1.0),
+	"PAPER_BORDER": Color(0.72, 0.67, 0.59, 0.9),
+	"PAPER_INK": Color(0.15, 0.14, 0.13, 1.0),
+	"PAPER_INK_SOFT": Color(0.40, 0.37, 0.33, 1.0),
+	"COLOR_CLEAR": Color(0.925, 0.905, 0.862, 1.0),      # #ECE7DC 图纸底色
+	"ERA_ACCENTS": [Color(0.80, 0.52, 0.25), Color(0.72, 0.42, 0.24), Color(0.20, 0.55, 0.45),
+		Color(0.20, 0.42, 0.75), Color(0.55, 0.36, 0.75), Color(0.10, 0.56, 0.74)],
+}
+
+const DARK: Dictionary = {
+	"COLOR_BG": Color(0.106, 0.098, 0.090, 0.97),        # #1B1917 暖墨
+	"COLOR_BG_SOLID": Color(0.130, 0.120, 0.110, 1.0),
+	"COLOR_CARD": Color(0.165, 0.152, 0.138, 0.95),      # #2A2723
+	"COLOR_CARD_HOVER": Color(0.215, 0.198, 0.178, 1.0),
+	"COLOR_BORDER": Color(0.33, 0.30, 0.26, 0.9),        # #544C42
+	"COLOR_BORDER_HOVER": Color(0.48, 0.44, 0.38, 0.95),
+	"COLOR_BORDER_FOCUS": Color(0.85, 0.60, 0.30, 0.95), # #D9994D
+	"COLOR_TEXT_PRIMARY": Color(0.95, 0.92, 0.86, 1.0),  # #F2EBDB 纸白
+	"COLOR_TEXT_SECONDARY": Color(0.74, 0.69, 0.61, 1.0),
+	"COLOR_TEXT_MUTED": Color(0.55, 0.51, 0.45, 1.0),
+	"COLOR_TEXT_ON_ACCENT": Color(0.11, 0.10, 0.09, 1.0),
+	"COLOR_ACCENT": Color(0.85, 0.60, 0.30, 1.0),        # #D9994D 铜赭 (提亮)
+	"COLOR_ACCENT_HOVER": Color(0.93, 0.70, 0.40, 1.0),
+	"COLOR_ACCENT_PRESSED": Color(0.68, 0.46, 0.22, 1.0),
+	"COLOR_WARNING": Color(0.89, 0.70, 0.30, 1.0),
+	"COLOR_SUCCESS": Color(0.47, 0.72, 0.47, 1.0),
+	"COLOR_DANGER": Color(0.90, 0.45, 0.38, 1.0),
+	"COLOR_INFO": Color(0.48, 0.67, 0.86, 1.0),
+	"TINT_SUCCESS": Color(0.15, 0.22, 0.15, 1.0),
+	"TINT_WARNING": Color(0.26, 0.21, 0.10, 1.0),
+	"TINT_DANGER": Color(0.28, 0.14, 0.12, 1.0),
+	"TINT_INFO": Color(0.12, 0.18, 0.25, 1.0),
+	"COLOR_SHADOW": Color(0.0, 0.0, 0.0, 0.45),
+	"COLOR_BACKDROP": Color(0.0, 0.0, 0.0, 0.50),
+	"PAPER_BG": Color(0.130, 0.120, 0.110, 0.96),
+	"PAPER_BG_HOVER": Color(0.180, 0.165, 0.150, 1.0),
+	"PAPER_BORDER": Color(0.33, 0.30, 0.26, 0.9),
+	"PAPER_INK": Color(0.93, 0.90, 0.84, 1.0),
+	"PAPER_INK_SOFT": Color(0.70, 0.65, 0.58, 1.0),
+	"COLOR_CLEAR": Color(0.075, 0.070, 0.065, 1.0),
+	"ERA_ACCENTS": [Color(0.86, 0.60, 0.33), Color(0.84, 0.55, 0.35), Color(0.33, 0.72, 0.60),
+		Color(0.40, 0.60, 0.90), Color(0.68, 0.52, 0.88), Color(0.20, 0.75, 0.93)],
+}
+
+static func _static_init() -> void:
+	apply_mode(false)
+
+# 写入一套配色；返回值表示模式是否发生变化
+static func apply_mode(dark: bool) -> bool:
+	var changed := dark != is_dark
+	is_dark = dark
+	var pal: Dictionary = DARK if dark else LIGHT
+	COLOR_BG = pal["COLOR_BG"]; COLOR_BG_SOLID = pal["COLOR_BG_SOLID"]
+	COLOR_CARD = pal["COLOR_CARD"]; COLOR_CARD_HOVER = pal["COLOR_CARD_HOVER"]
+	COLOR_BORDER = pal["COLOR_BORDER"]; COLOR_BORDER_HOVER = pal["COLOR_BORDER_HOVER"]; COLOR_BORDER_FOCUS = pal["COLOR_BORDER_FOCUS"]
+	COLOR_TEXT_PRIMARY = pal["COLOR_TEXT_PRIMARY"]; COLOR_TEXT_SECONDARY = pal["COLOR_TEXT_SECONDARY"]
+	COLOR_TEXT_MUTED = pal["COLOR_TEXT_MUTED"]; COLOR_TEXT_ON_ACCENT = pal["COLOR_TEXT_ON_ACCENT"]
+	COLOR_ACCENT = pal["COLOR_ACCENT"]; COLOR_ACCENT_HOVER = pal["COLOR_ACCENT_HOVER"]; COLOR_ACCENT_PRESSED = pal["COLOR_ACCENT_PRESSED"]
+	COLOR_WARNING = pal["COLOR_WARNING"]; COLOR_SUCCESS = pal["COLOR_SUCCESS"]
+	COLOR_DANGER = pal["COLOR_DANGER"]; COLOR_INFO = pal["COLOR_INFO"]
+	TINT_SUCCESS = pal["TINT_SUCCESS"]; TINT_WARNING = pal["TINT_WARNING"]
+	TINT_DANGER = pal["TINT_DANGER"]; TINT_INFO = pal["TINT_INFO"]
+	COLOR_SHADOW = pal["COLOR_SHADOW"]; COLOR_BACKDROP = pal["COLOR_BACKDROP"]
+	PAPER_BG = pal["PAPER_BG"]; PAPER_BG_HOVER = pal["PAPER_BG_HOVER"]; PAPER_BORDER = pal["PAPER_BORDER"]
+	PAPER_INK = pal["PAPER_INK"]; PAPER_INK_SOFT = pal["PAPER_INK_SOFT"]
+	COLOR_CLEAR = pal["COLOR_CLEAR"]
+	ERA_ACCENTS.clear()
+	for c in pal["ERA_ACCENTS"]:
+		ERA_ACCENTS.append(c)
+	return changed
+
+# 按设置值 ("light" / "dark" / "system") 判断是否使用深色
+static func resolve_dark(mode: String) -> bool:
+	if mode == "dark":
+		return true
+	if mode == "system":
+		return DisplayServer.is_dark_mode_supported() and DisplayServer.is_dark_mode()
+	return false
+
+# 把为浅色纸面设计的颜色换算到当前主题：浅色模式原样返回；
+# 深色模式下浅色表面变暗、墨色文字变亮、彩色提亮，色相与透明度保持不变。
+# 只用于界面与地图上零散的颜色字面量；主要配色请直接使用上面的令牌。
+static func adapt(c: Color) -> Color:
+	if not is_dark:
+		return c
+	var mx = maxf(c.r, maxf(c.g, c.b))
+	var mn = minf(c.r, minf(c.g, c.b))
+	var l = (mx + mn) * 0.5
+	var s = 0.0 if mx == mn else (mx - mn) / (1.0 - absf(2.0 * l - 1.0))
+	var nl: float
+	if s < 0.35:
+		if l < 0.5:
+			nl = 0.98 - 0.6 * l          # 墨色文字 → 纸白
+		elif l < 0.8:
+			nl = 1.0 - l                 # 铅笔线 → 暖灰线
+		else:
+			nl = 0.10 + (1.0 - l) * 0.6  # 纸面 → 暖墨
+	else:
+		if l > 0.75:
+			nl = 0.10 + (1.0 - l) * 0.8  # 浅色状态底 → 深色状态底
+			s *= 0.6
+		elif l < 0.5:
+			nl = minf(l + 0.2, 0.72)     # 彩色文字 / 线条提亮
+		else:
+			nl = minf(l + 0.08, 0.78)
+	return _from_hsl(c.h, clampf(s, 0.0, 1.0), clampf(nl, 0.0, 1.0), c.a)
+
+static func _from_hsl(h: float, s: float, l: float, a: float) -> Color:
+	var v = l + s * minf(l, 1.0 - l)
+	var sv = 0.0 if v <= 0.0 else 2.0 * (1.0 - l / v)
+	return Color.from_hsv(h, sv, v, a)
+
+# 「加深」一个强调色：浅色模式变暗、深色模式变亮，保证与底色的对比方向一致
+static func deepen(c: Color, amount: float) -> Color:
+	return c.lightened(amount) if is_dark else c.darkened(amount)
+
+# 场景文件 (.tscn) 中写死的文字颜色与遮罩：节点进入场景树时按当前主题换算一次
+const _ADAPT_COLOR_NAMES: Array[String] = ["font_color", "font_hover_color", "font_pressed_color", "font_focus_color",
+	"font_disabled_color", "font_outline_color", "default_color"]
+
+static func adapt_scene_node(n: Node) -> void:
+	if n is ColorRect:
+		# 全屏遮罩统一使用当前主题的遮罩色
+		n.color = COLOR_BACKDROP if n.color.a < 0.9 else adapt(n.color)
+	if n is Control:
+		for nm in _ADAPT_COLOR_NAMES:
+			if n.has_theme_color_override(nm):
+				n.add_theme_color_override(nm, adapt(n.get_theme_color(nm)))
+		if n.has_theme_color_override("font_shadow_color"):
+			n.add_theme_color_override("font_shadow_color", COLOR_SHADOW)
+	if n is Button and n.icon:
+		n.icon = ItemIconManager.themed(n.icon)
+	elif n is TextureRect and n.texture:
+		n.texture = ItemIconManager.themed(n.texture)
 
 static func get_era_accent(era: int) -> Color:
 	return ERA_ACCENTS[clampi(era, 0, ERA_ACCENTS.size() - 1)]
@@ -153,7 +306,7 @@ static func create_scientific_theme() -> Theme:
 
 	# 按下样式
 	var btn_pressed = btn_normal.duplicate()
-	btn_pressed.bg_color = Color(0.84, 0.79, 0.71, 1.0)
+	btn_pressed.bg_color = adapt(Color(0.84, 0.79, 0.71, 1.0))
 	btn_pressed.border_color = COLOR_ACCENT_PRESSED
 	theme.set_stylebox("pressed", "Button", btn_pressed)
 
@@ -169,8 +322,8 @@ static func create_scientific_theme() -> Theme:
 
 	# 禁用样式
 	var btn_disabled = btn_normal.duplicate()
-	btn_disabled.bg_color = Color(0.90, 0.88, 0.84, 0.6)
-	btn_disabled.border_color = Color(0.76, 0.71, 0.64, 0.5)
+	btn_disabled.bg_color = Color(COLOR_CARD.r, COLOR_CARD.g, COLOR_CARD.b, 0.6)
+	btn_disabled.border_color = Color(COLOR_BORDER.r, COLOR_BORDER.g, COLOR_BORDER.b, 0.5)
 	theme.set_stylebox("disabled", "Button", btn_disabled)
 
 	# 3. 进度条样式 (ProgressBar)
@@ -267,9 +420,9 @@ static func create_scientific_theme() -> Theme:
 	theme.set_stylebox("focus", "LineEdit", edit_focus)
 	theme.set_color("font_color", "LineEdit", COLOR_TEXT_PRIMARY)
 	theme.set_color("caret_color", "LineEdit", COLOR_TEXT_PRIMARY)
-	var track = create_card_box(4, Color(0.15, 0.14, 0.13, 0.06), Color(0, 0, 0, 0))
-	var grab = create_card_box(4, Color(0.37, 0.34, 0.30, 0.35), Color(0, 0, 0, 0))
-	var grab_hi = create_card_box(4, Color(0.37, 0.34, 0.30, 0.60), Color(0, 0, 0, 0))
+	var track = create_card_box(4, Color(COLOR_TEXT_PRIMARY.r, COLOR_TEXT_PRIMARY.g, COLOR_TEXT_PRIMARY.b, 0.06), Color(0, 0, 0, 0))
+	var grab = create_card_box(4, Color(COLOR_TEXT_SECONDARY.r, COLOR_TEXT_SECONDARY.g, COLOR_TEXT_SECONDARY.b, 0.35), Color(0, 0, 0, 0))
+	var grab_hi = create_card_box(4, Color(COLOR_TEXT_SECONDARY.r, COLOR_TEXT_SECONDARY.g, COLOR_TEXT_SECONDARY.b, 0.60), Color(0, 0, 0, 0))
 	for cls in ["VScrollBar", "HScrollBar"]:
 		theme.set_stylebox("scroll", cls, track)
 		theme.set_stylebox("grabber", cls, grab)

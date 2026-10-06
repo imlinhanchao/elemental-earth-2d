@@ -175,8 +175,8 @@ func _build_tech_tree_graph() -> void:
 		header_panel.custom_minimum_size = Vector2(CARD_WIDTH, 24)
 		
 		var h_style = StyleBoxFlat.new()
-		h_style.bg_color = Color(0.80, 0.86, 0.93, 0.85)
-		h_style.border_color = Color(0.22, 0.40, 0.62, 0.80)
+		h_style.bg_color = ThemeStyler.adapt(Color(0.80, 0.86, 0.93, 0.85))
+		h_style.border_color = ThemeStyler.adapt(Color(0.22, 0.40, 0.62, 0.80))
 		h_style.border_width_bottom = 2
 		h_style.corner_radius_top_left = 3
 		h_style.corner_radius_top_right = 3
@@ -232,13 +232,13 @@ func _create_oni_tech_card(tech: Dictionary) -> PanelContainer:
 	title_lbl.name = "TitleLabel"
 	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_lbl.add_theme_font_size_override("font_size", 12)
-	title_lbl.add_theme_color_override("font_color", Color(0.15, 0.14, 0.13))
+	title_lbl.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.15, 0.14, 0.13)))
 	top_hbox.add_child(title_lbl)
 	
 	var tier_badge = Label.new()
 	tier_badge.text = "T%d" % (t_tier + 1)
 	tier_badge.add_theme_font_size_override("font_size", 12)
-	tier_badge.add_theme_color_override("font_color", Color(0.25, 0.46, 0.62))
+	tier_badge.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.25, 0.46, 0.62)))
 	top_hbox.add_child(tier_badge)
 	
 	# 中间行: 消耗材料/前置/状态提示
@@ -316,7 +316,7 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 	
 	if is_researched:
 		# 已研发 (现代科学翡翠绿细线)
-		style.bg_color = Color(0.83, 0.93, 0.80, 0.92)
+		style.bg_color = ThemeStyler.adapt(Color(0.83, 0.93, 0.80, 0.92))
 		style.border_color = ThemeStyler.COLOR_SUCCESS
 		style.border_width_left = 1
 		style.border_width_top = 1
@@ -360,7 +360,7 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 				btn_action.modulate = Color(0.85, 0.6, 0.5, 0.8)
 	else:
 		# 未解锁 (极简冷灰受控状态)
-		style.bg_color = Color(0.92, 0.89, 0.84, 0.70)
+		style.bg_color = ThemeStyler.adapt(Color(0.92, 0.89, 0.84, 0.70))
 		style.border_color = ThemeStyler.COLOR_BORDER
 		style.border_width_left = 1
 		style.border_width_top = 1
@@ -420,19 +420,19 @@ func _draw_connecting_lines(canvas_ctrl: Control) -> void:
 				
 			if is_child_done and is_parent_done:
 				# 双方均已完成: 璀璨电青色能量光晕
-				canvas_ctrl.draw_polyline(points, Color(0.25, 0.50, 0.27, 0.22), 4.5)
+				canvas_ctrl.draw_polyline(points, ThemeStyler.adapt(Color(0.25, 0.50, 0.27, 0.22)), 4.5)
 				canvas_ctrl.draw_polyline(points, ThemeStyler.COLOR_SUCCESS, 1.8)
 				canvas_ctrl.draw_circle(pin_out, 2.5, ThemeStyler.COLOR_SUCCESS)
 				canvas_ctrl.draw_circle(pin_in, 2.5, ThemeStyler.COLOR_SUCCESS)
 			elif is_parent_done:
 				# 前置已满足可研发: 金色脉动能量流
-				canvas_ctrl.draw_polyline(points, Color(0.69, 0.41, 0.16, 0.20), 3.5)
-				canvas_ctrl.draw_polyline(points, Color(0.69, 0.41, 0.16, 0.90), 1.5)
-				canvas_ctrl.draw_circle(pin_out, 2.0, Color(0.69, 0.41, 0.16))
-				canvas_ctrl.draw_circle(pin_in, 2.0, Color(0.69, 0.41, 0.16))
+				canvas_ctrl.draw_polyline(points, ThemeStyler.adapt(Color(0.69, 0.41, 0.16, 0.20)), 3.5)
+				canvas_ctrl.draw_polyline(points, ThemeStyler.adapt(Color(0.69, 0.41, 0.16, 0.90)), 1.5)
+				canvas_ctrl.draw_circle(pin_out, 2.0, ThemeStyler.adapt(Color(0.69, 0.41, 0.16)))
+				canvas_ctrl.draw_circle(pin_in, 2.0, ThemeStyler.adapt(Color(0.69, 0.41, 0.16)))
 			else:
 				# 未解锁路径: 幽暗隐秘灰色虚线
-				canvas_ctrl.draw_polyline(points, Color(0.54, 0.50, 0.44, 0.45), 1.2)
+				canvas_ctrl.draw_polyline(points, ThemeStyler.adapt(Color(0.54, 0.50, 0.44, 0.45)), 1.2)
 
 # 画布自由平移交互
 func _on_scroll_gui_input(event: InputEvent) -> void:

@@ -68,7 +68,7 @@ func _build_ui() -> void:
 	# 1. 全屏柔和暗色微光蒙版
 	backdrop = ColorRect.new()
 	backdrop.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	backdrop.color = Color(0.20, 0.17, 0.13, 0.35)
+	backdrop.color = ThemeStyler.adapt(Color(0.20, 0.17, 0.13, 0.35))
 	add_child(backdrop)
 
 	# 2. 居中容器
@@ -92,7 +92,7 @@ func _build_ui() -> void:
 	card_style.corner_radius_top_right = 18
 	card_style.corner_radius_bottom_left = 18
 	card_style.corner_radius_bottom_right = 18
-	card_style.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
+	card_style.shadow_color = ThemeStyler.adapt(Color(0.25, 0.20, 0.12, 0.22))
 	card_style.shadow_size = 28
 	card_panel.add_theme_stylebox_override("panel", card_style)
 
@@ -114,7 +114,7 @@ func _build_ui() -> void:
 	var header_title = Label.new()
 	header_title.text = "发现新元素"
 	header_title.add_theme_font_size_override("font_size", 12)
-	header_title.add_theme_color_override("font_color", Color(0.58, 0.49, 0.17))
+	header_title.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.58, 0.49, 0.17)))
 	top_hbox.add_child(header_title)
 
 	var spacer_top = Control.new()
@@ -132,7 +132,7 @@ func _build_ui() -> void:
 	elem_box.custom_minimum_size = Vector2(0, 160)
 	var e_box_style = StyleBoxFlat.new()
 	e_box_style.bg_color = ThemeStyler.COLOR_CARD
-	e_box_style.border_color = Color(0.30, 0.43, 0.62, 0.50)
+	e_box_style.border_color = ThemeStyler.adapt(Color(0.30, 0.43, 0.62, 0.50))
 	e_box_style.border_width_left = 1
 	e_box_style.border_width_top = 1
 	e_box_style.border_width_right = 1
@@ -153,14 +153,14 @@ func _build_ui() -> void:
 	symbol_label.text = "Cu"
 	symbol_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	symbol_label.add_theme_font_size_override("font_size", 62)
-	symbol_label.add_theme_color_override("font_color", Color(0.14, 0.47, 0.62))
+	symbol_label.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.14, 0.47, 0.62)))
 	elem_vbox.add_child(symbol_label)
 
 	name_label = Label.new()
 	name_label.text = "铜 · Copper"
 	name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	name_label.add_theme_font_size_override("font_size", 20)
-	name_label.add_theme_color_override("font_color", Color(0.15, 0.14, 0.13))
+	name_label.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.15, 0.14, 0.13)))
 	elem_vbox.add_child(name_label)
 
 	# 属性信息条
@@ -172,13 +172,13 @@ func _build_ui() -> void:
 	mass_label = Label.new()
 	mass_label.text = "原子量: 63.546"
 	mass_label.add_theme_font_size_override("font_size", 12)
-	mass_label.add_theme_color_override("font_color", Color(0.37, 0.34, 0.30))
+	mass_label.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.37, 0.34, 0.30)))
 	meta_hbox.add_child(mass_label)
 
 	category_badge = Label.new()
 	category_badge.text = "[过渡金属]"
 	category_badge.add_theme_font_size_override("font_size", 12)
-	category_badge.add_theme_color_override("font_color", Color(0.24, 0.51, 0.62))
+	category_badge.add_theme_color_override("font_color", ThemeStyler.adapt(Color(0.24, 0.51, 0.62)))
 	meta_hbox.add_child(category_badge)
 
 	position_label = Label.new()
@@ -191,8 +191,8 @@ func _build_ui() -> void:
 	var story_panel = PanelContainer.new()
 	story_panel.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	var s_style = StyleBoxFlat.new()
-	s_style.bg_color = Color(0.92, 0.89, 0.84, 0.70)
-	s_style.border_color = Color(0.25, 0.40, 0.62, 0.40)
+	s_style.bg_color = ThemeStyler.adapt(Color(0.92, 0.89, 0.84, 0.70))
+	s_style.border_color = ThemeStyler.adapt(Color(0.25, 0.40, 0.62, 0.40))
 	s_style.border_width_left = 1
 	s_style.border_width_top = 1
 	s_style.border_width_right = 1
@@ -216,7 +216,7 @@ func _build_ui() -> void:
 	story_label.fit_content = false
 	story_label.scroll_active = true
 	story_label.add_theme_font_size_override("normal_font_size", 12)
-	story_label.add_theme_color_override("default_color", Color(0.15, 0.14, 0.13))
+	story_label.add_theme_color_override("default_color", ThemeStyler.adapt(Color(0.15, 0.14, 0.13)))
 	story_margin.add_child(story_label)
 
 	# 进度指示栏
@@ -284,7 +284,7 @@ func show_discovery(elem_num: int, item_key: String = "") -> void:
 	var col = int(elem.get("col", 1))
 	var story = str(elem.get("story", "人类在探索微观物质结构过程中，成功提纯并确证了此关键化学元素。"))
 
-	var cat_color = CATEGORY_COLORS.get(cat, Color(0.12, 0.45, 0.68))
+	var cat_color = CATEGORY_COLORS.get(cat, ThemeStyler.adapt(Color(0.12, 0.45, 0.68)))
 	var cat_name = CATEGORY_NAMES.get(cat, cat.capitalize())
 
 	num_label.text = "NO. %d" % elem_num

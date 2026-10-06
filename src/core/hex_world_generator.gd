@@ -3,6 +3,8 @@
 class_name HexWorldGenerator
 extends RefCounted
 
+const ThemeStyler = preload("res://src/ui/theme_styler.gd")
+
 # 生态群落类型定义
 enum BiomeType {
 	PLAINS,      # 平原草地 (常见孔雀石/树木)
@@ -76,6 +78,12 @@ func get_biome(q: int, r: int) -> BiomeType:
 
 # 获取群落代表色彩
 static func get_biome_color(biome: BiomeType) -> Color:
+	if ThemeStyler.is_dark:
+		match biome:
+			BiomeType.PLAINS: return Color(0.27, 0.30, 0.22)      # 原野 · 夜间灰绿
+			BiomeType.VOLCANO: return Color(0.33, 0.21, 0.17)     # 火山 · 夜间赭红
+			BiomeType.SALT_LAKE: return Color(0.18, 0.26, 0.30)   # 盐湖 · 夜间灰蓝
+			BiomeType.DEEP_FOREST: return Color(0.17, 0.24, 0.17) # 深林 · 夜间墨绿
 	match biome:
 		BiomeType.PLAINS:
 			return Color(0.74, 0.78, 0.62) # 原野 · 灰绿测绘色 #BDC79E

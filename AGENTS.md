@@ -24,7 +24,7 @@
 | :--- | :--- | :--- |
 | **直接启动游戏** | `/Applications/Godot.app/Contents/MacOS/Godot --path /Users/hancel/Documents/project/elemental-earth-2d` | 窗口模式启动游玩 |
 | **无头实机截图测试** | `/Applications/Godot.app/Contents/MacOS/Godot --path /Users/hancel/Documents/project/elemental-earth-2d ++ --screenshot` | 启动并在1.2s后输出 `screenshot_current.png` 并安全退出 |
-| **运行测试** | `Godot --headless --path . -s res://tests/test_progression.gd`、`-s res://tests/test_chemistry.gd`、`-s res://tests/test_modal_stack.gd`、`res://tests/test_save_v3.tscn`、`res://tests/test_tutorial.tscn` | 五套测试均需通过 |
+| **运行测试** | `Godot --headless --path . -s res://tests/test_progression.gd`、`-s res://tests/test_chemistry.gd`、`-s res://tests/test_modal_stack.gd`、`res://tests/test_save_v3.tscn`、`res://tests/test_tutorial.tscn`、`res://tests/test_theme.tscn` | 六套测试均需通过 |
 | **性能剖析** | `Godot --path . -s res://tools/profile_load.gd \| grep PROF` | 输出加载、帧时间、存读档与重绘耗时 |
 | **进程可达性检查** | `Godot --headless --path . -s res://tools/dump_map_resources.gd \| grep MAPDUMP > /tmp/map.txt && python3 tools/check_progression.py /tmp/map.txt` | 修改 data/*.json 后必须运行 |
 | **Git 状态检查** | `git status` | 检查修改状态 |
@@ -887,6 +887,17 @@
 - **时代勋标**：按「文字 + 图标 + 内边距」显式计算按钮宽度，`expand_icon` 图标不再被挤掉；
 - **logo**：`game_logo.png` 导入开启 mipmaps，34px / 52px 显示时边缘平滑；
 - 所有新图标导入为 `svg/scale=3.0` + mipmaps。
+
+### 2.51 深色主题与设置切换 (2026-10-06)
+
+- **设置入口**：设置 → 画面 → 主题，可选「浅色（纸面）」「深色（暖墨）」「跟随系统」，保存在 `game_settings.json` 的 `theme_mode`。点「应用」后立即生效；在大世界中切换时，进度先写入临时槽位 `_theme_reload`，场景重新加载后读回并删除该槽位（不提示「已载入」），背包、作业、教程、镜头均保持不变；
+- **配色令牌可切换**（`ThemeStyler`）：所有 `COLOR_* / PAPER_* / TINT_* / ERA_ACCENTS` 由常量改为静态变量，`LIGHT` / `DARK` 两套配色由 `apply_mode(dark)` 写入，新增 `COLOR_CLEAR`（大世界清屏色）。深色为暖墨底 `#1B1917` + 纸白字 `#F2EBDB`，功能色与时代色提亮。全游戏仍只有一种明度：深色模式下地图、HUD、弹窗、主菜单一起变暗；
+- **零散颜色换算**：界面与地图代码中为纸面设计的颜色字面量统一包一层 `ThemeStyler.adapt()`（浅色原样返回；深色下浅表面变暗、墨色变亮、彩色提亮，色相与透明度不变）。「加深」改用 `ThemeStyler.deepen()`（深色下改为提亮）。场景文件里写死的文字颜色、遮罩 `ColorRect` 与图标，由 `GameState` 在节点进入场景树时调用 `adapt_scene_node` 换算；
+- **地图**：群系底色有夜间版本（`HexWorldGenerator.get_biome_color`），未解锁区、网格、地图符号、悬停框、教程标记随主题换算；
+- **图标**：墨色线稿图标在深色模式下换用 `assets/icons/dark/` 中的浅色版本（`ItemIconManager.themed`）。新增或修改线稿图标后运行 `python3 tools/make_dark_icons.py` 重新生成；彩色物品图标两种主题通用；
+- **调试**：命令行 `--theme-dark` / `--theme-light` 临时覆盖主题（不写入设置），可与截图参数组合；
+- **测试与截图不再写玩家的自动存档**：新增 `SaveManager.suppress_auto_save`，截图场景与教程、主题测试运行期间跳过对 `auto` 槽位的写入；
+- **测试**：新增 `tests/test_theme.tscn`（大世界中切换深色 / 浅色，校验令牌明暗、背包与教程保持、临时存档清理、设置保存）。
 
 ---
 

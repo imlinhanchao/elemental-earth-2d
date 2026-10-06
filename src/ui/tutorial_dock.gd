@@ -89,8 +89,8 @@ func _apply_styles() -> void:
 	card_box.shadow_offset = Vector2(0, 3)
 	panel_container.add_theme_stylebox_override("panel", card_box)
 
-	var bar_bg = ThemeStyler.create_card_box(2, ThemeStyler.COLOR_CARD, Color(0, 0, 0, 0))
-	var bar_fill = ThemeStyler.create_card_box(2, ThemeStyler.COLOR_ACCENT, Color(0, 0, 0, 0))
+	var bar_bg = ThemeStyler.create_card_box(2, ThemeStyler.COLOR_CARD, ThemeStyler.adapt(Color(0, 0, 0, 0)))
+	var bar_fill = ThemeStyler.create_card_box(2, ThemeStyler.COLOR_ACCENT, ThemeStyler.adapt(Color(0, 0, 0, 0)))
 	step_bar.add_theme_stylebox_override("background", bar_bg)
 	step_bar.add_theme_stylebox_override("fill", bar_fill)
 	step_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
@@ -222,7 +222,7 @@ func _on_highlight_draw() -> void:
 	var t = Time.get_ticks_msec() / 1000.0
 	var col = ThemeStyler.COLOR_ACCENT
 	var rect = _highlight_target.get_global_rect().grow(4.0 + sin(t * 4.0) * 1.5)
-	_highlight.draw_rect(rect.grow(2.0), Color(1, 1, 1, 0.6), false, 4.0)
+	_highlight.draw_rect(rect.grow(2.0), ThemeStyler.adapt(Color(1, 1, 1, 0.6)), false, 4.0)
 	_highlight.draw_rect(rect, col, false, 2.5)
 	# 上方指示箭头
 	var tip = Vector2(rect.get_center().x, rect.position.y - 6.0 - absf(sin(t * 3.0)) * 5.0)

@@ -225,7 +225,7 @@ func show_placement_mode(structure_name: String) -> void:
 		sbox.corner_radius_top_right = 8
 		sbox.corner_radius_bottom_left = 8
 		sbox.corner_radius_bottom_right = 8
-		sbox.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
+		sbox.shadow_color = ThemeStyler.adapt(Color(0.25, 0.20, 0.12, 0.22))
 		sbox.shadow_size = 6
 		placement_bar.add_theme_stylebox_override("panel", sbox)
 		
@@ -516,7 +516,7 @@ func _add_inventory_subitems() -> void:
 func _apply_scheme3_styling() -> void:
 	# 1. 顶栏悬浮胶囊 Ribbon (Floating Capsule Ribbon)
 	var top_box = ThemeStyler.create_pill_box(22, ThemeStyler.PAPER_BG, ThemeStyler.PAPER_BORDER)
-	top_box.shadow_color = Color(0.25, 0.20, 0.12, 0.18)
+	top_box.shadow_color = ThemeStyler.adapt(Color(0.25, 0.20, 0.12, 0.18))
 	top_box.content_margin_left = 20
 	top_box.content_margin_top = 6
 	top_box.content_margin_right = 20
@@ -561,8 +561,8 @@ func _apply_scheme3_styling() -> void:
 		era_badge_btn.add_theme_stylebox_override("normal", pill_normal)
 		era_badge_btn.add_theme_stylebox_override("hover", pill_hover)
 		era_badge_btn.add_theme_stylebox_override("pressed", pill_hover)
-		era_badge_btn.add_theme_color_override("font_color", era_col.darkened(0.35))
-		era_badge_btn.add_theme_color_override("font_hover_color", era_col.darkened(0.5))
+		era_badge_btn.add_theme_color_override("font_color", ThemeStyler.deepen(era_col, 0.35))
+		era_badge_btn.add_theme_color_override("font_hover_color", ThemeStyler.deepen(era_col, 0.5))
 		era_badge_btn.add_theme_font_size_override("font_size", 14)
 		era_badge_btn.custom_minimum_size = Vector2(0, 30)
 	
@@ -583,7 +583,7 @@ func _apply_scheme3_styling() -> void:
 		btn_menu.add_theme_stylebox_override("disabled", empty_box)
 		
 		var menu_hover = StyleBoxFlat.new()
-		menu_hover.bg_color = Color(0.92, 0.89, 0.84, 0.08)
+		menu_hover.bg_color = ThemeStyler.adapt(Color(0.92, 0.89, 0.84, 0.08))
 		menu_hover.corner_radius_top_left = 6
 		menu_hover.corner_radius_top_right = 6
 		menu_hover.corner_radius_bottom_left = 6
@@ -591,7 +591,7 @@ func _apply_scheme3_styling() -> void:
 		btn_menu.add_theme_stylebox_override("hover", menu_hover)
 		
 		var menu_pressed = StyleBoxFlat.new()
-		menu_pressed.bg_color = Color(0.92, 0.89, 0.84, 0.16)
+		menu_pressed.bg_color = ThemeStyler.adapt(Color(0.92, 0.89, 0.84, 0.16))
 		menu_pressed.corner_radius_top_left = 6
 		menu_pressed.corner_radius_top_right = 6
 		menu_pressed.corner_radius_bottom_left = 6
@@ -610,7 +610,7 @@ func _apply_scheme3_styling() -> void:
 	dock_box.corner_radius_top_right = 24
 	dock_box.corner_radius_bottom_left = 24
 	dock_box.corner_radius_bottom_right = 24
-	dock_box.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
+	dock_box.shadow_color = ThemeStyler.adapt(Color(0.25, 0.20, 0.12, 0.22))
 	dock_box.shadow_size = 14
 	dock_box.shadow_offset = Vector2(0, 4)
 	dock_box.content_margin_left = 16
@@ -625,7 +625,7 @@ func _apply_scheme3_styling() -> void:
 	for btn in tab_buttons:
 		if btn:
 			var btn_norm = StyleBoxFlat.new()
-			btn_norm.bg_color = Color(0.92, 0.89, 0.84, 0.00)
+			btn_norm.bg_color = ThemeStyler.adapt(Color(0.92, 0.89, 0.84, 0.00))
 			btn_norm.corner_radius_top_left = 12
 			btn_norm.corner_radius_top_right = 12
 			btn_norm.corner_radius_bottom_left = 12
@@ -668,10 +668,10 @@ func _apply_scheme3_styling() -> void:
 			btn.add_theme_stylebox_override("focus", btn_hov)
 			btn.add_theme_font_size_override("font_size", ThemeStyler.FONT_BODY)
 			btn.add_theme_color_override("font_color", ThemeStyler.PAPER_INK)
-			btn.add_theme_color_override("font_hover_color", dock_accent.darkened(0.45))
-			btn.add_theme_color_override("font_pressed_color", dock_accent.darkened(0.45))
+			btn.add_theme_color_override("font_hover_color", ThemeStyler.deepen(dock_accent, 0.45))
+			btn.add_theme_color_override("font_pressed_color", ThemeStyler.deepen(dock_accent, 0.45))
 			btn.add_theme_color_override("icon_normal_color", ThemeStyler.PAPER_INK)
-			btn.add_theme_color_override("icon_hover_color", dock_accent.darkened(0.3))
+			btn.add_theme_color_override("icon_hover_color", ThemeStyler.deepen(dock_accent, 0.3))
 	
 	# 队列数字胶囊徽标 (Queue Badge)
 	if queue_badge:
@@ -1241,7 +1241,7 @@ func show_toast(msg: String, col: Color = Color.WHITE) -> void:
 	sbox.content_margin_top = 6
 	sbox.content_margin_right = 16
 	sbox.content_margin_bottom = 6
-	sbox.shadow_color = Color(0.25, 0.20, 0.12, 0.22)
+	sbox.shadow_color = ThemeStyler.adapt(Color(0.25, 0.20, 0.12, 0.22))
 	sbox.shadow_size = 8
 	toast_panel.add_theme_stylebox_override("panel", sbox)
 

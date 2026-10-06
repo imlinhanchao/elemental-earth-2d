@@ -27,7 +27,7 @@ func _draw() -> void:
 		# 浅色测绘底图上使用深墨描边 + 纸白内衬，保证悬停框清晰
 		var in_terr = GameState.is_hex_in_territory(world.hovered_hex.x, world.hovered_hex.y)
 		var h_col = ThemeStyler.PAPER_INK if in_terr else ThemeStyler.COLOR_DANGER
-		draw_polyline(h_points, Color(1, 1, 1, 0.55), 4.5)
+		draw_polyline(h_points, ThemeStyler.adapt(Color(1, 1, 1, 0.55)), 4.5)
 		draw_polyline(h_points, h_col, 2.0)
 	
 	# 教程目标地块：铜色脉动圆环 + 下落箭头
@@ -44,8 +44,8 @@ func _draw() -> void:
 		var begin_time = int(GameState.active_task.get("begin_time", 0))
 		var elapsed = (Time.get_ticks_msec() - begin_time) / 1000.0 if begin_time != 0 else float(GameState.active_task.get("elapsed_time", 0.0))
 		var pct = clamp(elapsed / max(total, 0.001), 0.0, 1.0)
-		var ring_col = ThemeStyler.get_era_accent(GameState.current_era).darkened(0.15)
-		draw_arc(t_pos, 28.0, 0, TAU, 32, Color(0.15, 0.14, 0.13, 0.25), 4.0)
+		var ring_col = ThemeStyler.deepen(ThemeStyler.get_era_accent(GameState.current_era), 0.15)
+		draw_arc(t_pos, 28.0, 0, TAU, 32, ThemeStyler.adapt(Color(0.15, 0.14, 0.13, 0.25)), 4.0)
 		draw_arc(t_pos, 28.0, -PI/2, -PI/2 + pct * TAU, 32, ring_col, 5.0)
 
 	# 3. 绘制排队中任务的地块指示环
@@ -55,8 +55,8 @@ func _draw() -> void:
 			float(q_task.get("world_pos_x", q_task.get("world_pos", Vector2.ZERO).x)),
 			float(q_task.get("world_pos_y", q_task.get("world_pos", Vector2.ZERO).y))
 		)
-		draw_circle(q_pos, 16.0, Color(0.96, 0.94, 0.90, 0.35))
-		draw_arc(q_pos, 20.0, 0, TAU, 24, Color(0.15, 0.14, 0.13, 0.55), 1.5)
+		draw_circle(q_pos, 16.0, ThemeStyler.adapt(Color(0.96, 0.94, 0.90, 0.35)))
+		draw_arc(q_pos, 20.0, 0, TAU, 24, ThemeStyler.adapt(Color(0.15, 0.14, 0.13, 0.55)), 1.5)
 
 func _draw_placement_preview(hex: Vector2i) -> void:
 	var check = world.get_build_validity(hex) if world.has_method("get_build_validity") else {"valid": true, "reason": ""}
@@ -78,8 +78,8 @@ func _draw_placement_preview(hex: Vector2i) -> void:
 	
 	if is_valid:
 		# 翡翠绿发光填充与边框
-		draw_colored_polygon(h_points, Color(0.42, 0.66, 0.42, 0.30))
-		draw_polyline(poly_outline, ThemeStyler.COLOR_SUCCESS.darkened(0.3), 3.0)
+		draw_colored_polygon(h_points, ThemeStyler.adapt(Color(0.42, 0.66, 0.42, 0.30)))
+		draw_polyline(poly_outline, ThemeStyler.deepen(ThemeStyler.COLOR_SUCCESS, 0.3), 3.0)
 		
 		# 虚影建筑预览
 		var p_key = world.placing_structure_key if "placing_structure_key" in world else "fire_pit"
@@ -95,16 +95,16 @@ func _draw_placement_preview(hex: Vector2i) -> void:
 		
 		# 提示文字
 		if font:
-			draw_string_outline(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), "点击左键安放", HORIZONTAL_ALIGNMENT_CENTER, -1, 13, 5, Color(0.96, 0.94, 0.90, 0.95))
-			draw_string(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), "点击左键安放", HORIZONTAL_ALIGNMENT_CENTER, -1, 13, ThemeStyler.COLOR_SUCCESS.darkened(0.45))
+			draw_string_outline(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), "点击左键安放", HORIZONTAL_ALIGNMENT_CENTER, -1, 13, 5, ThemeStyler.adapt(Color(0.96, 0.94, 0.90, 0.95)))
+			draw_string(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), "点击左键安放", HORIZONTAL_ALIGNMENT_CENTER, -1, 13, ThemeStyler.deepen(ThemeStyler.COLOR_SUCCESS, 0.45))
 	else:
 		# 红色警示填充与边框
-		draw_colored_polygon(h_points, Color(0.80, 0.33, 0.27, 0.25))
-		draw_polyline(poly_outline, ThemeStyler.COLOR_DANGER.darkened(0.2), 3.0)
+		draw_colored_polygon(h_points, ThemeStyler.adapt(Color(0.80, 0.33, 0.27, 0.25)))
+		draw_polyline(poly_outline, ThemeStyler.deepen(ThemeStyler.COLOR_DANGER, 0.2), 3.0)
 		
 		if font:
-			draw_string_outline(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), reason, HORIZONTAL_ALIGNMENT_CENTER, -1, 12, 5, Color(0.96, 0.94, 0.90, 0.95))
-			draw_string(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), reason, HORIZONTAL_ALIGNMENT_CENTER, -1, 12, ThemeStyler.COLOR_DANGER.darkened(0.3))
+			draw_string_outline(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), reason, HORIZONTAL_ALIGNMENT_CENTER, -1, 12, 5, ThemeStyler.adapt(Color(0.96, 0.94, 0.90, 0.95)))
+			draw_string(font, h_center + Vector2(0, -HexWorldGenerator.HEX_RADIUS - 8), reason, HORIZONTAL_ALIGNMENT_CENTER, -1, 12, ThemeStyler.deepen(ThemeStyler.COLOR_DANGER, 0.3))
 
 func _draw_ghost_fire_pit(pos: Vector2) -> void:
 	# 8 块半透明小河卵石环
@@ -113,31 +113,31 @@ func _draw_ghost_fire_pit(pos: Vector2) -> void:
 	for i in range(stone_count):
 		var angle = (TAU / stone_count) * i
 		var stone_pos = pos + Vector2(cos(angle) * ring_r, sin(angle) * ring_r * 0.72)
-		draw_circle(stone_pos, 4.2, Color(0.75, 0.8, 0.85, 0.65))
-		draw_arc(stone_pos, 4.2, 0, TAU, 12, Color(0.9, 0.95, 1.0, 0.7), 1.0)
+		draw_circle(stone_pos, 4.2, ThemeStyler.adapt(Color(0.75, 0.8, 0.85, 0.65)))
+		draw_arc(stone_pos, 4.2, 0, TAU, 12, ThemeStyler.adapt(Color(0.9, 0.95, 1.0, 0.7)), 1.0)
 	# 交叉烧焦柴木虚影
-	draw_line(pos + Vector2(-10, -5), pos + Vector2(10, 5), Color(0.65, 0.42, 0.22, 0.75), 3.5)
-	draw_line(pos + Vector2(-9, 5), pos + Vector2(9, -5), Color(0.55, 0.35, 0.18, 0.75), 3.0)
+	draw_line(pos + Vector2(-10, -5), pos + Vector2(10, 5), ThemeStyler.adapt(Color(0.65, 0.42, 0.22, 0.75)), 3.5)
+	draw_line(pos + Vector2(-9, 5), pos + Vector2(9, -5), ThemeStyler.adapt(Color(0.55, 0.35, 0.18, 0.75)), 3.0)
 	# 温暖火苗发光虚影
-	draw_circle(pos + Vector2(0, -2), 7.0, Color(1.0, 0.65, 0.15, 0.8))
-	draw_circle(pos + Vector2(0, -4), 4.0, Color(1.0, 0.92, 0.35, 0.9))
+	draw_circle(pos + Vector2(0, -2), 7.0, ThemeStyler.adapt(Color(1.0, 0.65, 0.15, 0.8)))
+	draw_circle(pos + Vector2(0, -4), 4.0, ThemeStyler.adapt(Color(1.0, 0.92, 0.35, 0.9)))
 
 func _draw_ghost_furnace(pos: Vector2) -> void:
-	draw_rect(Rect2(pos.x - 12, pos.y - 10, 24, 20), Color(0.85, 0.45, 0.25, 0.7))
-	draw_rect(Rect2(pos.x - 6, pos.y - 18, 12, 8), Color(0.70, 0.35, 0.20, 0.7))
-	draw_circle(pos + Vector2(0, 3), 6.0, Color(1.0, 0.6, 0.1, 0.85))
+	draw_rect(Rect2(pos.x - 12, pos.y - 10, 24, 20), ThemeStyler.adapt(Color(0.85, 0.45, 0.25, 0.7)))
+	draw_rect(Rect2(pos.x - 6, pos.y - 18, 12, 8), ThemeStyler.adapt(Color(0.70, 0.35, 0.20, 0.7)))
+	draw_circle(pos + Vector2(0, 3), 6.0, ThemeStyler.adapt(Color(1.0, 0.6, 0.1, 0.85)))
 
 func _draw_ghost_reactor(pos: Vector2) -> void:
-	draw_rect(Rect2(pos.x - 14, pos.y - 16, 28, 30), Color(0.2, 0.6, 0.9, 0.65))
-	draw_rect(Rect2(pos.x - 10, pos.y - 24, 20, 8), Color(0.3, 0.7, 1.0, 0.75))
-	draw_circle(pos + Vector2(0, 0), 7.0, Color(0.2, 0.9, 1.0, 0.85))
+	draw_rect(Rect2(pos.x - 14, pos.y - 16, 28, 30), ThemeStyler.adapt(Color(0.2, 0.6, 0.9, 0.65)))
+	draw_rect(Rect2(pos.x - 10, pos.y - 24, 20, 8), ThemeStyler.adapt(Color(0.3, 0.7, 1.0, 0.75)))
+	draw_circle(pos + Vector2(0, 0), 7.0, ThemeStyler.adapt(Color(0.2, 0.9, 1.0, 0.85)))
 
 func _draw_tutorial_marker(hex: Vector2i) -> void:
 	var c = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
 	var t = Time.get_ticks_msec() / 1000.0
 	var col = ThemeStyler.COLOR_ACCENT
 	var r = HexWorldGenerator.HEX_RADIUS * (0.95 + 0.08 * sin(t * 4.0))
-	draw_arc(c, r, 0, TAU, 40, Color(1, 1, 1, 0.7), 5.0)
+	draw_arc(c, r, 0, TAU, 40, ThemeStyler.adapt(Color(1, 1, 1, 0.7)), 5.0)
 	draw_arc(c, r, 0, TAU, 40, col, 2.5)
 	# 外扩涟漪
 	var phase = fmod(t, 1.2) / 1.2

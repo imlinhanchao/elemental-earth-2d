@@ -25,6 +25,9 @@ const LEGACY_SAVE_PATH: String = "user://elemental_save.json"
 # 跨场景传参：主菜单选择载入后，标记目标槽位给大世界场景
 static var pending_load_slot: String = ""
 
+# 测试与开发截图期间置为 true：跳过对 auto 槽位的写入，避免覆盖玩家真实的自动存档
+static var suppress_auto_save: bool = false
+
 static func get_slot_path(slot_id: String) -> String:
 	return "user://save_%s.json" % slot_id
 
@@ -128,6 +131,8 @@ static func get_latest_save_slot() -> String:
 	return best_slot
 
 static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
+	if slot_id == "auto" and suppress_auto_save:
+		return true
 	var path = get_slot_path(slot_id)
 	var world_data: Dictionary = {}
 	var furnaces_count: int = 0
@@ -199,7 +204,7 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 		GameState.post_notice("已保存到%s" % def_name, Color(0.3, 0.9, 0.5))
 	return true
 
-static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
+static func load_from_slot(slot_id: String, world_node: Node2D = null, quiet: bool = false) -> bool:
 	check_legacy_migration()
 	var path = get_slot_path(slot_id)
 	if not FileAccess.file_exists(path):
@@ -289,6 +294,8 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
 		
 	GameState.era_advanced.emit(0, GameState.current_era, GameState.ERA_NAMES[GameState.current_era])
 	_restore_tutorial(gs_data.get("tutorial", {}))
+	if quiet:
+		return true
 	GameState.post_notice("已载入%s（v%d · %s）" % [
 		parsed.get("slot_name", slot_id),
 		version,

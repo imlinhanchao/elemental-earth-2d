@@ -42,18 +42,33 @@ static var _cache: Dictionary = {}
 
 # 通用纹理加载 (带缓存)，供 HUD / 弹窗 / 主菜单加载 logo 与时代徽章
 static func load_texture(path: String) -> Texture2D:
-	if _cache.has(path):
-		return _cache[path]
+	var cache_key = "%s#%d" % [path, int(ThemeStyler.is_dark)]
+	if _cache.has(cache_key):
+		return _cache[cache_key]
 	var tex: Texture2D = load(path) if ResourceLoader.exists(path) else null
-	_cache[path] = tex
+	tex = themed(tex)
+	_cache[cache_key] = tex
 	return tex
 
 static func get_icon(key: String) -> Texture2D:
-	var cache_key = "key:" + key
+	var cache_key = "key:%s#%d" % [key, int(ThemeStyler.is_dark)]
 	if _cache.has(cache_key):
 		return _cache[cache_key]
-	var tex = _resolve_icon(key)
+	var tex = themed(_resolve_icon(key))
 	_cache[cache_key] = tex
+	return tex
+
+# 深色模式下，墨色线稿图标换成 assets/icons/dark/ 下的浅色版本 (由 tools/make_dark_icons.py 生成)；
+# 彩色物品图标两种模式通用，原样返回
+static func themed(tex: Texture2D) -> Texture2D:
+	if tex == null or not ThemeStyler.is_dark:
+		return tex
+	var path = tex.resource_path
+	if not path.begins_with("res://assets/icons/") or path.begins_with("res://assets/icons/dark/"):
+		return tex
+	var dark_path = path.replace("res://assets/icons/", "res://assets/icons/dark/")
+	if ResourceLoader.exists(dark_path):
+		return load(dark_path)
 	return tex
 
 static func _resolve_icon(key: String) -> Texture2D:

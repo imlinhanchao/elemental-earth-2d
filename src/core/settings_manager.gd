@@ -12,6 +12,7 @@ static var settings: Dictionary = {
 	"fullscreen": false,
 	"auto_save_interval": 45.0,
 	"camera_drag_speed": 1.0,
+	"theme_mode": "light", # light / dark / system
 	"tutorial_completed": false
 }
 
