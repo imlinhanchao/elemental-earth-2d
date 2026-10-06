@@ -60,6 +60,10 @@ func _ready() -> void:
 			hidden_trees += 1
 	_check(hidden_trees == 0, "领地内所有树木在装备斧头后都显示出来 (隐藏 %d 棵)" % hidden_trees)
 
+	# 教程进行到第 4 步时手动存档，结束后模拟「退出 → 继续游戏」读回
+	var SaveManager = load("res://src/core/save_manager.gd")
+	_check(SaveManager.save_to_slot("test_tutorial_slot", w), "教程中途可以存档")
+
 	inv.add_item("wood", 4)
 	await _wait(1.5)
 	_check(GameState.tutorial_step == 4, "砍到 4 根原木后进入第 5 步")
@@ -76,6 +80,20 @@ func _ready() -> void:
 	_check(GameState.tutorial_marker_hex == Vector2i(9999, 9999), "教程结束后清除地图标记")
 
 	w.queue_free()
+	await get_tree().process_frame
+
+	# 模拟退出游戏后从主菜单「继续游戏」：重置内存状态，由新的 world 读档
+	GameState.reset_to_new_game()
+	SaveManager.pending_load_slot = "test_tutorial_slot"
+	var w2 = load("res://src/scenes/world.tscn").instantiate()
+	add_child(w2)
+	await _wait(0.5)
+	_check(GameState.is_tutorial_active and GameState.tutorial_step == 3, "读档后回到教程第 4 步")
+	_check(w2.hud.tutorial_dock.visible, "读档后教程面板显示")
+	_check(w2.hud.tutorial_dock.current_stage_idx == 3, "教程面板显示的是第 4 步")
+	_check(int(GameState.tile_resources.get(GameState.tutorial_marker_hex, {}).get("wood", 0)) > 0, "读档后地图标记重新指向树木")
+	w2.queue_free()
+	SaveManager.delete_slot("test_tutorial_slot")
 	SettingsManager.set_tutorial_completed(had_completed)
 	if auto_backup.is_empty():
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(auto_path))

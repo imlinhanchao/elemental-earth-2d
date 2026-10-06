@@ -89,6 +89,10 @@ func _ready() -> void:
 	var stock_before: int = int(GameState.tile_resources[stock_hex][stock_key])
 	GameState.consume_tile_resource(stock_hex, stock_key, 7)
 	
+	# 教程进行到第 4 步时存档
+	GameState.start_tutorial()
+	GameState.set_tutorial_step(3)
+
 	# 2. 保存至测试槽位
 	var slot_id = "test_slot"
 	var save_ok = SaveManager.save_to_slot(slot_id, null)
@@ -148,6 +152,7 @@ func _ready() -> void:
 	assert(GameState.lab_vessel.has_substance("water", 2.9), "实验台试剂恢复错误!")
 	assert(GameState.depleted_tiles.has(Vector2i(3, -2)), "采空格子恢复错误!")
 	assert(GameState.get_current_territory_radius() == 8, "时代 1 领地半径应为 8!")
+	assert(GameState.is_tutorial_active and GameState.tutorial_step == 3, "教程进度恢复错误!")
 	print(" -> v3 存档全量恢复校验通过: 时代/背包/工具/队列/溶液/熔炉/反应塔/采空格子/领地半径/科技/里程碑全部精确吻合!")
 	
 	# 4. 测试时代跃迁与门槛保护 (时代 2 及以后不随意乱跳)
@@ -200,6 +205,7 @@ func _ready() -> void:
 	assert(GameState.task_queue.is_empty(), "v2 缺省任务队列应为空!")
 	assert(GameState.active_task.is_empty(), "v2 缺省进行中任务应为空!")
 	assert(GameState.depleted_tiles.is_empty(), "v2 缺省采空格子应为空!")
+	assert(not GameState.is_tutorial_active, "没有教程字段的旧档载入后不应处于教程中!")
 	print(" -> v2 旧档平滑升级载入成功 (缺失字段安全置空，背包正常保留)")
 	
 	# 8. 测试科技研发系统与里程碑联动

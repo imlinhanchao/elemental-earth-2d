@@ -180,7 +180,8 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 			"depleted_tiles": _serialize_depleted_tiles(GameState.depleted_tiles),
 			"tile_resources": _serialize_tile_resources(GameState.tile_resources),
 			"built_furnaces": _serialize_furnaces(GameState.built_furnaces),
-			"built_reactors": _serialize_reactors(GameState.built_reactors)
+			"built_reactors": _serialize_reactors(GameState.built_reactors),
+			"tutorial": {"active": GameState.is_tutorial_active, "step": GameState.tutorial_step}
 		},
 		"world_state": world_data
 	}
@@ -287,12 +288,27 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null) -> bool:
 		world_node.deserialize_world_state(world_data)
 		
 	GameState.era_advanced.emit(0, GameState.current_era, GameState.ERA_NAMES[GameState.current_era])
+	_restore_tutorial(gs_data.get("tutorial", {}))
 	GameState.post_notice("已载入%s（v%d · %s）" % [
 		parsed.get("slot_name", slot_id),
 		version,
 		GameState.ERA_NAMES[GameState.current_era]
 	], Color(0.2, 0.9, 1.0))
 	return true
+
+# 恢复教程进度：存档里没有教程字段 (旧档或非教程存档) 时视为未进行教程
+static func _restore_tutorial(data) -> void:
+	var active := false
+	var step := 0
+	if data is Dictionary:
+		active = bool(data.get("active", false))
+		step = int(data.get("step", 0))
+	GameState.is_tutorial_active = active
+	GameState.tutorial_step = step
+	GameState.tutorial_marker_hex = Vector2i(9999, 9999)
+	GameState.tutorial_state_changed.emit(active)
+	if active:
+		GameState.tutorial_step_changed.emit(step)
 
 static func delete_slot(slot_id: String) -> bool:
 	var path = get_slot_path(slot_id)

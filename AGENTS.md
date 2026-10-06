@@ -871,6 +871,13 @@
 - **修复**：改为遍历 `world.resource_nodes` 索引（只包含资源节点，不会误隐藏同在 `Entities` 下的熔炉与反应塔）；
 - **测试**：`test_tutorial` 增加「装备斧头后领地内所有树木可见」校验；去掉修复时该项失败（隐藏 2 棵），修复后通过。
 
+### 2.49 修复：教程进度不随存档保存 (2026-10-06)
+
+- **现象**：教程进行到一半时存档、退出，再从主菜单「继续游戏」，教程面板不再出现，无法接着做；
+- **根因**：教程状态只保存在内存中的 `GameState.is_tutorial_active` / `tutorial_step`，存档里没有对应字段，退出游戏后丢失；
+- **修复**：`SaveManager` 在 `game_state.tutorial` 中写入 `{active, step}`，读档时由 `_restore_tutorial` 恢复，并发出 `tutorial_state_changed` / `tutorial_step_changed`，教程面板与地图标记随之恢复。没有该字段的旧档按「不在教程中」处理（字段为新增可选项，存档版本仍为 v4）；
+- **测试**：`test_save_v3` 校验教程进度的保存与恢复，以及旧档不会误进入教程；`test_tutorial` 模拟「第 4 步存档 → 重置 → 新 world 读档」，校验面板、步骤与地图标记恢复。去掉修复时这 4 项均失败。
+
 ---
 
 ## 4. 全局键盘与鼠标操作控制总览 (Global Controls & Hotkeys)
