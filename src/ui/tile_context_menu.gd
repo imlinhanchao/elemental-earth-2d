@@ -118,7 +118,7 @@ func _show_count_selection(res_info: Dictionary) -> void:
 	btn_back.visible = (current_resources.size() > 1)
 	var iname = res_info.get("name", selected_item_key)
 	var remaining = int(res_info.get("amount", 0))
-	# amount < 0 表示不限量 (空地挖泥土)
+	# amount < 0 表示不限量 (空地挖泥土、湖里打水)
 	title_label.text = "采集%s（剩余 %d）" % [iname, remaining] if remaining >= 0 else "采集%s（不限量）" % iname
 	_clear_content()
 	
@@ -147,7 +147,7 @@ func _show_count_selection(res_info: Dictionary) -> void:
 	# 无尽按钮 (加宽加亮)
 	var btn_infinite = Button.new()
 	btn_infinite.custom_minimum_size = Vector2(180, 30)
-	btn_infinite.text = "一直采到采完" if remaining >= 0 else "一直挖"
+	btn_infinite.text = "一直采到采完" if remaining >= 0 else ("一直打水" if selected_item_key == "water" else "一直挖")
 	btn_infinite.add_theme_font_size_override("font_size", 12)
 	btn_infinite.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 	btn_infinite.pressed.connect(func():

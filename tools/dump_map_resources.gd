@@ -20,7 +20,11 @@ func _initialize() -> void:
 		var out := {}
 		for c in sim.tile_resources.keys():
 			var d = (abs(c.x) + abs(c.x + c.y) + abs(c.y)) / 2
-			for k in sim.tile_resources[c].keys():
+			# 湖面的水不限量、不记在储量里，按水域地块计入
+			var keys: Array = sim.tile_resources[c].keys()
+			if sim.is_water_hex(c) and not keys.has("water"):
+				keys.append("water")
+			for k in keys:
 				if not out.has(k):
 					out[k] = {"min_dist": d, "tiles": 0}
 				out[k]["min_dist"] = min(out[k]["min_dist"], d)

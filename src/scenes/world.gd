@@ -99,6 +99,12 @@ func _ready() -> void:
 		overlay_layer.queue_redraw()
 	)
 	
+	# 得到第一只或失去最后一只木桶时，湖面的汲水点随之显示或隐藏
+	GameState.inventory.item_changed.connect(func(key, count):
+		if (key == GameState.sim.WATER_CONTAINER and count <= 1) or key == "":
+			apply_depleted_tiles_to_nodes()
+	)
+	
 	GameState.era_advanced.connect(func(_old, _new, _era_name):
 		apply_depleted_tiles_to_nodes()
 		terrain_layer.refresh()

@@ -315,6 +315,42 @@ func _initialize() -> void:
 	_check(ms.can_dig_mud(inland_hex), "泥土不限量，挖完仍可继续挖")
 	_check(ms.inventory.get_count("clay") > 0, "湖边挖泥土掉落粘土 ×%d" % ms.inventory.get_count("clay"))
 
+	# 9b. 打水：湖泊任何地块持有木桶即可打水，不限量，木桶不消耗
+	var lakes: Array = []
+	for h in ms.world_biomes.keys():
+		if ms.world_biomes[h] == Simulation.B_LAKE:
+			lakes.append(h)
+	# 第一格放领地内的湖面 (下发作业要求在领地内)
+	lakes.sort_custom(func(a, b): return Simulation._ring(a) < Simulation._ring(b))
+	ms.inventory.remove_item("wooden_bucket", ms.inventory.get_count("wooden_bucket"))
+	ms.active_task.clear()
+	ms.task_queue.clear()
+	_check(not lakes.is_empty(), "地图上有湖泊 (%d 格)" % lakes.size())
+	_check(not ms.queue_hex_harvest(lakes[0], "water", 1), "没有木桶不能打水")
+	_check(ms.get_tile_tool_hint(lakes[0]).contains("木桶"), "湖面提示需要木桶")
+	ms.inventory.add_item("wooden_bucket", 1)
+	var all_lakes_ok := true
+	for h in lakes:
+		var av = ms.get_tile_available_resources(h)
+		if av.is_empty() or av[0]["key"] != "water" or int(av[0]["amount"]) != -1:
+			all_lakes_ok = false
+	_check(all_lakes_ok, "持有木桶后每一格湖面左键都是打水，不限量")
+	ms.tile_resources[lakes[0]] = {} # 盐和沙采完的湖面仍可打水
+	_check(ms.queue_hex_harvest(lakes[0], "water", 30), "盐沙采完的湖面仍可打水 ×30")
+	var water_before = ms.inventory.get_count("water")
+	for i in range(30):
+		ms.active_task["begin_time"] = Time.get_ticks_msec() - 2000
+		ms.tick(0.016)
+	_check(ms.inventory.get_count("water") == water_before + 30, "打水 30 次得到 30 份水")
+	_check(ms.inventory.get_count("wooden_bucket") == 1, "打水不消耗木桶")
+	_check(ms.can_draw_water(lakes[0]) and not ms.depleted_tiles.has(lakes[0]), "湖面不会被打干")
+	var land := Vector2i(9999, 9999)
+	for h in ms.world_biomes.keys():
+		if ms.world_biomes[h] != Simulation.B_LAKE:
+			land = h
+			break
+	_check(not ms.queue_hex_harvest(land, "water", 1), "陆地上不能打水")
+
 	# 10. 科技树布局：卡片不重叠、连线从左到右、跨列连线的途经点不压在卡片上
 	var Layout = load("res://src/ui/tech_tree_layout.gd")
 	var lay = Layout.compute(DataDB.techs)

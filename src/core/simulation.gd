@@ -238,7 +238,7 @@ func _init_hex_resources(coord: Vector2i, biome: HexWorldGenerator.BiomeType, sp
 			"pyrite":
 				res = { "pyrite": 80, "flint": 20 }
 			"rock_salt":
-				res = { "rock_salt": 60, "water": 300, "sand": 40 }
+				res = { "rock_salt": 60, "sand": 40 }
 			"coal":
 				res = { "coal": 100, "wood": 60, "stick": 20 }
 			"clay":
@@ -264,7 +264,7 @@ func _init_hex_resources(coord: Vector2i, biome: HexWorldGenerator.BiomeType, sp
 	else:
 		match biome:
 			HexWorldGenerator.BiomeType.SALT_LAKE:
-				res = { "water": 300, "rock_salt": 40, "sand": 30 }
+				res = { "rock_salt": 40, "sand": 30 } # 水不限量，见 can_draw_water
 				world_resources[coord] = "water"
 			HexWorldGenerator.BiomeType.VOLCANO:
 				res = { "stone": 40, "flint": 20 }
@@ -528,11 +528,16 @@ func get_tile_resources(hex: Vector2i) -> Dictionary:
 
 func get_tile_available_resources(hex: Vector2i) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
+	# 湖面持有木桶即可打水，不限量 (amount = -1)，排在最前，左键点击湖面就是打水
+	if can_draw_water(hex):
+		result.append({"key": "water", "name": DataDB.get_item("water").get("name", "水"), "amount": -1})
 	if not tile_resources.has(hex):
 		return result
 	var res = tile_resources[hex]
 	for k in res.keys():
 		var amt = int(res[k])
+		if k == "water":
+			continue # 旧存档里湖面的水储量，已改为不限量
 		if amt > 0 and is_resource_minable(k):
 			var iname = DataDB.get_item(k).get("name", k)
 			result.append({
@@ -552,6 +557,8 @@ func get_tile_tool_hint(hex: Vector2i) -> String:
 		match get_resource_required_tool(k):
 			"axe": return "砍伐%s需要先制作并装备斧头 [T]" % iname
 			"pickaxe": return "开采%s需要先制作并装备石镐 [T]" % iname
+	if is_water_hex(hex) and not can_draw_water(hex):
+		return WATER_HINT
 	return ""
 
 func consume_tile_resource(hex: Vector2i, item_key: String, count: int = 1) -> int:
@@ -575,7 +582,8 @@ func consume_tile_resource(hex: Vector2i, item_key: String, count: int = 1) -> i
 		if int(res[k]) > 0:
 			has_any = true
 			break
-	if not has_any:
+	# 湖面的盐和沙采完后仍可打水，不算采空
+	if not has_any and not is_water_hex(hex):
 		depleted_tiles[hex] = true
 		tile_depleted.emit(hex)
 		
@@ -593,6 +601,17 @@ func can_dig_mud(hex: Vector2i) -> bool:
 	if built_furnaces.has(hex) or built_reactors.has(hex):
 		return false
 	return get_tile_available_resources(hex).is_empty()
+
+# --- 打水 ---
+# 湖泊 (河流暂未生成，加入后同样算水域) 的任何地块都能打水，不限量；需要持有木桶 (不消耗)
+const WATER_CONTAINER: String = "wooden_bucket"
+const WATER_HINT: String = "打水需要木桶，研发木材加工后可在制作栏 [T] 制作"
+
+func is_water_hex(hex: Vector2i) -> bool:
+	return world_biomes.get(hex, -1) == B_LAKE
+
+func can_draw_water(hex: Vector2i) -> bool:
+	return is_water_hex(hex) and inventory.has_item(WATER_CONTAINER)
 
 func is_near_water(hex: Vector2i) -> bool:
 	for d in HEX_DIRECTIONS:
@@ -659,6 +678,8 @@ func get_resource_required_tool(item_key: String) -> String:
 	match item_key:
 		"wood":
 			return "axe"
+		"water":
+			return "bucket"
 		"clay", "malachite", "hematite", "cassiterite", "limestone", "niter", "graphite", "pyrolusite", "cryolite", "coal", "sulfur", "pyrite", "galena", "sphalerite", "bauxite", "monazite", "pitchblende":
 			return "pickaxe"
 		_:
@@ -681,6 +702,9 @@ func is_resource_minable(item_key: String) -> bool:
 	elif req_tool == "pickaxe":
 		if equipped_tools.get("pickaxe", "bare_hands") == "bare_hands":
 			return false
+	elif req_tool == "bucket":
+		if not inventory.has_item(WATER_CONTAINER):
+			return false
 			
 	return true
 
@@ -693,7 +717,10 @@ func can_mine(item_key: String) -> Dictionary:
 		
 	var pick = equipped_tools.get("pickaxe", "bare_hands")
 	var axe = equipped_tools.get("axe", "bare_hands")
-	if item_key == "wood":
+	if item_key == "water":
+		if not inventory.has_item(WATER_CONTAINER):
+			return { "allowed": false, "reason": WATER_HINT }
+	elif item_key == "wood":
 		if axe == "bare_hands":
 			return { "allowed": false, "reason": "徒手无法砍伐原木！请先在制作栏 (T) 制作并装配【原始燧石斧】！" }
 	elif item_key in ["malachite", "hematite", "cassiterite", "limestone", "niter", "graphite", "pyrolusite", "cryolite", "sulfur", "coal", "clay", "bauxite", "galena", "sphalerite", "monazite", "pitchblende"]:
@@ -711,6 +738,14 @@ func queue_hex_harvest(hex: Vector2i, item_key: String, count: int = 1, world_po
 	if item_key == "mud":
 		if not can_dig_mud(hex):
 			post_notice("这里不能挖泥土（只能在没有其他资源的陆地空地上挖）", Color.ORANGE)
+			return false
+		avail = MUD_UNLIMITED
+	elif item_key == "water":
+		if not is_water_hex(hex):
+			post_notice("只能在湖泊或河流里打水", Color.ORANGE)
+			return false
+		if not inventory.has_item(WATER_CONTAINER):
+			post_notice(WATER_HINT, Color(1.0, 0.4, 0.4))
 			return false
 		avail = MUD_UNLIMITED
 	var iname = DataDB.get_item(item_key).get("name", item_key)
@@ -884,7 +919,13 @@ func _complete_active_task() -> void:
 	lab.on_harvest() # 采集时偶尔捡到手稿
 
 	# 2. 扣减地块真实资源储量 (取完了就没了)
-	var rem_res = consume_tile_resource(hex, t_key, 1) if t_key != "mud" else (MUD_UNLIMITED if can_dig_mud(hex) else 0)
+	var rem_res: int
+	if t_key == "mud":
+		rem_res = MUD_UNLIMITED if can_dig_mud(hex) else 0
+	elif t_key == "water":
+		rem_res = MUD_UNLIMITED if can_draw_water(hex) else 0 # 木桶没了就停
+	else:
+		rem_res = consume_tile_resource(hex, t_key, 1)
 	
 	# 3. 循环判定 (无尽 -1 或 cur_cycle < rep)
 	var should_continue = false
@@ -1185,7 +1226,10 @@ func find_nearest_resource(item_key: String, from_hex: Vector2i) -> Vector2i:
 	var d_primary := 1 << 30
 	var d_any := 1 << 30
 	for hex in tile_resources.keys():
-		if int(tile_resources[hex].get(item_key, 0)) <= 0:
+		if item_key == "water":
+			if not is_water_hex(hex):
+				continue
+		elif int(tile_resources[hex].get(item_key, 0)) <= 0:
 			continue
 		if not is_hex_in_territory(hex.x, hex.y) or built_furnaces.has(hex) or built_reactors.has(hex):
 			continue

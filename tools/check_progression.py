@@ -10,7 +10,7 @@
 - 科技 / 制作 / 建筑：受 era 字段与 required_techs 约束
 - 配方：实验台必须放一件已制造的容器 (加热类操作要求 can_heat)；炉体可代替坩埚 / 窑炉 (ChemistrySolver.FURNACE_CONTAINERS)；
   温度上限取决于已建炉体；电压需要电池
-- 燃烧木柴副产草木灰；砍树 / 拾枝伴生树皮与树脂
+- 燃烧木柴副产草木灰；砍树 / 拾枝伴生树皮与树脂；湖里打水需要持有木桶
 退出码：全部时代可完成为 0，否则为 1。
 """
 import json
@@ -105,13 +105,17 @@ def main(map_path):
         return True
 
     have, built, researched = set(), set(), set()
+    water_on_map = False
     ok = True
     for era in sorted(eras, key=lambda e: e["order"]):
         E = era["order"]
         radius = int(era.get("territory_radius", 5 + E * 3))
         for k, info in map_res.items():
             if info["min_dist"] <= radius and res_era.get(k, 0) <= E:
-                have.add(k)
+                if k == "water":
+                    water_on_map = True  # 需要木桶，在下方循环中加入
+                else:
+                    have.add(k)
         if "wood" in have or "stick" in have:
             have |= {"bark", "resin"}
 
@@ -121,6 +125,8 @@ def main(map_path):
         changed = True
         while changed:
             changed = False
+            if water_on_map and "wooden_bucket" in have and "water" not in have:
+                have.add("water"); changed = True
             for t in techs:
                 if t["key"] in researched or int(t.get("era", 0)) > E:
                     continue

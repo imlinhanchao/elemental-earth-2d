@@ -280,6 +280,10 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null, quiet: bo
 			GameState.active_task = {}
 			
 		GameState.depleted_tiles = _deserialize_depleted_tiles(gs_data.get("depleted_tiles", []))
+		# 旧档里被打干的湖面：水已改为不限量，湖面不再算采空
+		for h in GameState.depleted_tiles.keys():
+			if GameState.sim.is_water_hex(h):
+				GameState.depleted_tiles.erase(h)
 		if version >= 4:
 			_deserialize_tile_resources(gs_data.get("tile_resources", []))
 		_deserialize_lab_vessel(gs_data.get("lab_vessel", {}))
