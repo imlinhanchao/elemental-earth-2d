@@ -203,6 +203,43 @@ func _initialize() -> void:
 	sim.tick(0.016)
 	_check(sim.active_task.is_empty(), "0.3s 作业在到期后的下一帧完成")
 
+	# 9b. 空地挖泥土：只在没有可采资源的陆地上挖，不限量；湖边挖到粘土
+	var ms = Simulation.new()
+	ms.reset_to_new_game()
+	var res_hex := Vector2i(9999, 9999)
+	var shore_hex := Vector2i(9999, 9999)
+	var inland_hex := Vector2i(9999, 9999)
+	for h in ms.world_biomes.keys():
+		if Simulation._ring(h) > 5 or ms.world_biomes[h] == Simulation.B_LAKE:
+			continue
+		if res_hex == Vector2i(9999, 9999) and not ms.get_tile_available_resources(h).is_empty():
+			res_hex = h
+		elif ms.is_near_water(h) and shore_hex == Vector2i(9999, 9999):
+			shore_hex = h
+		elif not ms.is_near_water(h) and h != res_hex and inland_hex == Vector2i(9999, 9999):
+			inland_hex = h
+	_check(not ms.can_dig_mud(res_hex), "还有资源的地块不能挖泥土")
+	ms.tile_resources[inland_hex] = {}
+	ms.tile_resources[shore_hex] = {}
+	_check(ms.can_dig_mud(inland_hex) and ms.can_dig_mud(shore_hex), "清空资源的陆地可以挖泥土")
+	var lake_hex := Vector2i(9999, 9999)
+	for h in ms.world_biomes.keys():
+		if ms.world_biomes[h] == Simulation.B_LAKE:
+			lake_hex = h
+			break
+	ms.tile_resources[lake_hex] = {}
+	_check(not ms.can_dig_mud(lake_hex), "湖面不能挖泥土")
+	for target in [inland_hex, shore_hex]:
+		ms.active_task.clear()
+		ms.task_queue.clear()
+		_check(ms.queue_hex_harvest(target, "mud", 40), "空地可下发挖泥土 ×40")
+		for i in range(40):
+			ms.active_task["begin_time"] = Time.get_ticks_msec() - 2000
+			ms.tick(0.016)
+	_check(ms.inventory.get_count("mud") == 80, "两块空地各挖出 40 份泥土 (%d)" % ms.inventory.get_count("mud"))
+	_check(ms.can_dig_mud(inland_hex), "泥土不限量，挖完仍可继续挖")
+	_check(ms.inventory.get_count("clay") > 0, "湖边挖泥土掉落粘土 ×%d" % ms.inventory.get_count("clay"))
+
 	# 10. 科技树布局：卡片不重叠、连线从左到右、跨列连线的途经点不压在卡片上
 	var Layout = load("res://src/ui/tech_tree_layout.gd")
 	var lay = Layout.compute(DataDB.techs)

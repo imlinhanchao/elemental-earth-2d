@@ -260,6 +260,9 @@ func _handle_tile_click(hex: Vector2i) -> void:
 	var available = GameState.get_tile_available_resources(hex)
 	if available.is_empty():
 		var hint = GameState.sim.get_tile_tool_hint(hex)
+		if hint == "" and GameState.sim.can_dig_mud(hex):
+			GameState.queue_hex_harvest(hex, "mud", 1, HexWorldGenerator.hex_to_pixel(hex.x, hex.y))
+			return
 		GameState.post_notice(hint if hint != "" else "该地块已采完", Color.GRAY)
 		return
 		
@@ -274,6 +277,8 @@ func _handle_tile_right_click(hex: Vector2i, screen_pos: Vector2) -> void:
 		return
 		
 	var available = GameState.get_tile_available_resources(hex)
+	if available.is_empty() and GameState.sim.can_dig_mud(hex):
+		available.append({ "key": "mud", "name": DataDB.get_item("mud").get("name", "泥土"), "amount": -1 })
 	if available.is_empty():
 		GameState.post_notice("该地块已采完", Color.GRAY)
 		return

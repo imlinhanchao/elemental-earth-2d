@@ -86,7 +86,7 @@ func _show_resource_selection() -> void:
 		
 		var btn = Button.new()
 		btn.custom_minimum_size = Vector2(180, 32)
-		btn.text = " %s  剩余 %d" % [iname, amount]
+		btn.text = " %s  剩余 %d" % [iname, amount] if amount >= 0 else " %s  不限量" % iname
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		
 		var icon_tex = ItemIconManager.get_icon(key)
@@ -118,7 +118,8 @@ func _show_count_selection(res_info: Dictionary) -> void:
 	btn_back.visible = (current_resources.size() > 1)
 	var iname = res_info.get("name", selected_item_key)
 	var remaining = int(res_info.get("amount", 0))
-	title_label.text = "采集%s（剩余 %d）" % [iname, remaining]
+	# amount < 0 表示不限量 (空地挖泥土)
+	title_label.text = "采集%s（剩余 %d）" % [iname, remaining] if remaining >= 0 else "采集%s（不限量）" % iname
 	_clear_content()
 	
 	var desc_label = Label.new()
@@ -146,7 +147,7 @@ func _show_count_selection(res_info: Dictionary) -> void:
 	# 无尽按钮 (加宽加亮)
 	var btn_infinite = Button.new()
 	btn_infinite.custom_minimum_size = Vector2(180, 30)
-	btn_infinite.text = "一直采到采完"
+	btn_infinite.text = "一直采到采完" if remaining >= 0 else "一直挖"
 	btn_infinite.add_theme_font_size_override("font_size", 12)
 	btn_infinite.add_theme_color_override("font_color", ThemeStyler.COLOR_ACCENT)
 	btn_infinite.pressed.connect(func():

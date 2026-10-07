@@ -592,6 +592,30 @@ func consume_tile_resource(hex: Vector2i, item_key: String, count: int = 1) -> i
 		
 	return remaining
 
+# --- 空地挖泥土 ---
+# 陆地上没有可采资源的空地 (开局中心、采空的地块) 可以徒手挖泥土，不限量；
+# 紧邻湖面的地块挖泥土时有概率挖到粘土
+const MUD_UNLIMITED: int = 1000000
+const MUD_CLAY_CHANCE: float = 0.3
+
+func can_dig_mud(hex: Vector2i) -> bool:
+	if not world_biomes.has(hex) or world_biomes[hex] == B_LAKE:
+		return false
+	if built_furnaces.has(hex) or built_reactors.has(hex):
+		return false
+	return get_tile_available_resources(hex).is_empty()
+
+func is_near_water(hex: Vector2i) -> bool:
+	for d in HEX_DIRECTIONS:
+		if world_biomes.get(hex + d, -1) == B_LAKE:
+			return true
+	return false
+
+const HEX_DIRECTIONS: Array[Vector2i] = [
+	Vector2i(1, 0), Vector2i(1, -1), Vector2i(0, -1),
+	Vector2i(-1, 0), Vector2i(-1, 1), Vector2i(0, 1)
+]
+
 # --- 任务队列调度与合并 ---
 
 # 作业耗时：徒手基准值，装配工具后读取 crafting.json 中的 work_time
@@ -603,6 +627,8 @@ func calculate_task_duration(item_key: String) -> float:
 		return 0.8
 	elif item_key == "stone" or item_key == "flint" or item_key == "water":
 		return 1.0
+	elif item_key == "mud":
+		return 1.5
 	var slot = "axe" if item_key == "wood" else "pickaxe"
 	var base = BARE_HAND_AXE_TIME if slot == "axe" else BARE_HAND_PICK_TIME
 	var tool_key = str(equipped_tools.get(slot, "bare_hands"))
@@ -628,6 +654,7 @@ const RESOURCE_ERA_REQUIREMENTS: Dictionary = {
 	"pyrolusite": 2,
 	"cryolite": 3,
 	"sand": 0,
+	"mud": 0,
 	"coal": 1,
 	"sulfur": 1,
 	"pyrite": 1,
@@ -692,6 +719,11 @@ func queue_hex_harvest(hex: Vector2i, item_key: String, count: int = 1, world_po
 		return false
 		
 	var avail = int(tile_resources.get(hex, {}).get(item_key, 0))
+	if item_key == "mud":
+		if not can_dig_mud(hex):
+			post_notice("这里不能挖泥土（只能在没有其他资源的陆地空地上挖）", Color.ORANGE)
+			return false
+		avail = MUD_UNLIMITED
 	var iname = DataDB.get_item(item_key).get("name", item_key)
 	if avail <= 0:
 		post_notice("该地块的%s已采完" % iname, Color.ORANGE)
@@ -707,6 +739,7 @@ func queue_hex_harvest(hex: Vector2i, item_key: String, count: int = 1, world_po
 	if item_key == "wood": action_tag = "伐木"
 	elif item_key == "stick": action_tag = "拾取"
 	elif item_key == "water": action_tag = "打水"
+	elif item_key == "mud": action_tag = "挖"
 	
 	var actual_count = count
 	if actual_count != -1:
@@ -851,6 +884,8 @@ func _complete_active_task() -> void:
 			inventory.add_item("bark", randi_range(1, 2))
 		if randf() < 0.15:
 			inventory.add_item("resin", 1)
+	elif t_key == "mud" and is_near_water(hex) and randf() < MUD_CLAY_CHANCE:
+		inventory.add_item("clay", 1)
 	elif t_key == "stick":
 		if randf() < 0.45:
 			inventory.add_item("bark", 1)
@@ -860,7 +895,7 @@ func _complete_active_task() -> void:
 	lab.on_harvest() # 采集时偶尔捡到手稿
 
 	# 2. 扣减地块真实资源储量 (取完了就没了)
-	var rem_res = consume_tile_resource(hex, t_key, 1)
+	var rem_res = consume_tile_resource(hex, t_key, 1) if t_key != "mud" else (MUD_UNLIMITED if can_dig_mud(hex) else 0)
 	
 	# 3. 循环判定 (无尽 -1 或 cur_cycle < rep)
 	var should_continue = false
