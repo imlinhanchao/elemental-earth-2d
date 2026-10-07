@@ -23,6 +23,11 @@ var hovered_hex: Vector2i = Vector2i(9999, 9999)
 # 区块开采上下文菜单
 var tile_context_menu: PanelContainer
 var right_click_down_pos: Vector2 = Vector2.ZERO
+# 左键按下后位移超过 DRAG_THRESHOLD 视为拖动地图，否则抬起时按单击处理
+const DRAG_THRESHOLD: float = 6.0
+var left_pressed: bool = false
+var left_down_pos: Vector2 = Vector2.ZERO
+var left_down_hex: Vector2i = Vector2i.ZERO
 
 # 建筑实例列表 (用于全量持久化存档)
 var built_furnaces: Array[Node2D] = []
@@ -198,13 +203,29 @@ func _unhandled_input(event: InputEvent) -> void:
 			camera.zoom = (camera.zoom * 0.85).clamp(Vector2(0.5, 0.5), Vector2(2.5, 2.5))
 			target_zoom = camera.zoom
 			_update_terrain_lod()
-		elif event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-			if is_placing_structure:
-				confirm_placement(hovered_hex)
-			else:
-				_handle_tile_click(hovered_hex)
+		elif event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				left_pressed = true
+				left_down_pos = event.position
+				left_down_hex = hovered_hex
+				drag_start_mouse = event.position
+				drag_start_cam_pos = camera.position
+			elif left_pressed:
+				left_pressed = false
+				if is_dragging_camera:
+					is_dragging_camera = false
+				elif is_placing_structure:
+					confirm_placement(left_down_hex)
+				else:
+					_handle_tile_click(left_down_hex)
 	
 	elif event is InputEventMouseMotion:
+		# 抬起事件被界面吞掉时复位，避免松开后地图仍跟着鼠标走
+		if left_pressed and not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			left_pressed = false
+			is_dragging_camera = false
+		if left_pressed and not is_dragging_camera and (event.position - left_down_pos).length() >= DRAG_THRESHOLD:
+			is_dragging_camera = true
 		if is_dragging_camera:
 			camera.position = _clamp_camera(drag_start_cam_pos - (event.position - drag_start_mouse) / camera.zoom)
 		
