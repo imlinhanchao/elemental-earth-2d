@@ -3,7 +3,7 @@
 # 1. 按最长前置链分列，再把只服务于后方科技的节点右移，缩短连线；
 # 2. 跨多列的连线插入占位点，让线从卡片之间的空隙穿过，不压在卡片上；
 # 3. 用重心法多轮调整每列的上下顺序，减少连线交叉；
-# 4. 每个节点向相邻节点的平均高度靠拢，连线尽量走直。
+# 4. 每个节点向相邻节点的平均高度靠拢，连线尽量走直；第一列（开局科技）紧挨排列。
 # 纯数据计算，不依赖场景节点，可在测试中直接调用。
 extends RefCounted
 
@@ -142,6 +142,10 @@ static func compute(techs: Dictionary) -> Dictionary:
 						s += y[m]
 					desired.append(lerpf(y[n], s / nb.size(), 0.7))
 			_place_column(col, desired, y, height, is_lane)
+			# 第一列是开局科技，紧挨着排列，不留空档
+			if l == 0:
+				for i in range(1, col.size()):
+					y[col[i]] = y[col[i - 1]] + _sep(col[i - 1], col[i], height, is_lane)
 
 	var min_top := INF
 	var max_bottom := -INF
