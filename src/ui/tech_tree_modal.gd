@@ -215,6 +215,10 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 		else:
 			cost_texts.append("%s: %d" % [item_n, item_qty])
 			
+	# 时代未到时按未解锁处理，提示所需时代
+	var era_met = GameState.current_era >= DataDB.get_tech_era(tech_key)
+	if not era_met:
+		prereqs_met = false
 	var cost_lbl: Label = card.find_child("CostLabel", true, false)
 	var btn_action: Button = card.find_child("BtnAction", true, false)
 	
@@ -286,7 +290,7 @@ func _update_card_state(card: PanelContainer, tech_key: String, tech: Dictionary
 		style.corner_radius_bottom_right = 6
 		card.modulate = Color(1, 1, 1, 0.5)
 		if cost_lbl:
-			cost_lbl.text = "需要先研发：" + " / ".join(missing_prereqs) if not missing_prereqs.is_empty() else "时代未达"
+			cost_lbl.text = "需要先研发：" + " / ".join(missing_prereqs) if not missing_prereqs.is_empty() else "需要进入" + GameState.sim.ERA_NAMES[DataDB.get_tech_era(tech_key)]
 			cost_lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_MUTED)
 		if btn_action:
 			btn_action.visible = false

@@ -60,6 +60,16 @@ func _initialize() -> void:
 	# 3. 科技时代读表
 	_check(DataDB.get_tech_era("stone_tool_crafting") == 0, "石器制作属于石器时代")
 	_check(DataDB.get_tech_era("crystallization_tech") == 2, "结晶工艺属于近代化学时代 (与里程碑同时代)")
+	# 研发受阻时给出具体原因：陶器制作没有前置科技，石器时代应提示时代未到而不是缺前置
+	sim.reset_to_new_game()
+	sim.inventory.add_item("clay", 20)
+	_check(sim.get_research_block_reason("pottery").begins_with("需要进入"), "陶器制作在石器时代提示所需时代")
+	sim.current_era = 1
+	_check(sim.can_research_tech("pottery"), "炼金术时代持有粘土即可研发陶器制作")
+	_check(sim.get_research_block_reason("mold_making").begins_with("需要先研发"), "缺前置时列出前置科技")
+	sim.inventory.remove_item("clay", 20)
+	_check(sim.get_research_block_reason("pottery").begins_with("材料不足"), "缺材料时提示材料不足")
+	sim.reset_to_new_game()
 
 	# 4. 鼓风高炉：可建造、生成模拟层炉体、炉温上限 1500K、赤铁矿炼生铁
 	sim.current_era = 1

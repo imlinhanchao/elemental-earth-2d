@@ -1039,22 +1039,26 @@ func build_structure(structure_key: String, hex: Vector2i) -> bool:
 # --- 科技研发系统 ---
 
 func can_research_tech(tech_key: String) -> bool:
-	if researched_techs.has(tech_key):
+	if researched_techs.has(tech_key) or DataDB.get_tech(tech_key).is_empty():
 		return false
+	return get_research_block_reason(tech_key) == ""
+
+# 返回无法研发的具体原因（时代 / 前置科技 / 材料），可以研发时返回空串
+func get_research_block_reason(tech_key: String) -> String:
 	var tech = DataDB.get_tech(tech_key)
-	if tech.is_empty():
-		return false
 	var req_era = int(tech.get("era", 0))
 	if current_era < req_era:
-		return false
-	var prereqs = tech.get("required_techs", tech.get("prerequisites", []))
-	for p in prereqs:
+		var names = ERA_NAMES
+		return "需要进入%s" % (names[req_era] if req_era < names.size() else "后续时代")
+	var missing: Array = []
+	for p in tech.get("required_techs", tech.get("prerequisites", [])):
 		if not researched_techs.has(str(p)):
-			return false
-	var req_items = tech.get("required_items", [])
-	if not _has_all_ingredients(req_items):
-		return false
-	return true
+			missing.append(DataDB.get_tech(str(p)).get("name", str(p)))
+	if not missing.is_empty():
+		return "需要先研发%s" % "、".join(missing)
+	if not _has_all_ingredients(tech.get("required_items", [])):
+		return "材料不足，需要%s" % describe_ingredients(tech.get("required_items", []))
+	return ""
 
 func research_tech(tech_key: String) -> bool:
 	if researched_techs.has(tech_key):
@@ -1065,7 +1069,7 @@ func research_tech(tech_key: String) -> bool:
 		post_notice("未知科技：%s" % tech_key, Color.RED)
 		return false
 	if not can_research_tech(tech_key):
-		post_notice("无法研发%s：缺少前置科技或材料" % tech.get("name", tech_key), Color.RED)
+		post_notice("无法研发%s：%s" % [tech.get("name", tech_key), get_research_block_reason(tech_key)], Color.RED)
 		return false
 		
 	var req_items = tech.get("required_items", [])
