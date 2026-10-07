@@ -175,6 +175,10 @@ static func run(w: Node2D, arg_name: String) -> void:
 		w.camera.reset_smoothing()
 		w._handle_tile_click(Vector2i(1, 0))
 		await w.get_tree().create_timer(2.2).timeout
+	elif arg_name == "--screenshot-periodic":
+		# 元素图鉴：周期表布局，点亮几种不同族的元素，高亮铜
+		GameState.sim.discovered_elements.append_array([1, 6, 8, 11, 16, 17, 18, 20, 26, 29, 50, 57, 92])
+		w.hud.periodic_modal.open(29)
 	elif arg_name == "--screenshot-placement":
 		GameState.inventory.add_item("wood", 10)
 		GameState.inventory.add_item("stone", 10)

@@ -103,7 +103,7 @@ func _ready() -> void:
 	element_discovery_modal = ElementDiscoveryModal.new()
 	element_discovery_modal.theme = sc_theme
 	add_child(element_discovery_modal)
-	element_discovery_modal.open_periodic_table_requested.connect(func(): periodic_modal.open())
+	element_discovery_modal.open_periodic_table_requested.connect(func(): periodic_modal.open(element_discovery_modal.current_elem_number))
 	element_discovery_modal.modal_closed.connect(func():
 		if era_modal and era_modal.has_method("on_element_discovery_closed"):
 			era_modal.on_element_discovery_closed()
