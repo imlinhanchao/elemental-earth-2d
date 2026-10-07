@@ -21,8 +21,10 @@ const HEX_HEIGHT: float = 72.0     # 2 * 36
 
 var noise_elevation: FastNoiseLite
 var noise_moisture: FastNoiseLite
+var world_seed: int = 42
 
 func _init(seed_val: int = 42) -> void:
+	world_seed = seed_val
 	# 海拔噪声
 	noise_elevation = FastNoiseLite.new()
 	noise_elevation.seed = seed_val
@@ -95,10 +97,14 @@ static func get_biome_color(biome: BiomeType) -> Color:
 			return Color(0.52, 0.64, 0.50) # 深林 · 墨绿 #85A380
 	return Color.GRAY
 
+# 地块的确定性伪随机数 [0, 1)：同一种子下每格固定，不同种子下资源分布不同
+func tile_rand(q: int, r: int, salt: int = 0) -> float:
+	return float(absi(hash(Vector4i(q, r, world_seed, salt))) % 1000003) / 1000003.0
+
 # 根据群落与径向地貌决定伴生生成的资源类型 (覆盖各时代特色矿脉)
 func determine_resource_spawn(q: int, r: int, biome: BiomeType) -> String:
 	var dist = (abs(q) + abs(q + r) + abs(r)) / 2
-	var rand_val = abs(sin(float(q * 374761393 + r * 668265263)))
+	var rand_val = tile_rand(q, r)
 	
 	# 首先在所有群落中分布散落碎石、燧石与断枝 (供开局一穷二白拾取)
 	if rand_val > 0.95:

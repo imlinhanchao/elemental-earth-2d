@@ -93,6 +93,9 @@ func _ready() -> void:
 	GameState.start_tutorial()
 	GameState.set_tutorial_step(3)
 
+	var saved_seed: int = GameState.sim.world_seed
+	var saved_map: Dictionary = GameState.world_resources.duplicate()
+
 	# 2. 保存至测试槽位
 	var slot_id = "test_slot"
 	var save_ok = SaveManager.save_to_slot(slot_id, null)
@@ -131,6 +134,8 @@ func _ready() -> void:
 	
 	var load_ok = SaveManager.load_from_slot(slot_id, null)
 	assert(load_ok, "v3 存档载入失败!")
+	assert(GameState.sim.world_seed == saved_seed, "地图种子恢复错误!")
+	assert(GameState.world_resources == saved_map, "读档后地图与存档时不一致!")
 	assert(GameState.current_era == 1, "时代恢复错误!")
 	assert(GameState.inventory.get_count("copper") == 5, "背包物品恢复错误!")
 	assert(GameState.equipped_tools["axe"] == "flint_axe", "工具恢复错误!")

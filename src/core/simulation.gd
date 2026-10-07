@@ -65,6 +65,7 @@ var hex_gen: HexWorldGenerator
 var world_resources: Dictionary = {} # Vector2i(q, r) -> primary item_key
 var world_biomes: Dictionary = {}    # Vector2i(q, r) -> BiomeType
 var WORLD_HEX_RADIUS: int = 18
+var world_seed: int = 12345 # 旧档没有种子字段时沿用的默认值
 
 # 工业建筑模拟层状态: Vector2i(q, r) -> Dictionary
 var built_furnaces: Dictionary = {}
@@ -96,8 +97,13 @@ func _init() -> void:
 	inventory.item_changed.connect(_on_inventory_item_changed)
 	init_world_map(12345, WORLD_HEX_RADIUS)
 
+# 新游戏使用随机种子；种子写入存档，读档时按同一种子重建地图
+static func random_world_seed() -> int:
+	return randi() % 2000000000 + 1
+
 func init_world_map(map_seed: int = 12345, radius: int = 18) -> void:
 	WORLD_HEX_RADIUS = radius
+	world_seed = map_seed
 	hex_gen = HexWorldGenerator.new(map_seed)
 	world_resources.clear()
 	world_biomes.clear()
@@ -115,6 +121,99 @@ func init_world_map(map_seed: int = 12345, radius: int = 18) -> void:
 				continue
 			var spawn_item = hex_gen.determine_resource_spawn(q, r, biome)
 			_init_hex_resources(coord, biome, spawn_item)
+	_ensure_resource_guarantees(map_seed)
+
+# 各资源在其解锁时代的领地范围内至少出现的地块数：[资源, 最大环距, 最少格数, 适宜群系]
+# 随机种子可能让开局一带没有森林或火山，这里把多余的碎石 / 枯枝地块改成缺少的资源，保证每张地图都能走完六个时代
+const B_PLAINS = HexWorldGenerator.BiomeType.PLAINS
+const B_VOLCANO = HexWorldGenerator.BiomeType.VOLCANO
+const B_LAKE = HexWorldGenerator.BiomeType.SALT_LAKE
+const B_FOREST = HexWorldGenerator.BiomeType.DEEP_FOREST
+const RESOURCE_GUARANTEES: Array = [
+	["wood", 5, 6, [B_FOREST, B_PLAINS]],
+	["stone", 5, 4, [B_PLAINS, B_VOLCANO, B_FOREST]],
+	["stick", 5, 4, [B_PLAINS, B_FOREST]],
+	["flint", 5, 3, [B_VOLCANO, B_PLAINS]],
+	["clay", 5, 2, [B_PLAINS]],
+	["malachite", 5, 2, [B_PLAINS]],
+	["rock_salt", 5, 1, [B_LAKE]],
+	["water", 5, 2, [B_LAKE]],
+	["hematite", 8, 2, [B_VOLCANO]],
+	["cassiterite", 8, 2, [B_VOLCANO]],
+	["limestone", 8, 2, [B_PLAINS]],
+	["coal", 8, 2, [B_FOREST]],
+	["sulfur", 8, 2, [B_VOLCANO]],
+	["pyrite", 8, 2, [B_VOLCANO]],
+	["graphite", 11, 2, [B_FOREST]],
+	["niter", 11, 2, [B_PLAINS]],
+	["pyrolusite", 11, 2, [B_VOLCANO]],
+	["galena", 11, 2, [B_VOLCANO]],
+	["sphalerite", 11, 2, [B_VOLCANO, B_PLAINS]],
+	["cryolite", 14, 2, [B_PLAINS, B_VOLCANO]],
+	["bauxite", 14, 2, [B_PLAINS]],
+	["monazite", 17, 2, [B_PLAINS, B_FOREST]],
+	["pitchblende", 18, 2, [B_VOLCANO]],
+]
+# 可以被改写的填充地块类型 (徒手可得、数量充足)
+const FILLER_RESOURCES: Array = ["stick", "stone"]
+
+func _ensure_resource_guarantees(map_seed: int) -> void:
+	var rng := RandomNumberGenerator.new()
+	rng.seed = map_seed
+	for g in RESOURCE_GUARANTEES:
+		var key: String = g[0]
+		var max_d: int = mini(g[1], WORLD_HEX_RADIUS)
+		var need: int = g[2] - _count_primary(key, max_d)
+		if need <= 0:
+			continue
+		var biomes: Array = g[3]
+		# 先在适宜群系中找填充地块；找不到时改写任意陆地填充地块的群系
+		var cands := _filler_candidates(max_d, biomes)
+		var change_biome := false
+		if cands.size() < need:
+			cands = _filler_candidates(max_d, [])
+			change_biome = true
+		for i in range(mini(need, cands.size())):
+			var j = rng.randi_range(i, cands.size() - 1)
+			var hex: Vector2i = cands[j]
+			cands[j] = cands[i]
+			if change_biome and not (world_biomes[hex] in biomes):
+				world_biomes[hex] = biomes[0]
+			_init_hex_resources(hex, world_biomes[hex], key)
+
+func _count_primary(key: String, max_d: int) -> int:
+	var n := 0
+	for hex in world_resources.keys():
+		if world_resources[hex] == key and _ring(hex) <= max_d:
+			n += 1
+	return n
+
+func _filler_candidates(max_d: int, biomes: Array) -> Array:
+	var result: Array = []
+	# 盐湖资源可以占用普通湖面 (water)；其余资源不进湖
+	var lake_ok := B_LAKE in biomes
+	var fillers: Array = FILLER_RESOURCES + (["water"] if lake_ok else [])
+	var counts := {}
+	for k in fillers:
+		counts[k] = _count_primary(k, 5)
+	for hex in world_resources.keys():
+		var k: String = world_resources[hex]
+		if not (k in fillers) or _ring(hex) > max_d:
+			continue
+		# 开局范围内的碎石 / 枯枝 / 湖面不能被改到低于自身保底数量
+		if _ring(hex) <= 5 and counts[k] <= 6:
+			continue
+		if (world_biomes[hex] == B_LAKE) != lake_ok and not biomes.is_empty():
+			continue
+		if biomes.is_empty() and world_biomes[hex] == B_LAKE:
+			continue
+		if biomes.is_empty() or world_biomes[hex] in biomes:
+			result.append(hex)
+	result.sort()
+	return result
+
+static func _ring(hex: Vector2i) -> int:
+	return (absi(hex.x) + absi(hex.x + hex.y) + absi(hex.y)) / 2
 
 func _init_hex_resources(coord: Vector2i, biome: HexWorldGenerator.BiomeType, spawn_item: String) -> void:
 	var res: Dictionary = {}
@@ -1089,5 +1188,5 @@ func reset_to_new_game() -> void:
 	if lab:
 		lab.reset()
 	playtime_seconds = 0.0
-	init_world_map(12345, WORLD_HEX_RADIUS)
+	init_world_map(random_world_seed(), WORLD_HEX_RADIUS)
 	era_advanced.emit(0, 0, ERA_NAMES[0])

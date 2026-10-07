@@ -115,6 +115,9 @@ func _ready() -> void:
 			break
 
 func _generate_hex_world() -> void:
+	for n in resource_nodes.values():
+		if is_instance_valid(n): n.queue_free()
+	resource_nodes.clear()
 	hex_gen = GameState.sim.hex_gen
 	generated_hexes = GameState.world_biomes.duplicate()
 	for coord in GameState.world_resources.keys():
@@ -443,6 +446,8 @@ func deserialize_world_state(data: Dictionary) -> void:
 		entities.add_child(new_r)
 		built_reactors.append(new_r)
 
+	# 存档可能来自另一张地图：按模拟层当前地图重建资源节点
+	_generate_hex_world()
 	# 将已采空的格子状态覆盖到地表资源节点上
 	apply_depleted_tiles_to_nodes()
 	terrain_layer.refresh()
@@ -470,6 +475,7 @@ func reset_world_state() -> void:
 	camera.position = Vector2.ZERO
 	target_zoom = Vector2.ONE
 	camera.zoom = Vector2.ONE
+	_generate_hex_world()
 	apply_depleted_tiles_to_nodes()
 	terrain_layer.refresh()
 	overlay_layer.queue_redraw()

@@ -29,6 +29,25 @@ func _initialize() -> void:
 		_check(spawned.has(k), "地图生成包含 %s" % k)
 	_check(not spawned.has("iron_ore") and not spawned.has("halite"), "地图不再生成未登记物品 iron_ore / halite")
 
+	# 1b. 新游戏随机种子：地图每次不同，开局领地内一定有树木、碎石、枯枝、燧石
+	var maps := {}
+	for i in range(8):
+		sim.reset_to_new_game()
+		var start := {}
+		for c in sim.world_resources.keys():
+			if (absi(c.x) + absi(c.x + c.y) + absi(c.y)) / 2 <= 5:
+				start[sim.world_resources[c]] = start.get(sim.world_resources[c], 0) + 1
+		maps[hash(sim.world_resources)] = true
+		var ok: bool = start.get("wood", 0) >= 6 and start.get("stone", 0) >= 4 and start.get("stick", 0) >= 4 and start.get("flint", 0) >= 3
+		if not ok:
+			_check(false, "种子 %d 开局资源不足: %s" % [sim.world_seed, start])
+	_check(maps.size() >= 7, "8 次新游戏生成了 %d 张不同的地图" % maps.size())
+	sim.init_world_map(4242, 18)
+	var map_a = sim.world_resources.duplicate()
+	sim.init_world_map(4242, 18)
+	_check(sim.world_resources == map_a, "同一种子生成的地图完全一致")
+	sim.init_world_map(12345, 18)
+
 	# 2. 工具耗时读取 crafting.json 的 work_time
 	_check(is_equal_approx(sim.calculate_task_duration("wood"), 4.0), "徒手伐木 4.0s")
 	sim.equipped_tools["axe"] = "flint_axe"

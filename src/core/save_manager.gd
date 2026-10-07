@@ -172,6 +172,7 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 		},
 		"game_state": {
 			"current_era": GameState.current_era,
+			"world_seed": GameState.sim.world_seed,
 			"playtime_seconds": GameState.playtime_seconds,
 			"discovered_elements": GameState.discovered_elements,
 			"researched_techs": GameState.researched_techs,
@@ -226,6 +227,8 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null, quiet: bo
 	var version = int(parsed.get("version", 1))
 	var gs_data = parsed.get("game_state", {})
 	
+	# 按存档里的种子重建地图 (旧档没有该字段，沿用当时固定的 12345)
+	GameState.sim.init_world_map(int(gs_data.get("world_seed", 12345)), GameState.sim.WORLD_HEX_RADIUS)
 	GameState.current_era = int(gs_data.get("current_era", 0))
 	GameState.playtime_seconds = float(gs_data.get("playtime_seconds", 0.0))
 	

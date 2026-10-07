@@ -111,6 +111,17 @@ static func run(w: Node2D, arg_name: String) -> void:
 		w.camera.reset_smoothing()
 		w.terrain_layer.refresh()
 		w.overlay_layer.queue_redraw()
+	elif arg_name == "--screenshot-newgame":
+		# 新游戏随机地图，装备斧头后显示开局领地内的树木
+		GameState.reset_to_new_game()
+		w.reset_world_state()
+		GameState.equipped_tools["axe"] = "flint_axe"
+		GameState.tool_equipped.emit("flint_axe")
+		w.camera.zoom = Vector2(0.8, 0.8)
+		w.target_zoom = w.camera.zoom
+		w.camera.reset_smoothing()
+		w.terrain_layer.refresh()
+		print("[Screenshot] seed=%d" % GameState.sim.world_seed)
 	elif arg_name == "--screenshot-hud":
 		w.camera.position = Vector2.ZERO
 		w.camera.zoom = Vector2(1.0, 1.0)
