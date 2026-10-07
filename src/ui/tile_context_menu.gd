@@ -12,6 +12,7 @@ signal harvest_requested(hex: Vector2i, item_key: String, count: int)
 var current_hex: Vector2i = Vector2i(9999, 9999)
 var current_resources: Array = []
 var selected_item_key: String = ""
+var tool_hint: String = "" # 地块上还有缺工具采不了的资源时的提示
 
 @onready var vbox: VBoxContainer = $Margin/VBox
 @onready var title_label: Label = $Margin/VBox/Header/TitleLabel
@@ -42,9 +43,10 @@ func _apply_styling() -> void:
 	box.shadow_offset = Vector2(0, 4)
 	add_theme_stylebox_override("panel", box)
 
-func open_at(screen_pos: Vector2, hex: Vector2i, resources: Array) -> void:
+func open_at(screen_pos: Vector2, hex: Vector2i, resources: Array, hint: String = "") -> void:
 	current_hex = hex
 	current_resources = resources
+	tool_hint = hint
 	selected_item_key = ""
 	
 	if resources.is_empty():
@@ -99,6 +101,17 @@ func _show_resource_selection() -> void:
 			_show_count_selection(res_dict)
 		)
 		content_box.add_child(btn)
+	_add_tool_hint()
+
+# 缺工具时在菜单底部说明 (例如林地徒手只能捡枯树枝)
+func _add_tool_hint() -> void:
+	if tool_hint == "":
+		return
+	var hint_label = Label.new()
+	hint_label.text = tool_hint
+	hint_label.add_theme_font_size_override("font_size", 12)
+	hint_label.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_MUTED)
+	content_box.add_child(hint_label)
 
 # 步骤 2: 选择开采次数 (5 / 10 / 20 / 100 / 1000 / 无尽)
 func _show_count_selection(res_info: Dictionary) -> void:
@@ -140,6 +153,7 @@ func _show_count_selection(res_info: Dictionary) -> void:
 		_dispatch_harvest(-1)
 	)
 	content_box.add_child(btn_infinite)
+	_add_tool_hint()
 
 func _dispatch_harvest(count: int) -> void:
 	harvest_requested.emit(current_hex, selected_item_key, count)

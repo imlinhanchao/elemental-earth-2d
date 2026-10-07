@@ -67,6 +67,10 @@ func _ready() -> void:
 		var n = resource_nodes.get(hex)
 		if is_instance_valid(n): n.on_respawned()
 	)
+	# 储量变化后地表显示的资源可能改变 (如林地枯枝采完，只剩需要斧头的原木)
+	GameState.tile_resources_changed.connect(func(hex):
+		if not GameState.depleted_tiles.has(hex): _refresh_resource_node(hex)
+	)
 	_generate_hex_world()
 	
 	hud.build_structure_requested.connect(_on_build_structure_requested)
@@ -132,15 +136,25 @@ func _spawn_resource_at_hex(q: int, r: int, item_key: String) -> void:
 	node.position = pos
 	node.item_key = item_key
 	node.hex_coord = Vector2i(q, r)
-	
-	var iname = DataDB.get_item(item_key).get("name", item_key)
-	node.item_name = iname
-	var in_terr = GameState.is_hex_in_territory(q, r)
-	var depleted = GameState.depleted_tiles.has(Vector2i(q, r))
-	var minable = GameState.sim.is_resource_minable(item_key)
-	node.visible = in_terr and not depleted and minable
 	entities.add_child(node)
 	resource_nodes[Vector2i(q, r)] = node
+	_refresh_resource_node(Vector2i(q, r))
+
+# 地表画出的资源 = 左键点击会采到的资源 (地块上第一种当前可开采的资源)。
+# 例如徒手时林地显示枯树枝而不是橡树，装备斧头后才显示橡树。
+func _refresh_resource_node(hex: Vector2i) -> void:
+	var node = resource_nodes.get(hex)
+	if not is_instance_valid(node):
+		return
+	var available = GameState.get_tile_available_resources(hex)
+	var show = GameState.is_hex_in_territory(hex.x, hex.y) and not GameState.depleted_tiles.has(hex) and not available.is_empty()
+	if show:
+		var key: String = available[0].get("key", "")
+		if node.item_key != key:
+			node.item_key = key
+			node.queue_redraw()
+		node.item_name = available[0].get("name", key)
+	node.visible = show
 
 func _on_context_menu_harvest(hex: Vector2i, item_key: String, count: int) -> void:
 	var world_p = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
@@ -224,7 +238,8 @@ func _handle_tile_click(hex: Vector2i) -> void:
 		
 	var available = GameState.get_tile_available_resources(hex)
 	if available.is_empty():
-		GameState.post_notice("该地块已采完", Color.GRAY)
+		var hint = GameState.sim.get_tile_tool_hint(hex)
+		GameState.post_notice(hint if hint != "" else "该地块已采完", Color.GRAY)
 		return
 		
 	# 点击一下只开采一下主要资源
@@ -243,7 +258,7 @@ func _handle_tile_right_click(hex: Vector2i, screen_pos: Vector2) -> void:
 		return
 		
 	if tile_context_menu:
-		tile_context_menu.open_at(screen_pos, hex, available)
+		tile_context_menu.open_at(screen_pos, hex, available, GameState.sim.get_tile_tool_hint(hex))
 
 func _process(delta: float) -> void:
 	# WASD / 方向键平滑移动摄像机
@@ -457,13 +472,7 @@ func deserialize_world_state(data: Dictionary) -> void:
 # 只遍历 resource_nodes 索引：熔炉、反应塔也挂在 Entities 下，不能被这里隐藏。
 func apply_depleted_tiles_to_nodes() -> void:
 	for hex in resource_nodes.keys():
-		var node = resource_nodes[hex]
-		if not is_instance_valid(node):
-			continue
-		var in_terr = GameState.is_hex_in_territory(hex.x, hex.y)
-		var depleted = GameState.depleted_tiles.has(hex)
-		var minable = GameState.sim.is_resource_minable(node.item_key)
-		node.visible = in_terr and not depleted and minable
+		_refresh_resource_node(hex)
 
 func reset_world_state() -> void:
 	for f in built_furnaces:

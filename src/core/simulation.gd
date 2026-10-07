@@ -27,6 +27,7 @@ signal task_cancelled(task: Dictionary)
 
 signal tile_depleted(hex: Vector2i)
 signal tile_respawned(hex: Vector2i)
+signal tile_resources_changed(hex: Vector2i) # 地块储量变化 (地表显示的资源可能随之改变)
 signal structure_built(structure_key: String, hex: Vector2i)
 
 const MAX_QUEUE_SIZE: int = 8
@@ -433,8 +434,10 @@ func is_hex_in_territory(q: int, r: int) -> bool:
 func is_tile_depleted(hex: Vector2i) -> bool:
 	return depleted_tiles.has(hex)
 
+# 地表当前显示的资源 = 左键点击会采到的资源 (随工具、时代与储量变化)；world_resources 只记录生成时的主资源
 func get_hex_resource(hex: Vector2i) -> String:
-	return world_resources.get(hex, "")
+	var avail = get_tile_available_resources(hex)
+	return "" if avail.is_empty() else str(avail[0].get("key", ""))
 
 # --- 时间步进 (一秒时间戳钟) ---
 
@@ -550,6 +553,18 @@ func get_tile_available_resources(hex: Vector2i) -> Array[Dictionary]:
 			})
 	return result
 
+# 地块上已到时代、但缺少工具而采不了的资源，返回提示文字 (如「砍伐原木需要斧头」)
+func get_tile_tool_hint(hex: Vector2i) -> String:
+	var res = tile_resources.get(hex, {})
+	for k in res.keys():
+		if int(res[k]) <= 0 or is_resource_minable(k) or current_era < int(RESOURCE_ERA_REQUIREMENTS.get(k, 0)):
+			continue
+		var iname = DataDB.get_item(k).get("name", k)
+		match get_resource_required_tool(k):
+			"axe": return "砍伐%s需要先制作并装备斧头 [T]" % iname
+			"pickaxe": return "开采%s需要先制作并装备石镐 [T]" % iname
+	return ""
+
 func consume_tile_resource(hex: Vector2i, item_key: String, count: int = 1) -> int:
 	if not tile_resources.has(hex):
 		return 0
@@ -563,6 +578,7 @@ func consume_tile_resource(hex: Vector2i, item_key: String, count: int = 1) -> i
 		res.erase(item_key)
 	else:
 		res[item_key] = remaining
+	tile_resources_changed.emit(hex)
 		
 	# 检查该地块全部资源是否已采空
 	var has_any = false
@@ -1149,7 +1165,7 @@ func find_nearest_resource(item_key: String, from_hex: Vector2i) -> Vector2i:
 			best_any = hex
 		if d < d_primary:
 			var avail = get_tile_available_resources(hex)
-			if world_resources.get(hex, "") == item_key and not avail.is_empty() and avail[0].get("key", "") == item_key:
+			if not avail.is_empty() and avail[0].get("key", "") == item_key:
 				d_primary = d
 				best_primary = hex
 	return best_primary if best_primary != none else best_any

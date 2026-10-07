@@ -25,6 +25,7 @@ signal task_cancelled(task: Dictionary)
 
 signal tile_depleted(hex: Vector2i)
 signal tile_respawned(hex: Vector2i)
+signal tile_resources_changed(hex: Vector2i)
 signal structure_built(structure_key: String, hex: Vector2i)
 
 signal tutorial_step_changed(step: int)
@@ -184,6 +185,7 @@ func _connect_sim_signals() -> void:
 	sim.task_cancelled.connect(func(t): task_cancelled.emit(t))
 	sim.tile_depleted.connect(func(h): tile_depleted.emit(h))
 	sim.tile_respawned.connect(func(h): tile_respawned.emit(h))
+	sim.tile_resources_changed.connect(func(h): tile_resources_changed.emit(h))
 	sim.structure_built.connect(func(k, h): structure_built.emit(k, h))
 
 func _process(delta: float) -> void:

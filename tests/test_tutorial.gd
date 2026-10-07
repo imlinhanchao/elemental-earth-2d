@@ -39,6 +39,11 @@ func _ready() -> void:
 	var first = GameState.get_tile_available_resources(mk)
 	_check(not first.is_empty() and first[0]["key"] == "stone", "标出的地块左键点击就会采到碎石")
 	_check(GameState.get_hex_resource(mk) == "stone", "标出的地块地表显示的就是碎石")
+	_check(_mismatched_nodes(w) == 0, "徒手时地表画出的资源都是左键会采到的资源 (不一致 %d 格)" % _mismatched_nodes(w))
+	for h in w.resource_nodes.keys():
+		if w.resource_nodes[h].visible and int(GameState.tile_resources[h].get("wood", 0)) > 0:
+			_check(w.resource_nodes[h].item_key != "wood", "徒手时有原木的地块不画橡树")
+			break
 	inv.add_item("stone", 2)
 	await _wait(1.5)
 	_check(GameState.tutorial_step == 1, "采到 2 块碎石后自动进入第 2 步")
@@ -60,6 +65,14 @@ func _ready() -> void:
 		if n.item_key == "wood" and GameState.is_hex_in_territory(h.x, h.y) and not n.visible:
 			hidden_trees += 1
 	_check(hidden_trees == 0, "领地内所有树木在装备斧头后都显示出来 (隐藏 %d 棵)" % hidden_trees)
+	_check(_mismatched_nodes(w) == 0, "装备斧头后地表画出的资源都是左键会采到的资源 (不一致 %d 格)" % _mismatched_nodes(w))
+	# 采完一块林地的原木：地表改画剩下的枯树枝
+	var wood_hex = GameState.tutorial_marker_hex
+	var wood_left = int(GameState.tile_resources[wood_hex].get("wood", 0))
+	GameState.consume_tile_resource(wood_hex, "wood", wood_left)
+	var after = GameState.get_tile_available_resources(wood_hex)
+	if not after.is_empty():
+		_check(w.resource_nodes[wood_hex].item_key == after[0]["key"], "原木采完后地表改画 %s" % after[0]["key"])
 
 	# 教程进行到第 4 步时手动存档，结束后模拟「退出 → 继续游戏」读回
 	var SaveManager = load("res://src/core/save_manager.gd")
@@ -108,3 +121,15 @@ func _ready() -> void:
 	else:
 		printerr("❌ %d 项失败" % _failed)
 		get_tree().quit(1)
+
+# 地表可见资源节点中，画出的资源与左键点击会采到的资源不一致的格数
+func _mismatched_nodes(w) -> int:
+	var bad := 0
+	for h in w.resource_nodes.keys():
+		var n = w.resource_nodes[h]
+		if not n.visible:
+			continue
+		var avail = GameState.get_tile_available_resources(h)
+		if avail.is_empty() or avail[0]["key"] != n.item_key:
+			bad += 1
+	return bad

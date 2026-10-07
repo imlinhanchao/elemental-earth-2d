@@ -96,8 +96,17 @@ func _draw() -> void:
 			_draw_clay_bank()
 		"charcoal":
 			_draw_charcoal_bed()
+		"water":
+			_draw_water_ripple()
 		_:
 			_draw_loose_stone()
+
+# 湖面汲水点：两道同心水纹 (原先落到默认分支画成了碎石)
+func _draw_water_ripple() -> void:
+	var col = ThemeStyler.adapt(Color(0.20, 0.36, 0.48, 0.55))
+	draw_arc(Vector2(0, 2), 9.0, PI * 1.1, PI * 1.9, 12, col, 1.4)
+	draw_arc(Vector2(0, 2), 15.0, PI * 1.15, PI * 1.85, 16, col, 1.2)
+	draw_circle(Vector2(0, 2), 2.0, col)
 
 # 1. 孔雀石晶簇 (Emerald Green Hex Crystals)
 func _draw_malachite_crystals() -> void:
