@@ -633,23 +633,43 @@ func fragment_text(f_key: String, known_col: String, op_col: String, unknown_col
 		pos = m.get_end()
 	return res + out.substr(pos)
 
-# 按手稿备料：切换到所需操作，并从行囊把每种原料按用量投入烧瓶。返回缺少的原料名称
-func prepare_from_fragment(f_key: String) -> Array:
+# 按手稿备料还缺什么 (容器、操作、原料)；全部满足时为空。原料算上容器里已有的
+func fragment_missing(f_key: String) -> Array:
 	var f = DataDB.get_formula(f_key)
 	var missing: Array = []
 	var box = best_container_for(f)
 	if box == "":
 		missing.append(("这里做不了，需要" if is_furnace() else "") + container_names(f))
-		return missing
-	if box != container and not set_container(box):
+	elif box != container and not vessel.components.is_empty():
 		missing.append("换用%s（先取回当前容器里的东西）" % container_names(f))
+	var op = ChemistrySolver.formula_operation(f)
+	if op != "" and op_lock_reason(op) != "":
+		missing.append(op_lock_reason(op))
+	for req in f.get("required_items", []):
+		var need = int(ceil(float(req.get("quantity", 1.0))))
+		var alts: Array = req["key"] if req["key"] is Array else [req["key"]]
+		var ok := false
+		for k in alts:
+			if vessel.get_moles(k) >= float(req.get("quantity", 1.0)) or sim.inventory.get_count(k) >= need:
+				ok = true
+		if not ok:
+			var nm = DataDB.get_item(alts[0]).get("name", alts[0]) if book().seen_items.has(alts[0]) else "???"
+			missing.append("%s ×%d" % [nm, need])
+	return missing
+
+# 按手稿备料：所需容器、操作、原料全部满足时才动手 (换容器、切换操作、勾选追加操作、投入原料)；
+# 有缺的就什么都不做，返回缺少的条目
+func prepare_from_fragment(f_key: String) -> Array:
+	var missing = fragment_missing(f_key)
+	if not missing.is_empty():
 		return missing
+	var f = DataDB.get_formula(f_key)
+	var box = best_container_for(f)
+	if box != container:
+		set_container(box)
 	var op = ChemistrySolver.formula_operation(f)
 	if op != "" and op != operation:
-		if op_lock_reason(op) != "":
-			missing.append(op_lock_reason(op))
-		else:
-			set_operation(op)
+		set_operation(op)
 	# 手稿里写到要集气或冷凝的，能做就顺手勾上
 	for c in chain_needed(f):
 		if not chain_ops.has(c) and op_lock_reason(c) == "":
@@ -663,16 +683,11 @@ func prepare_from_fragment(f_key: String) -> Array:
 				have_in_vessel = true
 		if have_in_vessel:
 			continue
-		var done := false
 		for k in alts:
 			if sim.inventory.get_count(k) >= need:
 				add_reagent(k, need)
-				done = true
 				break
-		if not done:
-			var nm = DataDB.get_item(alts[0]).get("name", alts[0]) if book().seen_items.has(alts[0]) else "???"
-			missing.append("%s ×%d" % [nm, need])
-	return missing
+	return []
 
 # 配方中需要追加操作才能收集的产物对应的追加操作 (气体默认用排空气集气)
 static func chain_needed(f: Dictionary) -> Array:

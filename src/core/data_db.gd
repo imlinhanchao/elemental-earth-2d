@@ -142,8 +142,6 @@ static func get_item(key: String) -> Dictionary:
 			item = {"key": "flint", "category": "矿石", "description": "坚硬锋利的燧石，断面呈贝壳状。"}
 		item["name"] = "燧石"
 		return item
-	elif key == "stick":
-		return {"key": "stick", "name": "枯树枝", "category": "材料", "description": "随处可拾取的断枝。"}
 	if not item.is_empty():
 		return item
 	return {"key": key, "name": key, "category": "物品", "description": "未知化学样本。"}

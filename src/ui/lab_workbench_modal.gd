@@ -49,6 +49,8 @@ var btn_retrieve: Button
 var reagent_grid: GridContainer
 var log_label: RichTextLabel
 var notes_list: VBoxContainer
+var reagent_search: LineEdit
+var notes_search: LineEdit
 
 var current_tab: int = 0
 var bubble_phase: float = 0.0
@@ -143,6 +145,24 @@ func _slot(key: String, count: int, highlight: Color = Color(0, 0, 0, 0)) -> But
 		c.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		b.add_child(c)
 	return b
+
+func _search_box(placeholder: String) -> LineEdit:
+	var e = LineEdit.new()
+	e.placeholder_text = placeholder
+	e.clear_button_enabled = true
+	e.custom_minimum_size = Vector2(150, 28)
+	e.add_theme_font_size_override("font_size", ThemeStyler.FONT_CAPTION)
+	return e
+
+# 搜索匹配：中文名或 key 包含关键字 (不区分大小写)
+func _match(query: String, texts: Array) -> bool:
+	var q = query.strip_edges().to_lower()
+	if q == "":
+		return true
+	for t in texts:
+		if str(t).to_lower().contains(q):
+			return true
+	return false
 
 func _section(text: String) -> Label:
 	var l = _label(text, ThemeStyler.FONT_CAPTION, ThemeStyler.COLOR_TEXT_MUTED)
@@ -358,7 +378,15 @@ func _build_side() -> Control:
 	flask_slots.add_theme_constant_override("v_separation", 6)
 	fp.add_child(flask_slots)
 	view_flask.add_child(fp)
-	view_flask.add_child(_section("行囊试剂 · 点击放入 1 份"))
+	var rh = HBoxContainer.new()
+	rh.add_theme_constant_override("separation", 8)
+	var rl = _section("行囊试剂 · 点击放入 1 份")
+	rl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	rh.add_child(rl)
+	reagent_search = _search_box("搜索试剂")
+	reagent_search.text_changed.connect(func(_t): _refresh_reagents())
+	rh.add_child(reagent_search)
+	view_flask.add_child(rh)
 	var rs = ScrollContainer.new()
 	rs.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	rs.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -382,6 +410,10 @@ func _build_side() -> Control:
 	var hint = _label("采集时偶尔捡到，研发科技必得一份，第一次获得某种物品时也可能得到。没见过的物品写作 ???，做成一次后完整显示。", ThemeStyler.FONT_CAPTION, ThemeStyler.COLOR_TEXT_MUTED)
 	hint.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	view_notes.add_child(hint)
+	notes_search = _search_box("搜索手稿：名称、原料或产物")
+	notes_search.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	notes_search.text_changed.connect(func(_t): _refresh_notes())
+	view_notes.add_child(notes_search)
 	var ns = ScrollContainer.new()
 	ns.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	ns.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
@@ -670,12 +702,18 @@ func _refresh_reagents() -> void:
 		var cat = str(DataDB.get_item(k).get("category", ""))
 		if not (cat in REAGENT_CATEGORIES or DataDB.is_pure_element(k) > 0) or LabBench.is_container(k):
 			continue
+		if not _match(reagent_search.text, [_name(k), k]):
+			continue
 		var s = _slot(k, n)
 		s.tooltip_text = "%s ×%d（点击放入 1 份）" % [_name(k), n]
 		s.pressed.connect(func(): add_reagent(k, 1.0))
 		reagent_grid.add_child(s)
 		shown += 1
 	# 补足空格，保持格子网格完整
+	if shown == 0 and reagent_search.text.strip_edges() != "":
+		var none = _label("行囊里没有匹配「%s」的试剂" % reagent_search.text.strip_edges(), ThemeStyler.FONT_CAPTION, ThemeStyler.COLOR_TEXT_MUTED)
+		reagent_grid.add_child(none)
+		return
 	for i in range(max(0, 15 - shown)):
 		var e = Panel.new()
 		e.custom_minimum_size = Vector2(SLOT, SLOT)
@@ -725,10 +763,14 @@ func _refresh_notes() -> void:
 	for i in range(book.fragments.size() - 1, -1, -1): # 新得到的在前，已确证的排在后面
 		var k = book.fragments[i]
 		(done if book.proven.has(k) else pending).append(k)
+	var shown := 0
 	for f_key in pending + done:
 		var f = DataDB.get_formula(f_key)
 		if f.is_empty():
 			continue
+		if not _match(notes_search.text, _note_search_texts(f, book)):
+			continue
+		shown += 1
 		var proven = book.proven.has(f_key)
 		var card = PanelContainer.new()
 		var box = _box(10, ThemeStyler.TINT_SUCCESS if proven else ThemeStyler.COLOR_BG_SOLID, ThemeStyler.COLOR_SUCCESS if proven else ThemeStyler.COLOR_BORDER, 10)
@@ -770,15 +812,43 @@ func _refresh_notes() -> void:
 		txt.add_theme_font_size_override("normal_font_size", ThemeStyler.FONT_CAPTION)
 		txt.text = lab.fragment_text(f_key, known, opc, unk)
 		vb.add_child(txt)
+		# 容器、操作、原料都满足才能按手稿备料，否则写明还缺什么
+		var missing = lab.fragment_missing(f_key)
+		var foot = HBoxContainer.new()
+		foot.add_theme_constant_override("separation", 8)
+		var lack = _label("还缺：" + "、".join(missing) if not missing.is_empty() else "原料齐全", ThemeStyler.FONT_CAPTION,
+			ThemeStyler.COLOR_WARNING if not missing.is_empty() else ThemeStyler.COLOR_SUCCESS)
+		lack.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		lack.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		foot.add_child(lack)
 		var btn = Button.new()
 		btn.text = "按手稿备料"
 		btn.custom_minimum_size = Vector2(110, 28)
-		btn.size_flags_horizontal = Control.SIZE_SHRINK_END
+		btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		btn.add_theme_font_size_override("font_size", ThemeStyler.FONT_CAPTION)
 		_style_primary(btn)
+		btn.disabled = not missing.is_empty()
+		btn.tooltip_text = "还缺：" + "、".join(missing) if not missing.is_empty() else "换上容器、切换操作并放入原料"
 		btn.pressed.connect(func(): _prepare(f_key))
-		vb.add_child(btn)
+		foot.add_child(btn)
+		vb.add_child(foot)
 		notes_list.add_child(card)
+	if shown == 0:
+		var t = "没有匹配「%s」的手稿" % notes_search.text.strip_edges() if notes_search.text.strip_edges() != "" else "还没有手稿"
+		notes_list.add_child(_label(t, ThemeStyler.FONT_CAPTION, ThemeStyler.COLOR_TEXT_MUTED))
+
+# 手稿可搜索的文字：配方名、操作名，以及见过的原料 / 产物名 (没见过的不参与搜索，避免剧透)
+func _note_search_texts(f: Dictionary, book) -> Array:
+	var texts: Array = [f.get("name", ""), DataDB.get_lab_op(ChemistrySolver.formula_operation(f)).get("name", "")]
+	var proven = book.proven.has(f.get("key", ""))
+	for req in f.get("required_items", []):
+		for k in (req["key"] if req["key"] is Array else [req["key"]]):
+			if proven or book.seen_items.has(k):
+				texts.append(_name(k))
+	for p in f.get("products", []):
+		if proven or book.seen_items.has(p["key"]):
+			texts.append(_name(p["key"]))
+	return texts
 
 # ---------------------------------------------------------------- 命令
 
@@ -843,9 +913,9 @@ func _prepare(f_key: String) -> void:
 	var missing = lab.prepare_from_fragment(f_key)
 	if missing.is_empty():
 		_add_log("已按手稿「%s」备好原料" % DataDB.get_formula(f_key).get("name", f_key))
+		_switch_tab(0)
 	else:
 		GameState.post_notification("还缺：%s" % "、".join(missing), Color(1.0, 0.6, 0.3))
-	_switch_tab(0)
 	_refresh_all()
 
 func _on_reacted(f_key: String, products: Array, lost: Array) -> void:

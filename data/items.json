@@ -4834,5 +4834,35 @@
       "burn_time": 30,
       "max_temp": 1473.0
     }
+  },
+  {
+    "name": "黄铁矿",
+    "key": "pyrite",
+    "category": "矿石",
+    "description": "浅黄铜色的立方体晶簇，金属光泽耀眼，常被误认作黄金，因此俗称「愚人金」。敲击燧石能迸出火花。",
+    "type": [
+      "material"
+    ],
+    "is_discovery": true
+  },
+  {
+    "name": "枯树枝",
+    "key": "stick",
+    "category": "材料",
+    "description": "随处可拾取的断枝，干燥易燃，可以制作简易工具或当作引火柴。",
+    "type": [
+      "material",
+      "fuel"
+    ]
+  },
+  {
+    "name": "原始燧石手斧",
+    "key": "flint_axe",
+    "category": "工具",
+    "description": "把燧石片绑在树枝上做成的手斧，可以砍伐树木。",
+    "durable": 1,
+    "type": [
+      "tool"
+    ]
   }
 ]

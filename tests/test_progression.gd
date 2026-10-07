@@ -213,12 +213,28 @@ func _initialize() -> void:
 	lab.fragments.append("charcoal_production")
 	_check(lab.prepare_from_fragment("charcoal_production").is_empty() and lab.container == "crucible", "按手稿备料换上坩埚")
 	lab.retrieve_all()
+	# 原料不齐时按手稿备料什么都不做 (不换容器、不切操作、不投料)
+	sim.inventory.remove_item("wood", sim.inventory.get_count("wood"))
+	var before_op = lab.operation
+	_check(not lab.fragment_missing("charcoal_production").is_empty(), "缺原木时手稿显示还缺什么")
+	_check(not lab.prepare_from_fragment("charcoal_production").is_empty() and lab.vessel.components.is_empty() and lab.operation == before_op, "原料不齐时按手稿备料不动手")
 	# 制作时写了 use 的器具只消耗耐久 (陶罐用窑炉烧制)
-	sim.inventory.add_item("kiln", 1)
-	sim.inventory.add_item("clay", 5)
+	var saved_furnaces = sim.built_furnaces.duplicate()
+	sim.built_furnaces.clear()
 	sim.researched_techs.append("pottery")
+	sim.inventory.add_item("clay", 10)
+	var pot_req = DataDB.get_crafting_recipe("clay_pot").get("required_items", [])
+	_check(not sim.has_ingredients(pot_req), "没有窑炉也没有熔炉时不能烧陶罐")
+	sim.inventory.add_item("kiln", 1)
 	sim.craft_tool("clay_pot")
 	_check(sim.inventory.get_count("kiln") == 1 and sim.inventory.wear.get("kiln", 0) == 1, "烧陶罐消耗窑炉 1 点耐久而不是整座窑炉")
+	# 已建成熔炉 / 鼓风高炉时，「窑炉」条件由炉体满足，不再消耗窑炉耐久
+	sim.built_furnaces = saved_furnaces
+	sim.inventory.remove_item("kiln", 1)
+	sim.inventory.wear.erase("kiln")
+	_check(sim.structure_provides("kiln") and sim.req_owned({"key": "kiln", "quantity": 1, "use": 0.1}) == 1, "已建成的炉体算作持有窑炉")
+	_check(sim.craft_tool("clay_pot"), "有炉体时不带窑炉也能烧陶罐")
+	_check(not sim.req_owned({"key": "kiln", "quantity": 1}) >= 1, "只有写了 use 的需求才由炉体满足")
 
 	lab.fuel_queue.clear()
 	lab.cur_fuel = ""

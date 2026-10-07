@@ -266,9 +266,22 @@ func _unhandled_input(event: InputEvent) -> void:
 			overlay_layer.queue_redraw()
 			if is_instance_valid(_hovered_node): _hovered_node.set_hovered(false)
 			_hovered_node = resource_nodes.get(hex)
+			_set_building_hover(hex)
 			if is_instance_valid(_hovered_node) and _hovered_node.visible: _hovered_node.set_hovered(true)
 			if hud and generated_hexes.has(hovered_hex):
 				hud.update_current_biome(generated_hexes[hovered_hex])
+
+# 建筑的「点击使用」提示只在鼠标悬停时显示
+var _hovered_building: Node2D = null
+func _set_building_hover(hex: Vector2i) -> void:
+	if is_instance_valid(_hovered_building):
+		_hovered_building.set_hovered(false)
+	_hovered_building = null
+	for b in built_furnaces + built_reactors:
+		if is_instance_valid(b) and b.hex_coord == hex:
+			_hovered_building = b
+			b.set_hovered(true)
+			return
 
 # 鼠标是否在弹窗或 HUD 面板 (顶栏、底栏、抽屉、作业队列、右键菜单等) 上
 func _is_pointer_over_ui(screen_pos: Vector2) -> bool:

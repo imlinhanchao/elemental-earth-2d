@@ -459,20 +459,8 @@ func _add_tech_subitems() -> void:
 		for req in req_items:
 			var r_key = req.get("key")
 			var r_qty = int(req.get("quantity", 1))
-			var owned = 0
-			var mat_name = ""
-			if r_key is Array:
-				var found_max = 0
-				for alt in r_key:
-					var cnt = GameState.inventory.get_count(alt)
-					if cnt > found_max: found_max = cnt
-					var it = DataDB.get_item(alt)
-					if mat_name == "": mat_name = it.get("name", alt)
-				owned = found_max
-			else:
-				owned = GameState.inventory.get_count(r_key)
-				var it = DataDB.get_item(r_key)
-				mat_name = it.get("name", r_key)
+			var owned = GameState.sim.req_owned(req)
+			var mat_name = DataDB.get_item(r_key[0] if r_key is Array else r_key).get("name", str(r_key))
 			cost_desc_list.append("%s: %d/%d" % [mat_name, owned, r_qty])
 			if owned < r_qty:
 				items_met = false
@@ -554,15 +542,8 @@ func _describe_cost(req_items: Array) -> Dictionary:
 	for req in req_items:
 		var r_key = req.get("key")
 		var r_qty = int(req.get("quantity", 1))
-		var owned = 0
-		var mat_name = ""
-		if r_key is Array:
-			for alt in r_key:
-				owned = maxi(owned, GameState.inventory.get_count(alt))
-				if mat_name == "": mat_name = DataDB.get_item(alt).get("name", alt)
-		else:
-			owned = GameState.inventory.get_count(r_key)
-			mat_name = DataDB.get_item(r_key).get("name", r_key)
+		var owned = GameState.sim.req_owned(req)
+		var mat_name = DataDB.get_item(r_key[0] if r_key is Array else r_key).get("name", str(r_key))
 		parts.append("%s %d/%d" % [mat_name, owned, r_qty])
 		if owned < r_qty:
 			ok = false
@@ -654,22 +635,9 @@ func _add_build_subitems() -> void:
 		for req in req_items:
 			var r_key = req.get("key")
 			var r_qty = int(req.get("quantity", 1))
-			var owned = 0
-			var mat_name = ""
-			if r_key is Array:
-				var found_max = 0
-				for alt in r_key:
-					var cnt = GameState.inventory.get_count(alt)
-					if cnt > found_max:
-						found_max = cnt
-					var it = DataDB.get_item(alt)
-					if mat_name == "": mat_name = it.get("name", alt)
-				owned = found_max
-			else:
-				owned = GameState.inventory.get_count(r_key)
-				var it = DataDB.get_item(r_key)
-				mat_name = it.get("name", r_key)
-				
+			var owned = GameState.sim.req_owned(req)
+			var mat_name = DataDB.get_item(r_key[0] if r_key is Array else r_key).get("name", str(r_key))
+
 			cost_desc_list.append("%s: %d/%d" % [mat_name, owned, r_qty])
 			if owned < r_qty:
 				can_build = false

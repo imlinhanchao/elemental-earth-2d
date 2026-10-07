@@ -36,6 +36,11 @@ func _ready() -> void:
 
 var _last_label: String = ""
 var _was_burning: bool = true
+var is_hovered: bool = false
+
+# 鼠标悬停时才显示「点击使用」(world 按地块调用)
+func set_hovered(v: bool) -> void:
+	is_hovered = v
 
 # 地表标签：名称 + 状态 (燃烧中显示温度与剩余燃料，反应中显示配方名)
 func _status_text() -> String:
@@ -43,17 +48,18 @@ func _status_text() -> String:
 	if not GameState.built_furnaces.has(hex_coord):
 		return b_name
 	var bench = GameState.built_furnaces[hex_coord]["bench"]
-	var line := "点击使用"
+	var lines: Array = [b_name]
 	if bench.fire_lit:
-		line = "%d ℃ · 燃料 %d 秒" % [int(buffer.temperature - 273.15), int(ceil(bench.fuel_seconds()))]
+		lines.append("%d ℃ · 燃料 %d 秒" % [int(buffer.temperature - 273.15), int(ceil(bench.fuel_seconds()))])
 	elif buffer.temperature > 323.15:
-		line = "冷却中 %d ℃" % int(buffer.temperature - 273.15)
-	var extra := ""
+		lines.append("冷却中 %d ℃" % int(buffer.temperature - 273.15))
+	elif is_hovered:
+		lines.append("点击使用")
 	if buffer.active_formula != "":
-		extra = "\n" + (DataDB.get_formula(buffer.active_formula).get("name", "反应") if bench.has_clue(buffer.active_formula) else "反应中")
+		lines.append(DataDB.get_formula(buffer.active_formula).get("name", "反应") if bench.has_clue(buffer.active_formula) else "反应中")
 	elif not buffer.components.is_empty():
-		extra = "\n炉内有物料"
-	return "%s\n%s%s" % [b_name, line, extra]
+		lines.append("炉内有物料")
+	return "\n".join(lines)
 
 func _process(_delta: float) -> void:
 	var txt = _status_text()

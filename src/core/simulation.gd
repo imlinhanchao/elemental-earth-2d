@@ -1250,26 +1250,37 @@ func reactor_missing_inputs(hex: Vector2i) -> Dictionary:
 			missing[k] = need - inventory.get_count(k)
 	return missing
 
+# 已建成的炉体能代替哪些器皿：熔炉可当窑炉 / 坩埚，鼓风高炉另可当高炉 (ChemistrySolver.FURNACE_CONTAINERS)
+func structure_provides(key: String) -> bool:
+	for f in built_furnaces.values():
+		if ChemistrySolver.FURNACE_CONTAINERS.get(f.get("type", ""), []).has(key):
+			return true
+	return false
+
+# 某项材料需求当前持有的数量：任选材料合计；写了 use 的器具 (只用不耗，如烧陶罐用的窑炉) 有对应炉体也算持有
+func req_owned(req: Dictionary) -> int:
+	var k = req.get("key")
+	var alts: Array = k if k is Array else [k]
+	var total := 0
+	for alt in alts:
+		total += inventory.get_count(alt)
+		if req.has("use") and structure_provides(alt):
+			total = maxi(total, int(req.get("quantity", 1)))
+	return total
+
 func _has_all_ingredients(req_items: Array) -> bool:
 	for req in req_items:
-		var q_needed = int(req.get("quantity", 1))
-		var k = req.get("key")
-		if k is Array:
-			var total = 0
-			for alt_k in k:
-				total += inventory.get_count(alt_k)
-			if total < q_needed:
-				return false
-		elif k is String:
-			if inventory.get_count(k) < q_needed:
-				return false
+		if req_owned(req) < int(req.get("quantity", 1)):
+			return false
 	return true
 
 func _consume_all_ingredients(req_items: Array) -> void:
 	for req in req_items:
 		var q_needed = int(req.get("quantity", 1))
 		var k = req.get("key")
-		# 写了 use 的耐久器具 (如烧陶罐用的窑炉) 只消耗 1 点耐久
+		# 写了 use 的器具：有对应炉体时直接在炉里做，不消耗；否则耐久器具 (如窑炉) 只消耗 1 点耐久
+		if req.has("use") and k is String and structure_provides(k):
+			continue
 		if req.has("use") and k is String and LabBench.max_durable(k) > 1:
 			inventory.use_durability(k, LabBench.max_durable(k), 1)
 			continue

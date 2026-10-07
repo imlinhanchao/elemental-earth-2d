@@ -58,6 +58,11 @@ func install_blueprint(bp: ProcessBlueprint) -> void:
 	_update_ui()
 
 var _last_status: String = ""
+var is_hovered: bool = false
+
+func set_hovered(v: bool) -> void:
+	is_hovered = v
+	_update_ui()
 
 func _set_status(txt: String) -> void:
 	if txt != _last_status:
@@ -69,7 +74,7 @@ func _update_ui() -> void:
 		return
 	var r = GameState.built_reactors.get(hex_coord, {})
 	if installed_blueprint == null:
-		_set_status("工业连续反应塔\n点击装入蓝图")
+		_set_status("工业连续反应塔\n点击装入蓝图" if is_hovered else "工业连续反应塔")
 	elif r.get("paused", false):
 		_set_status("%s\n已暂停" % installed_blueprint.display_name)
 	elif not GameState.sim.reactor_missing_inputs(hex_coord).is_empty():

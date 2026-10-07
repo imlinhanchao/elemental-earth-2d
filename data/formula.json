@@ -1388,7 +1388,7 @@
     "key": "produce_uranium_oxide",
     "name": "制备氧化铀",
     "description": "将铀矿石（如沥青铀矿或磷灰铀矿）通过焙烧或化学处理制备成氧化铀粉末（UO2 或 U3O8 的表示为统一资源）。",
-    "fragment_description": "对#uraninite#或#pitchblende#进行高温$roasting$或氧化处理，去除杂质并得到#uranium_oxide#作为中间氧化物。",
+    "fragment_description": "对#pitchblende#进行高温$roasting$或氧化处理，去除杂质并得到#uranium_oxide#作为中间氧化物。",
     "time_required": 40,
     "required_era": "rare_earth",
     "required_container": [
@@ -2956,7 +2956,7 @@
     "key": "sodium_from_halite",
     "name": "电解熔融岩盐制钠",
     "description": "通过熔融电解将岩盐分解为金属钠和氯气。",
-    "fragment_description": "对熔融的#halite#（岩盐）进行$electrolysis$处理，通过电子转移在阴极析出金属#sodium#。",
+    "fragment_description": "对熔融的#rock_salt#进行$electrolysis$处理，通过电子转移在阴极析出金属#sodium#。",
     "time_required": 30,
     "power_consumption": 0.2,
     "required_era": "electrochem",
@@ -3437,7 +3437,7 @@
     "key": "nitration",
     "name": "硝化甘油制备",
     "description": "在低温下将甘油缓慢滴入浓硝酸和浓硫酸的混合酸中，经硝化反应生成硝化甘油的粗品，再用水洗涤得到纯品。",
-    "fragment_description": "在#concentrated_sulfuric_acid#的催化和吸水作用下，利用#nitric_acid#对有机物进行$stirring$硝化反应，生成#nitrocellulose#。",
+    "fragment_description": "在#concentrated_sulfuric_acid#的催化和吸水作用下，利用#nitric_acid#对#glycerol#进行$stirring$硝化反应，生成#nitroglycerin#。",
     "time_required": 10,
     "required_era": "modern_chem",
     "required_container": [
@@ -11481,5 +11481,40 @@
       "min": 1
     },
     "fragment_description": "把#alkaline_solution#慢慢$evaporation$，锅底会留下白色的#sodium_carbonate#。"
+  },
+  {
+    "key": "roast_pyrite",
+    "name": "焙烧黄铁矿",
+    "description": "在窑炉中通风焙烧黄铁矿，硫被氧化成二氧化硫逸出，留下红褐色的氧化铁。古代用这种方法制取硫酸的原料气。",
+    "fragment_description": "把#pyrite#放进窑炉通风$roasting$，金黄的晶体会烧成红褐色的#iron_oxide#，同时冒出刺鼻的#sulfur_dioxide#。",
+    "time_required": 20,
+    "required_era": "alchemy",
+    "required_container": [
+      "kiln",
+      "furnace",
+      "crucible"
+    ],
+    "required_actions": {
+      "key": "roasting",
+      "min": 1
+    },
+    "required_items": [
+      {
+        "key": "pyrite",
+        "quantity": 2,
+        "isMain": true
+      }
+    ],
+    "products": [
+      {
+        "key": "iron_oxide",
+        "multiple": 1
+      },
+      {
+        "key": "sulfur_dioxide",
+        "multiple": 2,
+        "required_chain_operation": "gas_collecting_air"
+      }
+    ]
   }
 ]
