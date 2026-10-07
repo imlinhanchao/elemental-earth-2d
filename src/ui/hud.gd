@@ -168,12 +168,143 @@ func _ready() -> void:
 	if era_badge_btn:
 		era_badge_btn.pressed.connect(_on_era_badge_pressed)
 	
+	_build_status_chips()
+	GameState.tool_equipped.connect(func(_k): _update_status_chips())
+	GameState.element_discovered.connect(func(_n, _k): _update_status_chips())
+	_build_drawer_filters()
+	
 	furnace_panel.visible = false
 	action_drawer.visible = false
 	_apply_scheme3_styling()
 	_update_inventory_ui()
 	_update_era_label()
 	_update_task_queue_ui()
+	_update_status_chips()
+
+# --- 顶栏：当前装备与元素周期表 ---
+# 装备胶囊显示斧、镐两个槽位 (未装备时半透明的工具图标 + 「徒手」)；元素按钮显示已发现数量，点击打开周期表
+const TOOL_SLOTS: Array = [["axe", "斧"], ["pickaxe", "镐"]]
+var _tool_chip: Button = null
+var _tool_icons: Dictionary = {}   # slot -> TextureRect
+var _tool_labels: Dictionary = {}  # slot -> Label
+var _element_btn: Button = null
+
+func _build_status_chips() -> void:
+	var bar = $Margin/MainVBox/TopBarPanel/Margin/HBox
+	_tool_chip = Button.new()
+	_tool_chip.name = "ToolChip"
+	_tool_chip.focus_mode = Control.FOCUS_NONE
+	_tool_chip.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_tool_chip.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_tool_chip.custom_minimum_size = Vector2(0, 30)
+	_tool_chip.pressed.connect(func():
+		if ModalStack.is_empty(): _toggle_category(CategoryTab.CRAFT)
+	)
+	var row = HBoxContainer.new()
+	row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	row.add_theme_constant_override("separation", 6)
+	row.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	row.offset_left = 12
+	row.offset_right = -12
+	_tool_chip.add_child(row)
+	for i in range(TOOL_SLOTS.size()):
+		var slot: String = TOOL_SLOTS[i][0]
+		if i > 0:
+			var sep = VSeparator.new()
+			sep.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			row.add_child(sep)
+		var ic = TextureRect.new()
+		ic.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		ic.custom_minimum_size = Vector2(20, 20)
+		ic.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		ic.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		ic.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		row.add_child(ic)
+		var lbl = Label.new()
+		lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		lbl.add_theme_font_size_override("font_size", ThemeStyler.FONT_CAPTION)
+		row.add_child(lbl)
+		_tool_icons[slot] = ic
+		_tool_labels[slot] = lbl
+	bar.add_child(_tool_chip)
+	bar.move_child(_tool_chip, 1)
+
+	_element_btn = Button.new()
+	_element_btn.name = "ElementBtn"
+	_element_btn.focus_mode = Control.FOCUS_NONE
+	_element_btn.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
+	_element_btn.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_element_btn.icon = ItemIconManager.themed(ItemIconManager.load_texture("res://assets/icons/periodic_table.svg"))
+	_element_btn.expand_icon = true
+	_element_btn.add_theme_font_size_override("font_size", ThemeStyler.FONT_CAPTION)
+	_element_btn.pressed.connect(func():
+		if ModalStack.is_empty(): periodic_modal.open()
+	)
+	bar.add_child(_element_btn)
+	bar.move_child(_element_btn, 2)
+
+# 工具名优先取制作配方的中文名 (items.json 没有收录部分工具，get_item 会回退成内部键名)
+func _tool_display_name(tool_key: String) -> String:
+	var n = str(DataDB.get_crafting_recipe(tool_key).get("name", ""))
+	if n == "" or n == tool_key:
+		n = str(DataDB.get_item(tool_key).get("name", tool_key))
+	return n
+
+func _update_status_chips() -> void:
+	if _tool_chip == null:
+		return
+	var tip: Array[String] = ["当前装备（点击打开制作 [T]）"]
+	var font = _tool_chip.get_theme_font("font")
+	var width := 24.0
+	for i in range(TOOL_SLOTS.size()):
+		var slot: String = TOOL_SLOTS[i][0]
+		var tool_key = str(GameState.equipped_tools.get(slot, "bare_hands"))
+		var bare = tool_key == "bare_hands"
+		var ic: TextureRect = _tool_icons[slot]
+		var lbl: Label = _tool_labels[slot]
+		ic.texture = ItemIconManager.get_icon("flint_axe" if (bare and slot == "axe") else ("stone_pickaxe" if bare else tool_key))
+		ic.modulate.a = 0.35 if bare else 1.0
+		var nm = "徒手" if bare else _tool_display_name(tool_key)
+		lbl.text = nm
+		lbl.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_MUTED if bare else ThemeStyler.PAPER_INK)
+		var wt = "" if bare else "，作业 %.1f 秒" % float(DataDB.get_crafting_recipe(tool_key).get("work_time", 0.0))
+		tip.append("%s：%s%s" % [TOOL_SLOTS[i][1], nm, wt if not bare and DataDB.get_crafting_recipe(tool_key).has("work_time") else ""])
+		width += 20.0 + 6.0 + (font.get_string_size(nm, HORIZONTAL_ALIGNMENT_LEFT, -1, ThemeStyler.FONT_CAPTION).x if font else 48.0) + 6.0
+	width += 14.0 * (TOOL_SLOTS.size() - 1)
+	_tool_chip.custom_minimum_size = Vector2(ceil(width), 30)
+	_tool_chip.tooltip_text = "\n".join(tip)
+
+	var n = GameState.discovered_elements.size()
+	_element_btn.text = "元素 %d/118" % n
+	var tf = _element_btn.get_theme_font("font")
+	var tw = tf.get_string_size(_element_btn.text, HORIZONTAL_ALIGNMENT_LEFT, -1, ThemeStyler.FONT_CAPTION).x if tf else 80.0
+	_element_btn.custom_minimum_size = Vector2(ceil(tw + 18.0 + 6.0 + 28.0), 30)
+	var names: Array[String] = []
+	var sorted = GameState.discovered_elements.duplicate()
+	sorted.sort()
+	for num in sorted:
+		var e = DataDB.get_element(num)
+		names.append("%s %s" % [e.get("symbol", "?"), e.get("name", "")])
+	_element_btn.tooltip_text = "已发现元素 %d/118（点击打开周期表 [P]）%s" % [n, ("\n" + "、".join(names)) if not names.is_empty() else "\n还没有发现元素"]
+
+func _style_status_chips() -> void:
+	if _tool_chip == null:
+		return
+	for b in [_tool_chip, _element_btn]:
+		var normal = ThemeStyler.create_pill_box(15, ThemeStyler.adapt(Color(1, 1, 1, 0.35)), ThemeStyler.PAPER_BORDER)
+		normal.content_margin_left = 14
+		normal.content_margin_right = 14
+		normal.content_margin_top = 4
+		normal.content_margin_bottom = 4
+		normal.shadow_size = 0
+		var hover = normal.duplicate()
+		hover.border_color = ThemeStyler.COLOR_ACCENT
+		b.add_theme_stylebox_override("normal", normal)
+		b.add_theme_stylebox_override("hover", hover)
+		b.add_theme_stylebox_override("pressed", hover)
+		b.add_theme_stylebox_override("focus", StyleBoxEmpty.new())
+		b.add_theme_color_override("font_color", ThemeStyler.PAPER_INK)
+		b.add_theme_color_override("font_hover_color", ThemeStyler.PAPER_INK)
 
 func _on_era_badge_pressed() -> void:
 	if era_modal:
@@ -200,6 +331,7 @@ func _toggle_category(tab: CategoryTab) -> void:
 		current_tab = tab
 		action_drawer.visible = true
 		_populate_drawer(tab)
+		drawer_grid.get_parent().scroll_vertical = 0
 
 func _close_drawer() -> void:
 	current_tab = CategoryTab.NONE
@@ -258,6 +390,9 @@ func hide_placement_mode() -> void:
 		placement_bar.visible = false
 
 func _populate_drawer(tab: CategoryTab) -> void:
+	if _filter_bar:
+		_filter_bar.visible = tab == CategoryTab.CRAFT
+		_drawer_footer.text = ""
 	for n in _drawer_extras:
 		if is_instance_valid(n): n.queue_free()
 	_drawer_extras.clear()
@@ -267,6 +402,19 @@ func _populate_drawer(tab: CategoryTab) -> void:
 	# 本次没有用到的池中卡片隐藏
 	for i in range(_card_used, _card_pool.size()):
 		_card_pool[i].visible = false
+	_fit_drawer_height.call_deferred()
+
+# 卡片按行自动换行；抽屉高度随行数增长，最多 3 行，超出时滚轮上下滚动 (从第一行开始)
+const DRAWER_MAX_ROWS: int = 3
+func _fit_drawer_height() -> void:
+	var scroll: ScrollContainer = drawer_grid.get_parent()
+	var width = scroll.size.x
+	if width <= 0.0:
+		return
+	var per_row = maxi(1, int((width + 10.0) / (CARD_SIZE.x + 10.0)))
+	var n = maxi(_card_used, 1 if not _drawer_extras.is_empty() else 0)
+	var rows = clampi(ceili(float(n) / per_row), 1, DRAWER_MAX_ROWS)
+	scroll.custom_minimum_size.y = rows * CARD_SIZE.y + (rows - 1) * 10.0
 
 func _fill_drawer(tab: CategoryTab) -> void:
 	match tab:
@@ -357,68 +505,135 @@ func _add_tech_subitems() -> void:
 			)
 
 # --- 3. 制作分类细项 ---
+# 只列当前时代及以前的配方，可制作的排在前面；顶部按类别筛选，可只看能制作的
+const CRAFT_FILTERS: Array = [["all", "全部"], ["工具", "工具"], ["容器", "容器"], ["材料", "材料"], ["other", "其他"]]
+var craft_filter: String = "all"
+var craft_only_available: bool = false
+var _filter_bar: HBoxContainer = null
+var _filter_buttons: Dictionary = {}
+var _only_available_btn: CheckBox = null
+var _drawer_footer: Label = null
+
+func _build_drawer_filters() -> void:
+	var header = $Margin/MainVBox/BottomArea/ActionDrawer/Margin/VBox/Header
+	_filter_bar = HBoxContainer.new()
+	_filter_bar.add_theme_constant_override("separation", 6)
+	header.add_child(_filter_bar)
+	header.move_child(_filter_bar, 1)
+	var group = ButtonGroup.new()
+	for f in CRAFT_FILTERS:
+		var b = Button.new()
+		b.toggle_mode = true
+		b.button_group = group
+		b.text = f[1]
+		b.focus_mode = Control.FOCUS_NONE
+		b.custom_minimum_size = Vector2(52, 26)
+		b.add_theme_font_size_override("font_size", ThemeStyler.FONT_CAPTION)
+		b.button_pressed = f[0] == craft_filter
+		var key: String = f[0]
+		b.pressed.connect(func():
+			craft_filter = key
+			_populate_drawer(current_tab)
+		)
+		_filter_bar.add_child(b)
+		_filter_buttons[key] = b
+	_only_available_btn = CheckBox.new()
+	_only_available_btn.text = "只看能制作的"
+	_only_available_btn.focus_mode = Control.FOCUS_NONE
+	_only_available_btn.add_theme_font_size_override("font_size", ThemeStyler.FONT_CAPTION)
+	_only_available_btn.toggled.connect(func(on):
+		craft_only_available = on
+		_populate_drawer(current_tab)
+	)
+	_filter_bar.add_child(_only_available_btn)
+
+	_drawer_footer = Label.new()
+	_drawer_footer.add_theme_font_size_override("font_size", ThemeStyler.FONT_CAPTION)
+	_drawer_footer.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_MUTED)
+	$Margin/MainVBox/BottomArea/ActionDrawer/Margin/VBox.add_child(_drawer_footer)
+
+func _recipe_category(recipe: Dictionary) -> String:
+	var res_key = str(recipe.get("result_item", recipe.get("result_tool", recipe.get("key", ""))))
+	var cat = str(DataDB.get_item(res_key).get("category", ""))
+	return cat if cat in ["工具", "容器", "材料"] else "other"
+
+# 材料清单："名称 有/需"，任选材料取持有最多的一种
+func _describe_cost(req_items: Array) -> Dictionary:
+	var parts: Array = []
+	var ok := true
+	for req in req_items:
+		var r_key = req.get("key")
+		var r_qty = int(req.get("quantity", 1))
+		var owned = 0
+		var mat_name = ""
+		if r_key is Array:
+			for alt in r_key:
+				owned = maxi(owned, GameState.inventory.get_count(alt))
+				if mat_name == "": mat_name = DataDB.get_item(alt).get("name", alt)
+		else:
+			owned = GameState.inventory.get_count(r_key)
+			mat_name = DataDB.get_item(r_key).get("name", r_key)
+		parts.append("%s %d/%d" % [mat_name, owned, r_qty])
+		if owned < r_qty:
+			ok = false
+	return {"text": " · ".join(parts), "ok": ok}
+
 func _add_craft_subitems() -> void:
-	var recipes = DataDB.crafting.values()
-	for recipe in recipes:
-		var recipe_key = recipe.get("key", "")
-		var recipe_name = recipe.get("name", recipe_key)
-		var req_items = recipe.get("required_items", [])
-		var req_techs = recipe.get("required_techs", [])
+	var entries: Array = []
+	var later_eras := 0
+	for recipe in DataDB.crafting.values():
 		var r_era = int(recipe.get("era", 0))
-		
-		var can_craft = true
-		var missing_reason = ""
-		
 		if r_era > GameState.current_era:
-			can_craft = false
-			missing_reason = "时代未达"
-			
-		for req_t in req_techs:
+			later_eras += 1
+			continue
+		var cat = _recipe_category(recipe)
+		if craft_filter != "all" and cat != craft_filter:
+			continue
+		var reason = ""
+		for req_t in recipe.get("required_techs", []):
 			if not GameState.researched_techs.has(str(req_t)):
-				can_craft = false
-				if missing_reason == "": missing_reason = "缺少科技"
+				reason = "需要研发%s" % DataDB.techs.get(str(req_t), {}).get("name", str(req_t))
 				break
-		
-		var cost_desc_list = []
-		for req in req_items:
-			var r_key = req.get("key")
-			var r_qty = int(req.get("quantity", 1))
-			var owned = 0
-			var mat_name = ""
-			if r_key is Array:
-				var found_max = 0
-				for alt in r_key:
-					var cnt = GameState.inventory.get_count(alt)
-					if cnt > found_max:
-						found_max = cnt
-					var it = DataDB.get_item(alt)
-					if mat_name == "": mat_name = it.get("name", alt)
-				owned = found_max
-			else:
-				owned = GameState.inventory.get_count(r_key)
-				var it = DataDB.get_item(r_key)
-				mat_name = it.get("name", r_key)
-				
-			cost_desc_list.append("%s: %d/%d" % [mat_name, owned, r_qty])
-			if owned < r_qty:
-				can_craft = false
-				if missing_reason == "": missing_reason = "缺少材料"
-				
-		var cost_str = " · ".join(cost_desc_list)
-		var status_text = "可制作" if can_craft else missing_reason
+		var cost = _describe_cost(recipe.get("required_items", []))
+		if reason == "" and not cost["ok"]:
+			reason = "材料不足"
+		if craft_only_available and reason != "":
+			continue
+		entries.append({"recipe": recipe, "reason": reason, "cost": cost["text"]})
+	# 能制作的在前；同类按时代、原顺序
+	entries.sort_custom(func(a, b):
+		var ra = a["reason"] == ""
+		var rb = b["reason"] == ""
+		if ra != rb: return ra
+		return int(a["recipe"].get("era", 0)) < int(b["recipe"].get("era", 0))
+	)
+	for e in entries:
+		var recipe: Dictionary = e["recipe"]
+		var recipe_key = str(recipe.get("key", ""))
+		var can_craft: bool = e["reason"] == ""
+		# 状态标签保持简短；缺科技时第二行写明要研发什么
+		var tech_locked = str(e["reason"]).begins_with("需要研发")
 		var card = _create_action_card(
-			recipe_name,
-			cost_str,
+			str(recipe.get("name", recipe_key)),
+			e["reason"] if tech_locked else e["cost"],
 			get_item_icon(recipe_key),
-			status_text,
+			"可制作" if can_craft else ("缺科技" if tech_locked else "缺材料"),
 			can_craft
 		)
+		if tech_locked:
+			card.tooltip_text += "\n材料：%s" % e["cost"]
 		drawer_card_by_key[recipe_key] = card
 		if can_craft:
 			card.pressed.connect(func():
 				if GameState.craft_tool(recipe_key):
 					_populate_drawer(CategoryTab.CRAFT)
 			)
+	if entries.is_empty():
+		var empty_label = Label.new()
+		empty_label.text = "当前筛选下没有配方" if not craft_only_available else "现在还没有能制作的配方"
+		empty_label.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
+		_add_drawer_extra(empty_label)
+	_drawer_footer.text = "还有 %d 项配方在后续时代解锁" % later_eras if later_eras > 0 else ""
 
 # --- 4. 建造分类细项 ---
 func _add_build_subitems() -> void:
@@ -566,6 +781,8 @@ func _apply_scheme3_styling() -> void:
 		era_badge_btn.add_theme_font_size_override("font_size", 14)
 		era_badge_btn.custom_minimum_size = Vector2(0, 30)
 	
+	_style_status_chips()
+
 	# 右侧资源数值字体放大
 	for val_lbl in [val_stone, val_wood, val_flint, val_ore, val_fuel]:
 		if val_lbl:
@@ -763,10 +980,12 @@ func _card_style(kind: String) -> StyleBoxFlat:
 		_card_styles[kind] = box
 	return _card_styles[kind]
 
+const CARD_SIZE := Vector2(232, 64)
+
 func _new_pool_card() -> Button:
 	var btn = Button.new()
-	btn.custom_minimum_size = Vector2(210, 110)
-	btn.size_flags_vertical = 3
+	btn.custom_minimum_size = CARD_SIZE
+	btn.clip_contents = true
 	btn.add_theme_stylebox_override("normal", _card_style("normal"))
 	btn.add_theme_stylebox_override("hover", _card_style("hover"))
 	btn.add_theme_stylebox_override("pressed", _card_style("pressed"))
@@ -778,49 +997,56 @@ func _new_pool_card() -> Button:
 	margin.anchors_preset = Control.PRESET_FULL_RECT
 	margin.anchor_right = 1.0
 	margin.anchor_bottom = 1.0
-	margin.add_theme_constant_override("margin_left", 10)
-	margin.add_theme_constant_override("margin_top", 10)
-	margin.add_theme_constant_override("margin_right", 10)
-	margin.add_theme_constant_override("margin_bottom", 10)
+	margin.add_theme_constant_override("margin_left", 8)
+	margin.add_theme_constant_override("margin_top", 6)
+	margin.add_theme_constant_override("margin_right", 8)
+	margin.add_theme_constant_override("margin_bottom", 6)
 	btn.add_child(margin)
 	
-	var vbox = VBoxContainer.new()
-	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	vbox.add_theme_constant_override("separation", 6)
-	margin.add_child(vbox)
-	
+	# 紧凑卡片：左侧 36px 图标；右侧第一行名称 + 状态，第二行材料 (过长时截断，完整内容在悬停提示中)
 	var top_hbox = HBoxContainer.new()
 	top_hbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top_hbox.add_theme_constant_override("separation", 8)
-	vbox.add_child(top_hbox)
+	margin.add_child(top_hbox)
 	
 	var icon_rect = TextureRect.new()
 	icon_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	icon_rect.custom_minimum_size = Vector2(36, 36)
+	icon_rect.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	icon_rect.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	icon_rect.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	top_hbox.add_child(icon_rect)
 	
-	var title_vbox = VBoxContainer.new()
-	title_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	title_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	top_hbox.add_child(title_vbox)
+	var vbox = VBoxContainer.new()
+	vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	vbox.add_theme_constant_override("separation", 2)
+	top_hbox.add_child(vbox)
+	
+	var title_row = HBoxContainer.new()
+	title_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	vbox.add_child(title_row)
 	
 	var lbl_title = Label.new()
 	lbl_title.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lbl_title.add_theme_font_size_override("font_size", 14)
+	lbl_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	lbl_title.clip_text = true
+	lbl_title.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	lbl_title.add_theme_font_size_override("font_size", ThemeStyler.FONT_BODY)
 	lbl_title.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_PRIMARY)
-	title_vbox.add_child(lbl_title)
+	title_row.add_child(lbl_title)
 	
 	var lbl_badge = Label.new()
 	lbl_badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lbl_badge.add_theme_font_size_override("font_size", 12)
-	title_vbox.add_child(lbl_badge)
+	lbl_badge.add_theme_font_size_override("font_size", ThemeStyler.FONT_CAPTION)
+	title_row.add_child(lbl_badge)
 	
 	var lbl_sub = Label.new()
 	lbl_sub.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	lbl_sub.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	lbl_sub.add_theme_font_size_override("font_size", 12)
+	lbl_sub.clip_text = true
+	lbl_sub.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	lbl_sub.add_theme_font_size_override("font_size", ThemeStyler.FONT_CAPTION)
 	lbl_sub.add_theme_color_override("font_color", ThemeStyler.COLOR_TEXT_SECONDARY)
 	vbox.add_child(lbl_sub)
 	
@@ -862,6 +1088,15 @@ func _create_action_card(title: String, subtitle: String, icon_tex: Texture2D, b
 func _add_drawer_extra(node: Node) -> void:
 	_drawer_extras.append(node)
 	drawer_grid.add_child(node)
+
+# 鼠标是否在 HUD 的不透明面板上 (world 据此决定滚轮是否缩放地图)
+func is_pointer_over_panel(screen_pos: Vector2) -> bool:
+	var panels: Array = [$Margin/MainVBox/TopBarPanel, action_drawer, $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel,
+		$Margin/MainVBox/BodyHBox/RightBox/TaskDock, furnace_panel, tutorial_dock, placement_bar]
+	for p in panels:
+		if p != null and is_instance_valid(p) and p.is_visible_in_tree() and p.get_global_rect().has_point(screen_pos):
+			return true
+	return false
 
 func _is_world_placing() -> bool:
 	var w = get_parent()

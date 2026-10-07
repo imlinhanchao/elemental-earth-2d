@@ -368,7 +368,6 @@ theme_override_constants/separation = 8
 
 [node name="ActionDrawer" type="PanelContainer" parent="Margin/MainVBox/BottomArea"]
 visible = false
-custom_minimum_size = Vector2(0, 180)
 layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="Margin/MainVBox/BottomArea/ActionDrawer"]
@@ -403,14 +402,16 @@ theme_override_font_sizes/font_size = 12
 text = "✕"
 
 [node name="Scroll" type="ScrollContainer" parent="Margin/MainVBox/BottomArea/ActionDrawer/Margin/VBox"]
+custom_minimum_size = Vector2(0, 66)
 layout_mode = 2
 size_flags_vertical = 3
+horizontal_scroll_mode = 0
 
-[node name="DrawerGrid" type="HBoxContainer" parent="Margin/MainVBox/BottomArea/ActionDrawer/Margin/VBox/Scroll"]
+[node name="DrawerGrid" type="HFlowContainer" parent="Margin/MainVBox/BottomArea/ActionDrawer/Margin/VBox/Scroll"]
 layout_mode = 2
 size_flags_horizontal = 3
-size_flags_vertical = 3
-theme_override_constants/separation = 14
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
 
 [node name="BottomCenterRow" type="HBoxContainer" parent="Margin/MainVBox/BottomArea"]
 layout_mode = 2

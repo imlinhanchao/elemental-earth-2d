@@ -68,6 +68,18 @@
     }
   },
   {
+    "key": "sapling",
+    "name": "橡树苗",
+    "category": "材料",
+    "description": "砍伐橡树时从树根旁挖出的幼苗。种在领地内的空地上，几分钟后长成一棵新的橡树。",
+    "type": [
+      "material"
+    ],
+    "attrs": {
+      "burn_time": 5
+    }
+  },
+  {
     "name": "树脂",
     "key": "resin",
     "category": "材料",

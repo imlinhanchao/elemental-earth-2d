@@ -39,6 +39,21 @@ static func run(w: Node2D, arg_name: String) -> void:
 		w.target_zoom = Vector2(1.0, 1.0)
 		w.camera.reset_smoothing()
 	elif arg_name == "--screenshot-craft":
+		# 顶栏装备与元素、制作抽屉 (可制作的排在前面)、开局中心种着一棵树苗
+		for k in ["stick", "flint", "stone", "wood"]:
+			GameState.inventory.add_item(k, 6)
+		GameState.inventory.add_item("sapling", 2)
+		GameState.craft_tool("flint_axe")
+		GameState.sim.discovered_elements.append(6)
+		GameState.element_discovered.emit(6, "charcoal")
+		if w.hud.element_discovery_modal: w.hud.element_discovery_modal.close()
+		GameState.sim.queue_plant_sapling(Vector2i(0, 0))
+		GameState.active_task["begin_time"] = Time.get_ticks_msec() - 60000
+		GameState.sim.tick(0.01)
+		w.camera.position = Vector2.ZERO
+		w.camera.zoom = Vector2(1.3, 1.3)
+		w.camera.reset_smoothing()
+		await w.get_tree().create_timer(0.2).timeout
 		w.hud._toggle_category(w.hud.CategoryTab.CRAFT)
 	elif arg_name == "--screenshot-lab":
 		# 焙烧孔雀石：放入木炭点火，侦测卡提示温度 (先登记碳，避免弹出元素发现弹窗)

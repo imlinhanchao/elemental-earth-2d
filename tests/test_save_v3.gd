@@ -80,8 +80,13 @@ func _ready() -> void:
 	GameState.lab_vessel.add_substance("water", 3.0)
 	GameState.lab_vessel.add_substance("malachite", 1.5)
 	
-	# 注入采空格子
-	GameState.depleted_tiles[Vector2i(3, -2)] = 45.0
+	# 注入采空格子 (地图随机，选一块陆地：湖面读档时不算采空)
+	var depleted_hex := Vector2i(3, -2)
+	for h in [Vector2i(3, -2), Vector2i(-3, 2), Vector2i(2, -3), Vector2i(-2, 3), Vector2i(3, 0), Vector2i(-3, 0), Vector2i(0, 3), Vector2i(0, -3)]:
+		if not GameState.sim.is_water_hex(h):
+			depleted_hex = h
+			break
+	GameState.depleted_tiles[depleted_hex] = 45.0
 
 	# v4：消耗某地块部分储量，验证读档后不会回满
 	var stock_hex: Vector2i = GameState.tile_resources.keys()[0]
@@ -155,7 +160,7 @@ func _ready() -> void:
 	assert(GameState.built_reactors[Vector2i(2, 2)]["total_produced"] == 4, "反应塔累计产出恢复错误!")
 	assert(GameState.lab_vessel.temperature == 550.0, "实验台温度恢复错误!")
 	assert(GameState.lab_vessel.has_substance("water", 2.9), "实验台试剂恢复错误!")
-	assert(GameState.depleted_tiles.has(Vector2i(3, -2)), "采空格子恢复错误!")
+	assert(GameState.depleted_tiles.has(depleted_hex), "采空格子恢复错误!")
 	assert(GameState.get_current_territory_radius() == 8, "时代 1 领地半径应为 8!")
 	assert(GameState.is_tutorial_active and GameState.tutorial_step == 3, "教程进度恢复错误!")
 	print(" -> v3 存档全量恢复校验通过: 时代/背包/工具/队列/溶液/熔炉/反应塔/采空格子/领地半径/科技/里程碑全部精确吻合!")

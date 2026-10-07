@@ -186,6 +186,7 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 			"lab_vessel": _serialize_lab_vessel(GameState.lab_vessel),
 			"depleted_tiles": _serialize_depleted_tiles(GameState.depleted_tiles),
 			"tile_resources": _serialize_tile_resources(GameState.tile_resources),
+			"saplings": _serialize_saplings(GameState.sim.saplings),
 			"built_furnaces": _serialize_furnaces(GameState.built_furnaces),
 			"built_reactors": _serialize_reactors(GameState.built_reactors),
 			"tutorial": {"active": GameState.is_tutorial_active, "step": GameState.tutorial_step}
@@ -286,6 +287,7 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null, quiet: bo
 				GameState.depleted_tiles.erase(h)
 		if version >= 4:
 			_deserialize_tile_resources(gs_data.get("tile_resources", []))
+			_deserialize_saplings(gs_data.get("saplings", []))
 		_deserialize_lab_vessel(gs_data.get("lab_vessel", {}))
 		_deserialize_furnaces(gs_data.get("built_furnaces", []))
 		_deserialize_reactors(gs_data.get("built_reactors", []))
@@ -476,9 +478,28 @@ static func _deserialize_tile_resources(data: Variant) -> void:
 			var res: Dictionary = {}
 			for k in item[2].keys():
 				res[LEGACY_ITEM_KEYS.get(k, k)] = int(item[2][k])
-			restored[Vector2i(int(item[0]), int(item[1]))] = res
+			var hex = Vector2i(int(item[0]), int(item[1]))
+			restored[hex] = res
+			# 种下的树长在原本没有主资源的地块 (如开局中心) 时，补上主资源，读档后才会生成节点
+			if int(res.get("wood", 0)) > 0 and not GameState.world_resources.has(hex):
+				GameState.world_resources[hex] = "wood"
 	GameState.tile_resources.clear()
 	GameState.tile_resources.merge(restored)
+
+# 正在生长的树苗 (v4 新增可选字段)：[[q, r, 剩余秒数], ...]
+static func _serialize_saplings(saplings: Dictionary) -> Array:
+	var list: Array = []
+	for h in saplings.keys():
+		list.append([int(h.x), int(h.y), float(saplings[h])])
+	return list
+
+static func _deserialize_saplings(data: Variant) -> void:
+	GameState.sim.saplings.clear()
+	if not (data is Array):
+		return
+	for item in data:
+		if item is Array and item.size() == 3:
+			GameState.sim.saplings[Vector2i(int(item[0]), int(item[1]))] = float(item[2])
 
 static func _serialize_depleted_tiles(tiles: Dictionary) -> Array[Dictionary]:
 	var list: Array[Dictionary] = []

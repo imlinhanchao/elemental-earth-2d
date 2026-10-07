@@ -62,6 +62,7 @@ func _ready() -> void:
 	tile_context_menu = TileContextMenuScene.instantiate()
 	hud.add_child(tile_context_menu)
 	tile_context_menu.harvest_requested.connect(_on_context_menu_harvest)
+	tile_context_menu.plant_requested.connect(func(hex): GameState.sim.queue_plant_sapling(hex))
 
 	GameState.structure_built.connect(_on_structure_built)
 	GameState.tile_depleted.connect(func(hex):
@@ -75,6 +76,11 @@ func _ready() -> void:
 	# 储量变化后地表显示的资源可能改变 (如林地枯枝采完，只剩需要斧头的原木)
 	GameState.tile_resources_changed.connect(func(hex):
 		if not GameState.depleted_tiles.has(hex): _refresh_resource_node(hex)
+	)
+	# 种下树苗 / 树苗长成：开局中心等原本没有资源节点的地块按需补建节点
+	GameState.sapling_changed.connect(func(hex):
+		_ensure_resource_node(hex)
+		_refresh_resource_node(hex)
 	)
 	_generate_hex_world()
 	
@@ -138,6 +144,9 @@ func _generate_hex_world() -> void:
 	for coord in GameState.world_resources.keys():
 		var item_key = GameState.world_resources[coord]
 		_spawn_resource_at_hex(coord.x, coord.y, item_key)
+	for coord in GameState.sim.saplings.keys():
+		_ensure_resource_node(coord)
+		_refresh_resource_node(coord)
 	terrain_layer.refresh()
 	overlay_layer.queue_redraw()
 
@@ -151,11 +160,22 @@ func _spawn_resource_at_hex(q: int, r: int, item_key: String) -> void:
 	resource_nodes[Vector2i(q, r)] = node
 	_refresh_resource_node(Vector2i(q, r))
 
+func _ensure_resource_node(hex: Vector2i) -> void:
+	if not resource_nodes.has(hex):
+		_spawn_resource_at_hex(hex.x, hex.y, "sapling")
+
 # 地表画出的资源 = 左键点击会采到的资源 (地块上第一种当前可开采的资源)。
 # 例如徒手时林地显示枯树枝而不是橡树，装备斧头后才显示橡树。
 func _refresh_resource_node(hex: Vector2i) -> void:
 	var node = resource_nodes.get(hex)
 	if not is_instance_valid(node):
+		return
+	if GameState.sim.saplings.has(hex):
+		if node.item_key != "sapling":
+			node.item_key = "sapling"
+			node.queue_redraw()
+		node.item_name = "橡树苗（生长中）"
+		node.visible = true
 		return
 	var available = GameState.get_tile_available_resources(hex)
 	var show = GameState.is_hex_in_territory(hex.x, hex.y) and not GameState.depleted_tiles.has(hex) and not available.is_empty()
@@ -199,6 +219,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			is_dragging_camera = event.pressed
 			drag_start_mouse = event.position
 			drag_start_cam_pos = camera.position
+		elif (event.button_index == MOUSE_BUTTON_WHEEL_UP or event.button_index == MOUSE_BUTTON_WHEEL_DOWN) and _is_pointer_over_ui(event.position):
+			# Godot 4.2 的 GUI 控件不消耗滚轮事件：弹窗或 HUD 面板上的滚动只交给界面，不缩放地图
+			pass
 		elif event.button_index == MOUSE_BUTTON_WHEEL_UP and event.pressed:
 			# 直接应用缩放，消除弹性与顿挫
 			camera.zoom = (camera.zoom * 1.15).clamp(Vector2(0.5, 0.5), Vector2(2.5, 2.5))
@@ -247,6 +270,14 @@ func _unhandled_input(event: InputEvent) -> void:
 			if hud and generated_hexes.has(hovered_hex):
 				hud.update_current_biome(generated_hexes[hovered_hex])
 
+# 鼠标是否在弹窗或 HUD 面板 (顶栏、底栏、抽屉、作业队列、右键菜单等) 上
+func _is_pointer_over_ui(screen_pos: Vector2) -> bool:
+	if not ModalStack.is_empty():
+		return true
+	if tile_context_menu and tile_context_menu.visible and tile_context_menu.get_global_rect().has_point(screen_pos):
+		return true
+	return hud != null and hud.is_pointer_over_panel(screen_pos)
+
 # LOD 只切换地图符号层的可见性；镜头移动/缩放本身不触发重绘
 func _update_terrain_lod() -> void:
 	var new_lod = 1 if camera.zoom.x >= 0.85 else 0
@@ -285,6 +316,10 @@ func _handle_tile_right_click(hex: Vector2i, screen_pos: Vector2) -> void:
 	var available = GameState.get_tile_available_resources(hex)
 	if available.is_empty() and GameState.sim.can_dig_mud(hex):
 		available.append({ "key": "mud", "name": DataDB.get_item("mud").get("name", "泥土"), "amount": -1 })
+	# 持有树苗时，空地的右键菜单多一项「种下橡树苗」
+	var sim = GameState.sim
+	if sim.can_plant_sapling(hex) and GameState.inventory.has_item(sim.SAPLING_KEY):
+		available.append({ "key": sim.SAPLING_KEY, "name": "种下橡树苗", "amount": GameState.inventory.get_count(sim.SAPLING_KEY), "action": "plant" })
 	if available.is_empty():
 		GameState.post_notice("该地块已采完", Color.GRAY)
 		return
@@ -319,6 +354,8 @@ func get_build_validity(hex: Vector2i) -> Dictionary:
 		return {"valid": false, "reason": "超出文明领地边界"}
 	if GameState.built_furnaces.has(hex) or GameState.built_reactors.has(hex):
 		return {"valid": false, "reason": "地块已被设施占用"}
+	if GameState.sim.saplings.has(hex):
+		return {"valid": false, "reason": "这里种着树苗"}
 	if generated_hexes.get(hex) == HexWorldGenerator.BiomeType.SALT_LAKE:
 		return {"valid": false, "reason": "无法在盐湖水域中建造"}
 	return {"valid": true, "reason": "可安放设施"}

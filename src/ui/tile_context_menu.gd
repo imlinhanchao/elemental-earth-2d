@@ -8,6 +8,7 @@ const ItemIconManager = preload("res://src/ui/item_icon_manager.gd")
 const DataDB = preload("res://src/core/data_db.gd")
 
 signal harvest_requested(hex: Vector2i, item_key: String, count: int)
+signal plant_requested(hex: Vector2i)
 
 var current_hex: Vector2i = Vector2i(9999, 9999)
 var current_resources: Array = []
@@ -56,7 +57,7 @@ func open_at(screen_pos: Vector2, hex: Vector2i, resources: Array, hint: String 
 		
 	visible = true
 	
-	if resources.size() > 1:
+	if resources.size() > 1 or resources[0].has("action"):
 		_show_resource_selection()
 	else:
 		selected_item_key = resources[0].get("key", "")
@@ -86,7 +87,11 @@ func _show_resource_selection() -> void:
 		
 		var btn = Button.new()
 		btn.custom_minimum_size = Vector2(180, 32)
-		btn.text = " %s  剩余 %d" % [iname, amount] if amount >= 0 else " %s  不限量" % iname
+		var is_plant = res.get("action", "") == "plant"
+		if is_plant:
+			btn.text = " %s  (有 %d 棵)" % [iname, amount]
+		else:
+			btn.text = " %s  剩余 %d" % [iname, amount] if amount >= 0 else " %s  不限量" % iname
 		btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 		
 		var icon_tex = ItemIconManager.get_icon(key)
@@ -97,6 +102,10 @@ func _show_resource_selection() -> void:
 		btn.add_theme_font_size_override("font_size", 12)
 		var res_dict = res
 		btn.pressed.connect(func():
+			if is_plant:
+				plant_requested.emit(current_hex)
+				close()
+				return
 			selected_item_key = key
 			_show_count_selection(res_dict)
 		)

@@ -27,6 +27,7 @@ signal tile_depleted(hex: Vector2i)
 signal tile_respawned(hex: Vector2i)
 signal tile_resources_changed(hex: Vector2i)
 signal structure_built(structure_key: String, hex: Vector2i)
+signal sapling_changed(hex: Vector2i)
 
 signal tutorial_step_changed(step: int)
 signal tutorial_state_changed(active: bool)
@@ -187,6 +188,7 @@ func _connect_sim_signals() -> void:
 	sim.tile_respawned.connect(func(h): tile_respawned.emit(h))
 	sim.tile_resources_changed.connect(func(h): tile_resources_changed.emit(h))
 	sim.structure_built.connect(func(k, h): structure_built.emit(k, h))
+	sim.sapling_changed.connect(func(h): sapling_changed.emit(h))
 
 func _process(delta: float) -> void:
 	sim.tick(delta)

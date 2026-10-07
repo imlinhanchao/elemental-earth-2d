@@ -29,6 +29,7 @@ signal tile_depleted(hex: Vector2i)
 signal tile_respawned(hex: Vector2i)
 signal tile_resources_changed(hex: Vector2i) # 地块储量变化 (地表显示的资源可能随之改变)
 signal structure_built(structure_key: String, hex: Vector2i)
+signal sapling_changed(hex: Vector2i) # 种下树苗、树苗长成
 
 const MAX_QUEUE_SIZE: int = 8
 
@@ -60,6 +61,9 @@ var tile_resources: Dictionary = {}
 
 # 地块采空状态: Vector2i(q, r) -> bool
 var depleted_tiles: Dictionary = {}
+
+# 正在生长的树苗: Vector2i(q, r) -> 剩余秒数
+var saplings: Dictionary = {}
 
 # 世界地图纯数据
 var hex_gen: HexWorldGenerator
@@ -110,6 +114,7 @@ func init_world_map(map_seed: int = 12345, radius: int = 18) -> void:
 	world_biomes.clear()
 	tile_resources.clear()
 	depleted_tiles.clear()
+	saplings.clear()
 	
 	for q in range(-radius, radius + 1):
 		var r1 = max(-radius, -q - radius)
@@ -463,6 +468,8 @@ func tick(delta: float) -> void:
 		_on_second_tick()
 
 func _on_second_tick() -> void:
+	_tick_saplings(1.0)
+
 	# 1. 实验台溶液结算 (共用一秒节拍)
 	if lab_vessel and lab_vessel.total_moles() > 0:
 		var lab_res = solver.solve(lab_vessel, 1.0)
@@ -540,15 +547,23 @@ func get_tile_available_resources(hex: Vector2i) -> Array[Dictionary]:
 			continue # 旧存档里湖面的水储量，已改为不限量
 		if amt > 0 and is_resource_minable(k):
 			var iname = DataDB.get_item(k).get("name", k)
-			result.append({
+			var entry = {
 				"key": k,
 				"name": iname,
 				"amount": amt
-			})
+			}
+			# 地块主资源 (如林地的原木) 排在伴生物前面。不能依赖字典顺序：
+			# JSON.stringify 会按键名排序，读档后林地会变成 {stick, wood}，地表就画成了枯树枝
+			if k == world_resources.get(hex, ""):
+				result.insert(1 if (not result.is_empty() and result[0]["key"] == "water") else 0, entry)
+			else:
+				result.append(entry)
 	return result
 
 # 地块上已到时代、但缺少工具而采不了的资源，返回提示文字 (如「砍伐原木需要斧头」)
 func get_tile_tool_hint(hex: Vector2i) -> String:
+	if saplings.has(hex):
+		return "橡树苗正在生长，约 %d 秒后长成" % ceili(float(saplings[hex]))
 	var res = tile_resources.get(hex, {})
 	for k in res.keys():
 		if int(res[k]) <= 0 or is_resource_minable(k) or current_era < int(RESOURCE_ERA_REQUIREMENTS.get(k, 0)):
@@ -600,7 +615,83 @@ func can_dig_mud(hex: Vector2i) -> bool:
 		return false
 	if built_furnaces.has(hex) or built_reactors.has(hex):
 		return false
+	if saplings.has(hex):
+		return false
 	return get_tile_available_resources(hex).is_empty()
+
+# --- 植树 ---
+# 砍伐原木时有概率得到橡树苗，一个地块的原木砍完时必定得到 1 棵。
+# 树苗种在领地内的陆地空地上 (与能挖泥土的地块相同)，长成后地块变为新的树木。
+const SAPLING_KEY: String = "sapling"
+const SAPLING_DROP_CHANCE: float = 0.05
+const SAPLING_GROW_TIME: float = 180.0        # 秒
+const SAPLING_GROW_TIME_FOREST: float = 120.0 # 深林土壤肥沃，长得快
+const PLANT_TIME: float = 1.5
+const GROWN_TREE_RESOURCES: Dictionary = {"wood": 60, "stick": 15}
+
+func can_plant_sapling(hex: Vector2i) -> bool:
+	return is_hex_in_territory(hex.x, hex.y) and can_dig_mud(hex) and int(tile_resources.get(hex, {}).get("wood", 0)) <= 0
+
+func sapling_grow_time(hex: Vector2i) -> float:
+	return SAPLING_GROW_TIME_FOREST if world_biomes.get(hex, -1) == B_FOREST else SAPLING_GROW_TIME
+
+func queue_plant_sapling(hex: Vector2i) -> bool:
+	if not inventory.has_item(SAPLING_KEY):
+		post_notice("没有橡树苗，砍伐原木时有机会得到", Color.ORANGE)
+		return false
+	if not can_plant_sapling(hex):
+		post_notice("只能种在领地内没有资源的陆地空地上", Color.ORANGE)
+		return false
+	for t in ([active_task] if not active_task.is_empty() else []) + task_queue:
+		if str(t.get("action_id", "")) == "plant" and int(t.get("hex_q", 9999)) == hex.x and int(t.get("hex_r", 9999)) == hex.y:
+			post_notice("这块地已经在种树了", Color.ORANGE)
+			return false
+	var p = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
+	return add_task({
+		"action_id": "plant",
+		"hex_q": hex.x,
+		"hex_r": hex.y,
+		"target_key": SAPLING_KEY,
+		"yield_amount": 0,
+		"repeat_count": 1,
+		"current_cycle": 1,
+		"title": "种下橡树苗",
+		"icon": "",
+		"world_pos_x": p.x,
+		"world_pos_y": p.y,
+		"time_required": PLANT_TIME,
+		"begin_time": 0
+	})
+
+func _finish_planting(hex: Vector2i) -> void:
+	if not can_plant_sapling(hex) or not inventory.remove_item(SAPLING_KEY, 1):
+		post_notice("没能种下树苗（地块已被占用或树苗用完）", Color.ORANGE)
+		return
+	saplings[hex] = sapling_grow_time(hex)
+	depleted_tiles.erase(hex)
+	sapling_changed.emit(hex)
+	post_notice("已种下橡树苗，约 %d 分钟后长成" % ceili(saplings[hex] / 60.0), Color(0.4, 0.8, 0.4))
+
+func _tick_saplings(dt: float) -> void:
+	if saplings.is_empty():
+		return
+	var grown: Array = []
+	for hex in saplings.keys():
+		saplings[hex] = float(saplings[hex]) - dt
+		if saplings[hex] <= 0.0:
+			grown.append(hex)
+	for hex in grown:
+		saplings.erase(hex)
+		var res: Dictionary = tile_resources.get(hex, {})
+		for k in GROWN_TREE_RESOURCES.keys():
+			res[k] = int(res.get(k, 0)) + int(GROWN_TREE_RESOURCES[k])
+		tile_resources[hex] = res
+		world_resources[hex] = "wood"
+		depleted_tiles.erase(hex)
+		sapling_changed.emit(hex)
+		tile_resources_changed.emit(hex)
+	if not grown.is_empty():
+		post_notice("%d 棵橡树苗长成了树" % grown.size(), Color(0.4, 0.8, 0.4))
 
 # --- 打水 ---
 # 湖泊 (河流暂未生成，加入后同样算水域) 的任何地块都能打水，不限量；需要持有木桶 (不消耗)
@@ -892,6 +983,10 @@ func cancel_task(task_id: int) -> void:
 func _complete_active_task() -> void:
 	var finished_task = active_task.duplicate()
 	var hex = Vector2i(int(finished_task.get("hex_q", 0)), int(finished_task.get("hex_r", 0)))
+	if str(finished_task.get("action_id", "")) == "plant":
+		_finish_planting(hex)
+		_finish_task_and_advance(finished_task)
+		return
 	var t_key = str(finished_task.get("target_key", ""))
 	var amount = int(finished_task.get("yield_amount", 1))
 	var rep = int(finished_task.get("repeat_count", 1))
@@ -908,6 +1003,12 @@ func _complete_active_task() -> void:
 			inventory.add_item("bark", randi_range(1, 2))
 		if randf() < 0.15:
 			inventory.add_item("resin", 1)
+		# 树苗：随机掉落；地块上最后一根原木必定留下 1 棵
+		if randf() < SAPLING_DROP_CHANCE or int(tile_resources.get(hex, {}).get("wood", 0)) <= 1:
+			var first_sapling = not inventory.has_item(SAPLING_KEY)
+			inventory.add_item(SAPLING_KEY, 1)
+			if first_sapling:
+				post_notice("得到橡树苗。右键领地内的空地可以种下，几分钟后长成新的树", Color(0.4, 0.8, 0.4))
 	elif t_key == "mud" and is_near_water(hex) and randf() < MUD_CLAY_CHANCE:
 		inventory.add_item("clay", 1)
 	elif t_key == "stick":
@@ -946,6 +1047,9 @@ func _complete_active_task() -> void:
 		var iname = DataDB.get_item(t_key).get("name", t_key)
 		post_notice("该地块的%s已采完" % iname, Color.ORANGE)
 		
+	_finish_task_and_advance(finished_task)
+
+func _finish_task_and_advance(finished_task: Dictionary) -> void:
 	task_completed.emit(finished_task)
 	active_task.clear()
 	
@@ -1269,6 +1373,7 @@ func reset_to_new_game() -> void:
 	task_queue.clear()
 	active_task.clear()
 	depleted_tiles.clear()
+	saplings.clear()
 	built_furnaces.clear()
 	built_reactors.clear()
 	if inventory != null:

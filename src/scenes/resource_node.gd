@@ -98,6 +98,8 @@ func _draw() -> void:
 			_draw_charcoal_bed()
 		"water":
 			_draw_water_ripple()
+		"sapling":
+			_draw_sapling()
 		_:
 			_draw_loose_stone()
 
@@ -125,6 +127,16 @@ func _draw_hematite_rocks() -> void:
 	], Color(0.78, 0.28, 0.22))
 	draw_line(Vector2(-10, -10), Vector2(2, -2), Color(0.95, 0.55, 0.45), 1.8)
 	draw_line(Vector2(4, -14), Vector2(2, -2), Color(0.95, 0.55, 0.45), 1.8)
+
+# 种下的橡树苗：土堆 + 细茎 + 两对嫩叶
+func _draw_sapling() -> void:
+	draw_circle(Vector2(0, 10), 10.0, Color(0.30, 0.22, 0.14, 0.45))
+	draw_line(Vector2(0, 10), Vector2(0, -8), Color(0.38, 0.26, 0.14), 2.0)
+	var leaf = Color(0.35, 0.62, 0.28)
+	draw_colored_polygon(PackedVector2Array([Vector2(0, -2), Vector2(-9, -6), Vector2(-3, 1)]), leaf)
+	draw_colored_polygon(PackedVector2Array([Vector2(0, -2), Vector2(9, -6), Vector2(3, 1)]), leaf)
+	draw_colored_polygon(PackedVector2Array([Vector2(0, -8), Vector2(-6, -14), Vector2(-1, -6)]), leaf.lightened(0.15))
+	draw_colored_polygon(PackedVector2Array([Vector2(0, -8), Vector2(6, -14), Vector2(1, -6)]), leaf.lightened(0.15))
 
 # 3. 六边形饱满橡树 (Hexagon-Fitted Oak Tree)
 func _draw_hex_oak_tree() -> void:
