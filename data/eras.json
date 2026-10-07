@@ -45,6 +45,10 @@
       {
         "key": "research_pottery",
         "description": "研究陶器制作科技"
+      },
+      {
+        "key": "smelt_pig_iron",
+        "description": "炼出第一块生铁"
       }
     ]
   },

@@ -101,12 +101,13 @@ func _initialize() -> void:
 	fb.add_fuel("charcoal")
 	_check(fb.ignite(), "高炉放燃料后可以点火")
 	_check(sim.has_open_fire(), "领地里有燃着的炉子")
-	for i in range(30):
+	# 高炉炼生铁耗时 40 秒，加上升温时间
+	for i in range(60):
 		sim.tick(1.0)
 	_check(fb.vessel.temperature > 1100.0, "鼓风高炉升温超过 1100K")
 	var fgot = fb.retrieve_all()
-	_check(fgot.has("pig_iron") or fgot.has("iron"), "赤铁矿在高炉中炼出铁 %s" % str(fgot))
-	_check(sim.lab.proven.has("pig_iron_smelting") or sim.lab.proven.has("iron_smelting") or sim.lab.proven.has("reduce_iron_oxide"), "炉内确证的工艺记入实验台手稿")
+	_check(fgot.has("pig_iron") and sim.completed_milestones.has("smelt_pig_iron"), "高炉炼出生铁并达成炼金术时代里程碑 %s" % str(fgot))
+	_check(sim.lab.proven.has("pig_iron_smelting"), "炉内确证的工艺记入实验台手稿")
 
 	# 5. 木柴燃尽留下草木灰；实验台可从燃着的炉子引火，不消耗燧石
 	var ash_before = sim.inventory.get_count("wood_ash")

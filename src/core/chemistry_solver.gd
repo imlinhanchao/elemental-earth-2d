@@ -56,6 +56,11 @@ func _find_matching_formula(buffer: MixtureBuffer) -> Dictionary:
 		var f = DataDB.formulas[f_key]
 		if _matches_conditions(buffer, f):
 			var score = _calculate_formula_priority(f)
+			# 炉体内优先做点名要这种炉子的配方，可用容器越少越优先 (如鼓风高炉的「高炉炼生铁」只能在高炉做)，
+			# 否则会被同样能在坩埚 / 熔炉里做、温度门槛更高的通用配方 (「碳热还原炼铁」出熟铁) 抢先
+			var conts = formula_containers(f)
+			if FURNACE_CONTAINERS.has(buffer.container_type) and conts.has(buffer.container_type):
+				score += 100000.0 / conts.size()
 			if score > best_score:
 				best_score = score
 				best_formula = f

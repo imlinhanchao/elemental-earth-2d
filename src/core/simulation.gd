@@ -293,6 +293,8 @@ func _on_solver_reaction_occurred(rx_name: String, prods: Array) -> void:
 	for p in prods:
 		if p in ["hydrogen", "oxygen", "carbon_dioxide", "carbon_monoxide", "sulfur_dioxide", "chlorine"]:
 			complete_milestone("collect_gas")
+		elif p == "pig_iron":
+			complete_milestone("smelt_pig_iron")
 		elif p == "aluminum":
 			complete_milestone("produce_aluminum")
 		elif p == "radium":
@@ -320,7 +322,9 @@ func _on_inventory_item_changed(key: String, count: int) -> void:
 		var m_stone = it_data.get("milestone")
 		if m_stone != null and str(m_stone) != "":
 			complete_milestone(str(m_stone))
-		if key == "aluminum":
+		if key == "pig_iron":
+			complete_milestone("smelt_pig_iron")
+		elif key == "aluminum":
 			complete_milestone("produce_aluminum")
 		elif key == "radium":
 			complete_milestone("isolate_radium")

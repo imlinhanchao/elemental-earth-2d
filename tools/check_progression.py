@@ -195,6 +195,7 @@ def main(map_path):
             special = {
                 "build_kiln": "furnace" in built,
                 "first_smelt": bool({"copper", "pig_iron", "iron"} & have),
+                "smelt_pig_iron": "pig_iron" in have,
                 "collect_gas": bool({"hydrogen", "oxygen", "carbon_dioxide", "chlorine"} & have),
                 "first_electrolysis": "battery" in have,
                 "produce_aluminum": "aluminum" in have,
