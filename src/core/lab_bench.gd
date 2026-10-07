@@ -489,6 +489,29 @@ func add_reagent(key: String, amount: int = 1) -> bool:
 	vessel.add_substance(key, float(amount))
 	return true
 
+# 可取回的整数份数：本次生成的产物四舍五入，未反应的原料向下取整 (不会凭空多出)
+func retrievable(key: String) -> int:
+	var amt = vessel.get_moles(key)
+	return int(round(amt)) if produced.has(key) else int(floor(amt + 0.001))
+
+# 取回某一种物品最多 max_n 份 (max_n < 0 为全部)。取完后不足一份的零头随之丢弃。返回取回的份数
+func retrieve(key: String, max_n: int = 1) -> int:
+	if not vessel.components.has(key):
+		return 0
+	var total = retrievable(key)
+	var n = total if max_n < 0 else mini(max_n, total)
+	if n > 0:
+		sim.inventory.add_item(key, n)
+	if n >= total:
+		vessel.components.erase(key)
+		produced.erase(key)
+	else:
+		vessel.consume_substance(key, float(n))
+	# 内容变了，正在进行的反应重新判定
+	vessel.reaction_timer = 0.0
+	vessel.active_formula = ""
+	return n
+
 # 把烧瓶内容全部退回行囊：本次生成的产物四舍五入，未反应的原料向下取整 (不会凭空多出)
 func retrieve_all() -> Dictionary:
 	var got := {}

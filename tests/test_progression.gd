@@ -415,6 +415,24 @@ func _initialize() -> void:
 	_check(through == 0, "跨列连线不穿过卡片")
 	_check(int(lay.crossings) <= 40, "连线交叉数 %d 不超过 40" % lay.crossings)
 
+	# 容器内单种物品取回：左键 1 份、右键全部；零头不会凭空变成一份
+	sim.reset_to_new_game()
+	sim.inventory.add_item("wooden_bucket", 1)
+	sim.inventory.add_item("stone", 5)
+	sim.inventory.add_item("clay", 2)
+	var rb = sim.lab
+	rb.set_container("wooden_bucket")
+	rb.add_reagent("stone", 4)
+	rb.add_reagent("clay", 2)
+	_check(rb.retrieve("stone", 1) == 1 and sim.inventory.get_count("stone") == 2 and is_equal_approx(rb.vessel.get_moles("stone"), 3.0), "左键取回 1 份碎石")
+	_check(rb.retrieve("stone", -1) == 3 and sim.inventory.get_count("stone") == 5 and not rb.vessel.components.has("stone"), "右键取回剩下的全部碎石")
+	_check(rb.vessel.components.has("clay"), "取回一种物品不影响其他物品")
+	rb.vessel.components["clay"] = 0.6
+	_check(rb.retrieve("clay", 1) == 0 and not rb.vessel.components.has("clay") and sim.inventory.get_count("clay") == 0, "不足一份的原料取回 0 份并清掉")
+	rb.vessel.add_substance("charcoal", 0.6)
+	rb.produced["charcoal"] = true
+	_check(rb.retrieve("charcoal", -1) == 1 and not rb.produced.has("charcoal"), "产物按四舍五入取回")
+
 	if _failed == 0:
 		print("🎉 进程死锁修复测试全部通过")
 		quit(0)

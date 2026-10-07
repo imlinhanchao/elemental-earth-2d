@@ -417,7 +417,12 @@ func _input(event: InputEvent) -> void:
 	if not visible or not ModalStack.is_top(self):
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-		close()
+		# 右键容器内的物品：全部取回该物品；其余位置右键关闭弹窗
+		var k = _flask_key_at(event.position)
+		if k != "":
+			_retrieve_item(k, -1)
+		else:
+			close()
 		get_viewport().set_input_as_handled()
 	elif event is InputEventKey and event.pressed and not event.echo and (event.keycode == KEY_ESCAPE or event.keycode == KEY_L):
 		close()
@@ -691,8 +696,9 @@ func _refresh_flask() -> void:
 		var produced = lab.produced.has(k)
 		var s = _slot(k, 0, ThemeStyler.COLOR_SUCCESS if produced else Color(0, 0, 0, 0))
 		s.custom_minimum_size = Vector2(48, 48)
-		s.mouse_filter = Control.MOUSE_FILTER_PASS
-		s.tooltip_text = "%s %s%s" % [_name(k), _fmt_amount(amt), "（产物）" if produced else ""]
+		s.tooltip_text = "%s %s%s\n左键取回 1 份，右键全部取回" % [_name(k), _fmt_amount(amt), "（产物）" if produced else ""]
+		s.set_meta("item_key", k)
+		s.pressed.connect(func(): _retrieve_item(k, 1))
 		var c = _label(_fmt_amount(amt).trim_prefix("×"), ThemeStyler.FONT_CAPTION, ThemeStyler.COLOR_SUCCESS if produced else ThemeStyler.COLOR_TEXT_PRIMARY)
 		c.add_theme_font_override("font", ThemeStyler.get_font_mono())
 		c.add_theme_constant_override("outline_size", 4)
@@ -815,6 +821,23 @@ func _on_retrieve_pressed() -> void:
 			parts.append("%s ×%d" % [_name(k), got[k]])
 		_add_log("取回 " + "、".join(parts))
 	_refresh_all()
+
+# 容器内某种物品取回 n 份 (n < 0 为全部)
+func _retrieve_item(key: String, n: int) -> void:
+	var got = lab.retrieve(key, n)
+	if got > 0:
+		_add_log("取回 %s ×%d" % [_name(key), got])
+	else:
+		_add_log("%s不足一份，已倒掉" % _name(key))
+	_refresh_all()
+
+func _flask_key_at(screen_pos: Vector2) -> String:
+	if not view_flask.is_visible_in_tree():
+		return ""
+	for s in flask_slots.get_children():
+		if s.has_meta("item_key") and s.get_global_rect().has_point(screen_pos):
+			return str(s.get_meta("item_key"))
+	return ""
 
 func _prepare(f_key: String) -> void:
 	var missing = lab.prepare_from_fragment(f_key)
