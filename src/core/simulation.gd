@@ -29,6 +29,7 @@ signal tile_depleted(hex: Vector2i)
 signal tile_respawned(hex: Vector2i)
 signal tile_resources_changed(hex: Vector2i) # 地块储量变化 (地表显示的资源可能随之改变)
 signal structure_built(structure_key: String, hex: Vector2i)
+signal furnace_reacted # 任一炉体完成一次反应 (地图标签据此刷新)
 signal sapling_changed(hex: Vector2i) # 种下树苗、树苗长成
 
 const MAX_QUEUE_SIZE: int = 8
@@ -460,6 +461,8 @@ func tick(delta: float) -> void:
 	# 2. 实验台燃料、温度与电源
 	if lab:
 		lab.tick(delta)
+	for f in built_furnaces.values():
+		f["bench"].tick(delta)
 
 	# 3. 化学 / 熔炉 / 反应塔结算保持 1Hz
 	_second_accumulator += delta
@@ -476,47 +479,22 @@ func _on_second_tick() -> void:
 		if lab_res["occurred"]:
 			lab.on_reaction(lab_res)
 		
-	# 2. 熔炉溶液结算 (共用一秒节拍)
+	# 2. 炉体结算 (共用一秒节拍)：每座炉子是一个炉体模式的 LabBench，炉温、燃料由 bench.tick 推进
 	for hex in built_furnaces.keys():
 		var f = built_furnaces[hex]
 		var buf = f["buffer"]
-		if f.get("is_active_fire", false):
-			var b_timer = f.get("burn_timer", 0.0) - 1.0
-			f["burn_timer"] = max(0.0, b_timer)
-			buf.temperature = move_toward(buf.temperature, float(FURNACE_MAX_TEMP.get(f.get("type", "furnace"), 1100.0)), 180.0)
-			if f["burn_timer"] <= 0.0:
-				f["is_active_fire"] = false
-		else:
-			buf.temperature = move_toward(buf.temperature, 293.15, 35.0)
-			
 		if buf.total_moles() > 0:
-			buf.operations = LabBench.furnace_operations(f.get("type", "furnace"))
-			buf.chain_ops = [] # 炉体敞口，气体逸散
 			var res = solver.solve(buf, 1.0)
 			if res["occurred"]:
-				buf.consume_substance("carbon_dioxide", 999.0)
-				buf.consume_substance("carbon_monoxide", 999.0)
-				for p_key in res.get("products", []):
-					if buf.has_substance(p_key, 0.1):
-						var p_amount = buf.consume_substance(p_key, 999.0)
-						var p_int = int(ceil(p_amount))
-						if p_int > 0:
-							inventory.add_item(p_key, p_int)
-							var iname = DataDB.get_item(p_key).get("name", p_key)
-							post_notice("熔炉产出 %s ×%d，已放入行囊" % [iname, p_int], Color(0.9, 0.65, 0.2))
+				f["bench"].on_reaction(res)
 
 	# 3. 工业反应塔结算 (共用一秒节拍)
 	for hex in built_reactors.keys():
 		var r = built_reactors[hex]
 		var bp_id = r.get("blueprint_id", "")
-		if bp_id != "" and unlocked_blueprints.has(bp_id):
+		if bp_id != "" and unlocked_blueprints.has(bp_id) and not r.get("paused", false):
 			var bp = unlocked_blueprints[bp_id]
-			var has_inputs = true
-			for in_k in bp.inputs.keys():
-				if not inventory.has_item(in_k, int(ceil(bp.inputs[in_k]))):
-					has_inputs = false
-					break
-			if has_inputs:
+			if reactor_missing_inputs(hex).is_empty():
 				r["cycle_progress"] = r.get("cycle_progress", 0.0) + 1.0
 				if r["cycle_progress"] >= bp.duration_seconds:
 					r["cycle_progress"] = 0.0
@@ -1118,7 +1096,24 @@ func craft_tool(recipe_key: String) -> bool:
 const FURNACE_TYPES: Array[String] = ["fire_pit", "furnace", "blast_furnace"]
 const IMPLEMENTED_STRUCTURES: Array[String] = ["fire_pit", "furnace", "blast_furnace", "industrial_reactor"]
 # 各类炉体的最高炉温 (K)
-const FURNACE_MAX_TEMP: Dictionary = {"fire_pit": 900.0, "furnace": 1100.0, "blast_furnace": 1500.0}
+const FURNACE_MAX_TEMP: Dictionary = {"fire_pit": 900.0, "furnace": 1400.0, "blast_furnace": 1700.0}
+# 炉膛保温使火焰比实验台更热 (K)；鼓风高炉的加成包含自带的风箱
+const FURNACE_HEAT_BONUS: Dictionary = {"fire_pit": 0.0, "furnace": 200.0, "blast_furnace": 400.0}
+
+# 新建一座炉体的模拟层数据：炉膛 buffer + 炉体模式的 LabBench
+func new_furnace_state(structure_key: String) -> Dictionary:
+	var f_buf = MixtureBuffer.new()
+	f_buf.temperature = ROOM_TEMP
+	var bench = LabBench.new(self, f_buf, structure_key)
+	bench.reacted.connect(func(_k, _p, _l): furnace_reacted.emit())
+	return {"type": structure_key, "buffer": f_buf, "bench": bench}
+
+# 领地里有燃着的篝火或炉子 (实验台点火可从这里引火，不必消耗燧石)
+func has_open_fire() -> bool:
+	for f in built_furnaces.values():
+		if f["bench"].fire_lit:
+			return true
+	return false
 
 func build_structure(structure_key: String, hex: Vector2i) -> bool:
 	if not is_hex_in_territory(hex.x, hex.y):
@@ -1143,15 +1138,7 @@ func build_structure(structure_key: String, hex: Vector2i) -> bool:
 	depleted_tiles[hex] = true
 	
 	if FURNACE_TYPES.has(structure_key):
-		var f_buf = MixtureBuffer.new()
-		f_buf.container_type = structure_key
-		f_buf.temperature = 373.15 if structure_key == "fire_pit" else 293.15
-		built_furnaces[hex] = {
-			"type": structure_key,
-			"buffer": f_buf,
-			"burn_timer": 30.0 if structure_key == "fire_pit" else 0.0,
-			"is_active_fire": (structure_key == "fire_pit")
-		}
+		built_furnaces[hex] = new_furnace_state(structure_key)
 	elif structure_key == "industrial_reactor":
 		built_reactors[hex] = {
 			"blueprint_id": "",
@@ -1229,36 +1216,8 @@ func research_tech(tech_key: String) -> bool:
 	_check_era_advancement()
 	return true
 
-func furnace_add_fuel(hex: Vector2i) -> bool:
-	if not built_furnaces.has(hex):
-		return false
-	var f = built_furnaces[hex]
-	var burned_wood = false
-	if not inventory.remove_item("charcoal", 1):
-		if not (inventory.remove_item("wood", 2) or inventory.remove_item("stick", 3)):
-			post_notice("行囊里没有木炭、原木或树枝", Color.RED)
-			return false
-		burned_wood = true
-	if burned_wood:
-		inventory.add_item("wood_ash", 1) # 木柴燃尽留下草木灰
-	f["is_active_fire"] = true
-	f["burn_timer"] = f.get("burn_timer", 0.0) + 18.0
-	f["buffer"].add_substance("charcoal", 1.0)
-	post_notice("已添加燃料", Color.ORANGE)
-	return true
-
-func furnace_add_ore(hex: Vector2i, key: String, amount: int = 1) -> bool:
-	if not built_furnaces.has(hex):
-		return false
-	var f = built_furnaces[hex]
-	if inventory.remove_item(key, amount):
-		f["buffer"].add_substance(key, float(amount))
-		var iname = DataDB.get_item(key).get("name", key)
-		post_notice("已投入 %s ×%d" % [iname, amount], Color.CYAN)
-		return true
-	else:
-		post_notice("行囊里的原料不足", Color.RED)
-		return false
+func get_furnace_bench(hex: Vector2i):
+	return built_furnaces[hex]["bench"] if built_furnaces.has(hex) else null
 
 func reactor_install_blueprint(hex: Vector2i, bp_id: String) -> bool:
 	if not built_reactors.has(hex):
@@ -1267,8 +1226,25 @@ func reactor_install_blueprint(hex: Vector2i, bp_id: String) -> bool:
 		return false
 	built_reactors[hex]["blueprint_id"] = bp_id
 	built_reactors[hex]["cycle_progress"] = 0.0
+	built_reactors[hex]["paused"] = false
 	post_notice("反应塔已装入蓝图：%s" % unlocked_blueprints[bp_id].display_name, Color.CYAN)
 	return true
+
+func reactor_set_paused(hex: Vector2i, paused: bool) -> void:
+	if built_reactors.has(hex):
+		built_reactors[hex]["paused"] = paused
+
+# 反应塔当前蓝图每批还缺的原料 {key: 缺少数量}；没装蓝图时为空
+func reactor_missing_inputs(hex: Vector2i) -> Dictionary:
+	var missing := {}
+	var bp = unlocked_blueprints.get(built_reactors.get(hex, {}).get("blueprint_id", ""))
+	if bp == null:
+		return missing
+	for k in bp.inputs.keys():
+		var need = int(ceil(bp.inputs[k]))
+		if inventory.get_count(k) < need:
+			missing[k] = need - inventory.get_count(k)
+	return missing
 
 func _has_all_ingredients(req_items: Array) -> bool:
 	for req in req_items:

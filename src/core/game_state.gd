@@ -272,14 +272,14 @@ func craft_tool(recipe_key: String) -> bool:
 func build_structure(structure_key: String, hex: Vector2i) -> bool:
 	return sim.build_structure(structure_key, hex)
 
-func furnace_add_fuel(hex: Vector2i) -> bool:
-	return sim.furnace_add_fuel(hex)
-
-func furnace_add_ore(hex: Vector2i, key: String, amount: int = 1) -> bool:
-	return sim.furnace_add_ore(hex, key, amount)
+func get_furnace_bench(hex: Vector2i):
+	return sim.get_furnace_bench(hex)
 
 func reactor_install_blueprint(hex: Vector2i, bp_id: String) -> bool:
 	return sim.reactor_install_blueprint(hex, bp_id)
+
+func reactor_set_paused(hex: Vector2i, paused: bool) -> void:
+	sim.reactor_set_paused(hex, paused)
 
 func get_formatted_playtime() -> String:
 	return sim.get_formatted_playtime()

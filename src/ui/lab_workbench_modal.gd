@@ -1,6 +1,7 @@
 # lab_workbench_modal.gd
 # 实验台界面 (三栏)：左侧操作面板 (常温 / 点火 / 通电 / 追加) → 中间实验装置与炉火 → 右侧烧瓶与行囊格子。
 # 规则与状态都在模拟层 (src/core/lab_bench.gd)，这里只发命令、读状态。界面在代码中构建。
+# 同一个界面也用于地图上的炉体 (open_bench)：炉膛就是容器，只列出加热类操作，标题换成炉体名称。
 extends Control
 
 const ThemeStyler = preload("res://src/ui/theme_styler.gd")
@@ -10,6 +11,7 @@ const ChemistrySolver = preload("res://src/core/chemistry_solver.gd")
 
 @onready var btn_close: Button = $CenterPanel/VBox/Header/HBox/BtnClose
 @onready var body: MarginContainer = $CenterPanel/VBox/Body
+@onready var title_label: Label = $CenterPanel/VBox/Header/HBox/Title
 
 const GROUP_TITLES := ["常温", "点火", "通电", "追加操作"]
 const THERMO_MAX_C := 1600.0
@@ -42,6 +44,7 @@ var view_notes: VBoxContainer
 var flask_slots: HFlowContainer
 var flask_title: Label
 var container_slots: HFlowContainer
+var container_head: Label
 var btn_retrieve: Button
 var reagent_grid: GridContainer
 var log_label: RichTextLabel
@@ -57,10 +60,9 @@ func _ready() -> void:
 	visible = false
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	$CenterPanel.add_theme_stylebox_override("panel", _box(14, ThemeStyler.COLOR_BG, ThemeStyler.COLOR_BORDER, 16))
-	lab = GameState.lab
 	_build()
 	btn_close.pressed.connect(close)
-	lab.reacted.connect(_on_reacted)
+	_bind(GameState.lab)
 	GameState.inventory.item_changed.connect(func(_k, _c): _mark_dirty())
 	GameState.tech_researched.connect(func(_k): _mark_dirty())
 	GameState.era_advanced.connect(func(_a, _b, _c): _mark_dirty())
@@ -69,6 +71,24 @@ func _ready() -> void:
 			_add_log(t)
 	)
 	_switch_tab(0)
+
+# 切换到实验台或某座炉体的 LabBench
+func _bind(bench) -> void:
+	if lab == bench:
+		return
+	if lab != null and lab.reacted.is_connected(_on_reacted):
+		lab.reacted.disconnect(_on_reacted)
+	lab = bench
+	lab.reacted.connect(_on_reacted)
+	log_label.clear()
+	var furnace = lab.is_furnace()
+	title_label.text = DataDB.get_building_recipe(lab.furnace_type).get("name", "炉体") if furnace else "实验台"
+	container_head.visible = not furnace
+	container_slots.visible = not furnace
+
+# 手稿、已确证工艺的那一份 (炉体共用实验台的)
+func _book():
+	return lab.book()
 
 # ---------------------------------------------------------------- 样式工具
 
@@ -312,7 +332,8 @@ func _build_side() -> Control:
 	view_flask.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	view_flask.add_theme_constant_override("separation", 8)
 	side.add_child(view_flask)
-	view_flask.add_child(_section("选择容器 · 不同实验要用不同容器，每次反应消耗 1 点耐久"))
+	container_head = _section("选择容器 · 不同实验要用不同容器，每次反应消耗 1 点耐久")
+	view_flask.add_child(container_head)
 	container_slots = HFlowContainer.new()
 	container_slots.add_theme_constant_override("h_separation", 6)
 	container_slots.add_theme_constant_override("v_separation", 6)
@@ -374,6 +395,11 @@ func _build_side() -> Control:
 # ---------------------------------------------------------------- 打开 / 关闭
 
 func open() -> void:
+	open_bench(GameState.lab)
+
+# 打开实验台或炉体 (bench 为 Simulation.built_furnaces[hex].bench)
+func open_bench(bench) -> void:
+	_bind(bench)
 	visible = true
 	_refresh_all()
 	btn_close.grab_focus()
@@ -439,7 +465,7 @@ func _refresh_all() -> void:
 	_refresh_containers()
 	_refresh_reagents()
 	_refresh_flask()
-	tab_notes.text = "手稿  %d" % lab.fragments.size()
+	tab_notes.text = "手稿  %d" % _book().fragments.size()
 	if current_tab == 1:
 		_refresh_notes()
 	_refresh_status()
@@ -451,9 +477,12 @@ func _refresh_ops() -> void:
 		var b: Button = op_tiles[k]
 		var reason = lab.op_lock_reason(k)
 		var future = LabBench.unlock_era(k) > GameState.current_era
-		b.visible = not future
-		if future:
+		# 炉体只列出能在炉内完成的加热类操作
+		var unusable = lab.is_furnace() and (ChemistrySolver.CHAIN_OPS.has(k) or not LabBench.furnace_operations(lab.furnace_type).has(k))
+		b.visible = not future and not unusable
+		if future and not unusable:
 			hidden += 1
+		if future or unusable:
 			continue
 		var is_chain = ChemistrySolver.CHAIN_OPS.has(k)
 		var on = lab.chain_ops.has(k) if is_chain else lab.operation == k
@@ -490,7 +519,11 @@ func _refresh_status() -> void:
 	if lab.operation == "":
 		stage_icon.texture = ItemIconManager.load_texture("res://assets/icons/lab.svg")
 		stage_title.text = "选择一种操作"
-		stage_desc.text = "左侧挑选操作，右侧先放一件容器再放入试剂。焙烧、干馏等要点火，电解要接电池。"
+		if lab.is_furnace():
+			var top_c = int(GameState.sim.FURNACE_MAX_TEMP.get(lab.furnace_type, 1100.0) - 273.15)
+			stage_desc.text = "炉膛就是容器，不耗耐久，最高约 %d ℃。左侧选一种加热操作，放入原料和燃料后点火" % top_c
+		else:
+			stage_desc.text = "左侧挑选操作，右侧先放一件容器再放入试剂。焙烧、干馏等要点火，电解要接电池。"
 	else:
 		stage_icon.texture = _op_icon(lab.operation)
 		var chains: Array = []
@@ -510,8 +543,8 @@ func _refresh_status() -> void:
 			energy_status.text = "点击下方燃料放入炉膛。燃料越好，火焰越热"
 		btn_fire.visible = true
 		btn_fire.text = "熄火" if lab.fire_lit else "点火"
-		btn_fire.disabled = not lab.fire_lit and (lab.fuel_seconds() <= 0.0 or lab.container == "" or not LabBench.can_heat(lab.container))
-		if not lab.fire_lit and lab.container != "" and not LabBench.can_heat(lab.container):
+		btn_fire.disabled = not lab.fire_lit and (lab.fuel_seconds() <= 0.0 or lab.container == "" or not lab.container_can_heat())
+		if not lab.fire_lit and lab.container != "" and not lab.container_can_heat():
 			energy_status.text = "%s不耐热，换陶罐、坩埚等耐热容器才能点火" % _name(lab.container)
 	elif lab.needs_power():
 		energy_title.text = "电源"
@@ -524,7 +557,7 @@ func _refresh_status() -> void:
 		energy_title.text = "常温"
 		btn_fire.visible = lab.fire_lit
 		btn_fire.text = "熄火"
-		energy_status.text = "此操作不需要加热或通电" if lab.operation != "" else "还没有选择操作"
+		energy_status.text = "此操作不需要加热或通电" if lab.operation != "" else ("炉内的操作都需要点火" if lab.is_furnace() else "还没有选择操作")
 
 	var d = lab.diagnose()
 	var styles = {
@@ -560,7 +593,7 @@ func _refresh_energy_items() -> void:
 			var info = LabBench.fuel_info(k)
 			var s = _slot(k, GameState.inventory.get_count(k))
 			s.custom_minimum_size = Vector2(46, 46)
-			s.tooltip_text = "%s：燃烧 %d 秒，最高 %d ℃" % [_name(k), int(info["burn_time"]), int(info["max_temp"] - 273.15)]
+			s.tooltip_text = "%s：燃烧 %d 秒，在这里最高 %d ℃" % [_name(k), int(info["burn_time"]), int(lab.fuel_flame_temp(k) - 273.15)]
 			s.pressed.connect(func():
 				if lab.add_fuel(k):
 					_add_log("放入燃料 %s" % _name(k))
@@ -587,6 +620,8 @@ func _refresh_energy_items() -> void:
 func _refresh_containers() -> void:
 	for c in container_slots.get_children():
 		c.queue_free()
+	if lab.is_furnace():
+		return
 	var opts = lab.container_options()
 	if opts.is_empty():
 		container_slots.add_child(_label("行囊里没有容器。在制作栏 [T] 做一个木桶、陶罐或坩埚", ThemeStyler.FONT_CAPTION, ThemeStyler.COLOR_WARNING))
@@ -680,14 +715,15 @@ func _refresh_notes() -> void:
 	var unk = ThemeStyler.COLOR_TEXT_MUTED.to_html(false)
 	var pending: Array = []
 	var done: Array = []
-	for i in range(lab.fragments.size() - 1, -1, -1): # 新得到的在前，已确证的排在后面
-		var k = lab.fragments[i]
-		(done if lab.proven.has(k) else pending).append(k)
+	var book = _book()
+	for i in range(book.fragments.size() - 1, -1, -1): # 新得到的在前，已确证的排在后面
+		var k = book.fragments[i]
+		(done if book.proven.has(k) else pending).append(k)
 	for f_key in pending + done:
 		var f = DataDB.get_formula(f_key)
 		if f.is_empty():
 			continue
-		var proven = lab.proven.has(f_key)
+		var proven = book.proven.has(f_key)
 		var card = PanelContainer.new()
 		var box = _box(10, ThemeStyler.TINT_SUCCESS if proven else ThemeStyler.COLOR_BG_SOLID, ThemeStyler.COLOR_SUCCESS if proven else ThemeStyler.COLOR_BORDER, 10)
 		box.border_width_left = 4
@@ -837,6 +873,8 @@ const CONTAINER_PROFILES := {
 	"clay_pot": [Vector2(26, 120), Vector2(22, 110), Vector2(36, 96), Vector2(55, 72), Vector2(60, 46), Vector2(52, 18), Vector2(34, 0)],
 	"crucible": [Vector2(46, 86), Vector2(38, 30), Vector2(26, 0)],
 	"kiln": [Vector2(22, 128), Vector2(22, 116), Vector2(46, 100), Vector2(60, 70), Vector2(64, 0)],
+	"fire_pit": [Vector2(70, 34), Vector2(66, 0)],
+	"furnace": [Vector2(26, 132), Vector2(26, 120), Vector2(50, 104), Vector2(66, 72), Vector2(70, 0)],
 	"blast_furnace": [Vector2(30, 150), Vector2(30, 136), Vector2(50, 104), Vector2(56, 40), Vector2(46, 0)],
 	"gas_bottle": [Vector2(20, 124), Vector2(20, 110), Vector2(46, 98), Vector2(50, 88), Vector2(50, 0)],
 	"beaker": [Vector2(48, 128), Vector2(48, 6), Vector2(44, 0)],

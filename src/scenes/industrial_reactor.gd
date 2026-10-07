@@ -1,6 +1,7 @@
 # industrial_reactor.gd
-# 工业化连续流反应塔: 纯表现层节点，插装蓝图命令交由 Simulation 模拟层，由一秒时钟连续结算
-extends Area2D
+# 工业连续反应塔的地图表现节点。点击由 world 按地块分发，打开反应塔面板 (reactor_modal.gd)；
+# 蓝图、周期与产出都在模拟层 (built_reactors[hex])。
+extends Node2D
 
 const ProcessBlueprint = preload("res://src/core/process_blueprint.gd")
 
@@ -56,19 +57,6 @@ func install_blueprint(bp: ProcessBlueprint) -> void:
 	GameState.reactor_install_blueprint(hex_coord, bp.id)
 	_update_ui()
 
-func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
-	var world_node = get_tree().get_first_node_in_group("world")
-	if world_node and "is_placing_structure" in world_node and world_node.is_placing_structure:
-		return
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		get_viewport().set_input_as_handled()
-		if GameState.unlocked_blueprints.size() > 0:
-			var keys = GameState.unlocked_blueprints.keys()
-			var bp = GameState.unlocked_blueprints[keys[0]]
-			install_blueprint(bp)
-		else:
-			GameState.post_notice("还没有蓝图。先在实验台 [L] 做成一个配方，会自动生成蓝图", Color.YELLOW)
-
 var _last_status: String = ""
 
 func _set_status(txt: String) -> void:
@@ -77,16 +65,18 @@ func _set_status(txt: String) -> void:
 		status_label.text = txt
 
 func _update_ui() -> void:
-	if status_label:
-		if installed_blueprint == null:
-			_set_status("工业连续反应塔\n[未装载蓝图芯片]\n点击插入蓝图")
-		else:
-			var rem_time = max(0.0, installed_blueprint.duration_seconds - cycle_progress)
-			_set_status("反应塔: %s\n运转周期: %.1fs\n已量产: %d" % [
-				installed_blueprint.display_name,
-				rem_time,
-				total_produced_count
-			])
+	if not status_label:
+		return
+	var r = GameState.built_reactors.get(hex_coord, {})
+	if installed_blueprint == null:
+		_set_status("工业连续反应塔\n点击装入蓝图")
+	elif r.get("paused", false):
+		_set_status("%s\n已暂停" % installed_blueprint.display_name)
+	elif not GameState.sim.reactor_missing_inputs(hex_coord).is_empty():
+		_set_status("%s\n缺少原料" % installed_blueprint.display_name)
+	else:
+		_set_status("%s\n%d 秒后产出 · 已产 %d" % [installed_blueprint.display_name,
+			int(ceil(max(0.0, installed_blueprint.duration_seconds - cycle_progress))), total_produced_count])
 
 func _draw() -> void:
 	# 绘制工业重型塔楼基座 (金属质感)

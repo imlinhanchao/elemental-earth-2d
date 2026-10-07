@@ -60,15 +60,12 @@ func _ready() -> void:
 	}
 	
 	# 注入熔炉与反应塔
-	var f_buf = MixtureBuffer.new()
-	f_buf.container_type = "furnace"
-	f_buf.temperature = 1050.0
-	f_buf.add_substance("charcoal", 2.0)
-	GameState.built_furnaces[Vector2i(1, 1)] = {
-		"buffer": f_buf,
-		"burn_timer": 15.0,
-		"is_active_fire": true
-	}
+	var f_state = GameState.sim.new_furnace_state("furnace")
+	f_state["buffer"].temperature = 1050.0
+	f_state["buffer"].add_substance("charcoal", 2.0)
+	f_state["bench"].fuel_queue = ["charcoal", "wood"]
+	f_state["bench"].set_operation("roasting")
+	GameState.built_furnaces[Vector2i(1, 1)] = f_state
 	GameState.built_reactors[Vector2i(2, 2)] = {
 		"blueprint_id": "bp_smelt_copper",
 		"cycle_progress": 1.0,
@@ -155,7 +152,10 @@ func _ready() -> void:
 	assert(int(GameState.active_task.get("repeat_count")) == 5 and int(GameState.active_task.get("current_cycle")) == 2, "任务循环次数恢复错误!")
 	assert(int(GameState.tile_resources[stock_hex].get(stock_key, 0)) == stock_before - 7, "地块剩余储量恢复错误 (读档后回满)!")
 	assert(GameState.built_furnaces.has(Vector2i(1, 1)), "熔炉坐标恢复错误!")
-	assert(GameState.built_furnaces[Vector2i(1, 1)]["burn_timer"] == 15.0, "熔炉燃烧时间恢复错误!")
+	var rf = GameState.built_furnaces[Vector2i(1, 1)]
+	assert(rf["type"] == "furnace" and rf["bench"].container == "furnace", "熔炉类型恢复错误!")
+	assert(rf["bench"].fuel_queue == ["charcoal", "wood"] and rf["bench"].operation == "roasting", "熔炉燃料与操作恢复错误!")
+	assert(absf(rf["buffer"].get_moles("charcoal") - 2.0) < 0.01 and rf["buffer"].temperature > 1000.0, "熔炉炉内物料与温度恢复错误!")
 	assert(GameState.built_reactors.has(Vector2i(2, 2)), "反应塔坐标恢复错误!")
 	assert(GameState.built_reactors[Vector2i(2, 2)]["total_produced"] == 4, "反应塔累计产出恢复错误!")
 	assert(GameState.lab_vessel.temperature == 550.0, "实验台温度恢复错误!")

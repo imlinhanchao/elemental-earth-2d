@@ -6,6 +6,7 @@ extends SceneTree
 const DataDB = preload("res://src/core/data_db.gd")
 const Simulation = preload("res://src/core/simulation.gd")
 const LabBench = preload("res://src/core/lab_bench.gd")
+const MixtureBuffer = preload("res://src/core/mixture_buffer.gd")
 
 var _failed := 0
 
@@ -82,22 +83,61 @@ func _initialize() -> void:
 	_check(sim.built_furnaces.has(hex) and sim.built_furnaces[hex]["type"] == "blast_furnace", "鼓风高炉写入模拟层")
 	_check(not sim.build_structure("distillation_tower", Vector2i(2, 0)), "未实现的建筑不可建造")
 
+	# 炉体是炉体模式的实验台：炉膛即容器，只能做加热类操作，不耗容器耐久
+	var fb = sim.get_furnace_bench(hex)
+	_check(fb != null and fb.is_furnace() and fb.container == "blast_furnace", "鼓风高炉带有炉体实验台，炉膛即容器")
+	_check(fb.op_lock_reason("stirring") != "" and fb.op_lock_reason("roasting") == "", "炉内只能做加热类操作，焙烧不需要另带器皿")
+	_check(fb.op_lock_reason("blowing") == "", "鼓风高炉自带风箱，可以吹炼")
+	_check(not fb.set_container("clay_pot"), "炉体不能换容器")
 	sim.inventory.add_item("charcoal", 10)
 	sim.inventory.add_item("hematite", 4)
-	sim.furnace_add_fuel(hex)
-	sim.furnace_add_fuel(hex)
-	sim.furnace_add_ore(hex, "hematite", 2)
-	for i in range(12):
-		sim._on_second_tick()
-	_check(sim.built_furnaces[hex]["buffer"].temperature > 1100.0 or sim.inventory.get_count("pig_iron") > 0 or sim.inventory.get_count("iron") > 0,
-		"鼓风高炉升温超过陶土熔炉上限或已出铁")
-	_check(sim.inventory.get_count("pig_iron") > 0 or sim.inventory.get_count("iron") > 0, "赤铁矿在高炉中炼出铁")
+	sim.inventory.add_item("flint", 2)
+	_check(fb.fuel_flame_temp("charcoal") > sim.lab.fuel_flame_temp("charcoal"), "炉膛保温：同样的木炭在高炉里比实验台更热")
+	_check(sim.get_furnace_bench(hex) != null and LabBench.new(sim, MixtureBuffer.new(), "fire_pit").fuel_flame_temp("charcoal") <= sim.FURNACE_MAX_TEMP["fire_pit"], "篝火堆的火焰不超过炉温上限")
+	fb.set_operation("roasting")
+	fb.add_reagent("hematite", 2)
+	fb.add_reagent("charcoal", 2)
+	fb.add_fuel("charcoal")
+	fb.add_fuel("charcoal")
+	_check(fb.ignite(), "高炉放燃料后可以点火")
+	_check(sim.has_open_fire(), "领地里有燃着的炉子")
+	for i in range(30):
+		sim.tick(1.0)
+	_check(fb.vessel.temperature > 1100.0, "鼓风高炉升温超过 1100K")
+	var fgot = fb.retrieve_all()
+	_check(fgot.has("pig_iron") or fgot.has("iron"), "赤铁矿在高炉中炼出铁 %s" % str(fgot))
+	_check(sim.lab.proven.has("pig_iron_smelting") or sim.lab.proven.has("iron_smelting") or sim.lab.proven.has("reduce_iron_oxide"), "炉内确证的工艺记入实验台手稿")
 
-	# 5. 木柴燃烧副产草木灰
+	# 5. 木柴燃尽留下草木灰；实验台可从燃着的炉子引火，不消耗燧石
 	var ash_before = sim.inventory.get_count("wood_ash")
-	sim.inventory.remove_item("charcoal", sim.inventory.get_count("charcoal"))
-	sim.furnace_add_fuel(hex)
-	_check(sim.inventory.get_count("wood_ash") == ash_before + 1, "投入木柴后获得草木灰")
+	sim.inventory.add_item("wood", 2)
+	fb.add_fuel("wood")
+	for i in range(160):
+		sim.tick(1.0)
+	_check(sim.inventory.get_count("wood_ash") > ash_before, "木柴燃尽后获得草木灰")
+	_check(not fb.fire_lit and not sim.has_open_fire(), "燃料烧完后高炉熄火")
+	# 实验台可从燃着的篝火引火，不消耗燧石
+	var pit_hex = Vector2i(2, -1)
+	sim.inventory.add_item("wood", 8)
+	sim.inventory.add_item("stone", 8)
+	_check(sim.build_structure("fire_pit", pit_hex), "篝火堆建造成功")
+	var pit = sim.get_furnace_bench(pit_hex)
+	pit.set_operation("dry_distillation")
+	pit.add_fuel("wood")
+	sim.inventory.add_item("flint", 1)
+	_check(pit.ignite(), "篝火堆点火")
+	sim.inventory.add_item("clay_pot", 1)
+	sim.lab.set_container("clay_pot")
+	sim.lab.set_operation("dry_distillation")
+	sim.lab.add_fuel("wood")
+	sim.inventory.remove_item("flint", sim.inventory.get_count("flint"))
+	sim.inventory.remove_item("fire_seed", sim.inventory.get_count("fire_seed"))
+	_check(sim.lab.ignite(), "篝火燃着时实验台不用燧石也能点火")
+	sim.lab.extinguish()
+	sim.lab.retrieve_all()
+	sim.lab.set_container("")
+	sim.built_furnaces.erase(pit_hex)
+	sim.inventory.remove_item("clay_pot", sim.inventory.get_count("clay_pot"))
 
 	# 6. 背包中持有的器皿可满足配方容器要求 (筛子 → 筛分硅砂)
 	sim.lab_vessel.clear()

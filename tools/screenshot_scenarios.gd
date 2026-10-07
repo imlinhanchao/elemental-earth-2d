@@ -135,6 +135,46 @@ static func run(w: Node2D, arg_name: String) -> void:
 		w.target_zoom = Vector2(1.5, 1.5)
 		w.camera.reset_smoothing()
 		w.terrain_layer.refresh()
+	elif arg_name == "--screenshot-furnace":
+		# 点击地图上的鼓风高炉：炉体模式实验台，焙烧赤铁矿 (走 world 的地块点击分发)
+		GameState.sim.discovered_elements.append(6)
+		GameState.sim.discovered_elements.append(26)
+		GameState.sim.discovered_elements.append(29)
+		GameState.current_era = 1
+		for k in ["wood", "stone"]:
+			GameState.inventory.add_item(k, 20)
+		GameState.inventory.add_item("copper", 4)
+		GameState.inventory.add_item("charcoal", 10)
+		GameState.inventory.add_item("hematite", 6)
+		GameState.inventory.add_item("flint", 3)
+		var fh = Vector2i(1, 0)
+		GameState.build_structure("blast_furnace", fh)
+		w.camera.position = Vector2.ZERO
+		w.camera.zoom = Vector2(1.3, 1.3)
+		w.camera.reset_smoothing()
+		w._handle_tile_click(fh)
+		var fb = GameState.get_furnace_bench(fh)
+		w.hud.lab_modal._on_op_pressed("roasting")
+		w.hud.lab_modal.add_reagent("hematite", 2.0)
+		w.hud.lab_modal.add_reagent("charcoal", 2.0)
+		fb.add_fuel("charcoal")
+		fb.add_fuel("charcoal")
+		w.hud.lab_modal._on_fire_pressed()
+		w.hud.lab_modal._refresh_all()
+		await w.get_tree().create_timer(3.0).timeout
+	elif arg_name == "--screenshot-reactor":
+		GameState.current_era = 2
+		GameState.sim.discovered_elements.append_array([6, 29])
+		for k in ["wood", "copper"]:
+			GameState.inventory.add_item(k, 20)
+		GameState.sim.lab.on_reaction({"formula_key": "charcoal_production", "products": []})
+		GameState.build_structure("industrial_reactor", Vector2i(1, 0))
+		GameState.reactor_install_blueprint(Vector2i(1, 0), "charcoal_production")
+		w.camera.position = Vector2.ZERO
+		w.camera.zoom = Vector2(1.3, 1.3)
+		w.camera.reset_smoothing()
+		w._handle_tile_click(Vector2i(1, 0))
+		await w.get_tree().create_timer(2.2).timeout
 	elif arg_name == "--screenshot-placement":
 		GameState.inventory.add_item("wood", 10)
 		GameState.inventory.add_item("stone", 10)

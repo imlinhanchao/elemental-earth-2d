@@ -54,11 +54,6 @@ var current_tab: CategoryTab = CategoryTab.NONE
 @onready var task_queue_list = $Margin/MainVBox/BodyHBox/RightBox/TaskDock/Margin/VBox/QueueScroll/QueueList
 
 # 熔炉近场状态监测
-@onready var furnace_panel = $Margin/MainVBox/BodyHBox/RightBox/FurnacePanel
-@onready var furnace_info = $Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox/FurnaceInfo
-@onready var btn_add_fuel = $Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox/BtnAddFuel
-@onready var btn_add_malachite = $Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox/BtnAddMalachite
-@onready var btn_add_hematite = $Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox/BtnAddIronOre
 
 # 底部多分类动作坞 (Bottom Categorized Action Dock)
 @onready var action_drawer = $Margin/MainVBox/BottomArea/ActionDrawer
@@ -83,9 +78,9 @@ var current_tab: CategoryTab = CategoryTab.NONE
 @onready var pause_menu = $PauseMenu
 @onready var inventory_modal = $InventoryModal
 @onready var tutorial_dock = $TutorialDock
+@onready var reactor_modal = $ReactorModal
 
 var element_discovery_modal: ElementDiscoveryModal = null
-var current_nearby_furnace: Node2D = null
 
 func get_item_icon(key: String) -> Texture2D:
 	return ItemIconManager.get_icon(key)
@@ -95,6 +90,7 @@ func _ready() -> void:
 	$Margin.theme = sc_theme
 	periodic_modal.theme = sc_theme
 	lab_modal.theme = sc_theme
+	reactor_modal.theme = sc_theme
 	tech_modal.theme = sc_theme
 	era_modal.theme = sc_theme
 	save_load_modal.theme = sc_theme
@@ -160,11 +156,6 @@ func _ready() -> void:
 	# 存档状态点 (8px 圆点，默认灰色成功，失败红色)
 	_setup_save_dot()
 	
-	# 熔炉快速操作
-	btn_add_fuel.pressed.connect(_on_btn_add_fuel_pressed)
-	btn_add_malachite.pressed.connect(_on_btn_add_malachite_pressed)
-	btn_add_hematite.pressed.connect(_on_btn_add_hematite_pressed)
-	
 	if era_badge_btn:
 		era_badge_btn.pressed.connect(_on_era_badge_pressed)
 	
@@ -173,7 +164,6 @@ func _ready() -> void:
 	GameState.element_discovered.connect(func(_n, _k): _update_status_chips())
 	_build_drawer_filters()
 	
-	furnace_panel.visible = false
 	action_drawer.visible = false
 	_apply_scheme3_styling()
 	_update_inventory_ui()
@@ -948,13 +938,6 @@ func _apply_scheme3_styling() -> void:
 	drawer_box.content_margin_bottom = 14
 	action_drawer.add_theme_stylebox_override("panel", drawer_box)
 	
-	# 5. 熔炉监控面板 (Furnace Panel)
-	var f_box = ThemeStyler.create_card_box(10, ThemeStyler.COLOR_CARD, ThemeStyler.COLOR_BORDER)
-	f_box.content_margin_left = 12
-	f_box.content_margin_top = 10
-	f_box.content_margin_right = 12
-	f_box.content_margin_bottom = 10
-	furnace_panel.add_theme_stylebox_override("panel", f_box)
 
 # 通用制作/操作卡片创建函数
 # 抽屉卡片对象池：卡片节点只在首次需要时创建，之后每次刷新只改文字、图标与状态，
@@ -1092,7 +1075,7 @@ func _add_drawer_extra(node: Node) -> void:
 # 鼠标是否在 HUD 的不透明面板上 (world 据此决定滚轮是否缩放地图)
 func is_pointer_over_panel(screen_pos: Vector2) -> bool:
 	var panels: Array = [$Margin/MainVBox/TopBarPanel, action_drawer, $Margin/MainVBox/BottomArea/BottomCenterRow/BottomDockPanel,
-		$Margin/MainVBox/BodyHBox/RightBox/TaskDock, furnace_panel, tutorial_dock, placement_bar]
+		$Margin/MainVBox/BodyHBox/RightBox/TaskDock, tutorial_dock, placement_bar]
 	for p in panels:
 		if p != null and is_instance_valid(p) and p.is_visible_in_tree() and p.get_global_rect().has_point(screen_pos):
 			return true
@@ -1104,7 +1087,7 @@ func _is_world_placing() -> bool:
 
 func _unhandled_input(event: InputEvent) -> void:
 	# 输入层级 (由上到下，每次只处理一层)：
-	#   建造选址 (world 处理) > 弹窗栈最上层 (弹窗自身 _input 处理) > 抽屉 / 熔炉面板 > 暂停菜单
+	#   建造选址 (world 处理) > 弹窗栈最上层 (弹窗自身 _input 处理) > 抽屉 > 暂停菜单
 	# 有弹窗打开时功能热键一律不响应，避免在弹窗上方再叠一个弹窗
 	if _is_world_placing():
 		return
@@ -1136,47 +1119,16 @@ func _unhandled_input(event: InputEvent) -> void:
 	if handled:
 		get_viewport().set_input_as_handled()
 
-# 关闭底部抽屉与熔炉面板 (非模态的侧边面板)；有面板被关闭时返回 true
+# 关闭底部抽屉 (非模态的侧边面板)；有面板被关闭时返回 true
 func _close_side_panels() -> bool:
 	var closed = false
 	if action_drawer.visible:
 		_close_drawer()
 		closed = true
-	if furnace_panel.visible:
-		hide_furnace_ui()
-		closed = true
 	return closed
 
 func _has_any_modal_open() -> bool:
-	return not ModalStack.is_empty() or furnace_panel.visible
-
-var _furnace_info_timer: float = 0.0
-
-func _process(delta: float) -> void:
-	if current_nearby_furnace != null and furnace_panel.visible:
-		_furnace_info_timer -= delta
-		if _furnace_info_timer > 0.0:
-			return
-		_furnace_info_timer = 0.25
-		var buf = current_nearby_furnace.buffer
-		furnace_info.text = "温度 %d ℃（%d K）\n状态：%s\n炉内：%s" % [
-			int(buf.temperature - 273.15),
-			int(buf.temperature),
-			("燃烧中" if current_nearby_furnace.is_active_fire else "未生火"),
-			_describe_components(buf.components)
-		]
-
-# 熔炉物料以「名称 数量」列出，而不是直接打印字典
-func _describe_components(components: Dictionary) -> String:
-	if components.is_empty():
-		return "空"
-	var parts: Array[String] = []
-	for k in components.keys():
-		var amt = float(components[k])
-		if amt < 0.01:
-			continue
-		parts.append("%s %.1f" % [DataDB.get_item(k).get("name", k), amt])
-	return "空" if parts.is_empty() else "、".join(parts)
+	return not ModalStack.is_empty()
 
 func _setup_save_dot() -> void:
 	if save_dot:
@@ -1507,28 +1459,17 @@ func show_toast(msg: String, col: Color = Color.WHITE) -> void:
 	tw.tween_property(toast_panel, "modulate:a", 0.0, 0.35)
 	tw.tween_callback(toast_panel.queue_free)
 
-func show_furnace_ui(furnace: Node2D) -> void:
-	current_nearby_furnace = furnace
-	furnace_panel.visible = true
-	var b_name = DataDB.get_building_recipe(furnace.building_type).get("name", "熔炉") if "building_type" in furnace else "熔炉"
-	if furnace_info:
-		furnace_info.text = "%s\n温度 %d ℃" % [b_name, int(furnace.buffer.temperature - 273.15)]
+# 点击地图上的炉体：打开炉体模式的实验台 (炉膛即容器，只能做加热类操作)
+func open_furnace(hex: Vector2i) -> void:
+	var bench = GameState.get_furnace_bench(hex)
+	if bench == null:
+		return
+	_close_drawer()
+	lab_modal.open_bench(bench)
 
-func hide_furnace_ui() -> void:
-	current_nearby_furnace = null
-	furnace_panel.visible = false
-
-func _on_btn_add_fuel_pressed() -> void:
-	if current_nearby_furnace:
-		current_nearby_furnace.add_fuel()
-
-func _on_btn_add_malachite_pressed() -> void:
-	if current_nearby_furnace:
-		current_nearby_furnace.add_ore("malachite", 1)
-
-func _on_btn_add_hematite_pressed() -> void:
-	if current_nearby_furnace:
-		current_nearby_furnace.add_ore("hematite", 1)
+func open_reactor(hex: Vector2i) -> void:
+	_close_drawer()
+	reactor_modal.open(hex)
 
 func _on_build_structure_pressed(structure_key: String) -> void:
 	build_structure_requested.emit(structure_key)

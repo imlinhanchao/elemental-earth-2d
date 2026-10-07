@@ -290,6 +290,13 @@ func _clamp_camera(pos: Vector2) -> Vector2:
 	return pos.clamp(Vector2(-CAMERA_LIMIT, -CAMERA_LIMIT), Vector2(CAMERA_LIMIT, CAMERA_LIMIT))
 
 func _handle_tile_click(hex: Vector2i) -> void:
+	# 建筑不再用 Area2D 拾取 (项目未开启 physics_object_picking)，点击由这里按地块分发
+	if GameState.built_furnaces.has(hex):
+		hud.open_furnace(hex)
+		return
+	if GameState.built_reactors.has(hex):
+		hud.open_reactor(hex)
+		return
 	if not GameState.is_hex_in_territory(hex.x, hex.y):
 		GameState.post_notice("该地块在领地外", Color(1.0, 0.45, 0.3))
 		return
@@ -340,12 +347,6 @@ func _process(delta: float) -> void:
 		if auto_save_timer >= interval:
 			auto_save_timer = 0.0
 			SaveManager.save_to_slot("auto", self)
-
-func _bind_furnace_events(f_node: Node2D) -> void:
-	if f_node.has_signal("open_workbench_requested"):
-		f_node.open_workbench_requested.connect(func(furnace_inst):
-			hud.show_furnace_ui(furnace_inst)
-		)
 
 func get_build_validity(hex: Vector2i) -> Dictionary:
 	if not generated_hexes.has(hex):
@@ -435,7 +436,6 @@ func _on_structure_built(structure_key: String, hex: Vector2i) -> void:
 		new_f.position = spawn_pos
 		entities.add_child(new_f)
 		built_furnaces.append(new_f)
-		_bind_furnace_events(new_f)
 		# 隐匿该地块上的自然资源，避免与建筑视觉穿模
 		for child in entities.get_children():
 			if "hex_coord" in child and child.hex_coord == hex and "item_key" in child:
@@ -461,22 +461,7 @@ func serialize_world_state() -> Dictionary:
 	for hex in GameState.built_furnaces.keys():
 		var f = GameState.built_furnaces[hex]
 		var pos = HexWorldGenerator.hex_to_pixel(hex.x, hex.y)
-		var buf = f.get("buffer")
-		var comps: Dictionary = {}
-		var temp: float = 293.15
-		if buf != null and "components" in buf:
-			comps = buf.components.duplicate()
-			temp = buf.temperature
-		f_data.append({
-			"hex_q": hex.x,
-			"hex_r": hex.y,
-			"x": pos.x,
-			"y": pos.y,
-			"temperature": temp,
-			"burn_timer": float(f.get("burn_timer", 0.0)),
-			"is_active_fire": bool(f.get("is_active_fire", false)),
-			"components": comps
-		})
+		f_data.append({"hex_q": hex.x, "hex_r": hex.y, "x": pos.x, "y": pos.y, "type": str(f.get("type", "furnace"))})
 	var r_data: Array = []
 	for hex in GameState.built_reactors.keys():
 		var r = GameState.built_reactors[hex]
@@ -520,7 +505,6 @@ func deserialize_world_state(data: Dictionary) -> void:
 		new_f.position = HexWorldGenerator.hex_to_pixel(f_hex.x, f_hex.y)
 		entities.add_child(new_f)
 		built_furnaces.append(new_f)
-		_bind_furnace_events(new_f)
 
 	# 按模拟层状态实例化反应塔视图节点
 	for r_hex in GameState.built_reactors.keys():

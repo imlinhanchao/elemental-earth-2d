@@ -524,43 +524,36 @@ static func _serialize_furnaces(furnaces: Dictionary) -> Array[Dictionary]:
 	var list: Array[Dictionary] = []
 	for hex in furnaces.keys():
 		var f = furnaces[hex]
-		var buf = f.get("buffer")
-		var comps: Dictionary = {}
-		var temp: float = 293.15
-		if buf != null and "components" in buf:
-			comps = buf.components.duplicate()
-			temp = buf.temperature
+		var buf = f["buffer"]
 		list.append({
 			"hex_q": hex.x,
 			"hex_r": hex.y,
 			"type": str(f.get("type", "furnace")),
-			"temperature": temp,
-			"burn_timer": float(f.get("burn_timer", 0.0)),
-			"is_active_fire": bool(f.get("is_active_fire", false)),
-			"components": comps
+			"temperature": buf.temperature,
+			"components": buf.components.duplicate(),
+			"bench": f["bench"].serialize()
 		})
 	return list
 
+# 旧档的炉子只有温度、炉内物料与 burn_timer：物料保留，旧的燃烧计时不再使用 (炉火需重新点燃)
 static func _deserialize_furnaces(furnaces_data: Variant) -> void:
 	GameState.built_furnaces.clear()
 	if furnaces_data is Array:
 		for item in furnaces_data:
 			if item is Dictionary and item.has("hex_q") and item.has("hex_r"):
 				var hex = Vector2i(int(item["hex_q"]), int(item["hex_r"]))
-				var b_type = str(item.get("type", "furnace"))
-				var buf = MixtureBuffer.new()
-				buf.container_type = b_type
+				var f = GameState.sim.new_furnace_state(str(item.get("type", "furnace")))
+				var bench = f["bench"]
+				var bd = item.get("bench", {})
+				if bd is Dictionary and not bd.is_empty():
+					bench.deserialize(bd)
+				var buf = f["buffer"]
 				buf.temperature = float(item.get("temperature", 293.15))
 				var comps = item.get("components", {})
 				if comps is Dictionary:
 					for k in comps.keys():
 						buf.components[k] = float(comps[k])
-				GameState.built_furnaces[hex] = {
-					"type": b_type,
-					"buffer": buf,
-					"burn_timer": float(item.get("burn_timer", 0.0)),
-					"is_active_fire": bool(item.get("is_active_fire", false))
-				}
+				GameState.built_furnaces[hex] = f
 
 static func _serialize_reactors(reactors: Dictionary) -> Array[Dictionary]:
 	var list: Array[Dictionary] = []
@@ -571,7 +564,8 @@ static func _serialize_reactors(reactors: Dictionary) -> Array[Dictionary]:
 			"hex_r": hex.y,
 			"blueprint_id": str(r.get("blueprint_id", "")),
 			"cycle_progress": float(r.get("cycle_progress", 0.0)),
-			"total_produced": int(r.get("total_produced", 0))
+			"total_produced": int(r.get("total_produced", 0)),
+			"paused": bool(r.get("paused", false))
 		})
 	return list
 
@@ -584,5 +578,6 @@ static func _deserialize_reactors(reactors_data: Variant) -> void:
 				GameState.built_reactors[hex] = {
 					"blueprint_id": str(item.get("blueprint_id", "")),
 					"cycle_progress": float(item.get("cycle_progress", 0.0)),
-					"total_produced": int(item.get("total_produced", 0))
+					"total_produced": int(item.get("total_produced", 0)),
+					"paused": bool(item.get("paused", false))
 				}

@@ -58,6 +58,7 @@ def main(map_path):
     sim_src = open(SIM, encoding="utf-8").read()
     res_era = {k: int(v) for k, v in parse_gd_dict(sim_src, "RESOURCE_ERA_REQUIREMENTS").items()}
     furnace_temp = {k: float(v) for k, v in parse_gd_dict(sim_src, "FURNACE_MAX_TEMP").items()}
+    furnace_bonus = {k: float(v) for k, v in parse_gd_dict(sim_src, "FURNACE_HEAT_BONUS").items()}
     implemented = set(re.search(r"IMPLEMENTED_STRUCTURES[^=]*=\s*\[(.*?)\]", sim_src).group(1).replace('"', "").replace(" ", "").split(","))
 
     formulas, crafting, buildings = load("formula"), load("crafting"), load("buildings")
@@ -151,7 +152,10 @@ def main(map_path):
             for b in built & set(FURNACE_CONTAINERS):
                 furnace_containers |= set(FURNACE_CONTAINERS[b])
             lab_t = lab_flame(have)
-            furnace_t = max([0.0] + [furnace_temp.get(b, 0.0) for b in built])
+            # 炉体火焰 = 最好的燃料 + 炉膛保温 (熔炉可加风箱)，不超过炉温上限 (lab_bench.fuel_flame_temp)
+            fuel_t = lab_flame(have) - (200.0 if "bellows" in have else 0.0)
+            furnace_t = max([0.0] + [min(furnace_temp.get(b, 0.0), fuel_t + furnace_bonus.get(b, 0.0)
+                                         + (200.0 if b == "furnace" and "bellows" in have else 0.0)) for b in built if b in furnace_temp])
             voltage = battery_volt(have)
             fire_ops = {k for k, a in labs.items() if a.get("requires_burning")}
             for f in formulas:

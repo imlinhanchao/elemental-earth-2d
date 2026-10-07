@@ -1,10 +1,9 @@
 # furnace.gd
-# 严丝合缝对齐六边形网格的陶土熔炉/原始篝火堆实体: 纯表现层节点，模拟运算交由 Simulation 一秒时钟
-extends Area2D
+# 篝火堆 / 陶土熔炉 / 鼓风高炉的地图表现节点。点击由 world 按地块分发，打开炉体模式的实验台；
+# 炉温、燃料与反应都在模拟层 (built_furnaces[hex].bench)。
+extends Node2D
 
 const MixtureBuffer = preload("res://src/core/mixture_buffer.gd")
-
-signal open_workbench_requested(furnace_entity: Node2D)
 
 var hex_coord: Vector2i = Vector2i(9999, 9999)
 var building_type: String = "furnace" # "fire_pit" / "furnace" / "blast_furnace"
@@ -22,14 +21,8 @@ var buffer: MixtureBuffer:
 var is_active_fire: bool:
 	get:
 		if GameState.built_furnaces.has(hex_coord):
-			return GameState.built_furnaces[hex_coord].get("is_active_fire", false)
+			return GameState.built_furnaces[hex_coord]["bench"].fire_lit
 		return false
-
-var burn_timer: float:
-	get:
-		if GameState.built_furnaces.has(hex_coord):
-			return GameState.built_furnaces[hex_coord].get("burn_timer", 0.0)
-		return 0.0
 
 var _fallback_buffer: MixtureBuffer = null
 
@@ -41,15 +34,32 @@ func _ready() -> void:
 		building_type = GameState.built_furnaces[hex_coord].get("type", building_type)
 	queue_redraw()
 
-var _last_label_temp: int = -1
+var _last_label: String = ""
 var _was_burning: bool = true
 
+# 地表标签：名称 + 状态 (燃烧中显示温度与剩余燃料，反应中显示配方名)
+func _status_text() -> String:
+	var b_name = DataDB.get_building_recipe(building_type).get("name", "熔炉")
+	if not GameState.built_furnaces.has(hex_coord):
+		return b_name
+	var bench = GameState.built_furnaces[hex_coord]["bench"]
+	var line := "点击使用"
+	if bench.fire_lit:
+		line = "%d ℃ · 燃料 %d 秒" % [int(buffer.temperature - 273.15), int(ceil(bench.fuel_seconds()))]
+	elif buffer.temperature > 323.15:
+		line = "冷却中 %d ℃" % int(buffer.temperature - 273.15)
+	var extra := ""
+	if buffer.active_formula != "":
+		extra = "\n" + (DataDB.get_formula(buffer.active_formula).get("name", "反应") if bench.has_clue(buffer.active_formula) else "反应中")
+	elif not buffer.components.is_empty():
+		extra = "\n炉内有物料"
+	return "%s\n%s%s" % [b_name, line, extra]
+
 func _process(_delta: float) -> void:
-	var t = int(buffer.temperature)
-	if label_status and t != _last_label_temp:
-		_last_label_temp = t
-		var b_name = DataDB.get_building_recipe(building_type).get("name", "熔炉")
-		label_status.text = "%s\n%d ℃\n点击操作" % [b_name, t - 273]
+	var txt = _status_text()
+	if label_status and txt != _last_label:
+		_last_label = txt
+		label_status.text = txt
 	# 火焰动画只在燃烧时逐帧重绘；熄火后补画一帧静态图
 	var burning = is_active_fire
 	if burning or _was_burning:
@@ -118,17 +128,3 @@ func _draw_blast_furnace() -> void:
 		var flick = 0.9 + 0.12 * sin(Time.get_ticks_msec() * 0.02)
 		draw_rect(Rect2(-7, 6, 14, 9), Color(1.0, 0.45 * intensity + 0.3, 0.1, 0.95))
 		draw_circle(Vector2(0, -24), 7.0 * flick, Color(1.0, 0.75, 0.25, 0.85)) # 炉口火焰
-
-func _input_event(_viewport: Viewport, event: InputEvent, _shape_idx: int) -> void:
-	var world_node = get_tree().get_first_node_in_group("world")
-	if world_node and "is_placing_structure" in world_node and world_node.is_placing_structure:
-		return
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		get_viewport().set_input_as_handled()
-		open_workbench_requested.emit(self)
-
-func add_fuel() -> bool:
-	return GameState.furnace_add_fuel(hex_coord)
-
-func add_ore(key: String, amount: int = 1) -> bool:
-	return GameState.furnace_add_ore(hex_coord, key, amount)

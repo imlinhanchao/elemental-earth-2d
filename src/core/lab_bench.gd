@@ -11,6 +11,9 @@
 # - 实验没反应不损失原料：「全部取回」把烧瓶内容退回行囊，只有燃料和电量会消耗；
 # - 做实验必须先放一件制造出的容器 (木桶、陶罐、坩埚、烧杯…)，配方的 required_container 决定能用哪些；
 #   加热类操作要求容器耐热 (attrs.can_heat)，每完成一次反应消耗容器 1 点耐久，耐久用完容器损坏。
+# - 炉体模式 (furnace_type 非空)：篝火堆、熔炉、鼓风高炉各有一个 LabBench，炉膛就是容器 (不耗耐久)，
+#   只能做加热类操作，炉膛保温提高火焰温度 (Simulation.FURNACE_HEAT_BONUS)，鼓风高炉自带风箱；
+#   手稿、已确证工艺与曾获得物品共用实验台那一份 (book())。
 extends RefCounted
 
 const DataDB = preload("res://src/core/data_db.gd")
@@ -34,6 +37,7 @@ signal reacted(formula_key: String, products: Array, lost: Array)
 
 var sim # Simulation (不写类型，避免循环引用)
 var vessel: MixtureBuffer
+var furnace_type: String = ""   # 炉体模式："fire_pit" / "furnace" / "blast_furnace"；实验台为空
 
 var operation: String = ""
 var container: String = ""      # 当前放在台上的容器 (行囊中的物品 key)
@@ -50,15 +54,23 @@ var proven: Dictionary = {}     # 已确证配方 key -> true
 var seen_items: Dictionary = {} # 曾经获得过的物品 key -> true (手稿中未见过的物品显示为 ???)
 var produced: Dictionary = {}   # 本次实验生成的物品，取回时按四舍五入计数
 
-func _init(p_sim, p_vessel: MixtureBuffer) -> void:
+func _init(p_sim, p_vessel: MixtureBuffer, p_furnace_type: String = "") -> void:
 	sim = p_sim
 	vessel = p_vessel
+	furnace_type = p_furnace_type
 	reset()
+
+func is_furnace() -> bool:
+	return furnace_type != ""
+
+# 手稿、已确证工艺、曾获得物品：炉体共用实验台的那一份
+func book():
+	return sim.lab if is_furnace() and sim.lab != null else self
 
 func reset() -> void:
 	operation = ""
-	container = ""
-	vessel.container_type = ""
+	container = furnace_type
+	vessel.container_type = furnace_type
 	chain_ops.clear()
 	fire_lit = false
 	fuel_queue.clear()
@@ -128,6 +140,10 @@ func op_lock_reason(key: String) -> String:
 	var op = DataDB.get_lab_op(key)
 	if op.is_empty():
 		return "未知操作"
+	if is_furnace() and not ChemistrySolver.CHAIN_OPS.has(key) and not furnace_operations(furnace_type).has(key):
+		return "炉内只能做加热类操作"
+	if is_furnace() and ChemistrySolver.CHAIN_OPS.has(key):
+		return "炉体敞口，气体会逸散"
 	var era = unlock_era(key)
 	if era > sim.current_era:
 		var names = sim.ERA_NAMES
@@ -135,6 +151,8 @@ func op_lock_reason(key: String) -> String:
 	for t in op.get("required_techs", []):
 		if not sim.researched_techs.has(t):
 			return "需要研发%s" % DataDB.get_tech(t).get("name", t)
+	if is_furnace():
+		return "" # 炉膛本身就是器皿，鼓风高炉自带风箱
 	# 可加热的器皿 (陶罐、坩埚、烧杯等) 由配方的 required_container 判断；其余是必须持有的工具 (筛子、风箱、冷凝管…)
 	for req in op.get("required_item", []):
 		var alts: Array = req["key"] if req["key"] is Array else [req["key"]]
@@ -189,6 +207,10 @@ func needs_power() -> bool:
 static func is_container(key: String) -> bool:
 	return DataDB.get_item(key).get("type", []).has("container")
 
+# 当前容器能否加热 (炉膛总是可以)
+func container_can_heat() -> bool:
+	return is_furnace() or can_heat(container)
+
 static func can_heat(key: String) -> bool:
 	var attrs = DataDB.get_item(key).get("attrs", {})
 	return attrs is Dictionary and attrs.get("can_heat", false)
@@ -213,6 +235,8 @@ func durability_left(key: String) -> int:
 func set_container(key: String) -> bool:
 	if key == container:
 		return true
+	if is_furnace():
+		return false
 	if not vessel.components.is_empty():
 		sim.post_notice("先把容器里的东西取回，再换容器", Color(1.0, 0.6, 0.3))
 		return false
@@ -230,6 +254,8 @@ func set_container(key: String) -> bool:
 
 # 能装下该配方的容器中，优先已放上的，其次行囊中剩余耐久最多的
 func best_container_for(f: Dictionary) -> String:
+	if is_furnace():
+		return container if sim.solver._matches_container(vessel, f) else ""
 	var req = ChemistrySolver.formula_containers(f)
 	if req.is_empty() or req.has(container):
 		return container
@@ -251,7 +277,7 @@ static func container_names(f: Dictionary) -> String:
 
 # 每完成一次反应消耗 1 点耐久；用坏最后一件时容器从台上撤下，里面的东西仍可取回
 func _wear_container() -> void:
-	if container == "":
+	if container == "" or is_furnace():
 		return
 	var name = DataDB.get_item(container).get("name", container)
 	if sim.inventory.use_durability(container, max_durable(container), 1):
@@ -306,7 +332,18 @@ func has_bellows() -> bool:
 func flame_temp() -> float:
 	if not fire_lit or cur_fuel == "":
 		return ROOM_TEMP
-	return fuel_info(cur_fuel)["max_temp"] + (BELLOWS_BONUS if has_bellows() else 0.0)
+	return fuel_flame_temp(cur_fuel)
+
+# 某种燃料在这里能烧到的温度：实验台 = 燃料温度 (+风箱)；
+# 炉体再加炉膛保温，熔炉可用风箱 (鼓风高炉的风箱已计入保温加成)，不超过炉温上限
+func fuel_flame_temp(key: String) -> float:
+	var t: float = fuel_info(key)["max_temp"]
+	if not is_furnace():
+		return t + (BELLOWS_BONUS if has_bellows() else 0.0)
+	t += float(sim.FURNACE_HEAT_BONUS.get(furnace_type, 0.0))
+	if furnace_type == "furnace" and has_bellows():
+		t += BELLOWS_BONUS
+	return minf(t, float(sim.FURNACE_MAX_TEMP.get(furnace_type, t)))
 
 # 点火：需要燃料，以及火种 (不消耗) 或燧石 (每次消耗 1 块)
 func ignite() -> bool:
@@ -318,14 +355,15 @@ func ignite() -> bool:
 	if container == "":
 		sim.post_notice("先放一件容器再点火", Color(1.0, 0.6, 0.3))
 		return false
-	if not can_heat(container):
+	if not container_can_heat():
 		sim.post_notice("%s不耐热，不能放在火上" % DataDB.get_item(container).get("name", container), Color(1.0, 0.45, 0.35))
 		return false
 	if cur_fuel_left <= 0.0 and fuel_queue.is_empty():
 		sim.post_notice("先放入燃料再点火", Color(1.0, 0.6, 0.3))
 		return false
-	if sim.inventory.get_count("fire_seed") <= 0 and not sim.inventory.remove_item("flint", 1):
-		sim.post_notice("点火需要火种或燧石", Color(1.0, 0.45, 0.35))
+	# 领地里有燃着的篝火或炉子时，从那里引火即可
+	if sim.inventory.get_count("fire_seed") <= 0 and not sim.has_open_fire() and not sim.inventory.remove_item("flint", 1):
+		sim.post_notice("点火需要火种或燧石，或者领地里有燃着的篝火", Color(1.0, 0.45, 0.35))
 		return false
 	fire_lit = true
 	if cur_fuel_left <= 0.0:
@@ -380,7 +418,7 @@ func voltage() -> float:
 
 func tick(delta: float) -> void:
 	# 容器被拿去做别的用了 (如用作制作材料)
-	if container != "" and sim.inventory.get_count(container) <= 0:
+	if not is_furnace() and container != "" and sim.inventory.get_count(container) <= 0:
 		container = ""
 		vessel.container_type = ""
 		fire_lit = false
@@ -419,11 +457,12 @@ func on_reaction(result: Dictionary) -> void:
 	var m = DataDB.get_lab_op(ChemistrySolver.formula_operation(f)).get("milestone")
 	if m != null and str(m) != "":
 		sim.complete_milestone(str(m))
-	if proven.has(f_key):
+	var b = book()
+	if b.proven.has(f_key):
 		return
-	proven[f_key] = true
-	if not fragments.has(f_key):
-		fragments.append(f_key)
+	b.proven[f_key] = true
+	if not b.fragments.has(f_key):
+		b.fragments.append(f_key)
 	sim.post_notice("发现新工艺：%s，已记入手稿" % f.get("name", f_key), Color(0.95, 0.75, 0.3))
 	sim.unlock_blueprint(_blueprint_from(f), true)
 
@@ -468,7 +507,8 @@ func retrieve_all() -> Dictionary:
 # ---------------------------------------------------------------- 手稿
 
 func has_clue(f_key: String) -> bool:
-	return proven.has(f_key) or fragments.has(f_key)
+	var b = book()
+	return b.proven.has(f_key) or b.fragments.has(f_key)
 
 static func formula_era(f: Dictionary) -> int:
 	var key = f.get("required_era")
@@ -555,7 +595,7 @@ func fragment_text(f_key: String, known_col: String, op_col: String, unknown_col
 	for m in re.search_all(desc):
 		out += desc.substr(pos, m.get_start() - pos)
 		var k = m.get_string(1)
-		if seen_items.has(k) or prods.has(k) or proven.has(f_key):
+		if book().seen_items.has(k) or prods.has(k) or book().proven.has(f_key):
 			out += "[color=%s]%s[/color]" % [known_col, DataDB.get_item(k).get("name", k)]
 		else:
 			out += "[color=%s]???[/color]" % unknown_col
@@ -576,7 +616,7 @@ func prepare_from_fragment(f_key: String) -> Array:
 	var missing: Array = []
 	var box = best_container_for(f)
 	if box == "":
-		missing.append(container_names(f))
+		missing.append(("这里做不了，需要" if is_furnace() else "") + container_names(f))
 		return missing
 	if box != container and not set_container(box):
 		missing.append("换用%s（先取回当前容器里的东西）" % container_names(f))
@@ -607,7 +647,7 @@ func prepare_from_fragment(f_key: String) -> Array:
 				done = true
 				break
 		if not done:
-			var nm = DataDB.get_item(alts[0]).get("name", alts[0]) if seen_items.has(alts[0]) else "???"
+			var nm = DataDB.get_item(alts[0]).get("name", alts[0]) if book().seen_items.has(alts[0]) else "???"
 			missing.append("%s ×%d" % [nm, need])
 	return missing
 
@@ -671,8 +711,8 @@ func diagnose() -> Dictionary:
 		if v > 0.0 and vessel.applied_voltage < v:
 			needs.append("通电 %.0f V 以上" % v)
 		if not sim.solver._matches_container(vessel, f):
-			needs.append("换用%s" % container_names(f))
-		elif ChemistrySolver.formula_min_temp(f) > 0.0 and DataDB.get_lab_op(op).get("requires_burning", false) and not can_heat(container):
+			needs.append(("这里做不了，需要" if is_furnace() else "换用") + container_names(f))
+		elif ChemistrySolver.formula_min_temp(f) > 0.0 and DataDB.get_lab_op(op).get("requires_burning", false) and not container_can_heat():
 			needs.append("换用耐热的%s" % container_names(f))
 		if needs.is_empty():
 			return {"state": "reacting", "text": "%s即将开始" % f.get("name", ""), "progress": 0.0}
@@ -685,7 +725,7 @@ func diagnose() -> Dictionary:
 		for req in f.get("required_items", []):
 			if not _req_present(req):
 				var k = req["key"][0] if req["key"] is Array else req["key"]
-				var nm = DataDB.get_item(k).get("name", k) if seen_items.has(k) else "???"
+				var nm = DataDB.get_item(k).get("name", k) if book().seen_items.has(k) else "???"
 				lack.append("%s ×%d" % [nm, int(ceil(float(req.get("quantity", 1.0))))])
 		return {"state": "partial", "text": "按手稿「%s」还缺 %s" % [f.get("name", ""), "、".join(lack)]}
 	return {"state": "inert", "text": "这些试剂之间没有已知反应"}
@@ -701,6 +741,15 @@ func _req_present(req: Dictionary) -> bool:
 # ---------------------------------------------------------------- 存档
 
 func serialize() -> Dictionary:
+	if is_furnace():
+		return {
+			"operation": operation,
+			"fire_lit": fire_lit,
+			"fuel_queue": fuel_queue.duplicate(),
+			"cur_fuel": cur_fuel,
+			"cur_fuel_left": cur_fuel_left,
+			"produced": produced.keys(),
+		}
 	return {
 		"operation": operation,
 		"container": container,
@@ -723,7 +772,9 @@ func deserialize(d: Dictionary) -> void:
 	operation = str(d.get("operation", ""))
 	vessel.operations = [operation] if operation != "" else []
 	container = str(d.get("container", ""))
-	if not is_container(container):
+	if is_furnace():
+		container = furnace_type
+	elif not is_container(container):
 		container = ""
 	vessel.container_type = container
 	chain_ops = Array(d.get("chain_ops", []))

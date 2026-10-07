@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://ci8v43187140w"]
+[gd_scene load_steps=32 format=3 uid="uid://ci8v43187140w"]
 
 [ext_resource type="Script" path="res://src/ui/hud.gd" id="1_hud"]
 [ext_resource type="PackedScene" uid="uid://ci8v42187654x" path="res://src/ui/periodic_table_modal.tscn" id="2_modal"]
@@ -29,6 +29,7 @@
 [ext_resource type="Texture2D" uid="uid://dyrxpwev141wl" path="res://assets/icons/res_salt.svg" id="29_salt"]
 [ext_resource type="Texture2D" uid="uid://dxfqc18wxj5s5" path="res://assets/icons/res_sulfur.svg" id="30_sulfur"]
 [ext_resource type="PackedScene" path="res://src/ui/tutorial_dock.tscn" id="19_tut_dock"]
+[ext_resource type="Script" path="res://src/ui/reactor_modal.gd" id="40_reactor_modal"]
 
 [node name="HUD" type="CanvasLayer"]
 script = ExtResource("1_hud")
@@ -316,52 +317,6 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 4
 
-[node name="FurnacePanel" type="PanelContainer" parent="Margin/MainVBox/BodyHBox/RightBox"]
-visible = false
-layout_mode = 2
-
-[node name="Margin" type="MarginContainer" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel"]
-layout_mode = 2
-theme_override_constants/margin_left = 12
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 12
-theme_override_constants/margin_bottom = 10
-
-[node name="VBox" type="VBoxContainer" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin"]
-layout_mode = 2
-theme_override_constants/separation = 8
-
-[node name="Title" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
-layout_mode = 2
-theme_override_colors/font_color = Color(0.62, 0.44, 0.22, 1.00)
-theme_override_font_sizes/font_size = 14
-text = "熔炉"
-
-[node name="FurnaceInfo" type="Label" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "温度: 298 K
-状态: 未生火
-物料: 空"
-
-[node name="BtnAddFuel" type="Button" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "添加木炭"
-
-[node name="BtnAddMalachite" type="Button" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "投入孔雀石（炼铜）"
-
-[node name="BtnAddIronOre" type="Button" parent="Margin/MainVBox/BodyHBox/RightBox/FurnacePanel/Margin/VBox"]
-custom_minimum_size = Vector2(0, 30)
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "投入赤铁矿（炼铁）"
-
 [node name="BottomArea" type="VBoxContainer" parent="Margin/MainVBox"]
 layout_mode = 2
 theme_override_constants/separation = 8
@@ -513,3 +468,11 @@ visible = false
 
 [node name="TutorialDock" parent="." instance=ExtResource("19_tut_dock")]
 visible = false
+
+[node name="ReactorModal" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("40_reactor_modal")
