@@ -5,6 +5,7 @@ extends SceneTree
 
 const DataDB = preload("res://src/core/data_db.gd")
 const Simulation = preload("res://src/core/simulation.gd")
+const LabBench = preload("res://src/core/lab_bench.gd")
 
 var _failed := 0
 
@@ -103,6 +104,7 @@ func _initialize() -> void:
 	sim.current_era = 2
 	sim.researched_techs.append("sifting_technology")
 	sim.inventory.add_item("sieve", 1)
+	sim.lab.set_container("sieve")
 	sim.lab.set_operation("sifting")
 	sim.lab_vessel.add_substance("sand", 5.0)
 	# 配方有 time_required，按其秒数推进一秒节拍
@@ -120,6 +122,67 @@ func _initialize() -> void:
 	var ash_start = sim.inventory.get_count("wood_ash")
 	sim.lab_vessel.clear()
 	sim.lab_vessel.temperature = sim.ROOM_TEMP
+
+	# 8a. 容器：必须放一件制造出的容器；加热要耐热容器；配方决定能用哪些容器；每次反应消耗耐久
+	_check(lab.set_container(""), "撤下容器")
+	sim.inventory.add_item("mud", 2)
+	_check(not lab.add_reagent("mud", 1), "没放容器不能投料")
+	_check(not lab.set_container("clay_pot"), "行囊里没有的容器放不上")
+	sim.inventory.add_item("wooden_bucket", 1)
+	_check(lab.set_container("wooden_bucket"), "放上木桶")
+	sim.inventory.add_item("water", 2)
+	lab.set_operation("stirring")
+	lab.add_reagent("mud", 1)
+	lab.add_reagent("water", 1)
+	var clay_secs = int(ceil(float(DataDB.get_formula("clay_production").get("time_required", 1.0))))
+	for i in range(clay_secs):
+		sim._on_second_tick()
+	_check(sim.lab_vessel.has_substance("clay"), "木桶里和泥制成粘土")
+	_check(lab.durability_left("wooden_bucket") == LabBench.max_durable("wooden_bucket") - 1, "反应一次木桶耐久减 1 (%d)" % lab.durability_left("wooden_bucket"))
+	_check(not lab.set_container("crucible"), "容器里有东西时不能换容器")
+	lab.retrieve_all()
+	sim.inventory.add_item("wood", 2)
+	lab.set_operation("dry_distillation")
+	lab.add_reagent("wood", 1)
+	lab.add_fuel("wood")
+	sim.inventory.add_item("flint", 1)
+	_check(not lab.ignite(), "木桶不耐热，不能点火")
+	_check(lab.diagnose()["state"] == "blocked" or lab.diagnose()["state"] == "unknown", "侦测卡不把木桶当成干馏容器")
+	lab.retrieve_all()
+	# 容器不对不反应：木桶里干馏 (已到温度) 不出木炭
+	sim.lab_vessel.temperature = 900.0
+	lab.add_reagent("wood", 1)
+	sim._on_second_tick()
+	sim._on_second_tick()
+	_check(not sim.lab_vessel.has_substance("charcoal"), "木桶里不能干馏木炭")
+	sim.lab_vessel.temperature = sim.ROOM_TEMP
+	lab.retrieve_all()
+	# 耐久用完容器损坏
+	sim.inventory.wear["wooden_bucket"] = LabBench.max_durable("wooden_bucket") - 1
+	lab.set_operation("stirring")
+	lab.add_reagent("mud", 1)
+	lab.add_reagent("water", 1)
+	for i in range(clay_secs):
+		sim._on_second_tick()
+	_check(sim.inventory.get_count("wooden_bucket") == 0 and lab.container == "", "耐久用完木桶损坏并撤下")
+	_check(lab.retrieve_all().get("clay", 0) == 1, "损坏后容器里的产物仍可取回")
+	# 按手稿备料会自动换上合适的容器
+	sim.inventory.add_item("crucible", 1)
+	sim.inventory.add_item("wood", 1)
+	lab.fragments.append("charcoal_production")
+	_check(lab.prepare_from_fragment("charcoal_production").is_empty() and lab.container == "crucible", "按手稿备料换上坩埚")
+	lab.retrieve_all()
+	# 制作时写了 use 的器具只消耗耐久 (陶罐用窑炉烧制)
+	sim.inventory.add_item("kiln", 1)
+	sim.inventory.add_item("clay", 5)
+	sim.researched_techs.append("pottery")
+	sim.craft_tool("clay_pot")
+	_check(sim.inventory.get_count("kiln") == 1 and sim.inventory.wear.get("kiln", 0) == 1, "烧陶罐消耗窑炉 1 点耐久而不是整座窑炉")
+
+	lab.fuel_queue.clear()
+	lab.cur_fuel = ""
+	lab.cur_fuel_left = 0.0
+	_check(lab.set_container("crucible"), "放上坩埚做冶炼")
 	lab.set_operation("stirring")
 	sim.lab_vessel.add_substance("malachite", 2.0)
 	sim.lab_vessel.add_substance("charcoal", 2.0)
@@ -170,6 +233,8 @@ func _initialize() -> void:
 	sim.researched_techs.append("electrochemistry")
 	_check(lab.set_operation("electrolysis"), "研发电化学后可以电解")
 	sim.lab_vessel.clear()
+	sim.inventory.add_item("beaker", 1)
+	_check(lab.set_container("beaker"), "电解水改用烧杯")
 	sim.lab_vessel.add_substance("water", 2.0)
 	sim._on_second_tick()
 	_check(not sim.lab_vessel.has_substance("oxygen"), "未通电不电解")

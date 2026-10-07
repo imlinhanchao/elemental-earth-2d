@@ -40,6 +40,8 @@ var tab_notes: Button
 var view_flask: VBoxContainer
 var view_notes: VBoxContainer
 var flask_slots: HFlowContainer
+var flask_title: Label
+var container_slots: HFlowContainer
 var btn_retrieve: Button
 var reagent_grid: GridContainer
 var log_label: RichTextLabel
@@ -301,7 +303,7 @@ func _build_side() -> Control:
 		b.custom_minimum_size = Vector2(0, 34)
 		b.focus_mode = Control.FOCUS_NONE
 		tabs.add_child(b)
-	tab_flask.text = "烧瓶"
+	tab_flask.text = "容器"
 	tab_flask.pressed.connect(func(): _switch_tab(0))
 	tab_notes.pressed.connect(func(): _switch_tab(1))
 	side.add_child(tabs)
@@ -310,13 +312,18 @@ func _build_side() -> Control:
 	view_flask.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	view_flask.add_theme_constant_override("separation", 8)
 	side.add_child(view_flask)
+	view_flask.add_child(_section("选择容器 · 不同实验要用不同容器，每次反应消耗 1 点耐久"))
+	container_slots = HFlowContainer.new()
+	container_slots.add_theme_constant_override("h_separation", 6)
+	container_slots.add_theme_constant_override("v_separation", 6)
+	view_flask.add_child(container_slots)
 	var fh = HBoxContainer.new()
-	var fl = _section("烧瓶内")
-	fl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	fh.add_child(fl)
+	flask_title = _section("容器内")
+	flask_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	fh.add_child(flask_title)
 	btn_retrieve = Button.new()
 	btn_retrieve.text = "全部取回"
-	btn_retrieve.tooltip_text = "把烧瓶里的产物和没用完的原料放回行囊"
+	btn_retrieve.tooltip_text = "把容器里的产物和没用完的原料放回行囊"
 	btn_retrieve.custom_minimum_size = Vector2(96, 30)
 	_style_primary(btn_retrieve)
 	btn_retrieve.pressed.connect(_on_retrieve_pressed)
@@ -429,6 +436,7 @@ func _refresh_all() -> void:
 	_dirty = false
 	_refresh_ops()
 	_refresh_energy_items()
+	_refresh_containers()
 	_refresh_reagents()
 	_refresh_flask()
 	tab_notes.text = "手稿  %d" % lab.fragments.size()
@@ -482,7 +490,7 @@ func _refresh_status() -> void:
 	if lab.operation == "":
 		stage_icon.texture = ItemIconManager.load_texture("res://assets/icons/lab.svg")
 		stage_title.text = "选择一种操作"
-		stage_desc.text = "左侧挑选操作，右侧放入试剂。焙烧、干馏等要点火，电解要接电池。"
+		stage_desc.text = "左侧挑选操作，右侧先放一件容器再放入试剂。焙烧、干馏等要点火，电解要接电池。"
 	else:
 		stage_icon.texture = _op_icon(lab.operation)
 		var chains: Array = []
@@ -502,7 +510,9 @@ func _refresh_status() -> void:
 			energy_status.text = "点击下方燃料放入炉膛。燃料越好，火焰越热"
 		btn_fire.visible = true
 		btn_fire.text = "熄火" if lab.fire_lit else "点火"
-		btn_fire.disabled = not lab.fire_lit and lab.fuel_seconds() <= 0.0
+		btn_fire.disabled = not lab.fire_lit and (lab.fuel_seconds() <= 0.0 or lab.container == "" or not LabBench.can_heat(lab.container))
+		if not lab.fire_lit and lab.container != "" and not LabBench.can_heat(lab.container):
+			energy_status.text = "%s不耐热，换陶罐、坩埚等耐热容器才能点火" % _name(lab.container)
 	elif lab.needs_power():
 		energy_title.text = "电源"
 		btn_fire.visible = false
@@ -518,7 +528,7 @@ func _refresh_status() -> void:
 
 	var d = lab.diagnose()
 	var styles = {
-		"empty": ["空烧瓶", ThemeStyler.COLOR_TEXT_SECONDARY, ThemeStyler.COLOR_CARD],
+		"empty": ["待备料", ThemeStyler.COLOR_TEXT_SECONDARY, ThemeStyler.COLOR_CARD],
 		"reacting": ["反应中", ThemeStyler.COLOR_SUCCESS, ThemeStyler.TINT_SUCCESS],
 		"blocked": ["条件不足", ThemeStyler.COLOR_WARNING, ThemeStyler.TINT_WARNING],
 		"partial": ["缺少原料", ThemeStyler.COLOR_INFO, ThemeStyler.TINT_INFO],
@@ -573,6 +583,40 @@ func _refresh_energy_items() -> void:
 			)
 			energy_items.add_child(s)
 
+# 容器格子：右下角为剩余耐久，选中为铜色描边；不耐热的容器在加热类操作下半透明
+func _refresh_containers() -> void:
+	for c in container_slots.get_children():
+		c.queue_free()
+	var opts = lab.container_options()
+	if opts.is_empty():
+		container_slots.add_child(_label("行囊里没有容器。在制作栏 [T] 做一个木桶、陶罐或坩埚", ThemeStyler.FONT_CAPTION, ThemeStyler.COLOR_WARNING))
+		return
+	for k in opts:
+		var on = lab.container == k
+		var heat = LabBench.can_heat(k)
+		var s = _slot(k, 0, ThemeStyler.COLOR_ACCENT if on else Color(0, 0, 0, 0))
+		s.custom_minimum_size = Vector2(52, 52)
+		var left = lab.durability_left(k)
+		var c = _label(str(left), ThemeStyler.FONT_CAPTION, ThemeStyler.COLOR_TEXT_PRIMARY)
+		c.add_theme_font_override("font", ThemeStyler.get_font_mono())
+		c.add_theme_constant_override("outline_size", 4)
+		c.add_theme_color_override("font_outline_color", ThemeStyler.COLOR_BG_SOLID)
+		c.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		c.set_anchors_preset(Control.PRESET_BOTTOM_RIGHT)
+		c.offset_left = -40; c.offset_top = -18; c.offset_right = -3; c.offset_bottom = -1
+		c.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		s.add_child(c)
+		s.tooltip_text = "%s ×%d · 剩余耐久 %d%s%s" % [_name(k), GameState.inventory.get_count(k), left,
+			"" if heat else " · 不耐热，不能加热", "\n点击撤下" if on else "\n点击放上实验台"]
+		if lab.needs_fire() and not heat:
+			s.modulate = Color(1, 1, 1, 0.5)
+		s.pressed.connect(func():
+			if lab.set_container("" if lab.container == k else k):
+				_add_log("撤下%s" % _name(k) if lab.container == "" else "放上%s" % _name(k))
+			_refresh_all()
+		)
+		container_slots.add_child(s)
+
 func _refresh_reagents() -> void:
 	for c in reagent_grid.get_children():
 		c.queue_free()
@@ -584,7 +628,7 @@ func _refresh_reagents() -> void:
 		if n <= 0:
 			continue
 		var cat = str(DataDB.get_item(k).get("category", ""))
-		if not (cat in REAGENT_CATEGORIES or DataDB.is_pure_element(k) > 0):
+		if not (cat in REAGENT_CATEGORIES or DataDB.is_pure_element(k) > 0) or LabBench.is_container(k):
 			continue
 		var s = _slot(k, n)
 		s.tooltip_text = "%s ×%d（点击放入 1 份）" % [_name(k), n]
@@ -603,6 +647,7 @@ func _refresh_flask() -> void:
 	for c in flask_slots.get_children():
 		c.queue_free()
 	var v = lab.vessel
+	flask_title.text = "%s内" % _name(lab.container) if lab.container != "" else "还没放容器"
 	if v.components.is_empty():
 		flask_slots.add_child(_label("空", ThemeStyler.FONT_CAPTION, ThemeStyler.COLOR_TEXT_MUTED))
 		return
@@ -717,7 +762,8 @@ func _on_fire_pressed() -> void:
 
 func add_reagent(item_key: String, amount: float) -> void:
 	if not lab.add_reagent(item_key, int(amount)):
-		GameState.post_notification("行囊里没有%s" % _name(item_key), Color(1, 0.4, 0.4))
+		if lab.container != "":
+			GameState.post_notification("行囊里没有%s" % _name(item_key), Color(1, 0.4, 0.4))
 		return
 	_add_log("放入 %s ×%d" % [_name(item_key), int(amount)])
 	_refresh_flask()

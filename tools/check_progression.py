@@ -8,7 +8,8 @@
 规则 (与游戏实现保持一致):
 - 地图资源：需在 dump 中出现、最近环距 <= 当前时代领地半径、时代 >= RESOURCE_ERA_REQUIREMENTS
 - 科技 / 制作 / 建筑：受 era 字段与 required_techs 约束
-- 配方：容器可由建筑或背包中持有的器皿满足；温度上限取决于已建炉体；电压需要电池
+- 配方：实验台必须放一件已制造的容器 (加热类操作要求 can_heat)；炉体可代替坩埚 / 窑炉 (ChemistrySolver.FURNACE_CONTAINERS)；
+  温度上限取决于已建炉体；电压需要电池
 - 燃烧木柴副产草木灰；砍树 / 拾枝伴生树皮与树脂
 退出码：全部时代可完成为 0，否则为 1。
 """
@@ -34,6 +35,12 @@ def keys(req):
 
 # 追加操作：集气收集气体，冷凝收集蒸气 (ChemistrySolver.CHAIN_OPS)
 CHAIN_OPS = ("gas_collecting", "gas_collecting_air", "condensation")
+# 炉体能当作哪些容器 (与 ChemistrySolver.FURNACE_CONTAINERS 一致)
+FURNACE_CONTAINERS = {
+    "fire_pit": ["fire_pit"],
+    "furnace": ["furnace", "kiln", "crucible"],
+    "blast_furnace": ["blast_furnace", "furnace", "kiln", "crucible"],
+}
 
 
 def parse_gd_dict(src, name):
@@ -132,12 +139,11 @@ def main(map_path):
                     built.add(b["key"]); changed = True
             if built & {"fire_pit", "furnace", "blast_furnace"} and "wood_ash" not in have and "wood" in have:
                 have.add("wood_ash"); changed = True
-            containers = {"flask"} | built | have
-            if "furnace" in built:
-                containers |= {"kiln", "crucible"}
-            if "blast_furnace" in built:
-                containers |= {"furnace", "kiln", "crucible"}
-            containers |= {"clay_pot", "beaker", "cell"}  # 实验烧瓶别名
+            lab_containers = {k for k in have if "container" in items.get(k, {}).get("type", [])}
+            lab_hot = {k for k in lab_containers if (items[k].get("attrs") or {}).get("can_heat")}
+            furnace_containers = set()
+            for b in built & set(FURNACE_CONTAINERS):
+                furnace_containers |= set(FURNACE_CONTAINERS[b])
             lab_t = lab_flame(have)
             furnace_t = max([0.0] + [furnace_temp.get(b, 0.0) for b in built])
             voltage = battery_volt(have)
@@ -151,8 +157,11 @@ def main(map_path):
                     continue
                 max_temp = max(lab_t if in_lab else 0.0, furnace_t if in_furnace else 0.0)
                 rc = f.get("required_container")
-                rcs = [] if rc in (None, "") else (rc if isinstance(rc, list) else [rc])
-                if rcs and not any(c in containers for c in rcs):
+                rcs = set([] if rc in (None, "") else (rc if isinstance(rc, list) else [rc]))
+                usable = lab_hot if op in fire_ops else lab_containers
+                in_lab = in_lab and (not rcs or bool(rcs & usable))
+                in_furnace = in_furnace and (not rcs or bool(rcs & furnace_containers))
+                if not in_lab and not in_furnace:
                     continue
                 if min_temp(f) > max_temp:
                     continue

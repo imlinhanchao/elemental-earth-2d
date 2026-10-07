@@ -174,8 +174,8 @@
     "name": "木桶",
     "key": "wooden_bucket",
     "category": "容器",
-    "description": "用木材制作的桶，可以用来装水和其他物品。",
-    "durable": 1,
+    "description": "用木材箍成的桶，可以装水、和泥、泡草木灰，不能放在火上加热。",
+    "durable": 30,
     "type": [
       "container"
     ]
@@ -185,7 +185,7 @@
     "key": "clay_pot",
     "category": "容器",
     "description": "用粘土制作的罐子，可以用来装水和其他物品。",
-    "durable": 1,
+    "durable": 12,
     "type": [
       "container"
     ],
@@ -199,7 +199,7 @@
     "key": "kiln",
     "category": "容器",
     "description": "用来烧制陶器和其他物品的设备。",
-    "durable": 1,
+    "durable": 60,
     "type": [
       "container"
     ],
@@ -443,7 +443,7 @@
     "attrs": {
       "can_heat": true
     },
-    "durable": 1,
+    "durable": 20,
     "milestone": "craft_crucible"
   },
   {
@@ -464,7 +464,7 @@
     "type": [
       "container"
     ],
-    "durable": 1,
+    "durable": 25,
     "milestone": "craft_gas_bottle",
     "attrs": {
       "can_heat": true,
@@ -839,7 +839,7 @@
       "tool",
       "container"
     ],
-    "durable": 1
+    "durable": 30
   },
   {
     "key": "cobaltite",
@@ -2045,7 +2045,7 @@
     "attrs": {
       "can_heat": true
     },
-    "durable": 1
+    "durable": 40
   },
   {
     "name": "铁罐",
@@ -2057,7 +2057,8 @@
     ],
     "attrs": {
       "can_heat": true
-    }
+    },
+    "durable": 80
   },
   {
     "name": "玻璃试管",
@@ -2070,7 +2071,7 @@
     "attrs": {
       "can_heat": true
     },
-    "durable": 1
+    "durable": 25
   },
   {
     "key": "distilling_flask",
@@ -2080,7 +2081,7 @@
     "type": [
       "container"
     ],
-    "durable": 100,
+    "durable": 40,
     "attrs": {
       "can_heat": true
     }
@@ -3015,7 +3016,7 @@
     "type": [
       "container"
     ],
-    "durable": 100,
+    "durable": 120,
     "attrs": {
       "can_heat": true
     }
@@ -3683,7 +3684,7 @@
       "tool",
       "container"
     ],
-    "durable": 100,
+    "durable": 120,
     "attrs": {
       "can_heat": true
     }
@@ -3697,7 +3698,7 @@
       "tool",
       "container"
     ],
-    "durable": 50,
+    "durable": 40,
     "attrs": {
       "can_heat": true
     }
@@ -3711,7 +3712,7 @@
       "tool",
       "container"
     ],
-    "durable": 20,
+    "durable": 15,
     "attrs": {
       "can_heat": true
     }
@@ -3725,7 +3726,7 @@
       "tool",
       "container"
     ],
-    "durable": 30,
+    "durable": 40,
     "attrs": {
       "can_heat": true
     }
@@ -3749,7 +3750,7 @@
       "tool",
       "container"
     ],
-    "durable": 50,
+    "durable": 60,
     "attrs": {
       "can_heat": true
     }

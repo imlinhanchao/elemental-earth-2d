@@ -64,7 +64,7 @@ func _init() -> void:
 	# 4. 测试案例 C: 木材干馏制备木炭测试
 	print("\n[测试 3] 木材热解干馏制备木炭测试:")
 	var flask = MixtureBuffer.new()
-	flask.container_type = "flask"
+	flask.container_type = "clay_pot" # 陶罐隔绝空气干馏
 	flask.add_substance("wood", 2.0)
 	flask.temperature = 293.15 # 室温
 	var res_wood_cold = solver.solve(flask, 1.0)

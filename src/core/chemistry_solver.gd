@@ -161,43 +161,29 @@ func _matches_conditions(buffer: MixtureBuffer, formula: Dictionary) -> bool:
 			
 	return true
 
+# 炉体能当作哪些容器：炉膛本身耐火，可代替坩埚、窑炉 (篝火堆只能闷烧)
+const FURNACE_CONTAINERS := {
+	"fire_pit": ["fire_pit"],
+	"furnace": ["furnace", "kiln", "crucible"],
+	"blast_furnace": ["blast_furnace", "furnace", "kiln", "crucible"],
+}
+
+static func formula_containers(formula: Dictionary) -> Array:
+	var req = formula.get("required_container")
+	if req is Array:
+		return req
+	if req is String and req != "":
+		return [req]
+	return []
+
 func _matches_container(buffer: MixtureBuffer, formula: Dictionary) -> bool:
-	if not formula.has("required_container"):
+	var req = formula_containers(formula)
+	if req.is_empty() or buffer.container_type == "*":
 		return true
-	var req = formula["required_container"]
-	# 持有对应器皿即可在当前容器中完成该工艺
-	for c in buffer.available_containers:
-		if (req is String and req == c) or (req is Array and req.has(c)):
+	for c in FURNACE_CONTAINERS.get(buffer.container_type, [buffer.container_type]):
+		if req.has(c):
 			return true
-	if req is String:
-		if req == "" or buffer.container_type == "":
-			return true
-		if req == buffer.container_type:
-			return true
-		# 容器别名兼容匹配
-		if buffer.container_type == "furnace" and req in ["furnace", "kiln", "crucible"]:
-			return true
-		if buffer.container_type == "blast_furnace" and req in ["furnace", "kiln", "blast_furnace", "crucible"]:
-			return true
-		if buffer.container_type == "flask" and req in ["flask", "clay_pot", "beaker", "cell"]:
-			return true
-		return false
-	elif req is Array:
-		if req.is_empty() or buffer.container_type == "":
-			return true
-		if req.has(buffer.container_type):
-			return true
-		if buffer.container_type in ["furnace", "blast_furnace"]:
-			var aliases = ["furnace", "kiln", "crucible"] + (["blast_furnace"] if buffer.container_type == "blast_furnace" else [])
-			for alias in aliases:
-				if req.has(alias):
-					return true
-		if buffer.container_type == "flask":
-			for alias in ["flask", "clay_pot", "beaker", "cell"]:
-				if req.has(alias):
-					return true
-		return false
-	return true
+	return false
 
 func _execute_formula(buffer: MixtureBuffer, formula: Dictionary, results: Dictionary) -> void:
 	# 1. 消耗原料

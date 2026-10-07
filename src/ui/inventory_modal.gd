@@ -313,6 +313,11 @@ func _show_tooltip_for_item(item_key: String, data: Dictionary, count: int) -> v
 		extra_attrs.append("热值: %ds" % int(attrs["burn_time"]))
 	if attrs.has("durability"):
 		extra_attrs.append("耐久: %d" % int(attrs["durability"]))
+	if data.get("type", []).has("container") and data.get("durable") != null:
+		var per = max(1, int(data["durable"]))
+		extra_attrs.append("耐久 %d / %d（每件 %d）" % [GameState.inventory.durability_left(item_key, per), per * count, per])
+	if data.get("type", []).has("container"):
+		extra_attrs.append("可加热" if attrs.get("can_heat", false) else "不耐热")
 	if data.get("is_discovery", false):
 		extra_attrs.append("重大发现")
 		

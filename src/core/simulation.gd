@@ -89,7 +89,7 @@ func _init() -> void:
 	inventory = PlayerInventory.new()
 	solver = ChemistrySolver.new()
 	lab_vessel = MixtureBuffer.new()
-	lab_vessel.container_type = "flask"
+	lab_vessel.container_type = ""
 	lab_vessel.temperature = 293.15
 	lab = LabBench.new(self, lab_vessel)
 	
@@ -408,14 +408,6 @@ func advance_era(target_era: int) -> void:
 		era_advanced.emit(old, current_era, ERA_NAMES[current_era])
 		post_notice("进入%s，领地扩展到半径 %d 格" % [ERA_NAMES[current_era], get_current_territory_radius()], Color(1.0, 0.88, 0.3))
 
-# 背包中持有的可用器皿 (配方 required_container 中出现过的物品键)
-func _get_owned_containers() -> Array:
-	var result: Array = []
-	for k in DataDB.get_container_keys():
-		if inventory.get_count(k) > 0:
-			result.append(k)
-	return result
-
 var _territory_cache_era: int = -1
 var _territory_cache_radius: int = 5
 
@@ -472,9 +464,7 @@ func tick(delta: float) -> void:
 
 func _on_second_tick() -> void:
 	# 1. 实验台溶液结算 (共用一秒节拍)
-	var owned_containers = _get_owned_containers()
 	if lab_vessel and lab_vessel.total_moles() > 0:
-		lab_vessel.available_containers = owned_containers
 		var lab_res = solver.solve(lab_vessel, 1.0)
 		if lab_res["occurred"]:
 			lab.on_reaction(lab_res)
@@ -493,7 +483,6 @@ func _on_second_tick() -> void:
 			buf.temperature = move_toward(buf.temperature, 293.15, 35.0)
 			
 		if buf.total_moles() > 0:
-			buf.available_containers = owned_containers
 			buf.operations = LabBench.furnace_operations(f.get("type", "furnace"))
 			buf.chain_ops = [] # 炉体敞口，气体逸散
 			var res = solver.solve(buf, 1.0)
@@ -1155,6 +1144,10 @@ func _consume_all_ingredients(req_items: Array) -> void:
 	for req in req_items:
 		var q_needed = int(req.get("quantity", 1))
 		var k = req.get("key")
+		# 写了 use 的耐久器具 (如烧陶罐用的窑炉) 只消耗 1 点耐久
+		if req.has("use") and k is String and LabBench.max_durable(k) > 1:
+			inventory.use_durability(k, LabBench.max_durable(k), 1)
+			continue
 		if k is Array:
 			for alt_k in k:
 				var available = inventory.get_count(alt_k)
@@ -1235,7 +1228,7 @@ func reset_to_new_game() -> void:
 	built_furnaces.clear()
 	built_reactors.clear()
 	if inventory != null:
-		inventory.items.clear()
+		inventory.clear()
 		inventory.item_changed.emit("", 0)
 	if lab_vessel != null:
 		lab_vessel.clear()

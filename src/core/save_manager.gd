@@ -179,6 +179,7 @@ static func save_to_slot(slot_id: String, world_node: Node2D = null) -> bool:
 			"completed_milestones": GameState.completed_milestones,
 			"equipped_tools": GameState.equipped_tools,
 			"inventory": GameState.inventory.items,
+			"inventory_wear": GameState.inventory.wear,
 			"unlocked_blueprints": _serialize_blueprints(),
 			"task_queue": _serialize_tasks(GameState.task_queue),
 			"active_task": _serialize_task(GameState.active_task),
@@ -252,11 +253,17 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null, quiet: bo
 	})
 	
 	GameState.inventory.items = {}
+	GameState.inventory.wear = {}
 	var inv_data = gs_data.get("inventory", {})
 	for k in inv_data.keys():
 		# 旧档物品键迁移：iron_ore → hematite，halite → rock_salt (与 items.json 对齐)
 		var nk = LEGACY_ITEM_KEYS.get(k, k)
 		GameState.inventory.items[nk] = GameState.inventory.items.get(nk, 0) + int(inv_data[k])
+	var wear_data = gs_data.get("inventory_wear", {})
+	if wear_data is Dictionary:
+		for k in wear_data.keys():
+			if GameState.inventory.items.has(k):
+				GameState.inventory.wear[k] = int(wear_data[k])
 	GameState.inventory.item_changed.emit("", 0)
 	
 	_deserialize_blueprints(gs_data.get("unlocked_blueprints", {}))
@@ -440,7 +447,6 @@ static func _deserialize_lab_vessel(data: Dictionary) -> void:
 	GameState.lab_vessel.clear()
 	GameState.lab_vessel.temperature = float(data.get("temperature", 293.15))
 	GameState.lab_vessel.applied_voltage = float(data.get("applied_voltage", 0.0))
-	GameState.lab_vessel.container_type = str(data.get("container_type", "flask"))
 	GameState.lab_vessel.reaction_timer = float(data.get("reaction_timer", 0.0))
 	GameState.lab_vessel.active_formula = str(data.get("active_formula", ""))
 	# 实验台操作、燃料、手稿 (旧档没有，按初始状态补齐)

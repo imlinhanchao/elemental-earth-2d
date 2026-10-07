@@ -45,8 +45,10 @@ static func run(w: Node2D, arg_name: String) -> void:
 		GameState.sim.discovered_elements.append(6)
 		GameState.sim.current_era = 2
 		GameState.sim.researched_techs.append("gas_collection")
-		for k in ["wood", "charcoal", "malachite", "flint", "stone", "stick", "gas_bottle", "clay_pot"]:
+		for k in ["wood", "charcoal", "malachite", "flint", "stone", "stick", "gas_bottle", "clay_pot", "crucible", "wooden_bucket"]:
 			GameState.inventory.add_item(k, 5)
+		GameState.inventory.wear["crucible"] = 6
+		GameState.lab.set_container("crucible")
 		GameState.lab.fragments.append("copper_smelting")
 		GameState.lab.set_operation("roasting")
 		GameState.lab.toggle_chain("gas_collecting_air")

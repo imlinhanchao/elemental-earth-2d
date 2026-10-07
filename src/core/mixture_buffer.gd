@@ -11,9 +11,8 @@ var pressure: float = 101.325   # kPa (默认 1 atm)
 var volume: float = 1.0         # 容积 (升 L)
 var applied_voltage: float = 0.0 # 外加电解电压 (V)
 
-var container_type: String = "flask"
-# 额外可用器皿：玩家背包中持有的筛子/坩埚/烧杯等，由模拟层每秒同步
-var available_containers: Array = []
+# 容器：实验台为玩家选中的器皿 (items.json 的 key，"" 表示未放容器)；炉体为建筑类型；"*" 表示不限 (测试)
+var container_type: String = "*"
 var reaction_timer: float = 0.0
 # 当前允许的实验操作 (labs.json 的 key)。配方的 required_actions 必须在其中才会反应。
 # ["*"] 表示不限 (测试与旧逻辑)；实验台为玩家选中的一项；炉体为炉内能做的加热类操作。
