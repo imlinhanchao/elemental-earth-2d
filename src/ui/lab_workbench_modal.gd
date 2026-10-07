@@ -830,12 +830,48 @@ func _solution_color() -> Color:
 	c.a = 0.78
 	return ThemeStyler.adapt(c)
 
+# 容器简笔图：左右对称的半宽轮廓 Vector2(半宽, 距底高度)，自上而下排列；没登记的容器画成烧瓶
+const CONTAINER_PROFILES := {
+	"flask": [Vector2(16, 150), Vector2(16, 86), Vector2(66, 0)],
+	"wooden_bucket": [Vector2(58, 104), Vector2(47, 0)],
+	"clay_pot": [Vector2(26, 120), Vector2(22, 110), Vector2(36, 96), Vector2(55, 72), Vector2(60, 46), Vector2(52, 18), Vector2(34, 0)],
+	"crucible": [Vector2(46, 86), Vector2(38, 30), Vector2(26, 0)],
+	"kiln": [Vector2(22, 128), Vector2(22, 116), Vector2(46, 100), Vector2(60, 70), Vector2(64, 0)],
+	"blast_furnace": [Vector2(30, 150), Vector2(30, 136), Vector2(50, 104), Vector2(56, 40), Vector2(46, 0)],
+	"gas_bottle": [Vector2(20, 124), Vector2(20, 110), Vector2(46, 98), Vector2(50, 88), Vector2(50, 0)],
+	"beaker": [Vector2(48, 128), Vector2(48, 6), Vector2(44, 0)],
+	"test_tube": [Vector2(13, 168), Vector2(13, 16), Vector2(9, 5), Vector2(0, 0)],
+	"iron_tank": [Vector2(56, 112), Vector2(56, 0)],
+	"distilling_flask": [Vector2(12, 152), Vector2(12, 86), Vector2(28, 80), Vector2(44, 70), Vector2(53, 52), Vector2(52, 32), Vector2(42, 14), Vector2(24, 3), Vector2(0, 0)],
+	"evaporating_dish": [Vector2(72, 36), Vector2(58, 16), Vector2(32, 0)],
+	"sealed_tube": [Vector2(12, 156), Vector2(12, 12), Vector2(8, 3), Vector2(0, 0)],
+	"reaction_kettle": [Vector2(54, 116), Vector2(54, 24), Vector2(42, 6), Vector2(22, 0)],
+	"autoclave": [Vector2(42, 124), Vector2(42, 0)],
+	"graphite_electrolytic_cell": [Vector2(68, 92), Vector2(68, 0)],
+	"fractionating_column": [Vector2(9, 170), Vector2(9, 120), Vector2(16, 112), Vector2(9, 104), Vector2(16, 96), Vector2(9, 88), Vector2(12, 80), Vector2(42, 62), Vector2(48, 40), Vector2(38, 14), Vector2(18, 2), Vector2(0, 0)],
+	"sieve": [Vector2(68, 40), Vector2(64, 0)],
+	"reactor_vessel": [Vector2(18, 150), Vector2(44, 138), Vector2(58, 112), Vector2(60, 0)],
+}
+# 顶部封闭的容器 (画盖子)，以及画玻璃高光的容器
+const CLOSED_CONTAINERS := ["sealed_tube", "autoclave", "reaction_kettle", "reactor_vessel"]
+const GLASS_CONTAINERS := ["flask", "beaker", "test_tube", "gas_bottle", "distilling_flask", "sealed_tube", "fractionating_column"]
+
+func _container_profile(key: String) -> Array:
+	return CONTAINER_PROFILES.get(key, CONTAINER_PROFILES["flask"])
+
+# 轮廓在某高度处的半宽
+func _profile_width(prof: Array, h: float) -> float:
+	for i in range(prof.size() - 1):
+		var a: Vector2 = prof[i]
+		var b: Vector2 = prof[i + 1]
+		if h <= a.y and h >= b.y:
+			return lerpf(b.x, a.x, 0.0 if is_equal_approx(a.y, b.y) else (h - b.y) / (a.y - b.y))
+	return prof[0].x if h > prof[0].y else prof[-1].x
+
 func _on_vessel_draw() -> void:
 	var sz = vessel_draw.size
 	var cx = sz.x * 0.40
 	var bot = sz.y - 56.0
-	var neck_top = 14.0
-	var neck_bot = bot - 86.0
 	var ink = ThemeStyler.COLOR_TEXT_SECONDARY
 	var v = lab.vessel
 
@@ -849,28 +885,17 @@ func _on_vessel_draw() -> void:
 			var r = 70.0 + i * 22.0
 			vessel_draw.draw_circle(Vector2(cx, bot + 20), r, Color(1.0, 0.55 + heat * 0.3, 0.2, 0.05))
 
-	# 烧瓶液体、高光与轮廓
-	if not v.components.is_empty():
-		var fill = PackedVector2Array([Vector2(cx - 16, neck_bot + 30), Vector2(cx - 64, bot), Vector2(cx + 64, bot), Vector2(cx + 16, neck_bot + 30)])
-		vessel_draw.draw_colored_polygon(fill, _solution_color())
-		var wave: PackedVector2Array = []
-		for i in range(17):
-			var x = lerpf(cx - 16, cx + 16, i / 16.0)
-			wave.append(Vector2(x, neck_bot + 30 + sin(bubble_phase + i * 0.8) * 1.5))
-		vessel_draw.draw_polyline(wave, Color(1, 1, 1, 0.5), 1.5)
-	var outline = PackedVector2Array([Vector2(cx - 16, neck_top), Vector2(cx - 16, neck_bot), Vector2(cx - 66, bot), Vector2(cx + 66, bot), Vector2(cx + 16, neck_bot), Vector2(cx + 16, neck_top)])
-	vessel_draw.draw_polyline(outline, ink, 2.5, true)
-	vessel_draw.draw_line(Vector2(cx - 22, neck_top), Vector2(cx + 22, neck_top), ink, 2.5)
-	vessel_draw.draw_line(Vector2(cx - 40, bot - 20), Vector2(cx - 20, neck_bot + 30), Color(1, 1, 1, 0.45), 3.0)
-	if v.active_formula != "":
-		for i in range(6):
-			var ph = fmod(bubble_phase * 0.25 + i * 0.17, 1.0)
-			var p = Vector2(cx - 36 + i * 14 + sin(bubble_phase + i) * 3.0, bot - 6 - ph * 60.0)
-			vessel_draw.draw_arc(p, 2.5 + i % 2, 0, TAU, 12, ThemeStyler.adapt(Color(1, 1, 1, 0.85 * (1.0 - ph))), 1.4)
+	# 没放容器：只留台面与炉膛，中间给一行提示
+	var mouth_y: float = bot - 60.0
+	if lab.container == "":
+		var font = ThemeStyler.get_font_sans()
+		vessel_draw.draw_string(font, Vector2(cx - 120, bot - 50), "在右侧选择一件容器", HORIZONTAL_ALIGNMENT_CENTER, 240, ThemeStyler.FONT_BODY, ThemeStyler.COLOR_TEXT_MUTED)
+	else:
+		mouth_y = _draw_container(lab.container, cx, bot, ink)
 
 	# 追加操作：集气导管与集气瓶 / 冷凝管
-	if not lab.chain_ops.is_empty():
-		var tube = PackedVector2Array([Vector2(cx + 6, neck_top + 4), Vector2(cx + 6, neck_top - 4), Vector2(cx + 110, neck_top - 4), Vector2(cx + 110, bot - 40)])
+	if lab.container != "" and not lab.chain_ops.is_empty():
+		var tube = PackedVector2Array([Vector2(cx + 6, mouth_y + 4), Vector2(cx + 6, mouth_y - 4), Vector2(cx + 110, mouth_y - 4), Vector2(cx + 110, bot - 40)])
 		vessel_draw.draw_polyline(tube, ink, 2.0)
 		var jar = Rect2(cx + 88, bot - 60, 44, 60)
 		vessel_draw.draw_rect(jar, ThemeStyler.COLOR_INFO.lerp(Color(1, 1, 1, 0), 0.75), true)
@@ -897,14 +922,15 @@ func _on_vessel_draw() -> void:
 				vessel_draw.draw_colored_polygon(PackedVector2Array([Vector2(fx - 10, grate_y), Vector2(fx + sin(bubble_phase + i) * 3.0, grate_y - h), Vector2(fx + 10, grate_y)]), outer)
 				vessel_draw.draw_colored_polygon(PackedVector2Array([Vector2(fx - 4, grate_y), Vector2(fx, grate_y - h * 0.55), Vector2(fx + 4, grate_y)]), Color(1.0, 0.96, 0.78))
 	# 电极与电弧
-	if lab.needs_power():
+	if lab.needs_power() and lab.container != "":
 		var live = lab.power_left > 0.0
 		var ec = ThemeStyler.COLOR_INFO if live else ink
-		for dx in [-18.0, 18.0]:
-			vessel_draw.draw_line(Vector2(cx + dx, neck_top - 6), Vector2(cx + dx, bot - 14), ec, 4.0)
+		var ex = clampf(_container_profile(lab.container)[0].x - 5.0, 4.0, 18.0)
+		for dx in [-ex, ex]:
+			vessel_draw.draw_line(Vector2(cx + dx, mouth_y - 6), Vector2(cx + dx, bot - 14), ec, 4.0)
 		if live:
 			var y = bot - 36 + sin(bubble_phase) * 8.0
-			vessel_draw.draw_polyline(PackedVector2Array([Vector2(cx - 18, y), Vector2(cx - 6, y - 7), Vector2(cx + 5, y + 5), Vector2(cx + 18, y - 2)]), ec, 2.0)
+			vessel_draw.draw_polyline(PackedVector2Array([Vector2(cx - ex, y), Vector2(cx - ex * 0.33, y - 7), Vector2(cx + ex * 0.28, y + 5), Vector2(cx + ex, y - 2)]), ec, 2.0)
 
 	# 温度计：当前温度、火焰可达温度、手稿配方的目标温度
 	var tx = sz.x - 54.0
@@ -924,3 +950,134 @@ func _on_vessel_draw() -> void:
 	if lab.fire_lit:
 		var fy = tb - clampf((lab.flame_temp() - 273.15) / THERMO_MAX_C, 0.0, 1.0) * span
 		vessel_draw.draw_colored_polygon(PackedVector2Array([Vector2(tx - 8, fy), Vector2(tx - 16, fy - 5), Vector2(tx - 16, fy + 5)]), ThemeStyler.COLOR_ACCENT)
+
+# 画出容器 (液体、气泡、轮廓与细节)，返回容器口的 y 坐标
+func _draw_container(key: String, cx: float, bot: float, ink: Color) -> float:
+	var v = lab.vessel
+	var prof = _container_profile(key)
+	var height: float = prof[0].y
+	var k = minf(1.0, (bot - 18.0) / height) # 画布不够高时整体缩小
+	var top = bot - height * k
+	var pt = func(w: float, h: float, side: float) -> Vector2: return Vector2(cx + side * w * k, bot - h * k)
+
+	# 液体：液面高度随内容物多少变化
+	if not v.components.is_empty():
+		var level = height * clampf(0.22 + v.total_moles() * 0.05, 0.22, 0.6)
+		var fill := PackedVector2Array()
+		for i in range(prof.size() - 1, -1, -1):
+			if prof[i].y < level:
+				fill.append(pt.call(prof[i].x, prof[i].y, -1.0))
+		var lw = _profile_width(prof, level)
+		fill.append(pt.call(lw, level, -1.0))
+		fill.append(pt.call(lw, level, 1.0))
+		for i in range(prof.size()):
+			if prof[i].y < level and prof[i].x > 0.0:
+				fill.append(pt.call(prof[i].x, prof[i].y, 1.0))
+		vessel_draw.draw_colored_polygon(fill, _solution_color())
+		var wave: PackedVector2Array = []
+		for i in range(17):
+			var x = lerpf(cx - lw * k, cx + lw * k, i / 16.0)
+			wave.append(Vector2(x, bot - level * k + sin(bubble_phase + i * 0.8) * 1.5))
+		vessel_draw.draw_polyline(wave, Color(1, 1, 1, 0.5), 1.5)
+		if v.active_formula != "":
+			var bw = _profile_width(prof, 8.0) * k * 0.6
+			for i in range(6):
+				var ph = fmod(bubble_phase * 0.25 + i * 0.17, 1.0)
+				var p = Vector2(cx + lerpf(-bw, bw, i / 5.0) + sin(bubble_phase + i) * 2.0, bot - 6 - ph * (level * k - 8.0))
+				vessel_draw.draw_arc(p, 2.5 + i % 2, 0, TAU, 12, ThemeStyler.adapt(Color(1, 1, 1, 0.85 * (1.0 - ph))), 1.4)
+
+	# 轮廓：左侧自上而下，再沿右侧回到顶部
+	var outline := PackedVector2Array()
+	for q in prof:
+		outline.append(pt.call(q.x, q.y, -1.0))
+	# 尖底的最低点 (半宽 0) 只出现一次；平底由左右两个底角相连成底边
+	for i in range(prof.size() - 1, -1, -1):
+		if prof[i].x > 0.0:
+			outline.append(pt.call(prof[i].x, prof[i].y, 1.0))
+	vessel_draw.draw_polyline(outline, ink, 2.5, true)
+	var mw = prof[0].x * k
+	if CLOSED_CONTAINERS.has(key):
+		vessel_draw.draw_line(Vector2(cx - mw - 4, top), Vector2(cx + mw + 4, top), ink, 4.0)
+	elif mw < 30.0:
+		vessel_draw.draw_line(Vector2(cx - mw - 6, top), Vector2(cx + mw + 6, top), ink, 2.5) # 瓶口外沿
+	if GLASS_CONTAINERS.has(key):
+		var h1 = height * 0.18
+		var h2 = minf(height * 0.5, height - 10.0)
+		vessel_draw.draw_line(pt.call(_profile_width(prof, h1) * 0.72, h1, -1.0), pt.call(_profile_width(prof, h2) * 0.72, h2, -1.0), Color(1, 1, 1, 0.45), 3.0)
+	_draw_container_details(key, cx, bot, top, k, ink)
+	return top
+
+# 各容器的识别细节：箍、提手、刻度、铆钉、搅拌桨等
+func _draw_container_details(key: String, cx: float, bot: float, top: float, k: float, ink: Color) -> void:
+	var prof = _container_profile(key)
+	var at = func(h: float) -> float: return _profile_width(prof, h) * k
+	var y = func(h: float) -> float: return bot - h * k
+	match key:
+		"wooden_bucket":
+			for h in [18.0, 84.0]:
+				vessel_draw.draw_line(Vector2(cx - at.call(h), y.call(h)), Vector2(cx + at.call(h), y.call(h)), ink, 3.0)
+			for i in range(1, 5):
+				var t = i / 5.0
+				vessel_draw.draw_line(Vector2(cx + lerpf(-at.call(100.0), at.call(100.0), t), y.call(100.0)), Vector2(cx + lerpf(-at.call(4.0), at.call(4.0), t), y.call(4.0)), ink.lerp(Color(1, 1, 1, 0), 0.6), 1.0)
+			vessel_draw.draw_arc(Vector2(cx, top), at.call(104.0) * 0.9, PI, TAU, 24, ink, 2.0)
+		"clay_pot", "kiln":
+			if key == "kiln":
+				vessel_draw.draw_arc(Vector2(cx, y.call(0.0)), 18.0 * k, PI, TAU, 16, ink, 2.0)
+				for h in [24.0, 48.0, 72.0]:
+					vessel_draw.draw_line(Vector2(cx - at.call(h), y.call(h)), Vector2(cx + at.call(h), y.call(h)), ink.lerp(Color(1, 1, 1, 0), 0.6), 1.0)
+			else:
+				var hh = 60.0
+				var pts: PackedVector2Array = []
+				for i in range(13):
+					var x = lerpf(-at.call(hh), at.call(hh), i / 12.0)
+					pts.append(Vector2(cx + x, y.call(hh) + sin(i * 1.4) * 3.0))
+				vessel_draw.draw_polyline(pts, ink.lerp(Color(1, 1, 1, 0), 0.5), 1.5)
+		"beaker", "test_tube", "gas_bottle":
+			var steps = 4 if key == "beaker" else 3
+			var mh: float = prof[0].y
+			for i in range(1, steps + 1):
+				var h = mh * 0.82 * i / (steps + 1)
+				var w = at.call(h)
+				vessel_draw.draw_line(Vector2(cx + w - 10.0 * k, y.call(h)), Vector2(cx + w, y.call(h)), ink, 1.2)
+			if key == "beaker":
+				vessel_draw.draw_line(Vector2(cx - at.call(128.0), top), Vector2(cx - at.call(128.0) - 8, top - 5), ink, 2.5) # 杯嘴
+		"iron_tank", "autoclave", "graphite_electrolytic_cell":
+			var w = at.call(10.0)
+			for h in [10.0, prof[0].y - 10.0]:
+				for i in range(5):
+					vessel_draw.draw_circle(Vector2(cx + lerpf(-w + 8, w - 8, i / 4.0), y.call(h)), 2.2, ink)
+			if key == "autoclave":
+				vessel_draw.draw_circle(Vector2(cx + 20 * k, top - 12), 8.0, ThemeStyler.COLOR_BG_SOLID)
+				vessel_draw.draw_arc(Vector2(cx + 20 * k, top - 12), 8.0, 0, TAU, 16, ink, 2.0)
+				vessel_draw.draw_line(Vector2(cx + 20 * k, top - 12), Vector2(cx + 20 * k + 5, top - 16), ThemeStyler.COLOR_DANGER, 1.5)
+				vessel_draw.draw_line(Vector2(cx + 20 * k, top), Vector2(cx + 20 * k, top - 4), ink, 2.0)
+			elif key == "graphite_electrolytic_cell":
+				for dx in [-0.5, 0.5]:
+					vessel_draw.draw_rect(Rect2(cx + dx * at.call(40.0) - 5, top - 14, 10, 70 * k), ThemeStyler.adapt(Color(0.25, 0.25, 0.27)), true)
+		"reaction_kettle":
+			vessel_draw.draw_rect(Rect2(cx - 12, top - 22, 24, 18), ink, false, 2.0)
+			vessel_draw.draw_line(Vector2(cx, top - 4), Vector2(cx, y.call(18.0)), ink, 2.0)
+			var r = sin(bubble_phase * 0.8) * 16.0 * k
+			vessel_draw.draw_line(Vector2(cx - absf(r) - 6, y.call(18.0)), Vector2(cx + absf(r) + 6, y.call(18.0)), ink, 3.0)
+		"distilling_flask":
+			vessel_draw.draw_line(Vector2(cx + at.call(120.0), y.call(120.0)), Vector2(cx + 54 * k, y.call(104.0)), ink, 2.5) # 支管
+		"evaporating_dish":
+			vessel_draw.draw_line(Vector2(cx - at.call(36.0) - 6, top), Vector2(cx - at.call(36.0) + 4, top + 4), ink, 2.0)
+		"sealed_tube":
+			vessel_draw.draw_arc(Vector2(cx, top), at.call(150.0), PI, TAU, 12, ink, 2.5)
+		"fractionating_column":
+			vessel_draw.draw_line(Vector2(cx + at.call(160.0), y.call(160.0)), Vector2(cx + 44 * k, y.call(150.0)), ink, 2.5)
+		"sieve":
+			var w = at.call(20.0)
+			for i in range(1, 8):
+				var x = lerpf(-w, w, i / 8.0)
+				vessel_draw.draw_line(Vector2(cx + x, y.call(4.0)), Vector2(cx + x + 6, y.call(36.0)), ink.lerp(Color(1, 1, 1, 0), 0.5), 1.0)
+				vessel_draw.draw_line(Vector2(cx + x + 6, y.call(4.0)), Vector2(cx + x, y.call(36.0)), ink.lerp(Color(1, 1, 1, 0), 0.5), 1.0)
+		"reactor_vessel":
+			var cyp = Vector2(cx, y.call(60.0))
+			vessel_draw.draw_arc(cyp, 14.0, 0, TAU, 20, ThemeStyler.COLOR_INFO, 2.0)
+			for i in range(3):
+				vessel_draw.draw_line(cyp, cyp + Vector2.from_angle(i * TAU / 3.0 + bubble_phase * 0.2) * 10.0, ThemeStyler.COLOR_INFO, 2.0)
+		"blast_furnace":
+			for h in [30.0, 70.0, 110.0]:
+				vessel_draw.draw_line(Vector2(cx - at.call(h), y.call(h)), Vector2(cx + at.call(h), y.call(h)), ink.lerp(Color(1, 1, 1, 0), 0.6), 1.0)

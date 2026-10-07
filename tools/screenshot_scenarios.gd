@@ -58,6 +58,37 @@ static func run(w: Node2D, arg_name: String) -> void:
 		GameState.lab.add_fuel("charcoal")
 		GameState.lab.ignite()
 		w.hud.lab_modal._refresh_all()
+	elif arg_name == "--screenshot-lab-gallery":
+		# 所有容器的简笔图拼成一张图：每格为实验装置区域，放入少量试剂显示液面
+		var lab_modal = w.hud.lab_modal
+		var keys: Array = ["", "wooden_bucket", "clay_pot", "crucible", "kiln", "gas_bottle", "beaker", "test_tube", "iron_tank",
+			"distilling_flask", "evaporating_dish", "sealed_tube", "reaction_kettle", "autoclave", "graphite_electrolytic_cell",
+			"fractionating_column", "sieve", "blast_furnace", "reactor_vessel"]
+		for k in keys:
+			if k != "":
+				GameState.inventory.add_item(k, 1)
+		GameState.inventory.add_item("water", 50)
+		lab_modal.open()
+		var sheet: Image = null
+		var cols := 5
+		for i in range(keys.size()):
+			lab_modal.lab.retrieve_all()
+			lab_modal.lab.set_container(keys[i])
+			if keys[i] != "":
+				lab_modal.lab.add_reagent("water", 3)
+			lab_modal._refresh_all()
+			await w.get_tree().create_timer(0.15).timeout
+			var img = w.get_viewport().get_texture().get_image()
+			# 画布按窗口拉伸，换算到截图像素
+			var scale = Vector2(img.get_size()) / w.get_viewport().get_visible_rect().size
+			var r = lab_modal.vessel_draw.get_global_rect()
+			var cell = img.get_region(Rect2i(Vector2i(r.position * scale), Vector2i(r.size * scale)))
+			if sheet == null:
+				sheet = Image.create(cell.get_width() * cols, cell.get_height() * int(ceil(keys.size() / float(cols))), false, cell.get_format())
+				sheet.fill(Color.WHITE)
+			sheet.blit_rect(cell, Rect2i(Vector2i.ZERO, cell.get_size()), Vector2i((i % cols) * cell.get_width(), (i / cols) * cell.get_height()))
+		sheet.save_png(ProjectSettings.globalize_path("res://screenshot_lab_gallery.png"))
+		print("[Screenshot] lab gallery saved")
 	elif arg_name == "--screenshot-codex":
 		GameState.lab.seen_items["wood"] = true
 		GameState.lab.fragments.append("copper_smelting")
