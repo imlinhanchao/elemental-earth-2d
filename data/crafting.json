@@ -1430,5 +1430,604 @@
     "result_item": "kiln",
     "result_quantity": 1,
     "notice": "制作成功！获得【窑炉】，可用于烧制陶器与高温炉研发。"
+  },
+  {
+    "key": "cut_stone",
+    "name": "加工石块",
+    "era": 0,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "stone",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "stone_masonry"
+    ],
+    "result_item": "cut_stone",
+    "result_tool": null,
+    "result_quantity": 2,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得加工石块 ×2"
+  },
+  {
+    "key": "blue_brick",
+    "name": "青砖",
+    "era": 1,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "clay",
+        "quantity": 4
+      }
+    ],
+    "required_techs": [
+      "stone_masonry"
+    ],
+    "result_item": "blue_brick",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得青砖 ×1"
+  },
+  {
+    "key": "roman_concrete",
+    "name": "混凝土",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "cement",
+        "quantity": 2
+      },
+      {
+        "key": "limestone",
+        "quantity": 2
+      },
+      {
+        "key": "water",
+        "quantity": 1
+      },
+      {
+        "key": "sand",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "roman_architecture"
+    ],
+    "result_item": "roman_concrete",
+    "result_tool": null,
+    "result_quantity": 4,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得混凝土 ×4"
+  },
+  {
+    "key": "rivet",
+    "name": "铆钉",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 1
+      },
+      {
+        "key": "pottery_mold",
+        "quantity": 1,
+        "use": 0.01
+      }
+    ],
+    "required_techs": [
+      "iron_tool_crafting"
+    ],
+    "result_item": "rivet",
+    "result_tool": null,
+    "result_quantity": 10,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得铆钉 ×10"
+  },
+  {
+    "key": "lead_bricks",
+    "name": "铅砖",
+    "era": 5,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "lead",
+        "quantity": 4
+      },
+      {
+        "key": "pottery_mold",
+        "quantity": 1,
+        "use": 0.01
+      }
+    ],
+    "required_techs": [
+      "nuclear_reactor_tech"
+    ],
+    "result_item": "lead_bricks",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得铅砖 ×1"
+  },
+  {
+    "key": "blast_furnace",
+    "name": "高炉",
+    "era": 1,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "fire_brick",
+        "quantity": 10
+      },
+      {
+        "key": "clay",
+        "quantity": 5
+      },
+      {
+        "key": "bellows",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "high_temp_furnace"
+    ],
+    "result_item": "blast_furnace",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得高炉 ×1"
+  },
+  {
+    "key": "reactor_vessel",
+    "name": "核反应堆",
+    "era": 5,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 10
+      },
+      {
+        "key": "lead",
+        "quantity": 5
+      },
+      {
+        "key": "stainless_steel",
+        "quantity": 3
+      },
+      {
+        "key": "uranium_oxide",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "nuclear_reactor_tech"
+    ],
+    "result_item": "reactor_vessel",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得核反应堆 ×1"
+  },
+  {
+    "key": "magnesium_aluminum_alloy",
+    "name": "镁铝合金",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "magnesium",
+        "quantity": 5
+      },
+      {
+        "key": "aluminum",
+        "quantity": 10
+      }
+    ],
+    "required_techs": [
+      "magnesium_aluminum_alloying"
+    ],
+    "result_item": "magnesium_aluminum_alloy",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得镁铝合金 ×1"
+  },
+  {
+    "key": "liquid_hydrogen",
+    "name": "液氢",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "hydrogen",
+        "quantity": 10
+      },
+      {
+        "key": "steel_cylinder",
+        "quantity": 1,
+        "use": 0.1
+      }
+    ],
+    "required_techs": [
+      "gas_liquefaction"
+    ],
+    "result_item": "liquid_hydrogen",
+    "result_tool": null,
+    "result_quantity": 5,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得液氢 ×5"
+  },
+  {
+    "key": "liquid_oxygen",
+    "name": "液氧",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "oxygen",
+        "quantity": 10
+      },
+      {
+        "key": "steel_cylinder",
+        "quantity": 1,
+        "use": 0.1
+      }
+    ],
+    "required_techs": [
+      "gas_liquefaction"
+    ],
+    "result_item": "liquid_oxygen",
+    "result_tool": null,
+    "result_quantity": 5,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得液氧 ×5"
+  },
+  {
+    "key": "liquid_helium",
+    "name": "液氦",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "helium",
+        "quantity": 10
+      },
+      {
+        "key": "steel_cylinder",
+        "quantity": 1,
+        "use": 0.1
+      }
+    ],
+    "required_techs": [
+      "gas_liquefaction"
+    ],
+    "result_item": "liquid_helium",
+    "result_tool": null,
+    "result_quantity": 5,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得液氦 ×5"
+  },
+  {
+    "key": "solar_cell",
+    "name": "太阳能电池",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "silicon",
+        "quantity": 2
+      },
+      {
+        "key": "glass",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "solar_cell_manufacturing"
+    ],
+    "result_item": "solar_cell",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得太阳能电池 ×1"
+  },
+  {
+    "key": "launch_vehicle",
+    "name": "运载火箭",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "magnesium_aluminum_alloy",
+        "quantity": 20
+      },
+      {
+        "key": "liquid_hydrogen",
+        "quantity": 10
+      },
+      {
+        "key": "liquid_oxygen",
+        "quantity": 10
+      }
+    ],
+    "required_techs": [
+      "jet_propulsion_tech"
+    ],
+    "result_item": "launch_vehicle",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得运载火箭 ×1"
+  },
+  {
+    "key": "space_station",
+    "name": "空间站",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "magnesium_aluminum_alloy",
+        "quantity": 40
+      },
+      {
+        "key": "solar_cell",
+        "quantity": 10
+      },
+      {
+        "key": "steel",
+        "quantity": 20
+      }
+    ],
+    "required_techs": [
+      "solar_cell_manufacturing"
+    ],
+    "result_item": "space_station",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得空间站 ×1"
+  },
+  {
+    "key": "launched_space_station",
+    "name": "和平号空间站",
+    "era": 4,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "launch_vehicle",
+        "quantity": 1
+      },
+      {
+        "key": "space_station",
+        "quantity": 1
+      }
+    ],
+    "required_techs": [
+      "jet_propulsion_tech"
+    ],
+    "result_item": "launched_space_station",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得和平号空间站 ×1"
+  },
+  {
+    "key": "giza_pyramid",
+    "name": "埃及金字塔",
+    "era": 1,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "cut_stone",
+        "quantity": 200
+      }
+    ],
+    "required_techs": [
+      "stone_masonry"
+    ],
+    "result_item": "giza_pyramid",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得埃及金字塔 ×1"
+  },
+  {
+    "key": "four_goat_zun",
+    "name": "四羊方尊",
+    "era": 1,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "bronze",
+        "quantity": 20
+      },
+      {
+        "key": "pottery_mold",
+        "quantity": 2
+      }
+    ],
+    "required_techs": [
+      "mold_making"
+    ],
+    "result_item": "four_goat_zun",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得四羊方尊 ×1"
+  },
+  {
+    "key": "ming_great_wall",
+    "name": "万里长城",
+    "era": 1,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "blue_brick",
+        "quantity": 200
+      },
+      {
+        "key": "sticky_rice_mortar",
+        "quantity": 20
+      }
+    ],
+    "required_techs": [
+      "rammed_earth_technology"
+    ],
+    "result_item": "ming_great_wall",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得万里长城 ×1"
+  },
+  {
+    "key": "pantheon",
+    "name": "罗马万神殿",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "cut_stone",
+        "quantity": 20
+      },
+      {
+        "key": "roman_concrete",
+        "quantity": 40
+      },
+      {
+        "key": "wood",
+        "quantity": 20
+      }
+    ],
+    "required_techs": [
+      "stone_masonry",
+      "roman_architecture"
+    ],
+    "result_item": "pantheon",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得罗马万神殿 ×1"
+  },
+  {
+    "key": "eiffel_tower",
+    "name": "埃菲尔铁塔",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "steel",
+        "quantity": 300
+      },
+      {
+        "key": "rivet",
+        "quantity": 250
+      }
+    ],
+    "required_techs": [
+      "steel_construction"
+    ],
+    "result_item": "eiffel_tower",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得埃菲尔铁塔 ×1"
+  },
+  {
+    "key": "yinxian_pagoda",
+    "name": "应县木塔",
+    "era": 1,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "wood",
+        "quantity": 200
+      },
+      {
+        "key": "tenon_mortise",
+        "quantity": 40
+      },
+      {
+        "key": "cut_stone",
+        "quantity": 10
+      }
+    ],
+    "required_techs": [
+      "tenon_mortise_tech"
+    ],
+    "result_item": "yinxian_pagoda",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "制作完成，获得应县木塔 ×1"
+  },
+  {
+    "key": "collect_air",
+    "name": "收集空气",
+    "era": 2,
+    "type": "item",
+    "slot": null,
+    "required_items": [
+      {
+        "key": "gas_bottle",
+        "quantity": 1,
+        "use": 0.05
+      }
+    ],
+    "required_techs": [
+      "gas_collection"
+    ],
+    "result_item": "air",
+    "result_tool": null,
+    "result_quantity": 1,
+    "milestone": null,
+    "description": "",
+    "notice": "收集到一瓶空气"
   }
 ]

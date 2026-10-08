@@ -13,6 +13,8 @@ static var buildings: Dictionary = {}
 static var techs: Dictionary = {}
 static var techs_list: Array = []
 static var labs: Dictionary = {}
+# 采集伴生掉落 (data/harvest_drops.json)：稀有矿石、海水、海藻、糯米、动物脂肪等
+static var harvest_drops: Array = []
 static var _is_initialized: bool = false
 
 static func initialize() -> void:
@@ -27,6 +29,10 @@ static func initialize() -> void:
 	_load_buildings("res://data/buildings.json")
 	_load_techs("res://data/techs.json")
 	_load_labs("res://data/labs.json")
+	var hf = FileAccess.open("res://data/harvest_drops.json", FileAccess.READ)
+	if hf:
+		var hd = JSON.parse_string(hf.get_as_text())
+		harvest_drops = hd if hd is Array else []
 	_is_initialized = true
 	print("[DataDB] 初始化完成: 已加载 %d 个物品, %d 个元素, %d 个配方, %d 个行动, %d 个时代, %d 个制造配方, %d 个建筑配方, %d 项科技, %d 项实验操作" % [
 		items.size(), elements.size(), formulas.size(), actions.size(), eras.size(), crafting.size(), buildings.size(), techs.size(), labs.size()

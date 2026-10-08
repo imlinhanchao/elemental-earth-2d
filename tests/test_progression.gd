@@ -450,6 +450,29 @@ func _initialize() -> void:
 	rb.produced["charcoal"] = true
 	_check(rb.retrieve("charcoal", -1) == 1 and not rb.produced.has("charcoal"), "产物按四舍五入取回")
 
+	# 采集伴生掉落：时代、群系、科技、持有物品条件
+	sim.reset_to_new_game()
+	var volc := Vector2i(9999, 9999)
+	var forest := Vector2i(9999, 9999)
+	for h in sim.world_biomes.keys():
+		if volc.x == 9999 and sim.world_biomes[h] == sim.B_VOLCANO: volc = h
+		if forest.x == 9999 and sim.world_biomes[h] == sim.B_FOREST: forest = h
+	var cinnabar = {}
+	var fat = {}
+	for d in DataDB.harvest_drops:
+		if d["item"] == "cinnabar": cinnabar = d
+		if d["item"] == "animal_fat": fat = d
+	sim.current_era = 0
+	_check(not sim.harvest_drop_applies(cinnabar, volc, "hematite", sim.B_VOLCANO), "石器时代挖矿不会掉辰砂")
+	sim.current_era = 1
+	_check(sim.harvest_drop_applies(cinnabar, volc, "hematite", sim.B_VOLCANO), "炼金术时代在火山挖矿可能掉辰砂")
+	_check(not sim.harvest_drop_applies(cinnabar, forest, "coal", sim.B_FOREST), "辰砂不在深林掉落")
+	_check(not sim.harvest_drop_applies(cinnabar, volc, "stone", sim.B_VOLCANO), "捡碎石不掉矿石")
+	_check(not sim.harvest_drop_applies(fat, forest, "wood", sim.B_FOREST), "没有标枪不能狩猎")
+	sim.inventory.add_item("javelin", 1)
+	_check(sim.harvest_drop_applies(fat, forest, "wood", sim.B_FOREST), "持有标枪在深林伐木可能猎到动物脂肪")
+	sim.inventory.remove_item("javelin", 1)
+
 	if _failed == 0:
 		print("🎉 进程死锁修复测试全部通过")
 		quit(0)

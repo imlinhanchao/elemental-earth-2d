@@ -11521,5 +11521,369 @@
         "required_chain_operation": "gas_collecting_air"
       }
     ]
+  },
+  {
+    "key": "acidify_sodium_chromate",
+    "name": "铬酸钠酸化制重铬酸钠",
+    "description": "向铬酸钠溶液中加入稀硫酸，黄色溶液转为橙红色的重铬酸钠。",
+    "fragment_description": "向#sodium_chromate#里加入#dilute_sulfuric_acid#并$stirring$，黄色会转成橙红，析出#sodium_dichromate#。",
+    "time_required": 15,
+    "required_era": "modern_chem",
+    "required_container": [
+      "beaker",
+      "clay_pot"
+    ],
+    "required_actions": {
+      "key": "stirring",
+      "min": 1
+    },
+    "required_items": [
+      {
+        "key": "sodium_chromate",
+        "quantity": 2,
+        "isMain": true
+      },
+      {
+        "key": "dilute_sulfuric_acid",
+        "quantity": 1
+      }
+    ],
+    "products": [
+      {
+        "key": "sodium_dichromate",
+        "multiple": 1
+      },
+      {
+        "key": "sodium_sulfate",
+        "multiple": 1
+      }
+    ]
+  },
+  {
+    "key": "reduce_sodium_dichromate",
+    "name": "木炭还原重铬酸钠制氧化铬",
+    "description": "重铬酸钠与木炭共热，被还原为墨绿色的三氧化二铬。",
+    "fragment_description": "把#sodium_dichromate#和#charcoal#一起$roasting$，橙红色会变成墨绿色的#chromium_oxide#。",
+    "time_required": 20,
+    "required_era": "modern_chem",
+    "required_container": [
+      "kiln",
+      "crucible"
+    ],
+    "required_actions": {
+      "key": "roasting",
+      "min": 1
+    },
+    "required_items": [
+      {
+        "key": "sodium_dichromate",
+        "quantity": 1,
+        "isMain": true
+      },
+      {
+        "key": "charcoal",
+        "quantity": 1
+      }
+    ],
+    "products": [
+      {
+        "key": "chromium_oxide",
+        "multiple": 1
+      },
+      {
+        "key": "sodium_carbonate",
+        "multiple": 1
+      },
+      {
+        "key": "carbon_monoxide",
+        "multiple": 1,
+        "required_chain_operation": "gas_collecting"
+      }
+    ]
+  },
+  {
+    "key": "precipitate_lanthanum_oxalate",
+    "name": "草酸沉淀镧",
+    "description": "向氯化镧溶液中滴加草酸，析出白色的草酸镧沉淀。",
+    "fragment_description": "往#lanthanum_chloride#溶液里滴#oxalic_acid#，静置后$precipitation$出白色的#lanthanum_oxalate#。",
+    "time_required": 20,
+    "required_era": "rare_earth",
+    "required_container": [
+      "beaker",
+      "test_tube"
+    ],
+    "required_actions": {
+      "key": "precipitation",
+      "min": 1
+    },
+    "required_items": [
+      {
+        "key": "lanthanum_chloride",
+        "quantity": 1,
+        "isMain": true
+      },
+      {
+        "key": "oxalic_acid",
+        "quantity": 1
+      }
+    ],
+    "products": [
+      {
+        "key": "lanthanum_oxalate",
+        "multiple": 1
+      },
+      {
+        "key": "hydrochloric_acid",
+        "multiple": 1
+      }
+    ]
+  },
+  {
+    "key": "precipitate_cerium_oxalate",
+    "name": "草酸沉淀铈",
+    "description": "向氯化铈溶液中滴加草酸，析出白色的草酸铈沉淀。",
+    "fragment_description": "往#cerium_chloride#溶液里滴#oxalic_acid#，$precipitation$出白色的#cerium_oxalate#。",
+    "time_required": 20,
+    "required_era": "rare_earth",
+    "required_container": [
+      "beaker",
+      "test_tube"
+    ],
+    "required_actions": {
+      "key": "precipitation",
+      "min": 1
+    },
+    "required_items": [
+      {
+        "key": "cerium_chloride",
+        "quantity": 1,
+        "isMain": true
+      },
+      {
+        "key": "oxalic_acid",
+        "quantity": 1
+      }
+    ],
+    "products": [
+      {
+        "key": "cerium_oxalate",
+        "multiple": 1
+      },
+      {
+        "key": "hydrochloric_acid",
+        "multiple": 1
+      }
+    ]
+  },
+  {
+    "key": "dissolve_zinc_sulfate",
+    "name": "溶解硫酸锌",
+    "description": "把硫酸锌溶于水，得到澄清的硫酸锌溶液。",
+    "fragment_description": "把#zinc_sulfate#放进#water#里$dissolving$，得到透明的#zinc_sulfate_solution#。",
+    "time_required": 8,
+    "required_era": "modern_chem",
+    "required_container": [
+      "beaker",
+      "clay_pot"
+    ],
+    "required_actions": {
+      "key": "dissolving",
+      "min": 1
+    },
+    "required_items": [
+      {
+        "key": "zinc_sulfate",
+        "quantity": 1,
+        "isMain": true
+      },
+      {
+        "key": "water",
+        "quantity": 1
+      }
+    ],
+    "products": [
+      {
+        "key": "zinc_sulfate_solution",
+        "multiple": 1
+      }
+    ]
+  },
+  {
+    "key": "grind_cassiterite",
+    "name": "碾磨锡石",
+    "description": "锡石的主要成分就是氧化锡，碾磨去除脉石后得到较纯的氧化锡粉末。",
+    "fragment_description": "把#cassiterite#仔细$grinding$，拣去杂石，留下淡黄色的#tin_oxide#粉末。",
+    "time_required": 10,
+    "required_era": "alchemy",
+    "required_container": [
+      "clay_pot",
+      "crucible"
+    ],
+    "required_actions": {
+      "key": "grinding",
+      "min": 1
+    },
+    "required_items": [
+      {
+        "key": "cassiterite",
+        "quantity": 1,
+        "isMain": true
+      }
+    ],
+    "products": [
+      {
+        "key": "tin_oxide",
+        "multiple": 1
+      }
+    ]
+  },
+  {
+    "key": "carbonate_lead_oxide",
+    "name": "氧化铅碳酸化",
+    "description": "氧化铅在碳酸水中缓慢转化为白色的碳酸铅（铅白）。",
+    "fragment_description": "把#lead_oxide#泡进#carbonated_water#里$stirring$，黄色粉末慢慢变成白色的#lead_carbonate#。",
+    "time_required": 15,
+    "required_era": "modern_chem",
+    "required_container": [
+      "beaker",
+      "clay_pot"
+    ],
+    "required_actions": {
+      "key": "stirring",
+      "min": 1
+    },
+    "required_items": [
+      {
+        "key": "lead_oxide",
+        "quantity": 1,
+        "isMain": true
+      },
+      {
+        "key": "carbonated_water",
+        "quantity": 1
+      }
+    ],
+    "products": [
+      {
+        "key": "lead_carbonate",
+        "multiple": 1
+      },
+      {
+        "key": "water",
+        "multiple": 1
+      }
+    ]
+  },
+  {
+    "key": "precipitate_iron_carbonate",
+    "name": "纯碱沉淀碳酸亚铁",
+    "description": "硫酸亚铁溶液与纯碱反应，析出灰白色的碳酸亚铁沉淀。",
+    "fragment_description": "把#ferrous_sulfate#和#sodium_carbonate#混合，$precipitation$出灰白色的#iron_carbonate#。",
+    "time_required": 20,
+    "required_era": "modern_chem",
+    "required_container": [
+      "beaker",
+      "test_tube"
+    ],
+    "required_actions": {
+      "key": "precipitation",
+      "min": 1
+    },
+    "required_items": [
+      {
+        "key": "ferrous_sulfate",
+        "quantity": 1,
+        "isMain": true
+      },
+      {
+        "key": "sodium_carbonate",
+        "quantity": 1
+      }
+    ],
+    "products": [
+      {
+        "key": "iron_carbonate",
+        "multiple": 1
+      },
+      {
+        "key": "sodium_sulfate",
+        "multiple": 1
+      }
+    ]
+  },
+  {
+    "key": "precipitate_manganese_carbonate",
+    "name": "纯碱沉淀碳酸锰",
+    "description": "硫酸锰溶液与纯碱反应，析出淡粉色的碳酸锰沉淀。",
+    "fragment_description": "把#manganese_sulfate#和#sodium_carbonate#混合，$precipitation$出淡粉色的#manganese_carbonate#。",
+    "time_required": 20,
+    "required_era": "modern_chem",
+    "required_container": [
+      "beaker",
+      "test_tube"
+    ],
+    "required_actions": {
+      "key": "precipitation",
+      "min": 1
+    },
+    "required_items": [
+      {
+        "key": "manganese_sulfate",
+        "quantity": 1,
+        "isMain": true
+      },
+      {
+        "key": "sodium_carbonate",
+        "quantity": 1
+      }
+    ],
+    "products": [
+      {
+        "key": "manganese_carbonate",
+        "multiple": 1
+      },
+      {
+        "key": "sodium_sulfate",
+        "multiple": 1
+      }
+    ]
+  },
+  {
+    "key": "silver_in_aqua_regia",
+    "name": "王水溶银",
+    "description": "银在王水中被氧化，并立即生成不溶的白色氯化银覆盖在表面。",
+    "fragment_description": "把#silver#丢进#aqua_regia#里$dissolving$，银会变成一层白色的#silver_chloride#。",
+    "time_required": 15,
+    "required_era": "modern_chem",
+    "required_container": [
+      "beaker",
+      "test_tube"
+    ],
+    "required_actions": {
+      "key": "dissolving",
+      "min": 1
+    },
+    "required_items": [
+      {
+        "key": "silver",
+        "quantity": 1,
+        "isMain": true
+      },
+      {
+        "key": "aqua_regia",
+        "quantity": 1
+      }
+    ],
+    "products": [
+      {
+        "key": "silver_chloride",
+        "multiple": 1
+      },
+      {
+        "key": "nitrogen_monoxide",
+        "multiple": 1,
+        "required_chain_operation": "gas_collecting"
+      }
+    ]
   }
 ]

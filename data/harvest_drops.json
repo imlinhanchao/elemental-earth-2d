@@ -1,0 +1,484 @@
+[
+  {
+    "item": "cinnabar",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "stibnite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "arsenopyrite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "orpiment",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "realgar",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "cobaltite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "pentlandite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "borax",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 2,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "rutile",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "lorandite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 2,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "bismuthite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "tellurium_gold_ore",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "sperrylite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "volcano"
+    ]
+  },
+  {
+    "item": "chalcopyrite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "argentite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "native_silver",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "molybdenite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 2,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "scheelite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 2,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "chromite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "beryl",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 4,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "magnesite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "spodumene",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 3,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "fluorite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 2,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "lepidolite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 3,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "pollucite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 3,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "tantalite_columbite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 2,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "xenotime",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 2,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "vanadinite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 2,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "zircon",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "quartz",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "phosphorite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 2,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "strontianite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "biomes": [
+      "plains"
+    ]
+  },
+  {
+    "item": "green_vitriol",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 2,
+    "chance": 0.06,
+    "biomes": [
+      "forest"
+    ]
+  },
+  {
+    "item": "barite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.06,
+    "biomes": [
+      "forest"
+    ]
+  },
+  {
+    "item": "witherite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.06,
+    "biomes": [
+      "forest"
+    ]
+  },
+  {
+    "item": "struvite",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.06,
+    "biomes": [
+      "forest"
+    ]
+  },
+  {
+    "item": "celestine",
+    "on": [
+      "pickaxe"
+    ],
+    "era": 1,
+    "chance": 0.06,
+    "biomes": [
+      "forest"
+    ]
+  },
+  {
+    "item": "sylvite",
+    "on": [
+      "rock_salt"
+    ],
+    "era": 2,
+    "chance": 0.15
+  },
+  {
+    "item": "carnallite",
+    "on": [
+      "rock_salt"
+    ],
+    "era": 2,
+    "chance": 0.15
+  },
+  {
+    "item": "brine",
+    "on": [
+      "water"
+    ],
+    "era": 1,
+    "chance": 0.3
+  },
+  {
+    "item": "seaweed",
+    "on": [
+      "water"
+    ],
+    "era": 1,
+    "chance": 0.1
+  },
+  {
+    "item": "gold_sand",
+    "on": [
+      "mud"
+    ],
+    "era": 1,
+    "chance": 0.05,
+    "near_water": true
+  },
+  {
+    "item": "diatomaceous_earth",
+    "on": [
+      "mud"
+    ],
+    "era": 1,
+    "chance": 0.08,
+    "near_water": true
+  },
+  {
+    "item": "sticky_rice",
+    "on": [
+      "stick"
+    ],
+    "era": 0,
+    "chance": 0.1,
+    "biomes": [
+      "plains"
+    ],
+    "tech": "stone_masonry"
+  },
+  {
+    "item": "animal_fat",
+    "on": [
+      "wood",
+      "stick"
+    ],
+    "era": 1,
+    "chance": 0.2,
+    "biomes": [
+      "forest"
+    ],
+    "requires": "javelin"
+  }
+]

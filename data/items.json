@@ -3661,15 +3661,6 @@
     "category": "材料"
   },
   {
-    "key": "yttrium_oxide",
-    "name": "氧化钇",
-    "description": "高纯度的氧化钇粉末。",
-    "type": [
-      "material"
-    ],
-    "category": "材料"
-  },
-  {
     "key": "yttrium_nitrate",
     "name": "硝酸钇",
     "description": "硝酸钇晶体，通过分步结晶获得。",
@@ -4389,15 +4380,6 @@
     ]
   },
   {
-    "name": "铬酸钠",
-    "key": "sodium_chromate",
-    "category": "材料",
-    "description": "黄色晶体，是铬铁矿在有氧条件下与碳酸钠焙烧后的产物，易溶于水。",
-    "type": [
-      "material"
-    ]
-  },
-  {
     "name": "重铬酸钠",
     "key": "sodium_dichromate",
     "category": "材料",
@@ -4411,15 +4393,6 @@
     "key": "beryllium_chloride",
     "category": "材料",
     "description": "白色针状晶体，极易潮解。在工业上通过氧化铍、焦炭与氯气的高温热解反应制得，用于熔盐电解法制取金属铍。",
-    "type": [
-      "material"
-    ]
-  },
-  {
-    "name": "含碲碱熔块",
-    "key": "tellurium_flux",
-    "category": "材料",
-    "description": "碲金矿或阳极泥与碳酸钠焙烧后形成的块状物，含有可溶性的碲酸碱金属盐。",
     "type": [
       "material"
     ]
@@ -4488,24 +4461,6 @@
     ]
   },
   {
-    "name": "氯化铵",
-    "key": "ammonium_chloride",
-    "category": "材料",
-    "description": "白色晶体，受热时分解，冷却时重新凝结，散发出刺鼻的白烟。",
-    "type": [
-      "material"
-    ]
-  },
-  {
-    "name": "硝酸钠",
-    "key": "sodium_nitrate",
-    "category": "材料",
-    "description": "无色透明或白色微带黄色立方晶体，味苦咸，易潮解。",
-    "type": [
-      "material"
-    ]
-  },
-  {
     "name": "硫酸锌溶液",
     "key": "zinc_sulfate_solution",
     "category": "液体",
@@ -4520,15 +4475,6 @@
     "key": "zinc_carbonate",
     "category": "材料",
     "description": "白色微细粉末，不溶于水，是菱锌矿的主要成分。",
-    "type": [
-      "material"
-    ]
-  },
-  {
-    "name": "氧化铜",
-    "key": "copper_oxide",
-    "category": "材料",
-    "description": "黑色粉末，稍有吸湿性。它是铜的稳定氧化物。",
     "type": [
       "material"
     ]

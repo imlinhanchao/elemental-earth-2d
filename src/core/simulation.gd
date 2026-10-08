@@ -999,6 +999,7 @@ func _complete_active_task() -> void:
 		if randf() < 0.08:
 			inventory.add_item("resin", 1)
 		
+	_roll_harvest_drops(hex, t_key)
 	lab.on_harvest() # 采集时偶尔捡到手稿
 
 	# 2. 扣减地块真实资源储量 (取完了就没了)
@@ -1030,6 +1031,46 @@ func _complete_active_task() -> void:
 		post_notice("该地块的%s已采完" % iname, Color.ORANGE)
 		
 	_finish_task_and_advance(finished_task)
+
+const BIOME_KEYS := {"plains": B_PLAINS, "volcano": B_VOLCANO, "lake": B_LAKE, "forest": B_FOREST}
+
+# 采集伴生掉落 (data/harvest_drops.json)。一条掉落在以下条件都满足时按 chance 概率得到 1 份：
+#   on: 采集的资源 key，或 "pickaxe" 表示任何需要镐的矿脉；era: 最早时代；biomes: 地块群系；
+#   near_water: 地块与湖相邻；tech: 需要研发的科技；requires: 需要持有的物品 (如狩猎要标枪)
+# 第一次得到某种掉落时提示一次，让玩家知道它从哪里来
+func _roll_harvest_drops(hex: Vector2i, t_key: String) -> void:
+	var biome = world_biomes.get(hex, -1)
+	for d in DataDB.harvest_drops:
+		if not harvest_drop_applies(d, hex, t_key, biome):
+			continue
+		if randf() < float(d.get("chance", 0.0)):
+			var k = str(d["item"])
+			var first = inventory.get_count(k) <= 0 and not lab.seen_items.has(k)
+			inventory.add_item(k, 1)
+			if first:
+				post_notice("采集时意外发现了%s" % DataDB.get_item(k).get("name", k), Color(0.85, 0.7, 0.3))
+
+func harvest_drop_applies(d: Dictionary, hex: Vector2i, t_key: String, biome) -> bool:
+	var on: Array = d.get("on", [])
+	if not (on.has(t_key) or (on.has("pickaxe") and get_resource_required_tool(t_key) == "pickaxe")):
+		return false
+	if int(d.get("era", 0)) > current_era:
+		return false
+	var biomes: Array = d.get("biomes", [])
+	if not biomes.is_empty():
+		var ok := false
+		for b in biomes:
+			if BIOME_KEYS.get(b, -2) == biome:
+				ok = true
+		if not ok:
+			return false
+	if d.get("near_water", false) and not is_near_water(hex):
+		return false
+	if d.has("tech") and not researched_techs.has(str(d["tech"])):
+		return false
+	if d.has("requires") and inventory.get_count(str(d["requires"])) <= 0:
+		return false
+	return true
 
 func _finish_task_and_advance(finished_task: Dictionary) -> void:
 	task_completed.emit(finished_task)

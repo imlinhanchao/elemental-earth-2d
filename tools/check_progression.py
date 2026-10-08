@@ -65,6 +65,7 @@ def main(map_path):
     techs, eras = load("techs"), load("eras")
     labs = {a["key"]: a for a in load("labs")}
     items = {i["key"]: i for i in load("items")}
+    drops = load("harvest_drops")
 
     # 与 ChemistrySolver.formula_min_temp / formula_min_voltage 一致：配方没写就用操作默认值
     def op_of(f):
@@ -119,6 +120,8 @@ def main(map_path):
                     have.add(k)
         if "wood" in have or "stick" in have:
             have |= {"bark", "resin"}
+        # 采集伴生掉落 (data/harvest_drops.json)：资源可采、时代已到，且满足科技 / 持有物品条件时可得
+        pick_ores = {k for k in have if items.get(k, {}).get("category") == "矿石" or k in ("clay", "coal", "graphite")}
 
         def items_ok(reqs):
             return all(any(k in have for k in keys(r)) for r in reqs)
@@ -126,6 +129,17 @@ def main(map_path):
         changed = True
         while changed:
             changed = False
+            for d in drops:
+                if d["item"] in have or int(d.get("era", 0)) > E:
+                    continue
+                on = set(d.get("on", []))
+                src_ok = bool(on & have) or ("pickaxe" in on and bool(pick_ores) and "stone_pickaxe" in have)
+                if "mud" in on:
+                    src_ok = True  # 空地挖泥土不限量
+                if "water" in on:
+                    src_ok = "wooden_bucket" in have and water_on_map
+                if src_ok and (not d.get("tech") or d["tech"] in researched) and (not d.get("requires") or d["requires"] in have):
+                    have.add(d["item"]); changed = True
             if water_on_map and "wooden_bucket" in have and "water" not in have:
                 have.add("water"); changed = True
             for t in techs:

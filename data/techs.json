@@ -393,8 +393,7 @@
       }
     ],
     "required_techs": [
-      "explosives",
-      "detonation_tech"
+      "explosives"
     ],
     "era": 3
   },
