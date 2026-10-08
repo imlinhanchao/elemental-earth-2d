@@ -77,6 +77,8 @@ func _init() -> void:
 	print(" -> 实验烧瓶内产物: ", flask.components)
 	assert(flask.has_substance("charcoal"), "未能成功热解干馏出木炭!")
 	assert(flask.get_moles("charcoal") >= 1.0, "木炭产出摩尔量错误!")
+	assert(flask.has_substance("wood_ash"), "未能成功副产草木灰!")
+	assert(flask.get_moles("wood_ash") >= 1.0, "草木灰产出摩尔量错误!")
 
 	print("\n========================================")
 	print("🎉 所有唯象化学核心逻辑与数据加载测试 100% 通过!")

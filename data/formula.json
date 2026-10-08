@@ -2,7 +2,7 @@
   {
     "key": "charcoal_production",
     "name": "木材干馏制备木炭",
-    "description": "木材在隔绝空气条件下加热热解干馏，分解出固体木炭与一氧化碳气体。",
+    "description": "木材在隔绝空气条件下加热热解干馏，分解出固体木炭与草木灰，并释放出一氧化碳气体。",
     "min_temp": 500.0,
     "time_required": 1.0,
     "required_container": [
@@ -26,6 +26,11 @@
         "multiple": 1.0
       },
       {
+        "key": "wood_ash",
+        "quantity": 1.0,
+        "multiple": 1.0
+      },
+      {
         "key": "carbon_monoxide",
         "quantity": 0.5,
         "multiple": 0.5
@@ -36,7 +41,7 @@
       "key": "dry_distillation",
       "min": 1
     },
-    "fragment_description": "把#wood#放进密闭的陶罐里$dry_distillation$，木头不会烧成灰，而是变成乌黑的#charcoal#。"
+    "fragment_description": "把#wood#放进密闭的陶罐里$dry_distillation$，分解出乌黑的#charcoal#与副产物#wood_ash#，同时释放#carbon_monoxide#。"
   },
   {
     "name": "制作粘土",
