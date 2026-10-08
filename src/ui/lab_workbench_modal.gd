@@ -53,6 +53,12 @@ var reagent_search: LineEdit
 var notes_search: LineEdit
 
 var current_tab: int = 0
+# 长按左键连续放入 / 取回：按下立即执行一次，停顿 HOLD_DELAY 后每 HOLD_INTERVAL 再执行一次
+const HOLD_DELAY := 0.35
+const HOLD_INTERVAL := 0.08
+var _hold_kind: String = ""   # "reagent" / "flask"，空为未按住
+var _hold_key: String = ""
+var _hold_timer: float = 0.0
 var bubble_phase: float = 0.0
 var _refresh_timer: float = 0.0
 var _dirty: bool = false
@@ -380,7 +386,7 @@ func _build_side() -> Control:
 	view_flask.add_child(fp)
 	var rh = HBoxContainer.new()
 	rh.add_theme_constant_override("separation", 8)
-	var rl = _section("行囊试剂 · 点击放入 1 份")
+	var rl = _section("行囊试剂 · 左键 1 份 / 右键全部")
 	rl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	rh.add_child(rl)
 	reagent_search = _search_box("搜索试剂")
@@ -448,11 +454,24 @@ func toggle() -> void:
 func _input(event: InputEvent) -> void:
 	if not visible or not ModalStack.is_top(self):
 		return
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
-		# 右键容器内的物品：全部取回该物品；其余位置右键关闭弹窗
-		var k = _flask_key_at(event.position)
-		if k != "":
-			_retrieve_item(k, -1)
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if not event.pressed:
+			_hold_kind = ""
+			return
+		# 左键试剂 / 容器内物品：放入 / 取回 1 份，按住不放连续执行
+		var hit = _slot_at(event.position)
+		if hit.is_empty():
+			return
+		_hold_kind = hit[0]
+		_hold_key = hit[1]
+		_hold_timer = HOLD_DELAY
+		_slot_action(_hold_kind, _hold_key, 1)
+		get_viewport().set_input_as_handled()
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+		# 右键试剂：全部放入；右键容器内物品：全部取回；其余位置右键关闭弹窗
+		var hit = _slot_at(event.position)
+		if not hit.is_empty():
+			_slot_action(hit[0], hit[1], -1)
 		else:
 			close()
 		get_viewport().set_input_as_handled()
@@ -486,6 +505,7 @@ func _mark_dirty() -> void:
 func _process(delta: float) -> void:
 	if not visible:
 		return
+	_tick_hold(delta)
 	bubble_phase += delta * (8.0 if lab.vessel.active_formula != "" else 1.5)
 	vessel_draw.queue_redraw()
 	_refresh_timer -= delta
@@ -705,8 +725,8 @@ func _refresh_reagents() -> void:
 		if not _match(reagent_search.text, [_name(k), k]):
 			continue
 		var s = _slot(k, n)
-		s.tooltip_text = "%s ×%d（点击放入 1 份）" % [_name(k), n]
-		s.pressed.connect(func(): add_reagent(k, 1.0))
+		s.tooltip_text = "%s ×%d\n左键放入 1 份（按住连续放入），右键全部放入" % [_name(k), n]
+		s.set_meta("reagent_key", k)
 		reagent_grid.add_child(s)
 		shown += 1
 	# 补足空格，保持格子网格完整
@@ -734,9 +754,8 @@ func _refresh_flask() -> void:
 		var produced = lab.produced.has(k)
 		var s = _slot(k, 0, ThemeStyler.COLOR_SUCCESS if produced else Color(0, 0, 0, 0))
 		s.custom_minimum_size = Vector2(48, 48)
-		s.tooltip_text = "%s %s%s\n左键取回 1 份，右键全部取回" % [_name(k), _fmt_amount(amt), "（产物）" if produced else ""]
+		s.tooltip_text = "%s %s%s\n左键取回 1 份（按住连续取回），右键全部取回" % [_name(k), _fmt_amount(amt), "（产物）" if produced else ""]
 		s.set_meta("item_key", k)
-		s.pressed.connect(func(): _retrieve_item(k, 1))
 		var c = _label(_fmt_amount(amt).trim_prefix("×"), ThemeStyler.FONT_CAPTION, ThemeStyler.COLOR_SUCCESS if produced else ThemeStyler.COLOR_TEXT_PRIMARY)
 		c.add_theme_font_override("font", ThemeStyler.get_font_mono())
 		c.add_theme_constant_override("outline_size", 4)
@@ -872,14 +891,15 @@ func _on_fire_pressed() -> void:
 		_add_log("点火，%s开始燃烧" % _name(lab.cur_fuel))
 	_refresh_status()
 
-func add_reagent(item_key: String, amount: float) -> void:
+func add_reagent(item_key: String, amount: float) -> bool:
 	if not lab.add_reagent(item_key, int(amount)):
 		if lab.container != "":
 			GameState.post_notification("行囊里没有%s" % _name(item_key), Color(1, 0.4, 0.4))
-		return
+		return false
 	_add_log("放入 %s ×%d" % [_name(item_key), int(amount)])
 	_refresh_flask()
 	_refresh_status()
+	return true
 
 func _on_retrieve_pressed() -> void:
 	var got = lab.retrieve_all()
@@ -901,13 +921,44 @@ func _retrieve_item(key: String, n: int) -> void:
 		_add_log("%s不足一份，已倒掉" % _name(key))
 	_refresh_all()
 
-func _flask_key_at(screen_pos: Vector2) -> String:
+# 鼠标下的物品格子：["reagent", key] 行囊试剂、["flask", key] 容器内物品，都不是时为空
+func _slot_at(screen_pos: Vector2) -> Array:
 	if not view_flask.is_visible_in_tree():
-		return ""
+		return []
 	for s in flask_slots.get_children():
 		if s.has_meta("item_key") and s.get_global_rect().has_point(screen_pos):
-			return str(s.get_meta("item_key"))
-	return ""
+			return ["flask", str(s.get_meta("item_key"))]
+	for s in reagent_grid.get_children():
+		if s.has_meta("reagent_key") and s.is_visible_in_tree() and s.get_global_rect().has_point(screen_pos):
+			return ["reagent", str(s.get_meta("reagent_key"))]
+	return []
+
+# n = 1 为 1 份，n < 0 为全部
+func _slot_action(kind: String, key: String, n: int) -> bool:
+	if kind == "reagent":
+		var count = GameState.inventory.get_count(key) if n < 0 else 1
+		if count <= 0:
+			return false
+		return add_reagent(key, float(count))
+	if not lab.vessel.components.has(key):
+		return false
+	_retrieve_item(key, n)
+	return true
+
+# 长按连续执行；格子在刷新中被重建也没关系，按物品 key 重新找鼠标下的格子
+func _tick_hold(delta: float) -> void:
+	if _hold_kind == "":
+		return
+	if not Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+		_hold_kind = ""
+		return
+	_hold_timer -= delta
+	if _hold_timer > 0.0:
+		return
+	_hold_timer = HOLD_INTERVAL
+	var hit = _slot_at(get_viewport().get_mouse_position())
+	if hit.is_empty() or hit[0] != _hold_kind or hit[1] != _hold_key or not _slot_action(_hold_kind, _hold_key, 1):
+		_hold_kind = ""
 
 func _prepare(f_key: String) -> void:
 	var missing = lab.prepare_from_fragment(f_key)

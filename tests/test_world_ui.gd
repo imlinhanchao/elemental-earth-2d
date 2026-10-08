@@ -22,6 +22,27 @@ func _wheel(w, pos: Vector2) -> float:
 	w._unhandled_input(ev)
 	return w.camera.zoom.x
 
+# 在实验台的物品格子上按下鼠标 (kind: "reagent" 行囊试剂 / "flask" 容器内物品)；找不到格子时返回 false
+func _click_slot(lm, kind: String, key: String, button: int) -> bool:
+	var grid = lm.reagent_grid if kind == "reagent" else lm.flask_slots
+	var meta = "reagent_key" if kind == "reagent" else "item_key"
+	for s in grid.get_children():
+		if s.has_meta(meta) and str(s.get_meta(meta)) == key and not s.is_queued_for_deletion():
+			var ev = InputEventMouseButton.new()
+			ev.button_index = button
+			ev.pressed = true
+			ev.position = s.get_global_rect().get_center()
+			ev.global_position = ev.position
+			lm._input(ev)
+			return true
+	return false
+
+func _release_left(lm) -> void:
+	var ev = InputEventMouseButton.new()
+	ev.button_index = MOUSE_BUTTON_LEFT
+	ev.pressed = false
+	lm._input(ev)
+
 func _ready() -> void:
 	print("\n[地图与界面测试]")
 	var SaveManager = load("res://src/core/save_manager.gd")
@@ -183,6 +204,36 @@ func _ready() -> void:
 			if n == null or n.item_key != "wood": forest_ok = false
 	_check(forest_ok, "读档后装备斧头时所有林地都画橡树、左键砍原木")
 	SaveManager.delete_slot("test_world_ui_slot")
+
+	# --- 实验台：左键放入 / 取回 1 份，右键全部 ---
+	var lm = hud.lab_modal
+	GameState.inventory.add_item("wooden_bucket", 1)
+	GameState.inventory.add_item("clay", 6)
+	lm.open()
+	lm.lab.retrieve_all()
+	lm.lab.set_container("wooden_bucket")
+	lm._refresh_all()
+	await get_tree().process_frame
+	await get_tree().process_frame
+	var clay_before = GameState.inventory.get_count("clay")
+	_check(_click_slot(lm, "reagent", "clay", MOUSE_BUTTON_LEFT) and is_equal_approx(lm.lab.vessel.get_moles("clay"), 1.0), "左键试剂放入 1 份")
+	_check(lm._hold_kind == "reagent" and lm._hold_key == "clay", "按住左键进入连续放入")
+	_release_left(lm)
+	_check(lm._hold_kind == "", "松开左键停止连续放入")
+	# 连续放入的单步 (长按时每隔 HOLD_INTERVAL 执行一次)
+	_check(lm._slot_action("reagent", "clay", 1) and is_equal_approx(lm.lab.vessel.get_moles("clay"), 2.0), "连续放入每次 1 份")
+	await get_tree().process_frame
+	_check(_click_slot(lm, "reagent", "clay", MOUSE_BUTTON_RIGHT) and GameState.inventory.get_count("clay") == 0
+		and is_equal_approx(lm.lab.vessel.get_moles("clay"), float(clay_before)), "右键试剂全部放入")
+	await get_tree().process_frame
+	_check(_click_slot(lm, "flask", "clay", MOUSE_BUTTON_LEFT) and GameState.inventory.get_count("clay") == 1, "左键容器内物品取回 1 份")
+	_release_left(lm)
+	await get_tree().process_frame
+	_check(_click_slot(lm, "flask", "clay", MOUSE_BUTTON_RIGHT) and GameState.inventory.get_count("clay") == clay_before
+		and not lm.lab.vessel.components.has("clay"), "右键容器内物品全部取回")
+	_check(lm.visible, "右键物品格子不会关闭实验台")
+	lm.lab.set_container("")
+	lm.close()
 
 	w.queue_free()
 	if _failed == 0:
