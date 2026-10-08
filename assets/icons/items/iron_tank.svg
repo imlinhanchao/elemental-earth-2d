@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" stroke-linejoin="round" stroke-linecap="round">
+<rect x="14" y="14" width="36" height="40" rx="4" fill="#8A9099" stroke="#2A2420" stroke-width="2.0"/>
+<ellipse cx="32" cy="14" rx="18" ry="4" fill="#A3AAB2" stroke="#2A2420" stroke-width="2"/>
+<line x1="14" y1="26" x2="50" y2="26" stroke="#5A5F66" stroke-width="2.0"/>
+<line x1="14" y1="44" x2="50" y2="44" stroke="#5A5F66" stroke-width="2.0"/>
+<circle cx="18" cy="26" r="1.2" fill="#C9CED4" stroke="none" stroke-width="0.0"/><circle cx="25" cy="26" r="1.2" fill="#C9CED4" stroke="none" stroke-width="0.0"/><circle cx="32" cy="26" r="1.2" fill="#C9CED4" stroke="none" stroke-width="0.0"/><circle cx="39" cy="26" r="1.2" fill="#C9CED4" stroke="none" stroke-width="0.0"/><circle cx="46" cy="26" r="1.2" fill="#C9CED4" stroke="none" stroke-width="0.0"/>
+</svg>

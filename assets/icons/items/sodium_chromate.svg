@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" stroke-linejoin="round" stroke-linecap="round">
+<path d="M8 54 Q32 48 56 54" fill="none" stroke="#77610F" stroke-width="2.5"/>
+<polygon points="13,52 13,20 21,12 29,20 29,52" fill="#E6C239" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="21,12 29,20 29,52 21,52" fill="#C8A419" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="17" y1="22" x2="17" y2="46" stroke="#F7ECC1" stroke-width="1.2"/>
+<polygon points="35,52 35,27 41,19 47,27 47,52" fill="#E4BC27" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="41,19 47,27 47,52 41,52" fill="#C8A419" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="38" y1="29" x2="38" y2="46" stroke="#F7ECC1" stroke-width="1.2"/>
+<polygon points="23,52 23,31 30,23 37,31 37,52" fill="#DBB31C" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="30,23 37,31 37,52 30,52" fill="#C8A419" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="26.5" y1="33" x2="26.5" y2="46" stroke="#F7ECC1" stroke-width="1.2"/>
+<rect x="26.0" y="45" width="36.0" height="17" rx="3" fill="#FBF7EE" stroke="#2A2420" stroke-width="1.5"/>
+<g transform="translate(29.00 48.20) scale(1.103)"><path d="M0 6 L0 0 L4 6 L4 0" fill="none" stroke="#2A2420" stroke-width="1.36"/></g>
+<g transform="translate(34.74 48.20) scale(1.103)"><path d="M3.5 2.6 Q3 2 2 2 Q0 2 0 4 Q0 6 2 6 Q3.5 6 3.5 4 M3.5 2 L3.5 6" fill="none" stroke="#2A2420" stroke-width="1.36"/></g>
+<g transform="translate(39.81 48.20) scale(1.103)"><path d="M4 0.8 Q3 0 2 0 Q0 0 0 3 Q0 6 2 6 Q3 6 4 5.2" fill="none" stroke="#2A2420" stroke-width="1.36"/></g>
+<g transform="translate(45.54 48.20) scale(1.103)"><path d="M0 6 L0 2 M0 3.8 Q0.8 2 2.6 2.2" fill="none" stroke="#2A2420" stroke-width="1.36"/></g>
+<g transform="translate(50.62 48.20) scale(1.103)"><path d="M2 0 Q0 0 0 3 Q0 6 2 6 Q4 6 4 3 Q4 0 2 0 Z" fill="none" stroke="#2A2420" stroke-width="1.36"/></g>
+<g transform="translate(56.35 52.04) scale(0.684)"><path d="M3 6 L3 0 L0 4.2 L4 4.2" fill="none" stroke="#2A2420" stroke-width="2.19"/></g>
+</svg>

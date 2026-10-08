@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" stroke-linejoin="round" stroke-linecap="round">
+<path d="M8 54 Q32 48 56 54" fill="none" stroke="#362956" stroke-width="2.5"/>
+<polygon points="13,52 13,24 21,16 29,24 29,52" fill="#7B64B4" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="21,16 29,24 29,52 21,52" fill="#5D4793" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="17" y1="26" x2="17" y2="46" stroke="#D3CBE6" stroke-width="1.2"/>
+<polygon points="29,52 29,33 37,25 45,33 45,52" fill="#6F56AD" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="37,25 45,33 45,52 37,52" fill="#5D4793" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="33" y1="35" x2="33" y2="46" stroke="#D3CBE6" stroke-width="1.2"/>
+<polygon points="20,52 20,27 28,19 36,27 36,52" fill="#664EA1" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="28,19 36,27 36,52 28,52" fill="#5D4793" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="24" y1="29" x2="24" y2="46" stroke="#D3CBE6" stroke-width="1.2"/>
+<polygon points="7,52 7,34 15,26 23,34 23,52" fill="#5D4793" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="15,26 23,34 23,52 15,52" fill="#5D4793" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="11" y1="36" x2="11" y2="46" stroke="#D3CBE6" stroke-width="1.2"/>
+<rect x="26.0" y="45" width="36.0" height="17" rx="3" fill="#FBF7EE" stroke="#2A2420" stroke-width="1.5"/>
+<g transform="translate(29.00 48.20) scale(1.327)"><path d="M0 0 L0 6 L2 6 Q4 6 4 3 Q4 0 2 0 Z" fill="none" stroke="#2A2420" stroke-width="1.13"/></g>
+<g transform="translate(35.90 48.20) scale(1.327)"><path d="M0 2 L1.8 5.6 M3.6 2 L1.6 7 Q1.2 8 0.4 8" fill="none" stroke="#2A2420" stroke-width="1.13"/></g>
+<g transform="translate(42.01 48.20) scale(1.327)"><path d="M0 6 L0 0 L4 6 L4 0" fill="none" stroke="#2A2420" stroke-width="1.13"/></g>
+<g transform="translate(48.91 48.20) scale(1.327)"><path d="M2 0 Q0 0 0 3 Q0 6 2 6 Q4 6 4 3 Q4 0 2 0 Z" fill="none" stroke="#2A2420" stroke-width="1.13"/></g>
+<g transform="translate(55.81 52.82) scale(0.823)"><path d="M0.4 0.6 Q1.2 0 2 0 Q3.6 0 3.6 1.5 Q3.6 3 2 3 Q3.8 3 3.8 4.5 Q3.8 6 2 6 Q1 6 0.3 5.4" fill="none" stroke="#2A2420" stroke-width="1.82"/></g>
+</svg>

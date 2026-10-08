@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" stroke-linejoin="round" stroke-linecap="round">
+<rect x="16" y="10" width="32" height="5" rx="2" fill="#B9A68A" stroke="#2A2420" stroke-width="1.5"/>
+<path d="M18 15 L46 15 L46 50 C46 55 18 55 18 50 Z" fill="#F4F8FA" stroke="#2A2420" stroke-width="2.0"/>
+<path d="M19 18 L45 18 L45 50 C45 54 19 54 19 50 Z" fill="#A6BE48" stroke="none" stroke-width="0.0" fill-opacity="0.45"/>
+<path d="M22 26 C28 21 34 31 42 25" fill="none" stroke="#879C37" stroke-width="2.2"/>
+<path d="M22 34 C28 29 34 39 42 33" fill="none" stroke="#879C37" stroke-width="2.2"/>
+<line x1="22" y1="20" x2="22" y2="46" stroke="#FFFFFF" stroke-width="1.5"/>
+<rect x="36.5" y="45" width="25.5" height="17" rx="3" fill="#FBF7EE" stroke="#2A2420" stroke-width="1.5"/>
+<g transform="translate(39.48 48.20) scale(1.600)"><path d="M4 0.8 Q3 0 2 0 Q0 0 0 3 Q0 6 2 6 Q3 6 4 5.2" fill="none" stroke="#2A2420" stroke-width="0.94"/></g>
+<g transform="translate(47.80 48.20) scale(1.600)"><path d="M1.8 0 L1.8 6" fill="none" stroke="#2A2420" stroke-width="0.94"/></g>
+<g transform="translate(55.16 53.77) scale(0.992)"><path d="M0.3 1.2 Q1 0 2 0 Q3.7 0 3.7 1.7 Q3.7 3 0.3 6 L3.8 6" fill="none" stroke="#2A2420" stroke-width="1.51"/></g>
+</svg>

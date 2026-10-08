@@ -86,31 +86,16 @@ static func _resolve_icon(key: String) -> Texture2D:
 	if BASE_ICONS.has(key):
 		return BASE_ICONS[key]
 
-	# 3. 科技：统一使用科技图标 (科技树卡片按科技 key 取图标)
+	# 3. 生成的物品专属图标 (tools/make_item_icons.py，按物品类型与颜色绘制，每种物品各不相同)
+	var gen = "res://assets/icons/items/%s.svg" % key
+	if ResourceLoader.exists(gen):
+		return load(gen)
+
+	# 4. 科技：统一使用科技图标 (科技树卡片按科技 key 取图标)
 	if DataDB.techs.has(key):
 		return load("res://assets/icons/tech.svg")
 
-	# 4. 词根匹配：工具、金属、建材等已有专属图标的大类
-	var k_lower = key.to_lower()
-	if k_lower.contains("pickaxe") or k_lower.contains("hammer") or k_lower.contains("chisel"):
-		return BASE_ICONS["stone_pickaxe"]
-	elif k_lower.contains("axe"):
-		return BASE_ICONS["flint_axe"]
-	elif k_lower.contains("gas") or k_lower.contains("oxide") or k_lower.contains("hydrogen") or k_lower.contains("oxygen"):
-		return BASE_ICONS["gas"]
-	elif k_lower.contains("furnace") or k_lower.contains("kiln"):
-		return BASE_ICONS["furnace"]
-	elif k_lower.contains("reactor"):
-		return BASE_ICONS["industrial_reactor"]
-	elif k_lower.contains("copper"):
-		return BASE_ICONS["copper"]
-	elif k_lower.contains("iron") or k_lower.contains("steel"):
-		return BASE_ICONS["iron"]
-	elif k_lower.contains("stone") or k_lower.contains("brick"):
-		return BASE_ICONS["stone"]
-	elif k_lower.contains("wood") or k_lower.contains("tree"):
-		return BASE_ICONS["wood"]
-
+	# 不再按 key 的词根猜图标 (原先草木灰、木桶因含 wood 显示成原木，氧化物显示成气瓶)
 	# 5. 按 items.json 的物品分类选用分类图标，避免所有未知物品都显示成矿石
 	var cat_icon = CATEGORY_ICONS.get(str(DataDB.get_item(key).get("category", "")), "")
 	if cat_icon != "" and ResourceLoader.exists(cat_icon):

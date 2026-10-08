@@ -104,6 +104,54 @@ static func run(w: Node2D, arg_name: String) -> void:
 			sheet.blit_rect(cell, Rect2i(Vector2i.ZERO, cell.get_size()), Vector2i((i % cols) * cell.get_width(), (i / cols) * cell.get_height()))
 		sheet.save_png(ProjectSettings.globalize_path("res://screenshot_lab_gallery.png"))
 		print("[Screenshot] lab gallery saved")
+	elif arg_name == "--screenshot-icons":
+		# 全部物品图标拼成图鉴 (每页 12 × 8 格，图标 + 中文名)，输出 screenshot_icons_<页>.png，用于检查图标与物品是否匹配
+		var ItemIconManager = load("res://src/ui/item_icon_manager.gd")
+		var keys: Array = DataDB.items.keys()
+		var cols := 12
+		var rows := 8
+		var cell := Vector2i(150, 120)
+		var page := 0
+		var font = ThemeStyler.get_font_sans()
+		var layer = CanvasLayer.new()
+		layer.layer = 100
+		w.add_child(layer)
+		while page * cols * rows < keys.size():
+			for c in layer.get_children():
+				c.queue_free()
+			var bg = ColorRect.new()
+			bg.color = Color(0.96, 0.94, 0.90)
+			bg.size = Vector2(cell.x * cols, cell.y * rows)
+			layer.add_child(bg)
+			for i in range(cols * rows):
+				var idx = page * cols * rows + i
+				if idx >= keys.size():
+					break
+				var k = keys[idx]
+				var tr = TextureRect.new()
+				tr.texture = ItemIconManager.get_icon(k)
+				tr.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+				tr.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+				tr.position = Vector2((i % cols) * cell.x + 43, (i / cols) * cell.y + 8)
+				tr.size = Vector2(64, 64)
+				layer.add_child(tr)
+				var lb = Label.new()
+				lb.text = "%s\n%s" % [DataDB.get_item(k).get("name", k), k]
+				lb.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				lb.position = Vector2((i % cols) * cell.x, (i / cols) * cell.y + 74)
+				lb.size = Vector2(cell.x, 40)
+				lb.add_theme_font_override("font", font)
+				lb.add_theme_font_size_override("font_size", 12)
+				lb.add_theme_color_override("font_color", Color(0.15, 0.14, 0.13))
+				lb.clip_text = true
+				layer.add_child(lb)
+			await w.get_tree().create_timer(0.3).timeout
+			var img = w.get_viewport().get_texture().get_image()
+			var scale = Vector2(img.get_size()) / w.get_viewport().get_visible_rect().size
+			img = img.get_region(Rect2i(Vector2i.ZERO, Vector2i(Vector2(cell.x * cols, cell.y * rows) * scale)))
+			img.save_png(ProjectSettings.globalize_path("res://screenshot_icons_%d.png" % page))
+			page += 1
+		print("[Screenshot] icon sheets saved: %d" % page)
 	elif arg_name == "--screenshot-codex":
 		GameState.lab.seen_items["wood"] = true
 		GameState.lab.fragments.append("copper_smelting")

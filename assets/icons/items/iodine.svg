@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" stroke-linejoin="round" stroke-linecap="round">
+<path d="M8 54 Q32 48 56 54" fill="none" stroke="#2D1D3E" stroke-width="2.5"/>
+<polygon points="19,52 19,30 25,22 31,30 31,52" fill="#7A4EA6" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="25,22 31,30 31,52 25,52" fill="#5B3A7C" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="22" y1="32" x2="22" y2="46" stroke="#C6B2DB" stroke-width="1.2"/>
+<polygon points="29,52 29,23 37,15 45,23 45,52" fill="#704798" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="37,15 45,23 45,52 37,52" fill="#5B3A7C" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="33" y1="25" x2="33" y2="46" stroke="#C6B2DB" stroke-width="1.2"/>
+<polygon points="26,52 26,37 32,29 38,37 38,52" fill="#66418A" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="32,29 38,37 38,52 32,52" fill="#5B3A7C" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="29" y1="39" x2="29" y2="46" stroke="#C6B2DB" stroke-width="1.2"/>
+<polygon points="7,52 7,32 15,24 23,32 23,52" fill="#5B3A7C" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="15,24 23,32 23,52 15,52" fill="#5B3A7C" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="11" y1="34" x2="11" y2="46" stroke="#C6B2DB" stroke-width="1.2"/>
+<rect x="49.3" y="45" width="12.7" height="17" rx="3" fill="#FBF7EE" stroke="#2A2420" stroke-width="1.5"/>
+<g transform="translate(52.28 48.20) scale(1.600)"><path d="M0.8 0 L3.2 0 M2 0 L2 6 M0.8 6 L3.2 6" fill="none" stroke="#2A2420" stroke-width="0.94"/></g>
+</svg>

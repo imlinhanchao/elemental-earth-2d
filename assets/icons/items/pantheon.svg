@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" stroke-linejoin="round" stroke-linecap="round">
+<path d="M14 30 C14 14 50 14 50 30 Z" fill="#D8CDB8" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="8,30 56,30 32,20" fill="#E6DCC8" stroke="#2A2420" stroke-width="2.0"/>
+<rect x="8" y="30" width="48" height="4" rx="0" fill="#CFC3AA" stroke="#2A2420" stroke-width="1.5"/>
+<rect x="12" y="34" width="4" height="16" rx="0" fill="#EDE6D8" stroke="#2A2420" stroke-width="1.2"/>
+<rect x="20" y="34" width="4" height="16" rx="0" fill="#EDE6D8" stroke="#2A2420" stroke-width="1.2"/>
+<rect x="28" y="34" width="4" height="16" rx="0" fill="#EDE6D8" stroke="#2A2420" stroke-width="1.2"/>
+<rect x="36" y="34" width="4" height="16" rx="0" fill="#EDE6D8" stroke="#2A2420" stroke-width="1.2"/>
+<rect x="44" y="34" width="4" height="16" rx="0" fill="#EDE6D8" stroke="#2A2420" stroke-width="1.2"/>
+<rect x="52" y="34" width="4" height="16" rx="0" fill="#EDE6D8" stroke="#2A2420" stroke-width="1.2"/>
+<rect x="6" y="50" width="52" height="5" rx="0" fill="#CFC3AA" stroke="#2A2420" stroke-width="1.5"/>
+</svg>

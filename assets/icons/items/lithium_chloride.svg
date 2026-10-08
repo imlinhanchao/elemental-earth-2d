@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" stroke-linejoin="round" stroke-linecap="round">
+<path d="M8 54 Q32 48 56 54" fill="none" stroke="#B5AB8C" stroke-width="2.5"/>
+<polygon points="16,52 16,31 24,23 32,31 32,52" fill="#F1EFE9" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="24,23 32,31 32,52 24,52" fill="#D9D4C4" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="20" y1="33" x2="20" y2="46" stroke="#FFFFFF" stroke-width="1.2"/>
+<polygon points="32,52 32,27 39,19 46,27 46,52" fill="#E9E6DD" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="39,19 46,27 46,52 39,52" fill="#D9D4C4" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="35.5" y1="29" x2="35.5" y2="46" stroke="#FFFFFF" stroke-width="1.2"/>
+<polygon points="26,52 26,34 32,26 38,34 38,52" fill="#E1DDD0" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="32,26 38,34 38,52 32,52" fill="#D9D4C4" stroke="#2A2420" stroke-width="1.2"/>
+<line x1="29" y1="36" x2="29" y2="46" stroke="#FFFFFF" stroke-width="1.2"/>
+<rect x="26.2" y="45" width="35.8" height="17" rx="3" fill="#FBF7EE" stroke="#2A2420" stroke-width="1.5"/>
+<g transform="translate(29.24 48.20) scale(1.600)"><path d="M0 0 L0 6 L4 6" fill="none" stroke="#2A2420" stroke-width="0.94"/></g>
+<g transform="translate(37.56 48.20) scale(1.600)"><path d="M1.8 2.4 L1.8 6 M1.8 0.6 L1.8 0.9" fill="none" stroke="#2A2420" stroke-width="0.94"/></g>
+<g transform="translate(44.92 48.20) scale(1.600)"><path d="M4 0.8 Q3 0 2 0 Q0 0 0 3 Q0 6 2 6 Q3 6 4 5.2" fill="none" stroke="#2A2420" stroke-width="0.94"/></g>
+<g transform="translate(53.24 48.20) scale(1.600)"><path d="M1.8 0 L1.8 6" fill="none" stroke="#2A2420" stroke-width="0.94"/></g>
+</svg>

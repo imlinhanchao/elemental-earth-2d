@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" stroke-linejoin="round" stroke-linecap="round">
+<rect x="16" y="10" width="32" height="5" rx="2" fill="#B9A68A" stroke="#2A2420" stroke-width="1.5"/>
+<path d="M18 15 L46 15 L46 50 C46 55 18 55 18 50 Z" fill="#F4F8FA" stroke="#2A2420" stroke-width="2.0"/>
+<path d="M19 18 L45 18 L45 50 C45 54 19 54 19 50 Z" fill="#E8F1F5" stroke="none" stroke-width="0.0" fill-opacity="0.45"/>
+<path d="M22 26 C28 21 34 31 42 25" fill="none" stroke="#9DB4C0" stroke-width="2.2"/>
+<path d="M22 34 C28 29 34 39 42 33" fill="none" stroke="#9DB4C0" stroke-width="2.2"/>
+<line x1="22" y1="20" x2="22" y2="46" stroke="#FFFFFF" stroke-width="1.5"/>
+<rect x="34.6" y="45" width="27.4" height="17" rx="3" fill="#FBF7EE" stroke="#2A2420" stroke-width="1.5"/>
+<g transform="translate(37.56 48.20) scale(1.600)"><path d="M0 6 L2 0 L4 6 M0.7 4 L3.3 4" fill="none" stroke="#2A2420" stroke-width="0.94"/></g>
+<g transform="translate(45.88 48.20) scale(1.600)"><path d="M1.8 2.4 L1.8 6 M1.8 0.6 L1.8 0.9" fill="none" stroke="#2A2420" stroke-width="0.94"/></g>
+<g transform="translate(53.24 48.20) scale(1.600)"><path d="M0 6 L0 2 M0 3.8 Q0.8 2 2.6 2.2" fill="none" stroke="#2A2420" stroke-width="0.94"/></g>
+</svg>

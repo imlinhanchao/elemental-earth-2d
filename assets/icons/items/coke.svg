@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" stroke-linejoin="round" stroke-linecap="round">
+<polygon points="19,14 44,12 56,30 46,51 18,52 6,32" fill="#77736C" stroke="#2A2420" stroke-width="2.0"/>
+<polygon points="19,14 44,12 36,28 16,26" fill="#918D85" stroke="#2A2420" stroke-width="1.5"/>
+<circle cx="19" cy="32" r="1.6" fill="#423F3B" stroke="none" stroke-width="0.0"/>
+<circle cx="44" cy="39" r="2.6" fill="#423F3B" stroke="none" stroke-width="0.0"/>
+<circle cx="26" cy="38" r="1.6" fill="#423F3B" stroke="none" stroke-width="0.0"/>
+<circle cx="30" cy="39" r="2.6" fill="#423F3B" stroke="none" stroke-width="0.0"/>
+<circle cx="39" cy="43" r="1.6" fill="#423F3B" stroke="none" stroke-width="0.0"/>
+<circle cx="17" cy="40" r="2.6" fill="#423F3B" stroke="none" stroke-width="0.0"/>
+<circle cx="44" cy="45" r="1.6" fill="#423F3B" stroke="none" stroke-width="0.0"/>
+<rect x="49.3" y="45" width="12.7" height="17" rx="3" fill="#FBF7EE" stroke="#2A2420" stroke-width="1.5"/>
+<g transform="translate(52.28 48.20) scale(1.600)"><path d="M4 0.8 Q3 0 2 0 Q0 0 0 3 Q0 6 2 6 Q3 6 4 5.2" fill="none" stroke="#2A2420" stroke-width="0.94"/></g>
+</svg>
