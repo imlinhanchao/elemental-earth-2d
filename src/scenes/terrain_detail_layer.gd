@@ -74,6 +74,22 @@ func _draw_connected_biome_terrain(center: Vector2, points: PackedVector2Array, 
 					var edge_mid = (points[e] + points[(e + 1) % 6]) * 0.5
 					_draw_tree_symbol(center * 0.45 + edge_mid * 0.55)
 
+		HexWorldGenerator.BiomeType.MOUNTAIN:
+			# 山地：两座墨线山峰 (阴坡晕滃线 + 雪顶白点)，相邻山地之间以山脊线相连
+			var ridge_col = ThemeStyler.adapt(Color(0.30, 0.26, 0.21, 0.55))
+			for e in same_neighbors:
+				if e < 3:
+					var edge_mid = (points[e] + points[(e + 1) % 6]) * 0.5
+					var delta_v = edge_mid - center
+					var norm = Vector2(-delta_v.y, delta_v.x).normalized()
+					var waypoint = (center + edge_mid) * 0.5 + norm * sin(seed_f + e * 17.0) * 2.5
+					draw_polyline([center + Vector2(-15, -16), waypoint, edge_mid], ridge_col, 1.2)
+			# 山峰画在瓦片边角，避开中心的资源图标
+			var big = 1.0 + 0.15 * sin(seed_f)
+			_draw_peak_symbol(center + Vector2(-15, -6), 8.0 * big, 10.0 * big)
+			_draw_peak_symbol(center + Vector2(14, 20), 7.0, 8.0)
+			_draw_peak_symbol(center + Vector2(17, -10), 5.0, 6.0)
+
 		HexWorldGenerator.BiomeType.PLAINS:
 			# 原野：稀疏草丛符号 (ψ 形短笔触)
 			var grass = ThemeStyler.adapt(Color(0.36, 0.45, 0.28, 0.55))
@@ -87,3 +103,17 @@ func _draw_tree_symbol(pos: Vector2) -> void:
 	draw_line(pos + Vector2(0, 2), pos + Vector2(0, 6), ThemeStyler.adapt(Color(0.30, 0.25, 0.18, 0.7)), 1.2)
 	draw_circle(pos, 4.5, ThemeStyler.adapt(Color(0.30, 0.45, 0.30, 0.55)))
 	draw_arc(pos, 4.5, 0, TAU, 12, ThemeStyler.adapt(Color(0.18, 0.28, 0.18, 0.75)), 1.0)
+
+# 山峰符号：base 为山脚中点，向阳坡留白、阴坡 (右侧) 画晕滃线
+func _draw_peak_symbol(base: Vector2, half_w: float, height: float) -> void:
+	var top = base + Vector2(0, -height)
+	var left = base + Vector2(-half_w, 0)
+	var right = base + Vector2(half_w, 0)
+	draw_colored_polygon(PackedVector2Array([left, top, right]), ThemeStyler.adapt(Color(0.92, 0.89, 0.83, 0.55)))
+	var hach = ThemeStyler.adapt(Color(0.32, 0.27, 0.22, 0.50))
+	for k in range(1, 5):
+		var t = float(k) / 5.0
+		var on_ridge = top.lerp(right, t)
+		draw_line(on_ridge, on_ridge.lerp(base, 0.55), hach, 1.0)
+	draw_polyline(PackedVector2Array([left, top, right]), ThemeStyler.adapt(Color(0.24, 0.21, 0.18, 0.85)), 1.3)
+	draw_circle(top + Vector2(0, 1.5), 1.3, ThemeStyler.adapt(Color(1, 1, 1, 0.85)))

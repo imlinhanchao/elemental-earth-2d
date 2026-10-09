@@ -342,7 +342,7 @@ func _initialize() -> void:
 	var shore_hex := Vector2i(9999, 9999)
 	var inland_hex := Vector2i(9999, 9999)
 	for h in ms.world_biomes.keys():
-		if Simulation._ring(h) > 5 or ms.world_biomes[h] == Simulation.B_LAKE:
+		if Simulation._ring(h) > 5 or ms.world_biomes[h] == Simulation.B_LAKE or ms.world_biomes[h] == Simulation.B_MOUNTAIN:
 			continue
 		if res_hex == Vector2i(9999, 9999) and not ms.get_tile_available_resources(h).is_empty():
 			res_hex = h
@@ -472,6 +472,35 @@ func _initialize() -> void:
 	sim.inventory.add_item("javelin", 1)
 	_check(sim.harvest_drop_applies(fat, forest, "wood", sim.B_FOREST), "持有标枪在深林伐木可能猎到动物脂肪")
 	sim.inventory.remove_item("javelin", 1)
+
+	# 山地：多个种子下都会生成；不长树、裸岩不能挖泥土 / 种树；可以建造；山地挖矿可能掉石英
+	var mt_tiles := 0
+	var mt_wood := 0
+	var mt_hex := Vector2i(9999, 9999)
+	for s in [1, 7, 999, 31337, 12345]:
+		var mg = Simulation.new()
+		mg.init_world_map(s, 18)
+		for h in mg.world_biomes.keys():
+			if mg.world_biomes[h] != Simulation.B_MOUNTAIN:
+				continue
+			mt_tiles += 1
+			if mg.world_resources.get(h, "") in ["wood", "stick", "coal"]:
+				mt_wood += 1
+	_check(mt_tiles >= 100, "山地在随机地图中成片出现 (%d 格)" % mt_tiles)
+	_check(mt_wood == 0, "山地不长树、没有枯树枝")
+	for h in sim.world_biomes.keys():
+		if sim.world_biomes[h] == Simulation.B_MOUNTAIN:
+			mt_hex = h
+			break
+	if mt_hex.x != 9999:
+		sim.tile_resources[mt_hex] = {}
+		_check(not sim.can_dig_mud(mt_hex), "山地清空资源后也不能挖泥土")
+		_check(not sim.can_plant_sapling(mt_hex), "山地不能种树")
+	var quartz = {}
+	for d in DataDB.harvest_drops:
+		if d["item"] == "quartz": quartz = d
+	_check(sim.harvest_drop_applies(quartz, mt_hex, "hematite", Simulation.B_MOUNTAIN), "炼金术时代在山地挖矿可能掉石英")
+	_check(not sim.harvest_drop_applies(cinnabar, mt_hex, "hematite", Simulation.B_MOUNTAIN), "辰砂不在山地掉落")
 
 	if _failed == 0:
 		print("🎉 进程死锁修复测试全部通过")

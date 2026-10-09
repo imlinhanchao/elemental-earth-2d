@@ -136,25 +136,26 @@ const B_PLAINS = HexWorldGenerator.BiomeType.PLAINS
 const B_VOLCANO = HexWorldGenerator.BiomeType.VOLCANO
 const B_LAKE = HexWorldGenerator.BiomeType.SALT_LAKE
 const B_FOREST = HexWorldGenerator.BiomeType.DEEP_FOREST
+const B_MOUNTAIN = HexWorldGenerator.BiomeType.MOUNTAIN
 const RESOURCE_GUARANTEES: Array = [
 	["wood", 5, 6, [B_FOREST, B_PLAINS]],
-	["stone", 5, 4, [B_PLAINS, B_VOLCANO, B_FOREST]],
+	["stone", 5, 4, [B_PLAINS, B_MOUNTAIN, B_VOLCANO, B_FOREST]],
 	["stick", 5, 4, [B_PLAINS, B_FOREST]],
-	["flint", 5, 3, [B_VOLCANO, B_PLAINS]],
+	["flint", 5, 3, [B_VOLCANO, B_MOUNTAIN, B_PLAINS]],
 	["clay", 5, 2, [B_PLAINS]],
-	["malachite", 5, 2, [B_PLAINS]],
+	["malachite", 5, 2, [B_PLAINS, B_MOUNTAIN]],
 	["rock_salt", 5, 1, [B_LAKE]],
 	["water", 5, 2, [B_LAKE]],
-	["hematite", 8, 2, [B_VOLCANO]],
-	["cassiterite", 8, 2, [B_VOLCANO]],
-	["limestone", 8, 2, [B_PLAINS]],
+	["hematite", 8, 2, [B_VOLCANO, B_MOUNTAIN]],
+	["cassiterite", 8, 2, [B_VOLCANO, B_MOUNTAIN]],
+	["limestone", 8, 2, [B_PLAINS, B_MOUNTAIN]],
 	["coal", 8, 2, [B_FOREST]],
 	["sulfur", 8, 2, [B_VOLCANO]],
 	["pyrite", 8, 2, [B_VOLCANO]],
 	["graphite", 11, 2, [B_FOREST]],
 	["niter", 11, 2, [B_PLAINS]],
 	["pyrolusite", 11, 2, [B_VOLCANO]],
-	["galena", 11, 2, [B_VOLCANO]],
+	["galena", 11, 2, [B_VOLCANO, B_MOUNTAIN]],
 	["sphalerite", 11, 2, [B_VOLCANO, B_PLAINS]],
 	["cryolite", 14, 2, [B_PLAINS, B_VOLCANO]],
 	["bauxite", 14, 2, [B_PLAINS]],
@@ -281,6 +282,9 @@ func _init_hex_resources(coord: Vector2i, biome: HexWorldGenerator.BiomeType, sp
 			HexWorldGenerator.BiomeType.PLAINS:
 				res = { "stone": 30, "stick": 20 }
 				world_resources[coord] = "stick"
+			HexWorldGenerator.BiomeType.MOUNTAIN:
+				res = { "stone": 60, "flint": 15 }
+				world_resources[coord] = "stone"
 				
 	tile_resources[coord] = res
 
@@ -593,7 +597,8 @@ const MUD_UNLIMITED: int = 1000000
 const MUD_CLAY_CHANCE: float = 0.3
 
 func can_dig_mud(hex: Vector2i) -> bool:
-	if not world_biomes.has(hex) or world_biomes[hex] == B_LAKE:
+	# 湖面挖不了；山地是裸岩，没有土层
+	if not world_biomes.has(hex) or world_biomes[hex] == B_LAKE or world_biomes[hex] == B_MOUNTAIN:
 		return false
 	if built_furnaces.has(hex) or built_reactors.has(hex):
 		return false
@@ -622,7 +627,7 @@ func queue_plant_sapling(hex: Vector2i) -> bool:
 		post_notice("没有橡树苗，砍伐原木时有机会得到", Color.ORANGE)
 		return false
 	if not can_plant_sapling(hex):
-		post_notice("只能种在领地内没有资源的陆地空地上", Color.ORANGE)
+		post_notice("只能种在领地内没有资源的陆地空地上（山地和湖面不行）", Color.ORANGE)
 		return false
 	for t in ([active_task] if not active_task.is_empty() else []) + task_queue:
 		if str(t.get("action_id", "")) == "plant" and int(t.get("hex_q", 9999)) == hex.x and int(t.get("hex_r", 9999)) == hex.y:
@@ -810,7 +815,7 @@ func queue_hex_harvest(hex: Vector2i, item_key: String, count: int = 1, world_po
 	var avail = int(tile_resources.get(hex, {}).get(item_key, 0))
 	if item_key == "mud":
 		if not can_dig_mud(hex):
-			post_notice("这里不能挖泥土（只能在没有其他资源的陆地空地上挖）", Color.ORANGE)
+			post_notice("这里不能挖泥土（只能在没有其他资源的陆地空地上挖，山地是裸岩）", Color.ORANGE)
 			return false
 		avail = MUD_UNLIMITED
 	elif item_key == "water":
@@ -1032,7 +1037,7 @@ func _complete_active_task() -> void:
 		
 	_finish_task_and_advance(finished_task)
 
-const BIOME_KEYS := {"plains": B_PLAINS, "volcano": B_VOLCANO, "lake": B_LAKE, "forest": B_FOREST}
+const BIOME_KEYS := {"plains": B_PLAINS, "volcano": B_VOLCANO, "lake": B_LAKE, "forest": B_FOREST, "mountain": B_MOUNTAIN}
 
 # 采集伴生掉落 (data/harvest_drops.json)。一条掉落在以下条件都满足时按 chance 概率得到 1 份：
 #   on: 采集的资源 key，或 "pickaxe" 表示任何需要镐的矿脉；era: 最早时代；biomes: 地块群系；

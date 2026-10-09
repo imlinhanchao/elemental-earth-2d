@@ -199,6 +199,12 @@ func _draw_natural_biome_transition(p1: Vector2, p2: Vector2, my_biome: HexWorld
 			var pt = p1.lerp(p2, 0.25 + 0.25 * float(k)) + inward * 2.0
 			_add_line(pt, pt + inward * 4.0, ThemeStyler.adapt(Color(0.40, 0.22, 0.15, 0.40)), 1.0)
 		return
+	# 山麓：山地一侧向外的短晕滃线 (坡脚)，比火山更密、颜色更冷
+	if my_biome == HexWorldGenerator.BiomeType.MOUNTAIN:
+		for k in range(4):
+			var pt = p1.lerp(p2, 0.2 + 0.2 * float(k)) + inward * 1.5
+			_add_line(pt, pt + inward * 5.0, ThemeStyler.adapt(Color(0.30, 0.27, 0.23, 0.38)), 1.0)
+		return
 	# 林缘：森林一侧浅墨细线
 	if my_biome == HexWorldGenerator.BiomeType.DEEP_FOREST:
 		_add_line(p1 + inward * 1.5, p2 + inward * 1.5, ThemeStyler.adapt(Color(0.22, 0.32, 0.22, 0.30)), 1.0)

@@ -267,6 +267,33 @@ static func run(w: Node2D, arg_name: String) -> void:
 		w.camera.reset_smoothing()
 		w.terrain_layer.refresh()
 		print("[Screenshot] seed=%d" % GameState.sim.world_seed)
+	elif arg_name == "--screenshot-mountain":
+		# 山地：近代化学时代领地 (半径 11)，镜头对准离中心最近的成片山地
+		GameState.reset_to_new_game()
+		w.reset_world_state()
+		GameState.current_era = 2
+		GameState.equipped_tools["pickaxe"] = "stone_pickaxe"
+		GameState.tool_equipped.emit("stone_pickaxe")
+		var best := Vector2i.ZERO
+		var best_n := -9999
+		for h in GameState.world_biomes.keys():
+			if GameState.world_biomes[h] != HexWorldGenerator.BiomeType.MOUNTAIN or not GameState.is_hex_in_territory(h.x, h.y):
+				continue
+			var n := 0
+			for d in GameState.sim.HEX_DIRECTIONS:
+				if GameState.world_biomes.get(h + d, -1) == HexWorldGenerator.BiomeType.MOUNTAIN:
+					n += 1
+			n = n * 4 - GameState.sim._ring(h) # 成片优先，其次离中心近
+			if n > best_n:
+				best_n = n
+				best = h
+		w.camera.position = HexWorldGenerator.hex_to_pixel(best.x, best.y)
+		w.camera.zoom = Vector2(1.3, 1.3)
+		w.target_zoom = w.camera.zoom
+		w.camera.reset_smoothing()
+		w.apply_depleted_tiles_to_nodes()
+		w.terrain_layer.refresh()
+		print("[Screenshot] seed=%d mountain=%s" % [GameState.sim.world_seed, best])
 	elif arg_name == "--screenshot-hud":
 		w.camera.position = Vector2.ZERO
 		w.camera.zoom = Vector2(1.0, 1.0)

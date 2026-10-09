@@ -10,8 +10,14 @@ enum BiomeType {
 	PLAINS,      # 平原草地 (常见孔雀石/树木)
 	VOLCANO,     # 火山与地热地带 (伴生硫磺/黄铁矿)
 	SALT_LAKE,   # 盐湖与卤水矿床 (伴生石盐/卤水)
-	DEEP_FOREST  # 茂密原始森林 (高密度优质木材/煤炭)
+	DEEP_FOREST, # 茂密原始森林 (高密度优质木材/煤炭)
+	MOUNTAIN     # 山地 (岩石裸露，碎石 / 燧石与金属矿脉，不长树)
 }
+
+# 山脉：脊状噪声 (ridged) 的高值连成细长山脊，只隆起在原野与深林上
+const MOUNTAIN_RIDGE_THRESHOLD: float = 0.6
+# 开局中心两圈不起山：保证出生点附近有能挖泥土、种树、建造的平地
+const MOUNTAIN_MIN_RING: int = 2
 
 # 六边形基础规格 (平顶六边形 Flat-topped 或 尖顶 Pointy-topped)
 # 这里采用标准的尖顶六边形: 宽度 = sqrt(3) * 半径, 高度 = 2 * 半径
@@ -21,6 +27,7 @@ const HEX_HEIGHT: float = 72.0     # 2 * 36
 
 var noise_elevation: FastNoiseLite
 var noise_moisture: FastNoiseLite
+var noise_ridge: FastNoiseLite
 var world_seed: int = 42
 
 func _init(seed_val: int = 42) -> void:
@@ -36,6 +43,14 @@ func _init(seed_val: int = 42) -> void:
 	noise_moisture.seed = seed_val + 101
 	noise_moisture.noise_type = FastNoiseLite.TYPE_PERLIN
 	noise_moisture.frequency = 0.03
+
+	# 山脊噪声
+	noise_ridge = FastNoiseLite.new()
+	noise_ridge.seed = seed_val + 211
+	noise_ridge.noise_type = FastNoiseLite.TYPE_SIMPLEX
+	noise_ridge.frequency = 0.05
+	noise_ridge.fractal_type = FastNoiseLite.FRACTAL_RIDGED
+	noise_ridge.fractal_octaves = 2
 
 # 六边形轴向坐标 (q, r) 转换为世界像素坐标 (x, y)
 static func hex_to_pixel(q: int, r: int) -> Vector2:
@@ -73,6 +88,8 @@ func get_biome(q: int, r: int) -> BiomeType:
 		return BiomeType.VOLCANO
 	elif elev < -0.2:
 		return BiomeType.SALT_LAKE
+	elif (abs(q) + abs(q + r) + abs(r)) / 2 > MOUNTAIN_MIN_RING and noise_ridge.get_noise_2d(float(q), float(r)) > MOUNTAIN_RIDGE_THRESHOLD:
+		return BiomeType.MOUNTAIN
 	elif moist > 0.15:
 		return BiomeType.DEEP_FOREST
 	else:
@@ -86,6 +103,7 @@ static func get_biome_color(biome: BiomeType) -> Color:
 			BiomeType.VOLCANO: return Color(0.33, 0.21, 0.17)     # 火山 · 夜间赭红
 			BiomeType.SALT_LAKE: return Color(0.18, 0.26, 0.30)   # 盐湖 · 夜间灰蓝
 			BiomeType.DEEP_FOREST: return Color(0.17, 0.24, 0.17) # 深林 · 夜间墨绿
+			BiomeType.MOUNTAIN: return Color(0.30, 0.28, 0.25)    # 山地 · 夜间岩灰
 	match biome:
 		BiomeType.PLAINS:
 			return Color(0.74, 0.78, 0.62) # 原野 · 灰绿测绘色 #BDC79E
@@ -95,6 +113,8 @@ static func get_biome_color(biome: BiomeType) -> Color:
 			return Color(0.62, 0.74, 0.78) # 盐湖 · 灰蓝水域 #9EBDC7
 		BiomeType.DEEP_FOREST:
 			return Color(0.52, 0.64, 0.50) # 深林 · 墨绿 #85A380
+		BiomeType.MOUNTAIN:
+			return Color(0.66, 0.62, 0.55) # 山地 · 岩灰褐 #A89E8C
 	return Color.GRAY
 
 # 地块的确定性伪随机数 [0, 1)：同一种子下每格固定，不同种子下资源分布不同
@@ -112,7 +132,8 @@ func determine_resource_spawn(q: int, r: int, biome: BiomeType) -> String:
 	elif rand_val > 0.91 and rand_val <= 0.95:
 		return "flint"        # 伴生燧石 (尖锐矿石)
 	elif rand_val < 0.06:
-		return "stick"        # 地表断枝 (徒手可拾取)
+		# 地表断枝 (徒手可拾取)；山地不长树，换成碎石
+		return "stone" if biome == BiomeType.MOUNTAIN else "stick"
 		
 	# 高阶外圈时代专属矿脉 (距离核心区越远，蕴藏矿石越具时代深度)
 	if dist > 14: # 原子能与稀土外圈 (15-20)
@@ -161,4 +182,19 @@ func determine_resource_spawn(q: int, r: int, biome: BiomeType) -> String:
 				return "coal"         # 浅层煤矿
 			elif rand_val < 0.18:
 				return "graphite"     # 石墨矿层 (电极与核反应堆慢化剂)
+		BiomeType.MOUNTAIN:
+			if rand_val > 0.86:
+				return "stone"        # 崩落岩块
+			elif rand_val > 0.80:
+				return "flint"        # 燧石结核
+			elif rand_val > 0.74:
+				return "malachite"    # 铜矿露头
+			elif rand_val < 0.12:
+				return "hematite"     # 山体铁矿
+			elif rand_val < 0.20:
+				return "cassiterite"  # 锡石矿脉
+			elif rand_val < 0.26:
+				return "limestone"    # 石灰岩峭壁
+			elif rand_val < 0.30 and dist > 7:
+				return "galena"       # 方铅矿脉
 	return ""

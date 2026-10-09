@@ -18,7 +18,8 @@
     "era": 1,
     "chance": 0.05,
     "biomes": [
-      "volcano"
+      "volcano",
+      "mountain"
     ]
   },
   {
@@ -62,7 +63,8 @@
     "era": 1,
     "chance": 0.05,
     "biomes": [
-      "volcano"
+      "volcano",
+      "mountain"
     ]
   },
   {
@@ -95,7 +97,8 @@
     "era": 1,
     "chance": 0.05,
     "biomes": [
-      "volcano"
+      "volcano",
+      "mountain"
     ]
   },
   {
@@ -117,7 +120,8 @@
     "era": 1,
     "chance": 0.05,
     "biomes": [
-      "volcano"
+      "volcano",
+      "mountain"
     ]
   },
   {
@@ -128,7 +132,8 @@
     "era": 1,
     "chance": 0.05,
     "biomes": [
-      "volcano"
+      "volcano",
+      "mountain"
     ]
   },
   {
@@ -139,7 +144,8 @@
     "era": 1,
     "chance": 0.05,
     "biomes": [
-      "volcano"
+      "volcano",
+      "mountain"
     ]
   },
   {
@@ -150,7 +156,8 @@
     "era": 1,
     "chance": 0.05,
     "biomes": [
-      "plains"
+      "plains",
+      "mountain"
     ]
   },
   {
@@ -161,7 +168,8 @@
     "era": 1,
     "chance": 0.05,
     "biomes": [
-      "plains"
+      "plains",
+      "mountain"
     ]
   },
   {
@@ -172,7 +180,8 @@
     "era": 1,
     "chance": 0.05,
     "biomes": [
-      "plains"
+      "plains",
+      "mountain"
     ]
   },
   {
@@ -183,7 +192,8 @@
     "era": 2,
     "chance": 0.05,
     "biomes": [
-      "plains"
+      "plains",
+      "mountain"
     ]
   },
   {
@@ -194,7 +204,8 @@
     "era": 2,
     "chance": 0.05,
     "biomes": [
-      "plains"
+      "plains",
+      "mountain"
     ]
   },
   {
@@ -216,7 +227,8 @@
     "era": 4,
     "chance": 0.05,
     "biomes": [
-      "plains"
+      "plains",
+      "mountain"
     ]
   },
   {
@@ -238,7 +250,8 @@
     "era": 3,
     "chance": 0.05,
     "biomes": [
-      "plains"
+      "plains",
+      "mountain"
     ]
   },
   {
@@ -249,7 +262,8 @@
     "era": 2,
     "chance": 0.05,
     "biomes": [
-      "plains"
+      "plains",
+      "mountain"
     ]
   },
   {
@@ -260,7 +274,8 @@
     "era": 3,
     "chance": 0.05,
     "biomes": [
-      "plains"
+      "plains",
+      "mountain"
     ]
   },
   {
@@ -282,7 +297,8 @@
     "era": 2,
     "chance": 0.05,
     "biomes": [
-      "plains"
+      "plains",
+      "mountain"
     ]
   },
   {
@@ -315,7 +331,8 @@
     "era": 1,
     "chance": 0.05,
     "biomes": [
-      "plains"
+      "plains",
+      "mountain"
     ]
   },
   {
@@ -326,7 +343,8 @@
     "era": 1,
     "chance": 0.05,
     "biomes": [
-      "plains"
+      "plains",
+      "mountain"
     ]
   },
   {
