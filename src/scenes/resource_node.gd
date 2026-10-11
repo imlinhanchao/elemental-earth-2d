@@ -100,6 +100,20 @@ func _draw() -> void:
 			_draw_water_ripple()
 		"sapling":
 			_draw_sapling()
+		"cassiterite":
+			_draw_cassiterite_grains()
+		"limestone":
+			_draw_limestone_ledge()
+		"coal":
+			_draw_coal_seam()
+		"graphite":
+			_draw_graphite_flakes()
+		"niter":
+			_draw_niter_crust()
+		"pyrolusite":
+			_draw_pyrolusite_dendrites()
+		"cryolite":
+			_draw_cryolite_blocks()
 		_:
 			_draw_loose_stone()
 
@@ -367,6 +381,76 @@ func _draw_charcoal_bed() -> void:
 	], Color(0.32, 0.32, 0.36))
 	# 碳质解理闪光线
 	draw_line(Vector2(-9, -10), Vector2(2, -4), Color(0.65, 0.65, 0.72), 1.5)
+
+# 以下 7 种矿原先落到默认分支画成碎石，玩家无法在地图上认出来
+
+# 锡石：深褐带树脂光泽的双锥晶体，散落在砂粒中
+func _draw_cassiterite_grains() -> void:
+	draw_circle(Vector2(0, 4), 20.0, Color(0.16, 0.10, 0.06, 0.5))
+	for p in [Vector2(-12, 8), Vector2(-4, 11), Vector2(10, 9), Vector2(14, 2), Vector2(-15, 0)]:
+		draw_circle(p, 1.8, Color(0.72, 0.62, 0.46))
+	_draw_crystal_poly(Vector2(-5, -1), Vector2(12, 20), Color(0.30, 0.18, 0.10), Color(0.55, 0.36, 0.20))
+	_draw_crystal_poly(Vector2(7, 2), Vector2(10, 16), Color(0.26, 0.15, 0.08), Color(0.48, 0.30, 0.16))
+	draw_circle(Vector2(-3, -6), 1.6, Color(0.95, 0.85, 0.65))
+
+# 石灰岩：灰白水平层理的岩壁
+func _draw_limestone_ledge() -> void:
+	draw_circle(Vector2(0, 5), 20.0, Color(0.10, 0.10, 0.08, 0.35))
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(-16, 9), Vector2(-14, -6), Vector2(-4, -11), Vector2(12, -9), Vector2(16, 8)
+	]), Color(0.82, 0.80, 0.72))
+	for y in [-5.0, 0.0, 5.0]:
+		draw_line(Vector2(-14, y), Vector2(15, y - 1.0), Color(0.58, 0.56, 0.50), 1.4)
+	draw_circle(Vector2(5, -3), 1.5, Color(0.55, 0.52, 0.45))
+
+# 煤：黑色层状露头，夹一道土层
+func _draw_coal_seam() -> void:
+	draw_circle(Vector2(0, 5), 20.0, Color(0.04, 0.04, 0.05, 0.55))
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(-16, 9), Vector2(-13, -8), Vector2(12, -10), Vector2(16, 8)
+	]), Color(0.50, 0.40, 0.28))
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(-15, 4), Vector2(-14, -4), Vector2(14, -5), Vector2(15, 4)
+	]), Color(0.10, 0.10, 0.11))
+	draw_line(Vector2(-12, -2), Vector2(10, -3), Color(0.55, 0.55, 0.62), 1.2)
+
+# 石墨：铅灰色的片状鳞片，带金属光泽
+func _draw_graphite_flakes() -> void:
+	draw_circle(Vector2(0, 4), 20.0, Color(0.06, 0.07, 0.08, 0.5))
+	var flakes = [[Vector2(-6, 0), 0.3], [Vector2(6, -4), -0.4], [Vector2(2, 7), 0.1]]
+	for f in flakes:
+		var c: Vector2 = f[0]
+		var a: float = f[1]
+		var dx = Vector2(cos(a), sin(a)) * 9.0
+		var dy = Vector2(-sin(a), cos(a)) * 4.0
+		draw_colored_polygon(PackedVector2Array([c - dx - dy, c + dx - dy, c + dx + dy, c - dx + dy]), Color(0.30, 0.32, 0.35))
+		draw_line(c - dx - dy, c + dx - dy, Color(0.78, 0.80, 0.85), 1.4)
+
+# 硝石：土面上的白色絮状结壳
+func _draw_niter_crust() -> void:
+	draw_circle(Vector2(0, 4), 18.0, Color(0.38, 0.30, 0.20, 0.45))
+	for p in [Vector2(-8, -2), Vector2(-2, 4), Vector2(5, -4), Vector2(9, 4), Vector2(-10, 6), Vector2(1, -8)]:
+		draw_circle(p, 3.6, Color(0.96, 0.95, 0.90))
+		draw_circle(p + Vector2(1, 1), 1.4, Color(0.78, 0.76, 0.70))
+
+# 软锰矿：黑色岩块上的树枝状纹理
+func _draw_pyrolusite_dendrites() -> void:
+	draw_circle(Vector2(0, 4), 20.0, Color(0.06, 0.05, 0.06, 0.5))
+	draw_colored_polygon(PackedVector2Array([
+		Vector2(-14, 7), Vector2(-10, -10), Vector2(6, -13), Vector2(15, -2), Vector2(10, 11)
+	]), Color(0.22, 0.20, 0.22))
+	var dc = Color(0.62, 0.58, 0.62)
+	draw_line(Vector2(-8, 8), Vector2(2, -8), dc, 1.4)
+	draw_line(Vector2(-3, 1), Vector2(-9, -4), dc, 1.1)
+	draw_line(Vector2(0, -4), Vector2(8, -6), dc, 1.1)
+	draw_line(Vector2(-5, 4), Vector2(5, 5), dc, 1.1)
+
+# 冰晶石：半透明冰白色的方块状晶体
+func _draw_cryolite_blocks() -> void:
+	draw_circle(Vector2(0, 4), 20.0, Color(0.10, 0.14, 0.18, 0.35))
+	_draw_cube(Vector2(-6, 2), 14.0, Color(0.82, 0.90, 0.95, 0.9))
+	_draw_cube(Vector2(7, -3), 11.0, Color(0.88, 0.94, 0.98, 0.9))
+	_draw_cube(Vector2(2, 9), 8.0, Color(0.75, 0.85, 0.92, 0.9))
 
 # 相互连接成片的矿脉延伸 (Connecting Mineral Veins)
 func _draw_connecting_mineral_veins() -> void:

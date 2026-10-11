@@ -146,11 +146,11 @@ const RESOURCE_GUARANTEES: Array = [
 	["malachite", 5, 2, [B_PLAINS, B_MOUNTAIN]],
 	["rock_salt", 5, 1, [B_LAKE]],
 	["water", 5, 2, [B_LAKE]],
-	["hematite", 8, 2, [B_VOLCANO, B_MOUNTAIN]],
-	["cassiterite", 8, 2, [B_VOLCANO, B_MOUNTAIN]],
+	["hematite", 7, 3, [B_VOLCANO, B_MOUNTAIN]],
+	["cassiterite", 7, 3, [B_VOLCANO, B_MOUNTAIN]],
 	["limestone", 8, 2, [B_PLAINS, B_MOUNTAIN]],
-	["coal", 8, 2, [B_FOREST]],
-	["sulfur", 8, 2, [B_VOLCANO]],
+	["coal", 7, 3, [B_FOREST]],
+	["sulfur", 7, 3, [B_VOLCANO]],
 	["pyrite", 8, 2, [B_VOLCANO]],
 	["graphite", 11, 2, [B_FOREST]],
 	["niter", 11, 2, [B_PLAINS]],
@@ -421,6 +421,9 @@ func advance_era(target_era: int) -> void:
 		current_era = target_era
 		era_advanced.emit(old, current_era, ERA_NAMES[current_era])
 		post_notice("进入%s，领地扩展到半径 %d 格" % [ERA_NAMES[current_era], get_current_territory_radius()], Color(1.0, 0.88, 0.3))
+		var ores = new_era_resource_hint(current_era)
+		if ores != "":
+			post_notice(ores, Color(0.85, 0.7, 0.3))
 
 var _territory_cache_era: int = -1
 var _territory_cache_radius: int = 5
@@ -751,6 +754,19 @@ const RESOURCE_ERA_REQUIREMENTS: Dictionary = {
 	"pitchblende": 5
 }
 
+# 跨入新时代时告诉玩家新出现了哪些矿、去哪找 (群系取 RESOURCE_GUARANTEES 的首选群系)
+const BIOME_NAMES := {B_PLAINS: "原野", B_VOLCANO: "火山", B_LAKE: "盐湖", B_FOREST: "深林", B_MOUNTAIN: "山地"}
+func new_era_resource_hint(era: int) -> String:
+	var parts: Array = []
+	for g in RESOURCE_GUARANTEES:
+		if int(RESOURCE_ERA_REQUIREMENTS.get(g[0], 0)) != era:
+			continue
+		var where: Array = []
+		for b in g[3]:
+			where.append(BIOME_NAMES.get(b, ""))
+		parts.append("%s（%s）" % [DataDB.get_item(g[0]).get("name", g[0]), "/".join(where)])
+	return "" if parts.is_empty() else "地图上出现了新矿：" + "、".join(parts)
+
 # 获取资源所需的工具槽位类型 ("axe", "pickaxe", "bare_hands")
 func get_resource_required_tool(item_key: String) -> String:
 	match item_key:
@@ -1039,21 +1055,35 @@ func _complete_active_task() -> void:
 
 const BIOME_KEYS := {"plains": B_PLAINS, "volcano": B_VOLCANO, "lake": B_LAKE, "forest": B_FOREST, "mountain": B_MOUNTAIN}
 
-# 采集伴生掉落 (data/harvest_drops.json)。一条掉落在以下条件都满足时按 chance 概率得到 1 份：
+# 采集伴生掉落 (data/harvest_drops.json)。一条掉落在以下条件都满足时才可能得到：
 #   on: 采集的资源 key，或 "pickaxe" 表示任何需要镐的矿脉；era: 最早时代；biomes: 地块群系；
 #   near_water: 地块与湖相邻；tech: 需要研发的科技；requires: 需要持有的物品 (如狩猎要标枪)
+# 矿脉伴生的稀有矿石 (on 含 "pickaxe") 合为一个池子：每次开采只按 VEIN_DROP_CHANCE 抽一次，抽中再从池中等概率选一种，
+# 行囊里已有 DROP_HOLD_CAP 份的不再掉。原先每条各按 5% 独立判定，近代化学时代每挖一下约 75% 掉稀有矿，
+# 玩家很快攒下几十块后期矿石，反而淹没了锡石、煤等本时代主矿。其余掉落 (卤水、海藻、糯米…) 仍各自按 chance 判定
 # 第一次得到某种掉落时提示一次，让玩家知道它从哪里来
+const VEIN_DROP_CHANCE := 0.06
+const DROP_HOLD_CAP := 10
+
 func _roll_harvest_drops(hex: Vector2i, t_key: String) -> void:
 	var biome = world_biomes.get(hex, -1)
+	var pool: Array = []
 	for d in DataDB.harvest_drops:
 		if not harvest_drop_applies(d, hex, t_key, biome):
 			continue
-		if randf() < float(d.get("chance", 0.0)):
-			var k = str(d["item"])
-			var first = inventory.get_count(k) <= 0 and not lab.seen_items.has(k)
-			inventory.add_item(k, 1)
-			if first:
-				post_notice("采集时意外发现了%s" % DataDB.get_item(k).get("name", k), Color(0.85, 0.7, 0.3))
+		if d.get("on", []).has("pickaxe"):
+			if inventory.get_count(str(d["item"])) < DROP_HOLD_CAP:
+				pool.append(d)
+		elif randf() < float(d.get("chance", 0.0)):
+			_give_drop(str(d["item"]))
+	if not pool.is_empty() and randf() < VEIN_DROP_CHANCE:
+		_give_drop(str(pool[randi() % pool.size()]["item"]))
+
+func _give_drop(k: String) -> void:
+	var first = inventory.get_count(k) <= 0 and not lab.seen_items.has(k)
+	inventory.add_item(k, 1)
+	if first:
+		post_notice("采集时意外发现了%s" % DataDB.get_item(k).get("name", k), Color(0.85, 0.7, 0.3))
 
 func harvest_drop_applies(d: Dictionary, hex: Vector2i, t_key: String, biome) -> bool:
 	var on: Array = d.get("on", [])

@@ -470,8 +470,36 @@ func _initialize() -> void:
 	_check(not sim.harvest_drop_applies(cinnabar, volc, "stone", sim.B_VOLCANO), "捡碎石不掉矿石")
 	_check(not sim.harvest_drop_applies(fat, forest, "wood", sim.B_FOREST), "没有标枪不能狩猎")
 	sim.inventory.add_item("javelin", 1)
+	_check(not sim.harvest_drop_applies(fat, forest, "wood", sim.B_FOREST), "动物脂肪在近代化学时代前不掉落 (之前用不到)")
+	sim.current_era = 2
 	_check(sim.harvest_drop_applies(fat, forest, "wood", sim.B_FOREST), "持有标枪在深林伐木可能猎到动物脂肪")
+	sim.current_era = 1
 	sim.inventory.remove_item("javelin", 1)
+
+	# 矿脉伴生掉落合为一次抽取：火山挖赤铁矿 1000 次，稀有矿总数接近 VEIN_DROP_CHANCE，且每种不超过持有上限
+	var rare_keys: Array = []
+	for d in DataDB.harvest_drops:
+		if d.get("on", []).has("pickaxe"):
+			rare_keys.append(d["item"])
+	var rare_before := 0
+	for k in rare_keys:
+		rare_before += sim.inventory.get_count(k)
+	seed(4242)
+	for i in range(1000):
+		sim._roll_harvest_drops(volc, "hematite")
+	var rare_got := 0
+	var over_cap := false
+	for k in rare_keys:
+		rare_got += sim.inventory.get_count(k)
+		if sim.inventory.get_count(k) > sim.DROP_HOLD_CAP:
+			over_cap = true
+	rare_got -= rare_before
+	_check(rare_got >= 30 and rare_got <= 100, "挖矿 1000 次约掉 60 块稀有矿 (实际 %d 块)" % rare_got)
+	_check(not over_cap, "每种稀有矿持有数不超过上限")
+	for k in rare_keys:
+		sim.inventory.remove_item(k, sim.inventory.get_count(k))
+	_check(sim.new_era_resource_hint(1).contains("锡石"), "进入炼金术时代提示锡石的位置")
+	_check(sim.new_era_resource_hint(3).contains("铝土矿") and not sim.new_era_resource_hint(3).contains("锡石"), "进入电化学时代只提示本时代新矿")
 
 	# 山地：多个种子下都会生成；不长树、裸岩不能挖泥土 / 种树；可以建造；山地挖矿可能掉石英
 	var mt_tiles := 0
@@ -499,7 +527,8 @@ func _initialize() -> void:
 	var quartz = {}
 	for d in DataDB.harvest_drops:
 		if d["item"] == "quartz": quartz = d
-	_check(sim.harvest_drop_applies(quartz, mt_hex, "hematite", Simulation.B_MOUNTAIN), "炼金术时代在山地挖矿可能掉石英")
+	sim.current_era = 2
+	_check(sim.harvest_drop_applies(quartz, mt_hex, "hematite", Simulation.B_MOUNTAIN), "近代化学时代在山地挖矿可能掉石英")
 	_check(not sim.harvest_drop_applies(cinnabar, mt_hex, "hematite", Simulation.B_MOUNTAIN), "辰砂不在山地掉落")
 
 	if _failed == 0:
