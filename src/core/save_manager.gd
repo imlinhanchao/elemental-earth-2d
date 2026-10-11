@@ -27,6 +27,8 @@ static var pending_load_slot: String = ""
 
 # 测试与开发截图期间置为 true：跳过对 auto 槽位的写入，避免覆盖玩家真实的自动存档
 static var suppress_auto_save: bool = false
+# 读档期间为 true：读档会重发 era_advanced，监听方据此区分真正的时代跃迁
+static var is_loading: bool = false
 
 static func get_slot_path(slot_id: String) -> String:
 	return "user://save_%s.json" % slot_id
@@ -309,7 +311,9 @@ static func load_from_slot(slot_id: String, world_node: Node2D = null, quiet: bo
 	if world_node != null and world_node.has_method("deserialize_world_state"):
 		world_node.deserialize_world_state(world_data)
 		
+	is_loading = true
 	GameState.era_advanced.emit(0, GameState.current_era, GameState.ERA_NAMES[GameState.current_era])
+	is_loading = false
 	_restore_tutorial(gs_data.get("tutorial", {}))
 	if quiet:
 		return true

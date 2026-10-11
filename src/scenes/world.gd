@@ -128,6 +128,7 @@ func _ready() -> void:
 		hud._update_era_label()
 	elif not GameState.is_tutorial_active:
 		GameState.post_notice("点击碎石、枯树枝开始采集，点击盐湖打水，右键拖拽移动视野", Color(1.0, 0.88, 0.4))
+	MusicManager.play_era(GameState.current_era)
 	
 	# 开发截图：携带 --screenshot[-场景名] 参数时运行 tools/screenshot_scenarios.gd
 	for arg in OS.get_cmdline_user_args() + OS.get_cmdline_args():

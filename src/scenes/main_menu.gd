@@ -52,6 +52,7 @@ const SATELLITE_ELEMENTS = [
 
 func _ready() -> void:
 	SettingsManager.load_settings()
+	MusicManager.play_menu()
 	var theme = ThemeStyler.create_scientific_theme()
 	self.theme = theme
 	save_load_modal.theme = theme

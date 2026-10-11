@@ -24,7 +24,7 @@
 | :--- | :--- | :--- |
 | **直接启动游戏** | `/Applications/Godot.app/Contents/MacOS/Godot --path /Users/hancel/Documents/project/elemental-earth-2d` | 窗口模式启动游玩 |
 | **无头实机截图测试** | `/Applications/Godot.app/Contents/MacOS/Godot --path /Users/hancel/Documents/project/elemental-earth-2d ++ --screenshot` | 启动并在1.2s后输出 `screenshot_current.png` 并安全退出 |
-| **运行测试** | `Godot --headless --path . -s res://tests/test_progression.gd`、`-s res://tests/test_chemistry.gd`、`-s res://tests/test_modal_stack.gd`、`res://tests/test_save_v3.tscn`、`res://tests/test_tutorial.tscn`、`res://tests/test_theme.tscn`、`res://tests/test_world_ui.tscn` | 七套测试均需通过 |
+| **运行测试** | `Godot --headless --path . -s res://tests/test_progression.gd`、`-s res://tests/test_chemistry.gd`、`-s res://tests/test_modal_stack.gd`、`res://tests/test_save_v3.tscn`、`res://tests/test_tutorial.tscn`、`res://tests/test_theme.tscn`、`res://tests/test_world_ui.tscn`、`res://tests/test_music.tscn` | 八套测试均需通过 |
 | **性能剖析** | `Godot --path . -s res://tools/profile_load.gd \| grep PROF` | 输出加载、帧时间、存读档与重绘耗时 |
 | **进程可达性检查** | `Godot --headless --path . -s res://tools/dump_map_resources.gd \| grep MAPDUMP > /tmp/map.txt && python3 tools/check_progression.py /tmp/map.txt` | 修改 data/*.json 后必须运行 |
 | **Git 状态检查** | `git status` | 检查修改状态 |
@@ -1077,6 +1077,22 @@
 - **采集伴生掉落**：石英、黄铜矿、辉银矿、自然银、辉钼矿、白钨矿、绿柱石、萤石、碲金矿、砷铂矿、金红石、锆石、锂辉石、锂云母、钽铌矿、辉钴矿、辉铋矿、辉锑矿共 18 种脉状矿物在山地挖矿时也可掉落（`harvest_drops.json` 的 `biomes` 加入 `mountain`，`Simulation.BIOME_KEYS` 同步）；
 - **绘制**：岩灰褐底色（深色主题 `#4D4740`）；`terrain_detail_layer` 在瓦片边角画两三座墨线山峰，避开中心的资源图标，相邻山地之间画山脊线；`terrain_layer` 在山地与其他群系交界处画冷灰短晕滃线（山麓）；
 - **校验与测试**：41 个种子下开局资源满足保底，六个时代全部可完成，40 项科技均可研发；`test_progression` 新增山地成片出现、不长树、不能挖泥土 / 种树、山地掉落石英而不掉辰砂。截图场景新增 `--screenshot-mountain`（近代化学时代领地，镜头对准最近的成片山地）。
+
+### 2.72 原创背景音乐：主菜单、六个时代与两段短乐句 (2026-10-11)
+
+- **作曲**（`tools/compose_music.py`）：全部音色由 numpy 合成，不用外部采样，没有版权问题。拨弦用 Karplus-Strong，钢琴用带非谐泛音的加法合成，电钢和钟用 FM，弦乐、垫音、长笛用波表加颤音，另有手鼓、沙锤、底鼓和卷积混响。九首曲目共用一个两小节的主动机，按时代换调式、配器和速度做变奏：
+  - 主菜单：D 小调，钢琴主旋律、弦乐、钢片琴和竖琴分解和弦，66 BPM；
+  - 石器时代：A 小调五声，长笛、人声哼鸣、拇指琴、木琴、手鼓与风声，62 BPM；
+  - 炼金术时代：D 多利亚，鲁特琴分解和弦、竖笛、主音与五度持续低音，72 BPM；
+  - 近代化学时代：F 大调，钢琴、弦乐、拨弦低音，76 BPM；
+  - 电化学时代：E 小调七和弦，电钢琴、合成器拨弦、合成低音、底鼓，84 BPM；
+  - 稀土时代：C 利底亚，钟琴、电钢琴琶音、垫音，78 BPM；
+  - 原子时代：F♯ 小调，钟、合成器琶音、八分音符低音脉冲，90 BPM（未来时代沿用）；
+  - 时代跃迁（7.5 秒）与元素发现（5 秒）短乐句；
+- **无缝循环**：循环曲目按小节数精确计算长度，越过结尾的尾音和混响回卷到开头，导入时开启 `loop`。曲目约 85~125 秒，Ogg Vorbis 约 96 kbps，共约 7MB。修改后运行 `python3 tools/compose_music.py [曲目名]`（需要 `brew install vorbis-tools` 提供 oggenc），再用 `Godot --headless --editor --quit-after 600 --path .` 重新导入；新增循环曲目需把 `.import` 中的 `loop` 改为 `true`；
+- **音频总线**：新增 `default_bus_layout.tres`（Master → BGM、SFX）。此前没有这两条总线，设置里的 BGM / SFX 滑块不起作用；
+- **播放**（autoload `MusicManager`，`src/core/music_manager.gd`）：两个播放器交替，切曲交叉淡化 2.5 秒；暂停时照常播放。主菜单播主菜单曲，大世界按当前时代播放，曲目路径读 `data/eras.json` 的 `bgm` 字段。时代跃迁先放乐句并把背景音乐压低 12 dB，乐句结束后切到新时代曲目；元素发现同样放乐句、压低音量。读档与新游戏也会发出 `era_advanced`，只切曲不放乐句（`SaveManager.is_loading`）；
+- **测试**：新增 `tests/test_music.tscn`（总线与音量设置、曲目可循环、主菜单 / 大世界曲目、跃迁乐句与压低、乐句后切曲、新游戏与读档不放乐句、元素发现乐句）。
 
 ---
 

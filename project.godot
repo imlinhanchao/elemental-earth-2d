@@ -16,6 +16,7 @@ config/icon="res://icon.svg"
 [autoload]
 
 GameState="*res://src/core/game_state.gd"
+MusicManager="*res://src/core/music_manager.gd"
 
 [display]
 

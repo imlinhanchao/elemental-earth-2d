@@ -7,6 +7,7 @@
     "description": "人类第一次将石块打磨成工具，用燧石点燃火焰。",
     "order": 0,
     "territory_radius": 5,
+    "bgm": "res://assets/audio/bgm/era_stone.ogg",
     "advance_threshold": {
       "elements": [29]
     },
@@ -29,6 +30,7 @@
     "description": "火焰被用于改造物质，矿石在窑炉中化为金属。",
     "order": 1,
     "territory_radius": 8,
+    "bgm": "res://assets/audio/bgm/era_alchemy.ogg",
     "advance_threshold": {
       "elements": [26],
       "min_blueprints": 2
@@ -60,6 +62,7 @@
     "description": "气体的收集与定量研究，开启了系统化的化学探索。",
     "order": 2,
     "territory_radius": 11,
+    "bgm": "res://assets/audio/bgm/era_modern.ogg",
     "advance_threshold": {},
     "milestones": [
       {
@@ -92,6 +95,7 @@
     "description": "电力的应用使人类能够分离最顽固的化合物。",
     "order": 3,
     "territory_radius": 14,
+    "bgm": "res://assets/audio/bgm/era_electro.ogg",
     "advance_threshold": {},
     "milestones": [
       {
@@ -116,6 +120,7 @@
     "description": "镧系元素的精密分离技术，打开了元素周期表深处的大门。",
     "order": 4,
     "territory_radius": 17,
+    "bgm": "res://assets/audio/bgm/era_rare_earth.ogg",
     "advance_threshold": {},
     "milestones": [
       {
@@ -136,6 +141,7 @@
     "description": "跨越稳定核素的边界，掌握同位素与元素嬗变的终极奥秘。",
     "order": 5,
     "territory_radius": 20,
+    "bgm": "res://assets/audio/bgm/era_atomic.ogg",
     "advance_threshold": {},
     "milestones": [
       {
@@ -156,6 +162,7 @@
     "description": "人类文明的未来，充满了无限可能。",
     "order": 6,
     "territory_radius": 20,
+    "bgm": "res://assets/audio/bgm/era_atomic.ogg",
     "advance_threshold": {},
     "milestones": []
   }
